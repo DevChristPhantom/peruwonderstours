@@ -1,0 +1,108 @@
+import type { Faq, Tour, TourSummary } from "@/lib/catalog/types";
+import { absoluteUrl, SITE } from "@/lib/site";
+
+type JsonLdObject = Record<string, unknown>;
+
+/** Inserta JSON-LD escapando `<` (guía JSON-LD de Next 16: evita inyección de HTML). */
+export function JsonLd({ data }: { data: JsonLdObject | JsonLdObject[] }) {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, "\\u003c") }}
+    />
+  );
+}
+
+export interface Crumb {
+  name: string;
+  path: string;
+}
+
+export function breadcrumbJsonLd(crumbs: Crumb[]): JsonLdObject {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: crumbs.map((c, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: c.name,
+      item: absoluteUrl(c.path),
+    })),
+  };
+}
+
+/** Agencia. Sin dirección/RUC hasta que el cliente los confirme. */
+export function organizationJsonLd(): JsonLdObject {
+  return {
+    "@context": "https://schema.org",
+    "@type": "TravelAgency",
+    name: SITE.name,
+    url: SITE.url,
+    areaServed: { "@type": "Country", name: "Perú" },
+  };
+}
+
+/**
+ * TouristTrip (+ Offer solo si hay tarifa real). Sin AggregateRating: no hay reseñas reales aún.
+ */
+export function touristTripJsonLd(tour: Tour): JsonLdObject {
+  const url = absoluteUrl(tour.path);
+  const data: JsonLdObject = {
+    "@context": "https://schema.org",
+    "@type": "TouristTrip",
+    name: tour.title,
+    description: tour.metaDescription || tour.excerpt,
+    url,
+    image: tour.gallery.slice(0, 6).map((g) => g.src),
+    touristType: tour.categorySlugs,
+    provider: { "@type": "TravelAgency", name: SITE.name, url: SITE.url },
+    itinerary: {
+      "@type": "ItemList",
+      numberOfItems: tour.itinerary.length,
+      itemListElement: tour.itinerary.map((step, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        name: step.title ?? `Día ${step.day}`,
+        description: step.description.slice(0, 300),
+      })),
+    },
+  };
+  if (tour.pricing) {
+    data.offers = {
+      "@type": "Offer",
+      url,
+      priceCurrency: tour.pricing.currency,
+      price: (tour.pricing.adultCents / 100).toFixed(2),
+      availability: "https://schema.org/InStock",
+      seller: { "@type": "TravelAgency", name: SITE.name },
+    };
+  }
+  return data;
+}
+
+export function faqJsonLd(faqs: Faq[]): JsonLdObject | null {
+  if (!faqs.length) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.question,
+      acceptedAnswer: { "@type": "Answer", text: f.answer },
+    })),
+  };
+}
+
+export function itemListJsonLd(name: string, tours: TourSummary[]): JsonLdObject {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name,
+    itemListElement: tours.map((t, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: absoluteUrl(t.path),
+      name: t.title,
+    })),
+  };
+}

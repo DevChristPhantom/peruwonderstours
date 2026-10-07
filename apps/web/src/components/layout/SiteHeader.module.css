@@ -1,0 +1,619 @@
+/*
+ * Header + dropdown "morph". Valores exactos de docs/design/hero-morph-spec.md (§3–§7).
+ * Tokens del hero: --pwt-hero-* (packages/ui). Nunca transform en el nav (solo opacidad).
+ */
+
+.header {
+  --ease: var(--pwt-ease-out);
+  --morph: 0.5s;
+  --bar-h: 76px;
+  --panel: var(--pwt-hero-panel);
+  --line: var(--pwt-hero-line);
+  --hover: var(--pwt-hero-hover);
+  --text: var(--pwt-hero-text);
+  --soft: var(--pwt-hero-soft);
+  --muted: var(--pwt-hero-muted);
+
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--pwt-z-header);
+  color: var(--text);
+  font-family: var(--pwt-font-sans);
+  transition: background-color var(--pwt-duration-base) ease, border-color var(--pwt-duration-base) ease;
+  border-bottom: 1px solid transparent;
+}
+
+/* Home: sobre el hero (spec: absolute). Fijo para poder volverse sólido al hacer scroll (> 80 px). */
+.overlay {
+  position: fixed;
+}
+
+/* Resto de páginas: sólido y sticky, 64 px (home.md · scroll / tour-detalle.md §1). */
+.solid {
+  position: sticky;
+}
+
+.solid,
+.scrolled {
+  --bar-h: 64px;
+  background: var(--panel);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  border-bottom-color: var(--line);
+}
+
+.header :focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.bar {
+  height: var(--bar-h);
+  padding: 0 clamp(20px, 3.4vw, 52px);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  transition: height var(--pwt-duration-base) var(--ease);
+}
+
+/* ---------- Entradas (fill-mode backwards) ---------- */
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.intro .logo {
+  animation: fadeDown 0.9s var(--ease) 0.35s backwards;
+}
+.intro .nav {
+  animation: fadeIn 0.9s ease 0.45s backwards; /* solo opacidad: el nav es offsetParent del morph */
+}
+.intro .actions {
+  animation: fadeDown 0.9s var(--ease) 0.55s backwards;
+}
+
+/* ---------- Logo (versión negativa, logo-colores.md opción 1) ---------- */
+.logo {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  color: var(--pwt-piedra-50);
+}
+.logoImg {
+  width: auto;
+  height: 40px;
+}
+
+/* ---------- Nav ---------- */
+.nav {
+  justify-self: center;
+}
+.list {
+  display: flex;
+  gap: 26px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  min-height: 44px;
+  font: inherit;
+  font-size: 14.5px;
+  color: var(--soft);
+  background: none;
+  border: 0;
+  transition: color 0.25s;
+}
+.trigger:hover,
+.trigger[aria-expanded="true"] {
+  color: var(--text);
+}
+.chevron {
+  width: 8px;
+  height: 5px;
+  transition: transform 0.35s var(--ease);
+}
+.trigger[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+
+/* ---------- Dropdown morph ---------- */
+.dd {
+  --x: 0px;
+  --w: 400px;
+  --h: 300px;
+  --s: 0.97;
+  position: absolute;
+  top: calc(var(--bar-h) - 12px); /* = 64 px con el header de 76 px (spec) */
+  left: 0;
+  z-index: var(--pwt-z-dropdown);
+  width: var(--w);
+  height: var(--h);
+  transform: translateX(var(--x)) scale(var(--s));
+  transform-origin: 50% 0;
+  opacity: 0;
+  pointer-events: none;
+  border-radius: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--pwt-shadow-overlay);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  overflow: hidden;
+  transition:
+    transform var(--morph) var(--ease),
+    width var(--morph) var(--ease),
+    height var(--morph) var(--ease),
+    opacity 0.3s;
+}
+.open {
+  --s: 1;
+  opacity: 1;
+  pointer-events: auto;
+}
+.instant {
+  transition: opacity 0.3s;
+}
+.instant.snap {
+  transition: none;
+}
+
+.panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  visibility: hidden;
+  filter: blur(8px);
+  transition:
+    opacity 0.26s,
+    transform var(--morph) var(--ease),
+    filter 0.4s,
+    visibility 0s linear 0.4s;
+}
+.exitLeft {
+  transform: translateX(-56px);
+}
+.exitRight {
+  transform: translateX(56px);
+}
+.panel[data-state="active"] {
+  opacity: 1;
+  visibility: visible;
+  filter: none;
+  transform: none;
+  transition:
+    opacity 0.36s 0.06s,
+    transform var(--morph) var(--ease),
+    filter 0.45s 0.04s,
+    visibility 0s;
+}
+.panel.snap {
+  transition: none;
+}
+
+/* Panel A — Descubre (664×358) */
+.panelDiscover {
+  width: 664px;
+  height: 358px;
+  display: grid;
+  grid-template-columns: 236px 1fr;
+}
+.discoverList {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.discoverRow {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 10px;
+  transition: background-color 0.25s;
+}
+.discoverRow[data-active="true"] {
+  background: var(--hover);
+}
+.discoverTitle {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+.discoverDesc {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  line-height: 1.42;
+  color: var(--muted);
+}
+.discoverMedia {
+  position: relative;
+  overflow: hidden;
+}
+.discoverMedia::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 70px;
+  background: linear-gradient(to right, var(--pwt-hero-ink), transparent);
+  opacity: 0.85;
+  pointer-events: none;
+}
+.discoverImg {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(1.06);
+  filter: blur(10px);
+  transition:
+    opacity 0.6s var(--ease),
+    transform 0.9s var(--ease),
+    filter 0.6s var(--ease);
+}
+.discoverImg[data-active="true"] {
+  opacity: 1;
+  transform: none;
+  filter: none;
+}
+.discoverImg img {
+  object-fit: cover;
+}
+
+/* Panel B — Viajes (446×308) */
+.panelJourneys {
+  width: 446px;
+  height: 308px;
+  padding: 7px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+.journeyCard {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  padding: 14px;
+  border-radius: 10px;
+  overflow: hidden;
+  isolation: isolate;
+}
+.journeyCard img {
+  object-fit: cover;
+  z-index: -2;
+  transition:
+    transform 0.9s var(--ease),
+    filter 0.9s var(--ease);
+}
+.journeyCard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to top, rgba(6, 9, 11, 0.8), transparent 60%);
+}
+.journeyCard:hover img,
+.journeyCard:focus-visible img {
+  transform: scale(1.05);
+  filter: brightness(1.08);
+}
+.journeyTitle {
+  font-size: 15.5px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* Panel C — Destinos (232×218) */
+.panelRegions {
+  width: 232px;
+  height: 218px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+}
+.panelRegions a {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 9px;
+  font-size: 15px;
+  color: var(--soft);
+  transition:
+    background-color 0.25s,
+    color 0.25s;
+}
+.panelRegions a:hover,
+.panelRegions a:focus-visible {
+  background: var(--hover);
+  color: var(--text);
+}
+
+/* ---------- Acciones ---------- */
+.actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.iconButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  color: var(--soft);
+  background: none;
+  border: 0;
+  transition: color 0.25s, background-color 0.25s;
+}
+.iconButton:hover {
+  color: var(--text);
+  background: var(--hover);
+}
+.badge {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--pwt-dorado-300);
+  color: var(--pwt-piedra-900);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.lang {
+  position: relative;
+}
+.langButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 10px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--soft);
+  background: none;
+  border: 0;
+  transition: color 0.25s;
+}
+.langButton:hover,
+.langButton[aria-expanded="true"] {
+  color: var(--text);
+}
+.langButton[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
+}
+.langMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 190px;
+  padding: 6px;
+  margin: 0;
+  list-style: none;
+  border-radius: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--pwt-shadow-overlay);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+}
+.langMenu li > * {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--soft);
+}
+.langMenu [aria-current="true"] {
+  color: var(--text);
+  background: var(--hover);
+}
+.langMenu small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 15px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: var(--pwt-hero-cta);
+  color: var(--pwt-hero-on-cta);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background-color 0.25s,
+    transform 0.25s var(--ease);
+}
+/* Área táctil de 44 px sin cambiar lo visual (MASTER §12 #4). */
+.cta::after,
+.menuButton::after {
+  content: "";
+  position: absolute;
+  inset: -6px -4px;
+}
+.cta:hover {
+  background: var(--pwt-hero-cta-hover);
+  transform: translateY(-1px);
+}
+
+.menuButton {
+  position: relative;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 32px;
+  margin-left: 4px;
+  border-radius: 999px;
+  border: 0;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.menuIcon {
+  width: 16px;
+  height: 8px;
+}
+.menuIcon line {
+  transition: transform 0.35s var(--ease);
+  transform-origin: center;
+}
+.menuButton[aria-expanded="true"] .menuIcon line:first-child {
+  transform: translateY(3px) rotate(45deg);
+}
+.menuButton[aria-expanded="true"] .menuIcon line:last-child {
+  transform: translateY(-3px) rotate(-45deg);
+}
+
+/* ---------- Hoja móvil (≤ 860 px) ---------- */
+.sheet {
+  position: absolute;
+  top: 68px;
+  left: 12px;
+  right: 12px;
+  z-index: var(--pwt-z-dropdown);
+  max-height: calc(100svh - 80px);
+  overflow-y: auto;
+  padding: 10px;
+  border-radius: 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  box-shadow: var(--pwt-shadow-overlay);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px) scale(0.98);
+  transform-origin: 50% 0;
+  transition:
+    opacity 0.3s,
+    transform 0.45s var(--ease),
+    visibility 0s linear 0.45s;
+}
+.sheetOpen {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.3s,
+    transform 0.45s var(--ease),
+    visibility 0s;
+}
+.sheet h3 {
+  margin: 10px 12px 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.sheet ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sheet a,
+.sheetItem {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  color: var(--soft);
+}
+.sheet a:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+.sheetDivider {
+  height: 1px;
+  margin: 8px 12px;
+  background: var(--line);
+}
+
+@media (max-width: 860px) {
+  .bar {
+    grid-template-columns: 1fr auto;
+  }
+  .nav,
+  .lang,
+  .cta {
+    display: none;
+  }
+  .menuButton {
+    display: inline-flex;
+  }
+  .logoImg {
+    height: 32px;
+  }
+}
+
+@media (min-width: 861px) {
+  .sheet {
+    display: none;
+  }
+}
+
+/* ---------- Movimiento reducido (spec §7) ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .header {
+    --morph: 0.01s;
+  }
+  .panel,
+  .panel[data-state="active"],
+  .discoverImg {
+    filter: none;
+  }
+  .intro .logo,
+  .intro .nav,
+  .intro .actions {
+    animation-duration: 0.01s;
+    animation-delay: 0s;
+  }
+}

@@ -1,0 +1,322 @@
+/*
+ * Peru Wonders Tours — design tokens
+ * Fuente de verdad: design-system/peru-wonders-tours/MASTER.md (mantener sincronizado con tokens.ts)
+ *
+ * CSS puro: se puede importar en cualquier app. Para Tailwind v4 importa además `theme.css`,
+ * que expone estas variables con `@theme inline` (utilidades bg-primary, text-foreground, etc.).
+ *
+ * Tema: claro por defecto; oscuro con prefers-color-scheme (salvo data-theme="light"),
+ * con data-theme="dark" o con la clase .dark en <html>.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ---------- Primitivos: titicaca (azul del lago) ---------- */
+  --pwt-titicaca-50: #eef5fa;
+  --pwt-titicaca-100: #d6e6f2;
+  --pwt-titicaca-200: #adcbe3;
+  --pwt-titicaca-300: #7aa8cc;
+  --pwt-titicaca-400: #4a84b0;
+  --pwt-titicaca-500: #2a6593;
+  --pwt-titicaca-600: #1c4f7a;
+  --pwt-titicaca-700: #153f63;
+  --pwt-titicaca-800: #10304d;
+  --pwt-titicaca-900: #0b2238;
+  --pwt-titicaca-950: #06141f;
+
+  /* ---------- Primitivos: terracota (textil andino) ---------- */
+  --pwt-terracota-50: #fcf2ee;
+  --pwt-terracota-100: #f7dfd5;
+  --pwt-terracota-200: #eebda9;
+  --pwt-terracota-300: #e29576;
+  --pwt-terracota-400: #d46f4d;
+  --pwt-terracota-500: #c0532f;
+  --pwt-terracota-600: #a34224;
+  --pwt-terracota-700: #84351e;
+  --pwt-terracota-800: #66291a;
+  --pwt-terracota-900: #4a1f15;
+  --pwt-terracota-950: #2e130d;
+
+  /* ---------- Primitivos: selva ---------- */
+  --pwt-selva-50: #edf7f1;
+  --pwt-selva-100: #d2ebdc;
+  --pwt-selva-200: #a6d6ba;
+  --pwt-selva-300: #6fba92;
+  --pwt-selva-400: #3e9a6c;
+  --pwt-selva-500: #23794f;
+  --pwt-selva-600: #1a6140;
+  --pwt-selva-700: #144d33;
+  --pwt-selva-800: #103b28;
+  --pwt-selva-900: #0b2a1d;
+  --pwt-selva-950: #061a12;
+
+  /* ---------- Primitivos: dorado inca (decorativo; nunca texto sobre claro < 700) ---------- */
+  --pwt-dorado-50: #fdf8ea;
+  --pwt-dorado-100: #faedc7;
+  --pwt-dorado-200: #f4d98c;
+  --pwt-dorado-300: #edc152;
+  --pwt-dorado-400: #e3a92b;
+  --pwt-dorado-500: #c98c17;
+  --pwt-dorado-600: #a06c12;
+  --pwt-dorado-700: #7a5210;
+  --pwt-dorado-800: #573b0d;
+  --pwt-dorado-900: #3b280a;
+  --pwt-dorado-950: #231805;
+
+  /* ---------- Primitivos: piedra (neutros cálidos) ---------- */
+  --pwt-piedra-50: #f7f5f2;
+  --pwt-piedra-100: #efebe6;
+  --pwt-piedra-200: #e0dad2;
+  --pwt-piedra-300: #c9c0b5;
+  --pwt-piedra-400: #a39889;
+  --pwt-piedra-500: #7d7365;
+  --pwt-piedra-600: #5f574c;
+  --pwt-piedra-700: #48423a;
+  --pwt-piedra-800: #312d28;
+  --pwt-piedra-900: #1f1c19;
+  --pwt-piedra-950: #141210;
+
+  /* ---------- Primitivos: noche (modo oscuro / hero) ---------- */
+  --pwt-noche-ink: #0b1013;
+  --pwt-noche-surface: #12191e;
+  --pwt-noche-raised: #1a232a;
+  --pwt-noche-line: #2a353d;
+  --pwt-noche-line-strong: #6b7a86;
+
+  /* ---------- Primitivos: error ---------- */
+  --pwt-danger-50: #fef1ef;
+  --pwt-danger-300: #f08a7c;
+  --pwt-danger-600: #b42318;
+  --pwt-danger-950: #2b1210;
+
+  /* ---------- Semánticos (claro) ---------- */
+  --pwt-background: var(--pwt-piedra-50);
+  --pwt-surface: #ffffff;
+  --pwt-surface-muted: var(--pwt-piedra-100);
+  --pwt-foreground: var(--pwt-piedra-900);
+  --pwt-foreground-muted: var(--pwt-piedra-600);
+
+  --pwt-primary: var(--pwt-titicaca-700);
+  --pwt-primary-hover: var(--pwt-titicaca-800);
+  --pwt-on-primary: #ffffff;
+  --pwt-link: var(--pwt-titicaca-600);
+
+  --pwt-accent: var(--pwt-terracota-600);
+  --pwt-accent-hover: var(--pwt-terracota-700);
+  --pwt-on-accent: #ffffff;
+  --pwt-accent-soft: var(--pwt-terracota-50);
+  --pwt-on-accent-soft: var(--pwt-terracota-700);
+
+  --pwt-success: var(--pwt-selva-600);
+  --pwt-success-soft: var(--pwt-selva-50);
+  --pwt-warning: var(--pwt-dorado-700);
+  --pwt-warning-soft: var(--pwt-dorado-50);
+  --pwt-danger: var(--pwt-danger-600);
+  --pwt-danger-soft: var(--pwt-danger-50);
+  --pwt-highlight: var(--pwt-dorado-400);
+  --pwt-on-highlight: var(--pwt-piedra-900);
+
+  --pwt-border: var(--pwt-piedra-200);
+  --pwt-border-strong: var(--pwt-piedra-500);
+  --pwt-ring: var(--pwt-titicaca-500);
+  --pwt-overlay: rgba(11, 16, 19, 0.56);
+
+  /* ---------- Hero (siempre oscuro; valores de docs/design/hero-morph-spec.md) ---------- */
+  --pwt-hero-ink: #0b1013;
+  --pwt-hero-panel: rgba(14, 19, 23, 0.84);
+  --pwt-hero-line: rgba(255, 255, 255, 0.08);
+  --pwt-hero-hover: rgba(255, 255, 255, 0.065);
+  --pwt-hero-text: #ffffff;
+  --pwt-hero-soft: rgba(255, 255, 255, 0.74);
+  --pwt-hero-muted: rgba(255, 255, 255, 0.6);
+  --pwt-hero-cta: #ffffff;
+  --pwt-hero-cta-hover: #e9eef0;
+  --pwt-hero-on-cta: #0b0f12;
+
+  /* ---------- Tipografía ---------- */
+  --pwt-font-sans: "Geist", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --pwt-font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --pwt-font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --pwt-text-display-2xl: clamp(2.75rem, 1.6rem + 4.2vw, 5rem);
+  --pwt-text-display-xl: clamp(2.25rem, 1.5rem + 2.8vw, 3.75rem);
+  --pwt-text-h1: clamp(2rem, 1.5rem + 1.8vw, 3rem);
+  --pwt-text-h2: clamp(1.625rem, 1.3rem + 1.2vw, 2.25rem);
+  --pwt-text-h3: 1.375rem;
+  --pwt-text-h4: 1.125rem;
+  --pwt-text-body-lg: 1.125rem;
+  --pwt-text-body: 1rem;
+  --pwt-text-sm: 0.875rem;
+  --pwt-text-nav: 0.90625rem;
+  --pwt-text-xs: 0.8125rem;
+  --pwt-text-label: 0.75rem;
+  --pwt-text-price-lg: 1.75rem;
+
+  --pwt-leading-tight: 1.05;
+  --pwt-leading-heading: 1.15;
+  --pwt-leading-snug: 1.42;
+  --pwt-leading-body: 1.6;
+  --pwt-tracking-display: -0.02em;
+  --pwt-tracking-label: 0.08em;
+
+  /* ---------- Espaciado (base 4 px) ---------- */
+  --pwt-space-unit: 0.25rem;
+  --pwt-space-0-5: 0.125rem;
+  --pwt-space-1: 0.25rem;
+  --pwt-space-2: 0.5rem;
+  --pwt-space-3: 0.75rem;
+  --pwt-space-4: 1rem;
+  --pwt-space-5: 1.25rem;
+  --pwt-space-6: 1.5rem;
+  --pwt-space-8: 2rem;
+  --pwt-space-10: 2.5rem;
+  --pwt-space-12: 3rem;
+  --pwt-space-16: 4rem;
+  --pwt-space-20: 5rem;
+  --pwt-space-24: 6rem;
+  --pwt-space-32: 8rem;
+  --pwt-section-y: clamp(4rem, 2.5rem + 6vw, 8rem);
+  --pwt-gutter: clamp(16px, 3.4vw, 52px);
+  --pwt-header-gutter: clamp(20px, 3.4vw, 52px);
+  --pwt-header-height: 76px;
+  --pwt-container: 1280px;
+  --pwt-container-wide: 1440px;
+  --pwt-container-narrow: 720px;
+  --pwt-tap-target: 44px;
+
+  /* ---------- Radios ---------- */
+  --pwt-radius-xs: 6px;
+  --pwt-radius-sm: 9px;
+  --pwt-radius-md: 10px;
+  --pwt-radius-lg: 16px;
+  --pwt-radius-xl: 24px;
+  --pwt-radius-pill: 999px;
+
+  /* ---------- Sombras ---------- */
+  --pwt-shadow-xs: 0 1px 2px rgba(31, 28, 25, 0.06);
+  --pwt-shadow-sm: 0 1px 3px rgba(31, 28, 25, 0.08), 0 1px 2px rgba(31, 28, 25, 0.04);
+  --pwt-shadow-md: 0 6px 16px -4px rgba(31, 28, 25, 0.12), 0 2px 4px rgba(31, 28, 25, 0.06);
+  --pwt-shadow-lg: 0 18px 40px -12px rgba(31, 28, 25, 0.2), 0 4px 10px rgba(31, 28, 25, 0.06);
+  --pwt-shadow-overlay: 0 30px 70px -25px rgba(0, 0, 0, 0.65), 0 2px 10px rgba(0, 0, 0, 0.2);
+  --pwt-shadow-sticky: 0 -8px 24px -12px rgba(31, 28, 25, 0.18);
+
+  /* ---------- Z-index ---------- */
+  --pwt-z-base: 0;
+  --pwt-z-sticky: 10;
+  --pwt-z-header: 20;
+  --pwt-z-dropdown: 30;
+  --pwt-z-drawer: 40;
+  --pwt-z-modal: 50;
+  --pwt-z-toast: 60;
+
+  /* ---------- Movimiento ---------- */
+  --pwt-ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* firma, = --ease de la spec */
+  --pwt-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --pwt-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --pwt-ease-standard: ease;
+
+  --pwt-duration-instant: 100ms;
+  --pwt-duration-fast: 160ms;
+  --pwt-duration-base: 250ms;
+  --pwt-duration-moderate: 360ms;
+  --pwt-duration-morph: 500ms; /* = --morph de la spec */
+  --pwt-duration-slow: 900ms;
+  --pwt-duration-hero: 2400ms;
+  --pwt-stagger: 60ms;
+
+  --pwt-delay-header-logo: 350ms;
+  --pwt-delay-header-nav: 450ms;
+  --pwt-delay-header-actions: 550ms;
+  --pwt-delay-scroll-cue: 900ms;
+  --pwt-dropdown-close-delay: 140ms;
+
+  --pwt-blur-panel: 8px;
+  --pwt-blur-image: 10px;
+  --pwt-blur-backdrop: 22px;
+}
+
+/* ---------- Modo oscuro: preferencia del sistema ---------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):not(.light) {
+    color-scheme: dark;
+    --pwt-background: var(--pwt-noche-ink);
+    --pwt-surface: var(--pwt-noche-surface);
+    --pwt-surface-muted: var(--pwt-noche-raised);
+    --pwt-foreground: #f3f0eb;
+    --pwt-foreground-muted: #b3aba0;
+    --pwt-primary: var(--pwt-titicaca-300);
+    --pwt-primary-hover: var(--pwt-titicaca-200);
+    --pwt-on-primary: var(--pwt-titicaca-950);
+    --pwt-link: var(--pwt-titicaca-300);
+    --pwt-accent: var(--pwt-terracota-400);
+    --pwt-accent-hover: var(--pwt-terracota-300);
+    --pwt-on-accent: #1a0d08;
+    --pwt-accent-soft: var(--pwt-terracota-950);
+    --pwt-on-accent-soft: var(--pwt-terracota-300);
+    --pwt-success: var(--pwt-selva-300);
+    --pwt-success-soft: var(--pwt-selva-900);
+    --pwt-warning: var(--pwt-dorado-300);
+    --pwt-warning-soft: var(--pwt-dorado-950);
+    --pwt-danger: var(--pwt-danger-300);
+    --pwt-danger-soft: var(--pwt-danger-950);
+    --pwt-highlight: var(--pwt-dorado-300);
+    --pwt-on-highlight: var(--pwt-piedra-900);
+    --pwt-border: var(--pwt-noche-line);
+    --pwt-border-strong: var(--pwt-noche-line-strong);
+    --pwt-ring: #9cc3e0;
+    --pwt-overlay: rgba(0, 0, 0, 0.66);
+  }
+}
+
+/* ---------- Modo oscuro: forzado por el usuario ---------- */
+:root[data-theme="dark"],
+:root.dark {
+  color-scheme: dark;
+  --pwt-background: var(--pwt-noche-ink);
+  --pwt-surface: var(--pwt-noche-surface);
+  --pwt-surface-muted: var(--pwt-noche-raised);
+  --pwt-foreground: #f3f0eb;
+  --pwt-foreground-muted: #b3aba0;
+  --pwt-primary: var(--pwt-titicaca-300);
+  --pwt-primary-hover: var(--pwt-titicaca-200);
+  --pwt-on-primary: var(--pwt-titicaca-950);
+  --pwt-link: var(--pwt-titicaca-300);
+  --pwt-accent: var(--pwt-terracota-400);
+  --pwt-accent-hover: var(--pwt-terracota-300);
+  --pwt-on-accent: #1a0d08;
+  --pwt-accent-soft: var(--pwt-terracota-950);
+  --pwt-on-accent-soft: var(--pwt-terracota-300);
+  --pwt-success: var(--pwt-selva-300);
+  --pwt-success-soft: var(--pwt-selva-900);
+  --pwt-warning: var(--pwt-dorado-300);
+  --pwt-warning-soft: var(--pwt-dorado-950);
+  --pwt-danger: var(--pwt-danger-300);
+  --pwt-danger-soft: var(--pwt-danger-950);
+  --pwt-highlight: var(--pwt-dorado-300);
+  --pwt-on-highlight: var(--pwt-piedra-900);
+  --pwt-border: var(--pwt-noche-line);
+  --pwt-border-strong: var(--pwt-noche-line-strong);
+  --pwt-ring: #9cc3e0;
+  --pwt-overlay: rgba(0, 0, 0, 0.66);
+}
+
+/* ---------- Movimiento reducido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --pwt-duration-instant: 0.01ms;
+    --pwt-duration-fast: 0.01ms;
+    --pwt-duration-base: 0.01ms;
+    --pwt-duration-moderate: 0.01ms;
+    --pwt-duration-morph: 0.01ms;
+    --pwt-duration-slow: 0.01ms;
+    --pwt-duration-hero: 0.01ms;
+    --pwt-stagger: 0ms;
+    --pwt-delay-header-logo: 0ms;
+    --pwt-delay-header-nav: 0ms;
+    --pwt-delay-header-actions: 0ms;
+    --pwt-delay-scroll-cue: 0ms;
+    --pwt-blur-panel: 0px;
+    --pwt-blur-image: 0px;
+  }
+}

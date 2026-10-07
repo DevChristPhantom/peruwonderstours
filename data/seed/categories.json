@@ -1,0 +1,113 @@
+[
+  {
+    "slug": "excursiones",
+    "name": "Excursiones",
+    "originalUrl": "https://www.andeanperutours.com/es/categorias/excursiones",
+    "newPath": "/es/categorias/excursiones",
+    "bannerImage": "https://www.andeanperutours.com/images/categories/saveclipapp-282112098-338245891726355-2103484089733423890-n-1766249261.jpg",
+    "declaredTourCount": 3,
+    "publishedTourCount": 3,
+    "tourSlugs": [
+      "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+      "trekking-canon-del-colca-2-dias",
+      "canon-del-colca-y-arequipa-3d-2n"
+    ],
+    "tagline": null,
+    "description": null,
+    "menuImage": null
+  },
+  {
+    "slug": "full-days",
+    "name": "Full Days",
+    "originalUrl": "https://www.andeanperutours.com/es/categorias/full-days",
+    "newPath": "/es/categorias/full-days",
+    "bannerImage": "https://www.andeanperutours.com/images/categories/69289724-126060618745285-6861872528201368441-n-1766092998.jpg",
+    "declaredTourCount": 11,
+    "publishedTourCount": 11,
+    "tourSlugs": [
+      "valle-sagrado-incas",
+      "full-day-maras-moray-sal-anden",
+      "full-day-valle-sur-cusco-descubrimiento",
+      "full-day-vinicunca-montana-arcoiris",
+      "laguna-humantay-espejo-turquesa",
+      "full-day-machu-picchu-esencia-ciudadela",
+      "trekking-7-lagunas-tour",
+      "city-tour-arequipa",
+      "tour-laguna-de-salinas-y-banos-termales-lojen-full-day",
+      "tour-campina-arequipa",
+      "tour-full-day-canon-del-colca"
+    ],
+    "tagline": null,
+    "description": null,
+    "menuImage": null
+  },
+  {
+    "slug": "paquetes-turisticos-en-peru",
+    "name": "Paquetes turísticos",
+    "originalUrl": "https://www.andeanperutours.com/es/categorias/paquetes-turisticos-en-peru",
+    "newPath": "/es/categorias/paquetes-turisticos-en-peru",
+    "bannerImage": "https://www.andeanperutours.com/images/categories/manu-peru-amazon-087-01-1627415589.jpg",
+    "declaredTourCount": 16,
+    "publishedTourCount": 13,
+    "tourSlugs": [
+      "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+      "full-day-ruta-sillar-arquitectura-volcanica",
+      "full-day-salinas-aguada-blanca-fauna-andina",
+      "full-day-cataratas-pillones-bosque-piedras",
+      "canon-del-colca-y-arequipa-3d-2n",
+      "arequipa-colca-profundo-condores-4d-3n",
+      "lo-mejor-peru-en-5-dias-5d-4n",
+      "peru-express-capital-de-reyes-y-legado-inca-5-dias-4-noches",
+      "peru-magico-cusco-lima-6d-5n",
+      "peru-de-ensueno-andes-incas-8d-7n",
+      "rutas-andinas-un-viaje-esencial-por-peru-8-dias-7-noches",
+      "peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+      "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches"
+    ],
+    "tagline": "Tours Especiales en Perú",
+    "description": "Ofrecemos dos aspectos particulares de nuestro medio ambiente: Prácticas mágico andinas referidas a la religiosidad y espiritualidad de la sociedad de las montañas de los Andes y Observación de aves, para los amantes de esta actividad, relacionada con entornos culturales y naturales.",
+    "menuImage": "https://www.andeanperutours.com/images/categories/md/manu-peru-amazon-087-01-1627415589.jpg"
+  },
+  {
+    "slug": "rutas-del-altiplano",
+    "name": "Rutas del Altiplano",
+    "originalUrl": "https://www.andeanperutours.com/es/categorias/rutas-del-altiplano",
+    "newPath": "/es/categorias/rutas-del-altiplano",
+    "bannerImage": "https://www.andeanperutours.com/images/categories/saveclipapp-490894861-18183531580314755-6606558784976965071-n-1765901222.jpg",
+    "declaredTourCount": 6,
+    "publishedTourCount": 6,
+    "tourSlugs": [
+      "tour-islas-flotantes-de-los-uros",
+      "tour-complejo-arqueologico-de-sillustani",
+      "tour-islas-de-los-uros-y-taquile-full-day",
+      "tour-privado-puerta-interdimensional-de-aramu-muru",
+      "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+      "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias"
+    ],
+    "tagline": "Descubre el lago Titicaca",
+    "description": "Las Rutas del Altiplano comprenden una selección de circuitos especializados que recorren la meseta del Collao, integrando los destinos más significativos de las regiones de Puno y el norte de Bolivia. Estos itinerarios han sido diseñados para explorar la complejidad de las civilizaciones que se desarrollaron alrededor del Lago Titicaca, abarcando desde centros funerarios prehispánicos y templos ceremoniales, hasta la arquitectura colonial de las denominadas \"Romas de las Indias\". Cada ruta ofrece un análisis profundo de la geografía altoandina, su biodiversidad y las estructuras sociales que mantienen vigentes las tradiciones más antiguas de los Andes centrales.",
+    "menuImage": "https://www.andeanperutours.com/images/categories/md/saveclipapp-490894861-18183531580314755-6606558784976965071-n-1765901222.jpg"
+  },
+  {
+    "slug": "tours-a-machu-picchu",
+    "name": "Tours a Machupicchu",
+    "originalUrl": "https://www.andeanperutours.com/es/categorias/tours-a-machu-picchu",
+    "newPath": "/es/categorias/tours-a-machu-picchu",
+    "bannerImage": "https://www.andeanperutours.com/images/categories/246869264-369881751498602-2390540162651104147-n-1765923152.jpg",
+    "declaredTourCount": 8,
+    "publishedTourCount": 8,
+    "tourSlugs": [
+      "full-day-machu-picchu-esencia-ciudadela",
+      "escapada-rapida-cusco-3d-2n",
+      "explorador-imperial-cusco-4d-3n",
+      "cusco-machu-picchu-premium-4d-3n",
+      "aventura-andina-cusco-5d-4n",
+      "lo-mejor-peru-en-5-dias-5d-4n",
+      "peru-magico-cusco-lima-6d-5n",
+      "peru-de-ensueno-andes-incas-8d-7n"
+    ],
+    "tagline": "La ruta de los Incas",
+    "description": "Nuestros Tours a Machu Picchu ofrecen soluciones integrales de viaje hacia el Santuario Histórico más importante de Sudamérica. Esta categoría incluye desde las rutas clásicas en servicios de tren panorámico hasta expediciones de aventura y rutas alternativas de alto valor paisajístico. Cada itinerario está estructurado bajo estándares de calidad que garantizan una gestión eficiente de ingresos, transporte y guiado especializado en la ciudadela. Nos enfocamos en proporcionar una perspectiva técnica sobre la arquitectura, astronomía e ingeniería hidráulica inca, asegurando que el visitante comprenda la trascendencia de este Patrimonio de la Humanidad en un entorno de seguridad y confort.",
+    "menuImage": "https://www.andeanperutours.com/images/categories/md/246869264-369881751498602-2390540162651104147-n-1765923152.jpg"
+  }
+]

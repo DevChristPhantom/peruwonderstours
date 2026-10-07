@@ -1,0 +1,115 @@
+[
+  {
+    "slug": "cuzco",
+    "name": "Cuzco",
+    "originalUrl": "https://www.andeanperutours.com/es/destinos/cuzco",
+    "newPath": "/es/destinos/cuzco",
+    "bannerImage": "https://www.andeanperutours.com/images/cities/69289724-126060618745285-6861872528201368441-n-1766248271.jpg",
+    "declaredTourCount": 18,
+    "publishedTourCount": 17,
+    "tourSlugs": [
+      "laguna-humantay-espejo-turquesa",
+      "qeswachaka-experiencia-ultimo-puente-inca",
+      "valle-sagrado-incas",
+      "full-day-maras-moray-sal-anden",
+      "full-day-valle-sur-cusco-descubrimiento",
+      "full-day-vinicunca-montana-arcoiris",
+      "full-day-machu-picchu-esencia-ciudadela",
+      "waqrapukara-fortaleza-entre-nubes",
+      "trekking-7-lagunas-tour",
+      "escapada-rapida-cusco-3d-2n",
+      "cusco-machu-picchu-premium-4d-3n",
+      "explorador-imperial-cusco-4d-3n",
+      "aventura-andina-cusco-5d-4n",
+      "peru-express-capital-de-reyes-y-legado-inca-5-dias-4-noches",
+      "rutas-andinas-un-viaje-esencial-por-peru-8-dias-7-noches",
+      "peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+      "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches"
+    ],
+    "description": "Reserva los mejores tours y programas de Cusco: Machu Picchu, Camino del Inca, Valle Sagrado, Salkantay y más, ¡al mejor precio.",
+    "cardImage": "https://www.andeanperutours.com/images/cities/sm/69289724-126060618745285-6861872528201368441-n-1766248271.jpg"
+  },
+  {
+    "slug": "tours-en-arequipa",
+    "name": "Arequipa",
+    "originalUrl": "https://www.andeanperutours.com/es/destinos/tours-en-arequipa",
+    "newPath": "/es/destinos/tours-en-arequipa",
+    "bannerImage": "https://www.andeanperutours.com/images/cities/mirador-yanahuara-1625087231.jpg",
+    "declaredTourCount": 13,
+    "publishedTourCount": 13,
+    "tourSlugs": [
+      "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+      "full-day-ruta-sillar-arquitectura-volcanica",
+      "full-day-salinas-aguada-blanca-fauna-andina",
+      "full-day-cataratas-pillones-bosque-piedras",
+      "city-tour-arequipa",
+      "tour-laguna-de-salinas-y-banos-termales-lojen-full-day",
+      "tour-campina-arequipa",
+      "tour-full-day-canon-del-colca",
+      "trekking-canon-del-colca-2-dias",
+      "canon-del-colca-y-arequipa-3d-2n",
+      "arequipa-colca-profundo-condores-4d-3n",
+      "peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+      "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches"
+    ],
+    "description": "Actualmente, Arequipa es una de las ciudades más pobladas de Perú y uno de los principales destinos turísticos de Perú que sobresale por sus impresionantes monumentos.",
+    "cardImage": "https://www.andeanperutours.com/images/cities/sm/mirador-yanahuara-1625087231.jpg"
+  },
+  {
+    "slug": "tours-en-ica-paracas",
+    "name": "Ica - Paracas",
+    "originalUrl": "https://www.andeanperutours.com/es/destinos/tours-en-ica-paracas",
+    "newPath": "/es/destinos/tours-en-ica-paracas",
+    "bannerImage": "https://www.andeanperutours.com/images/cities/saveclipapp-446115389-1101675260892783-3016599930400644429-n-1766248299.jpg",
+    "declaredTourCount": 5,
+    "publishedTourCount": 1,
+    "tourSlugs": [
+      "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches"
+    ],
+    "description": "Disfruta tus vacaciones con nosotros! Paquetes turístico Ica - Paracas todo incluido. Visita la ciudad de Ica, reserva nacional de Paracas, el Oasis de la Huacachina",
+    "cardImage": "https://www.andeanperutours.com/images/cities/sm/saveclipapp-446115389-1101675260892783-3016599930400644429-n-1766248299.jpg"
+  },
+  {
+    "slug": "tours-en-lima",
+    "name": "Lima",
+    "originalUrl": "https://www.andeanperutours.com/es/destinos/tours-en-lima",
+    "newPath": "/es/destinos/tours-en-lima",
+    "bannerImage": "https://www.andeanperutours.com/images/cities/pachacamac-2-1625083128.jpg",
+    "declaredTourCount": 4,
+    "publishedTourCount": 4,
+    "tourSlugs": [
+      "peru-express-capital-de-reyes-y-legado-inca-5-dias-4-noches",
+      "rutas-andinas-un-viaje-esencial-por-peru-8-dias-7-noches",
+      "peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+      "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches"
+    ],
+    "description": "Lima es una de las ciudades más fascinantes de Latinoamérica. Si vienes por una temporada, o es tu parada antes de seguir a Machu Picchu, hay una lista de tours en Lima que no puedes pasar por alto.",
+    "cardImage": "https://www.andeanperutours.com/images/cities/sm/pachacamac-2-1625083128.jpg"
+  },
+  {
+    "slug": "tours-en-puno",
+    "name": "Puno",
+    "originalUrl": "https://www.andeanperutours.com/es/destinos/tours-en-puno",
+    "newPath": "/es/destinos/tours-en-puno",
+    "bannerImage": "https://www.andeanperutours.com/images/cities/saveclipapp-281813272-575966233845843-6151745336466195975-n-1766248192.jpg",
+    "declaredTourCount": 15,
+    "publishedTourCount": 13,
+    "tourSlugs": [
+      "tour-islas-flotantes-de-los-uros",
+      "tour-complejo-arqueologico-de-sillustani",
+      "tour-islas-de-los-uros-y-taquile-full-day",
+      "tour-privado-puerta-interdimensional-de-aramu-muru",
+      "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+      "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+      "puno-clasico-lago-titicaca-3d-2n",
+      "ruta-del-sol-puno-desde-cusco-3d-2n",
+      "vivencia-titicaca-uros-amantani-taquile-3d-2n",
+      "cultura-titicaca-uros-llachon-taquile-3d-2n",
+      "rutas-andinas-un-viaje-esencial-por-peru-8-dias-7-noches",
+      "peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+      "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches"
+    ],
+    "description": "Explore Puno y el Lago Titicaca. Ofrecemos tours a las islas de los Uros, Taquile, Amantaní y sitios arqueológicos de la región con guías expertos. Calidad y cultura.",
+    "cardImage": "https://www.andeanperutours.com/images/cities/sm/saveclipapp-281813272-575966233845843-6151745336466195975-n-1766248192.jpg"
+  }
+]

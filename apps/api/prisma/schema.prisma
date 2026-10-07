@@ -1,0 +1,1294 @@
+// =============================================================================
+// Peru Wonders Tours — modelo de datos MVP (PostgreSQL 16 + Prisma 7.x)
+// Documentación y ERD: brain/wiki/concepts/modelo-de-datos.md
+//
+// Convenciones:
+//   - Modelos PascalCase / campos camelCase -> tablas y columnas snake_case (@@map/@map).
+//   - PK uuid v7 (ordenable en el tiempo, buen comportamiento en índices B-tree).
+//   - Dinero: BigInt en céntimos + currency Char(3) (ISO 4217: PEN, USD). Nunca float.
+//   - Fechas-hora: timestamptz (UTC). Fechas de calendario (viaje, vigencias): date.
+//   - CHECK, triggers, EXCLUDE, tsvector y extensiones: prisma/sql/constraints.sql
+//     (Prisma no los modela; se aplican como migración SQL aparte).
+//   - Prisma 7: la URL de conexión vive en prisma.config.ts -> env("DATABASE_URL").
+// =============================================================================
+
+generator client {
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["partialIndexes"]
+}
+
+datasource db {
+  provider = "postgresql"
+  // Prisma 7 ya no acepta `url` en el schema: se lee env("DATABASE_URL") en prisma.config.ts.
+}
+
+// -----------------------------------------------------------------------------
+// ENUMS
+// -----------------------------------------------------------------------------
+
+enum Locale {
+  es
+  en
+
+  @@map("locale")
+}
+
+enum PublicationStatus {
+  draft
+  published
+  archived
+
+  @@map("publication_status")
+}
+
+enum TourType {
+  tour
+  package
+  transfer
+
+  @@map("tour_type")
+}
+
+enum Difficulty {
+  easy
+  moderate
+  challenging
+  extreme
+
+  @@map("difficulty")
+}
+
+enum MediaKind {
+  image
+  video
+
+  @@map("media_kind")
+}
+
+enum PaxType {
+  adult
+  child
+  student
+  senior
+
+  @@map("pax_type")
+}
+
+enum Residency {
+  national
+  foreign
+
+  @@map("residency")
+}
+
+enum CartStatus {
+  active
+  converted
+  abandoned
+  expired
+
+  @@map("cart_status")
+}
+
+enum HoldStatus {
+  active
+  converted
+  released
+  expired
+
+  @@map("hold_status")
+}
+
+enum BookingStatus {
+  pending
+  held
+  confirmed
+  partially_paid
+  paid
+  cancelled
+  refunded
+  completed
+
+  @@map("booking_status")
+}
+
+enum BookingItemStatus {
+  active
+  cancelled
+
+  @@map("booking_item_status")
+}
+
+enum BookingSource {
+  web
+  admin
+  agent
+
+  @@map("booking_source")
+}
+
+enum PaymentOption {
+  deposit
+  full
+
+  @@map("payment_option")
+}
+
+enum PaymentKind {
+  deposit
+  balance
+  full
+  refund
+
+  @@map("payment_kind")
+}
+
+enum PaymentProvider {
+  izipay
+  niubiz
+  mercadopago
+  culqi
+  manual
+
+  @@map("payment_provider")
+}
+
+enum PaymentMethod {
+  card
+  yape
+  plin
+  pagoefectivo
+  bank_transfer
+  cash
+
+  @@map("payment_method")
+}
+
+enum PaymentStatus {
+  pending
+  requires_action
+  authorized
+  succeeded
+  failed
+  cancelled
+  expired
+
+  @@map("payment_status")
+}
+
+enum EventProcessingStatus {
+  received
+  processed
+  ignored
+  failed
+
+  @@map("event_processing_status")
+}
+
+enum ActorType {
+  system
+  customer
+  user
+  webhook
+
+  @@map("actor_type")
+}
+
+enum UserRole {
+  admin
+  operator
+  agent
+
+  @@map("user_role")
+}
+
+enum AccountStatus {
+  active
+  suspended
+  disabled
+
+  @@map("account_status")
+}
+
+enum DocumentType {
+  dni
+  ce
+  passport
+  ruc
+  other
+
+  @@map("document_type")
+}
+
+enum ConsentPurpose {
+  privacy_policy
+  terms_and_conditions
+  marketing
+  international_transfer
+  analytics_cookies
+
+  @@map("consent_purpose")
+}
+
+enum ComplaintType {
+  reclamo
+  queja
+
+  @@map("complaint_type")
+}
+
+enum ComplaintStatus {
+  received
+  in_review
+  answered
+  closed
+
+  @@map("complaint_status")
+}
+
+enum ContractedGoodType {
+  product
+  service
+
+  @@map("contracted_good_type")
+}
+
+enum InvoiceDocType {
+  boleta
+  factura
+  nota_credito
+
+  @@map("invoice_doc_type")
+}
+
+enum SunatStatus {
+  pending
+  sent
+  accepted
+  accepted_with_observations
+  rejected
+  voided
+
+  @@map("sunat_status")
+}
+
+enum ModerationStatus {
+  pending
+  approved
+  rejected
+
+  @@map("moderation_status")
+}
+
+enum SequenceScope {
+  booking
+  complaint
+  invoice
+
+  @@map("sequence_scope")
+}
+
+// -----------------------------------------------------------------------------
+// CATÁLOGO
+// -----------------------------------------------------------------------------
+
+/// Destino turístico jerárquico (región > ciudad/atractivo). Ej.: Cusco > Valle Sagrado.
+model Destination {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  parentId  String?   @map("parent_id") @db.Uuid
+  slug      String    @unique @db.VarChar(160)
+  /// Código de región/ubigeo (opcional) para filtros geográficos.
+  regionCode String?  @map("region_code") @db.VarChar(10)
+  latitude  Decimal?  @db.Decimal(9, 6)
+  longitude Decimal?  @db.Decimal(9, 6)
+  status    PublicationStatus @default(draft)
+  sortOrder Int       @default(0) @map("sort_order")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  parent       Destination?             @relation("DestinationTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children     Destination[]            @relation("DestinationTree")
+  translations DestinationTranslation[]
+  tours        TourDestination[]
+
+  @@index([parentId])
+  @@map("destinations")
+}
+
+model DestinationTranslation {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  destinationId  String   @map("destination_id") @db.Uuid
+  locale         Locale
+  name           String   @db.VarChar(160)
+  description    String?
+  seoTitle       String?  @map("seo_title") @db.VarChar(70)
+  seoDescription String?  @map("seo_description") @db.VarChar(170)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  destination Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+
+  @@unique([destinationId, locale])
+  @@map("destination_translations")
+}
+
+model Category {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  slug      String    @unique @db.VarChar(120)
+  sortOrder Int       @default(0) @map("sort_order")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  translations CategoryTranslation[]
+  tours        Tour[]
+
+  @@map("categories")
+}
+
+model CategoryTranslation {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  categoryId String   @map("category_id") @db.Uuid
+  locale     Locale
+  name       String   @db.VarChar(120)
+  description String?
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+  @@map("category_translations")
+}
+
+/// Producto vendible: tour (horas/día), paquete (días/noches) o traslado.
+/// El slug canónico es el de `es`; cada traducción tiene además su propio slug por idioma.
+model Tour {
+  id             String            @id @default(uuid(7)) @db.Uuid
+  slug           String            @unique @db.VarChar(160)
+  /// Código interno del operador (p. ej. "CUS-MAPI-01").
+  code           String            @unique @db.VarChar(40)
+  type           TourType
+  status         PublicationStatus @default(draft)
+  categoryId     String?           @map("category_id") @db.Uuid
+  durationDays   Int?              @map("duration_days") @db.SmallInt
+  durationNights Int?              @map("duration_nights") @db.SmallInt
+  /// Para tours de medio día / traslados (p. ej. 4.5 h).
+  durationHours  Decimal?          @map("duration_hours") @db.Decimal(4, 1)
+  minPax         Int               @default(1) @map("min_pax") @db.SmallInt
+  maxPax         Int?              @map("max_pax") @db.SmallInt
+  difficulty     Difficulty?
+  /// Idiomas de guiado ISO 639-1 (es, en, pt, ...).
+  languages      String[]          @default([]) @db.VarChar(5)
+  /// Horas mínimas de anticipación para reservar (cierre de venta).
+  bookingCutoffHours Int           @default(24) @map("booking_cutoff_hours")
+  /// Sobrescribe el % de adelanto global (tours con boletos de terceros: Machu Picchu, tren).
+  depositPercentOverride Int?      @map("deposit_percent_override") @db.SmallInt
+  /// Exige documento de identidad de cada viajero (boletos nominativos).
+  requiresTravelerDocument Boolean @default(false) @map("requires_traveler_document")
+  /// Usa inventario por salida (departures). Si es false, se vende bajo pedido sin cupo.
+  usesInventory  Boolean           @default(true) @map("uses_inventory")
+  isFeatured     Boolean           @default(false) @map("is_featured")
+  /// Versión de la política de cancelación aplicable (se congela en la reserva).
+  cancellationPolicyCode String?   @map("cancellation_policy_code") @db.VarChar(40)
+  publishedAt    DateTime?         @map("published_at") @db.Timestamptz(6)
+  createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt      DateTime?         @map("deleted_at") @db.Timestamptz(6)
+
+  category     Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  translations TourTranslation[]
+  media        TourMedia[]
+  destinations TourDestination[]
+  rates        Rate[]
+  departures   Departure[]
+  cartItems    CartItem[]
+  bookingItems BookingItem[]
+  testimonials Testimonial[]
+
+  // Listado público: publicados no borrados por categoría.
+  @@index([categoryId, status], where: raw("deleted_at IS NULL"))
+  @@index([status, isFeatured])
+  @@map("tours")
+}
+
+/// Contenido traducible del tour (es/en). `searchText`/`searchVector` los mantiene un trigger
+/// (constraints.sql) con unaccent; no se escriben desde la aplicación.
+model TourTranslation {
+  id              String   @id @default(uuid(7)) @db.Uuid
+  tourId          String   @map("tour_id") @db.Uuid
+  locale          Locale
+  slug            String   @db.VarChar(160)
+  title           String   @db.VarChar(200)
+  summary         String   @db.VarChar(600)
+  description     String?
+  /// [{ day: 1, title: "...", description: "...", meals: ["B","L"], overnight: "Cusco" }]
+  itinerary       Json     @default("[]")
+  includes        String[] @default([])
+  notIncluded     String[] @default([]) @map("not_included")
+  recommendations String[] @default([])
+  /// [{ question: "...", answer: "..." }]. Añadido 2026-10-07 (backend): HU-0.1 exige conservar
+  /// las FAQ del sitio viejo y el schema no tenía dónde guardarlas.
+  faqs            Json     @default("[]")
+  /// Bloque "Importante" de la ficha (altitud, clima, documentos). Añadido 2026-10-07 (HU-0.1).
+  importantNotes  String[] @default([]) @map("important_notes")
+  /// Pestaña "Políticas" específica del tour (solo algunos paquetes). Añadido 2026-10-07 (HU-0.1).
+  policies        String?
+  meetingPoint    String?  @map("meeting_point")
+  seoTitle        String?  @map("seo_title") @db.VarChar(70)
+  seoDescription  String?  @map("seo_description") @db.VarChar(170)
+  /// unaccent(lower(title || summary)) — para similitud trigram (typos, autocompletar).
+  searchText      String?  @map("search_text")
+  /// to_tsvector('spanish'|'english', unaccent(...)) — full-text con pesos A/B/C.
+  searchVector    Unsupported("tsvector")? @map("search_vector")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  tour Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@unique([tourId, locale])
+  // Resolución de URL /en/tours/{slug}.
+  @@unique([locale, slug])
+  @@index([searchText(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@map("tour_translations")
+}
+
+model TourMedia {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  tourId      String    @map("tour_id") @db.Uuid
+  kind        MediaKind @default(image)
+  /// Clave en el almacenamiento de objetos (S3/R2) o URL absoluta del CDN.
+  storageKey  String    @map("storage_key")
+  altEs       String?   @map("alt_es") @db.VarChar(250)
+  altEn       String?   @map("alt_en") @db.VarChar(250)
+  width       Int?
+  height      Int?
+  isCover     Boolean   @default(false) @map("is_cover")
+  sortOrder   Int       @default(0) @map("sort_order")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  tour Tour @relation(fields: [tourId], references: [id], onDelete: Cascade)
+
+  @@index([tourId, sortOrder])
+  // Una sola portada por tour.
+  @@unique([tourId, isCover], where: raw("is_cover"), map: "tour_media_one_cover_per_tour_key")
+  @@map("tour_media")
+}
+
+model TourDestination {
+  tourId        String  @map("tour_id") @db.Uuid
+  destinationId String  @map("destination_id") @db.Uuid
+  isPrimary     Boolean @default(false) @map("is_primary")
+  sortOrder     Int     @default(0) @map("sort_order")
+
+  tour        Tour        @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  destination Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)
+
+  @@id([tourId, destinationId])
+  // Búsqueda "tours en Cusco" parte del destino.
+  @@index([destinationId])
+  @@unique([tourId, isPrimary], where: raw("is_primary"), map: "tour_destinations_one_primary_key")
+  @@map("tour_destinations")
+}
+
+/// Redirecciones 301 del sitio anterior (andeanperutours) para conservar SEO.
+model LegacyRedirect {
+  id         String    @id @default(uuid(7)) @db.Uuid
+  /// Path normalizado sin dominio, en minúsculas, sin barra final.
+  fromPath   String    @unique @map("from_path") @db.VarChar(500)
+  toPath     String    @map("to_path") @db.VarChar(500)
+  statusCode Int       @default(301) @map("status_code") @db.SmallInt
+  hits       BigInt    @default(0)
+  lastHitAt  DateTime? @map("last_hit_at") @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("legacy_redirects")
+}
+
+// -----------------------------------------------------------------------------
+// PRECIOS E INVENTARIO
+// -----------------------------------------------------------------------------
+
+/// Temporadas (alta/baja/feriados). Etiqueta de negocio para tarifas.
+model Season {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  code      String   @unique @db.VarChar(40)
+  name      String   @db.VarChar(120)
+  startDate DateTime @map("start_date") @db.Date
+  endDate   DateTime @map("end_date") @db.Date
+  /// Mayor prioridad gana si dos temporadas se solapan.
+  priority  Int      @default(0) @db.SmallInt
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  rates Rate[]
+
+  @@index([startDate, endDate])
+  @@map("seasons")
+}
+
+/// Tarifa por persona: tour x tipo de pasajero x residencia x moneda x temporada x vigencia.
+/// Un EXCLUDE (constraints.sql) impide dos tarifas activas solapadas para la misma combinación.
+model Rate {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  tourId      String    @map("tour_id") @db.Uuid
+  seasonId    String?   @map("season_id") @db.Uuid
+  paxType     PaxType   @map("pax_type")
+  residency   Residency
+  currency    String    @db.Char(3)
+  /// Precio unitario en céntimos.
+  amount      BigInt
+  validFrom   DateTime  @map("valid_from") @db.Date
+  validTo     DateTime  @map("valid_to") @db.Date
+  /// Rango de pasajeros al que aplica (precios escalonados por grupo). Null = sin límite.
+  minGroupSize Int      @default(1) @map("min_group_size") @db.SmallInt
+  maxGroupSize Int?     @map("max_group_size") @db.SmallInt
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  tour   Tour    @relation(fields: [tourId], references: [id], onDelete: Restrict)
+  season Season? @relation(fields: [seasonId], references: [id], onDelete: Restrict)
+
+  // Cotizador: tarifa vigente de un tour para una fecha, moneda y residencia.
+  @@index([tourId, currency, residency, validFrom, validTo], where: raw("is_active AND deleted_at IS NULL"))
+  @@index([seasonId])
+  @@map("rates")
+}
+
+/// Salida (fecha [+ hora]) con cupo. Bloqueo optimista con `version`:
+/// UPDATE departures SET held = held + n, version = version + 1
+///  WHERE id = $1 AND version = $2 AND booked + held + n <= capacity;  -- 0 filas => reintentar
+model Departure {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  tourId        String    @map("tour_id") @db.Uuid
+  departureDate DateTime  @map("departure_date") @db.Date
+  /// Hora de inicio local (America/Lima); 00:00 si el tour es de día completo sin hora fija.
+  startTime     DateTime  @default(dbgenerated("'00:00:00'::time")) @map("start_time") @db.Time(0)
+  capacity      Int
+  /// Cupos vendidos (reservas con adelanto/pago o confirmadas).
+  booked        Int       @default(0)
+  /// Cupos retenidos temporalmente por holds activos.
+  held          Int       @default(0)
+  isClosed      Boolean   @default(false) @map("is_closed")
+  version       Int       @default(0)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  tour         Tour            @relation(fields: [tourId], references: [id], onDelete: Restrict)
+  holds        InventoryHold[]
+  cartItems    CartItem[]
+  bookingItems BookingItem[]
+
+  @@unique([tourId, departureDate, startTime])
+  // Calendario de disponibilidad: rango de fechas para varios tours.
+  @@index([departureDate, tourId], where: raw("NOT is_closed"))
+  @@map("departures")
+}
+
+/// Tipo de cambio de referencia (SUNAT/BCRP) por día; el aplicado se congela en cada pago.
+model ExchangeRate {
+  id            String   @id @default(uuid(7)) @db.Uuid
+  rateDate      DateTime @map("rate_date") @db.Date
+  baseCurrency  String   @map("base_currency") @db.Char(3)
+  quoteCurrency String   @map("quote_currency") @db.Char(3)
+  /// Unidades de quote por 1 base (p. ej. USD->PEN 3.75000000).
+  rate          Decimal  @db.Decimal(18, 8)
+  source        String   @db.VarChar(40)
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([rateDate, baseCurrency, quoteCurrency, source])
+  @@map("exchange_rates")
+}
+
+// -----------------------------------------------------------------------------
+// CARRITO
+// -----------------------------------------------------------------------------
+
+/// Carrito anónimo (cookie con token opaco; se guarda solo su hash SHA-256) o de cliente.
+/// Una sola moneda por carrito (las tarifas se eligen en esa moneda).
+model Cart {
+  id         String     @id @default(uuid(7)) @db.Uuid
+  tokenHash  Bytes      @unique @map("token_hash")
+  customerId String?    @map("customer_id") @db.Uuid
+  currency   String     @db.Char(3)
+  locale     Locale     @default(es)
+  status     CartStatus @default(active)
+  expiresAt  DateTime   @map("expires_at") @db.Timestamptz(6)
+  createdAt  DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime   @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  customer Customer?  @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  items    CartItem[]
+  booking  Booking?
+
+  // Un solo carrito activo por cliente.
+  @@unique([customerId, status], where: raw("status = 'active' AND customer_id IS NOT NULL"), map: "carts_one_active_per_customer_key")
+  // Job de expiración.
+  @@index([expiresAt], where: raw("status = 'active'"))
+  @@map("carts")
+}
+
+model CartItem {
+  id             String    @id @default(uuid(7)) @db.Uuid
+  cartId         String    @map("cart_id") @db.Uuid
+  tourId         String    @map("tour_id") @db.Uuid
+  departureId    String?   @map("departure_id") @db.Uuid
+  travelDate     DateTime  @map("travel_date") @db.Date
+  /// Suma de las líneas, en céntimos de la moneda del carrito.
+  subtotalAmount BigInt    @map("subtotal_amount")
+  currency       String    @db.Char(3)
+  /// Hasta cuándo se respeta el precio congelado.
+  priceLockedUntil DateTime @map("price_locked_until") @db.Timestamptz(6)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  cart      Cart            @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  tour      Tour            @relation(fields: [tourId], references: [id], onDelete: Restrict)
+  departure Departure?      @relation(fields: [departureId], references: [id], onDelete: Restrict)
+  lines     CartItemLine[]
+  holds     InventoryHold[]
+
+  @@index([cartId])
+  @@index([departureId])
+  @@map("cart_items")
+}
+
+/// Pasajeros por tipo con precio unitario congelado (céntimos).
+model CartItemLine {
+  id         String    @id @default(uuid(7)) @db.Uuid
+  cartItemId String    @map("cart_item_id") @db.Uuid
+  rateId     String?   @map("rate_id") @db.Uuid
+  paxType    PaxType   @map("pax_type")
+  residency  Residency
+  quantity   Int       @db.SmallInt
+  unitAmount BigInt    @map("unit_amount")
+  lineAmount BigInt    @map("line_amount")
+
+  cartItem CartItem @relation(fields: [cartItemId], references: [id], onDelete: Cascade)
+
+  @@unique([cartItemId, paxType, residency])
+  @@map("cart_item_lines")
+}
+
+/// Retención temporal de cupo. Se crea al pasar a checkout (cart_item) y se convierte
+/// al pagar el adelanto (booking_item). Redis acelera; esta tabla es la fuente de verdad.
+model InventoryHold {
+  id            String     @id @default(uuid(7)) @db.Uuid
+  departureId   String     @map("departure_id") @db.Uuid
+  cartItemId    String?    @map("cart_item_id") @db.Uuid
+  bookingItemId String?    @map("booking_item_id") @db.Uuid
+  quantity      Int        @db.SmallInt
+  status        HoldStatus @default(active)
+  expiresAt     DateTime   @map("expires_at") @db.Timestamptz(6)
+  releasedAt    DateTime?  @map("released_at") @db.Timestamptz(6)
+  createdAt     DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime   @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  departure   Departure    @relation(fields: [departureId], references: [id], onDelete: Restrict)
+  cartItem    CartItem?    @relation(fields: [cartItemId], references: [id], onDelete: SetNull)
+  bookingItem BookingItem? @relation(fields: [bookingItemId], references: [id], onDelete: Restrict)
+
+  // Barrido de holds vencidos (job cada minuto).
+  @@index([expiresAt], where: raw("status = 'active'"))
+  @@index([departureId, status])
+  @@index([cartItemId])
+  @@index([bookingItemId])
+  @@map("inventory_holds")
+}
+
+// -----------------------------------------------------------------------------
+// RESERVAS Y ADELANTO 50 %
+// -----------------------------------------------------------------------------
+
+/// Reserva (una por checkout). El plan de pago (adelanto/saldo) vive aquí:
+///   depositAmount + balanceAmount = totalAmount (CHECK en constraints.sql).
+/// paidAmount/refundedAmount son acumulados que mantiene el servicio de pagos
+/// dentro de la misma transacción que el payment `succeeded`.
+model Booking {
+  id             String        @id @default(uuid(7)) @db.Uuid
+  /// PWT-2026-000123 (secuencia anual vía document_sequences).
+  code           String        @unique @db.VarChar(20)
+  customerId     String        @map("customer_id") @db.Uuid
+  cartId         String?       @unique @map("cart_id") @db.Uuid
+  status         BookingStatus @default(pending)
+  source         BookingSource @default(web)
+  locale         Locale        @default(es)
+  currency       String        @db.Char(3)
+  subtotalAmount BigInt        @map("subtotal_amount")
+  discountAmount BigInt        @default(0) @map("discount_amount")
+  totalAmount    BigInt        @map("total_amount")
+  paymentOption  PaymentOption @default(deposit) @map("payment_option")
+  depositPercent Int           @default(50) @map("deposit_percent") @db.SmallInt
+  depositAmount  BigInt        @map("deposit_amount")
+  balanceAmount  BigInt        @map("balance_amount")
+  /// Fecha límite del saldo (p. ej. 7 días antes del primer servicio). Null si full.
+  balanceDueAt   DateTime?     @map("balance_due_at") @db.Timestamptz(6)
+  paidAmount     BigInt        @default(0) @map("paid_amount")
+  refundedAmount BigInt        @default(0) @map("refunded_amount")
+  /// Fin de la retención de cupo mientras está en `held`.
+  holdExpiresAt  DateTime?     @map("hold_expires_at") @db.Timestamptz(6)
+  /// Primer día de servicio (para recordatorios de saldo y paso a completed).
+  firstServiceDate DateTime    @map("first_service_date") @db.Date
+  lastServiceDate  DateTime    @map("last_service_date") @db.Date
+  /// Política de cancelación y T&C aceptadas (versión congelada).
+  cancellationPolicyVersion String @map("cancellation_policy_version") @db.VarChar(40)
+  termsVersion   String        @map("terms_version") @db.VarChar(40)
+  customerNotes  String?       @map("customer_notes") @db.VarChar(2000)
+  internalNotes  String?       @map("internal_notes")
+  createdByUserId String?      @map("created_by_user_id") @db.Uuid
+  confirmedAt    DateTime?     @map("confirmed_at") @db.Timestamptz(6)
+  cancelledAt    DateTime?     @map("cancelled_at") @db.Timestamptz(6)
+  cancellationReason String?   @map("cancellation_reason") @db.VarChar(500)
+  completedAt    DateTime?     @map("completed_at") @db.Timestamptz(6)
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  /// Borrado lógico: las reservas se conservan por obligación tributaria/contable.
+  deletedAt      DateTime?     @map("deleted_at") @db.Timestamptz(6)
+
+  customer      Customer               @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  cart          Cart?                  @relation(fields: [cartId], references: [id], onDelete: SetNull)
+  createdBy     User?                  @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+  items         BookingItem[]
+  travelers     Traveler[]
+  statusHistory BookingStatusHistory[]
+  payments      Payment[]
+  invoices      Invoice[]
+  complaints    Complaint[]
+
+  // "Mis reservas".
+  @@index([customerId, createdAt(sort: Desc)])
+  // Backoffice: bandeja por estado.
+  @@index([status, createdAt(sort: Desc)])
+  // Job de recordatorio/vencimiento de saldo.
+  @@index([balanceDueAt], where: raw("status = 'partially_paid'"))
+  // Job de expiración de retenciones.
+  @@index([holdExpiresAt], where: raw("status = 'held'"))
+  // Manifiesto operativo por fecha.
+  @@index([firstServiceDate])
+  @@map("bookings")
+}
+
+model BookingItem {
+  id             String            @id @default(uuid(7)) @db.Uuid
+  bookingId      String            @map("booking_id") @db.Uuid
+  tourId         String            @map("tour_id") @db.Uuid
+  departureId    String?           @map("departure_id") @db.Uuid
+  travelDate     DateTime          @map("travel_date") @db.Date
+  status         BookingItemStatus @default(active)
+  /// Snapshot del título al momento de comprar (el catálogo puede cambiar).
+  tourTitle      String            @map("tour_title") @db.VarChar(200)
+  paxCount       Int               @map("pax_count") @db.SmallInt
+  subtotalAmount BigInt            @map("subtotal_amount")
+  currency       String            @db.Char(3)
+  pickupLocation String?           @map("pickup_location") @db.VarChar(300)
+  createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  booking   Booking           @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  tour      Tour              @relation(fields: [tourId], references: [id], onDelete: Restrict)
+  departure Departure?        @relation(fields: [departureId], references: [id], onDelete: Restrict)
+  lines     BookingItemLine[]
+  holds     InventoryHold[]
+  travelers Traveler[]
+
+  @@index([bookingId])
+  // Manifiesto de pasajeros por salida.
+  @@index([departureId])
+  @@index([tourId, travelDate])
+  @@map("booking_items")
+}
+
+model BookingItemLine {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  bookingItemId String    @map("booking_item_id") @db.Uuid
+  rateId        String?   @map("rate_id") @db.Uuid
+  paxType       PaxType   @map("pax_type")
+  residency     Residency
+  quantity      Int       @db.SmallInt
+  unitAmount    BigInt    @map("unit_amount")
+  lineAmount    BigInt    @map("line_amount")
+
+  bookingItem BookingItem @relation(fields: [bookingItemId], references: [id], onDelete: Cascade)
+
+  @@unique([bookingItemId, paxType, residency])
+  @@map("booking_item_lines")
+}
+
+/// Viajero (datos mínimos, Ley 29733). Documento, teléfono y requerimientos de salud
+/// se cifran en la aplicación (AES-256-GCM, KMS) -> bytea. `documentHash` = HMAC-SHA256
+/// (blind index) para buscar/deduplicar sin descifrar.
+model Traveler {
+  id              String        @id @default(uuid(7)) @db.Uuid
+  bookingId       String        @map("booking_id") @db.Uuid
+  /// Null = participa en todos los ítems de la reserva.
+  bookingItemId   String?       @map("booking_item_id") @db.Uuid
+  isLead          Boolean       @default(false) @map("is_lead")
+  firstName       String        @map("first_name") @db.VarChar(100)
+  lastName        String        @map("last_name") @db.VarChar(100)
+  paxType         PaxType       @map("pax_type")
+  residency       Residency
+  /// ISO 3166-1 alfa-2.
+  nationality     String?       @db.Char(2)
+  /// Solo si el tour lo exige (boletos nominativos / validación de tarifa niño/adulto mayor).
+  birthDate       DateTime?     @map("birth_date") @db.Date
+  documentType    DocumentType? @map("document_type")
+  documentNumberEnc Bytes?      @map("document_number_enc")
+  documentHash    Bytes?        @map("document_hash")
+  phoneEnc        Bytes?        @map("phone_enc")
+  /// Dato sensible (salud/alimentación): cifrado.
+  specialNeedsEnc Bytes?        @map("special_needs_enc")
+  /// Fecha de anonimización (ARCO / fin de plazo de conservación).
+  anonymizedAt    DateTime?     @map("anonymized_at") @db.Timestamptz(6)
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt       DateTime?     @map("deleted_at") @db.Timestamptz(6)
+
+  booking     Booking      @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  bookingItem BookingItem? @relation(fields: [bookingItemId], references: [id], onDelete: SetNull)
+
+  @@index([bookingId])
+  @@index([bookingItemId])
+  @@index([documentHash])
+  @@map("travelers")
+}
+
+/// Historial de estados (append-only; UPDATE/DELETE bloqueados por trigger).
+model BookingStatusHistory {
+  id          String         @id @default(uuid(7)) @db.Uuid
+  bookingId   String         @map("booking_id") @db.Uuid
+  fromStatus  BookingStatus? @map("from_status")
+  toStatus    BookingStatus  @map("to_status")
+  reason      String?        @db.VarChar(500)
+  actorType   ActorType      @map("actor_type")
+  /// customer.id o user.id según actorType (sin FK: el historial sobrevive a anonimizaciones).
+  actorId     String?        @map("actor_id") @db.Uuid
+  metadata    Json?
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+
+  @@index([bookingId, createdAt])
+  @@map("booking_status_history")
+}
+
+// -----------------------------------------------------------------------------
+// PAGOS
+// -----------------------------------------------------------------------------
+
+/// Intento de cobro o reembolso ante un proveedor. Nunca datos de tarjeta (SAQ-A):
+/// `raw` guarda la respuesta del proveedor ya saneada (sin PAN/CVV/tokens).
+model Payment {
+  id                String          @id @default(uuid(7)) @db.Uuid
+  bookingId         String          @map("booking_id") @db.Uuid
+  kind              PaymentKind
+  provider          PaymentProvider
+  method            PaymentMethod?
+  status            PaymentStatus   @default(pending)
+  /// Monto cobrado en la moneda del cobro (céntimos, siempre > 0; el signo lo da `kind`).
+  amount            BigInt
+  currency          String          @db.Char(3)
+  /// Tipo de cambio aplicado si la moneda del cobro difiere de la de la reserva.
+  exchangeRate      Decimal?        @map("exchange_rate") @db.Decimal(18, 8)
+  /// Monto equivalente en la moneda de la reserva (lo que suma a paid_amount).
+  bookingCurrencyAmount BigInt      @map("booking_currency_amount")
+  providerPaymentId String?         @map("provider_payment_id") @db.VarChar(120)
+  /// Clave de idempotencia de nuestra API hacia el proveedor (y de la petición del cliente).
+  idempotencyKey    String          @unique @map("idempotency_key") @db.VarChar(100)
+  /// Para reembolsos: pago original.
+  parentPaymentId   String?         @map("parent_payment_id") @db.Uuid
+  failureCode       String?         @map("failure_code") @db.VarChar(80)
+  failureMessage    String?         @map("failure_message") @db.VarChar(500)
+  raw               Json?
+  /// Staff que registró un pago manual (efectivo/transferencia al llegar).
+  recordedByUserId  String?         @map("recorded_by_user_id") @db.Uuid
+  succeededAt       DateTime?       @map("succeeded_at") @db.Timestamptz(6)
+  createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  booking       Booking        @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  parentPayment Payment?       @relation("PaymentRefunds", fields: [parentPaymentId], references: [id], onDelete: Restrict)
+  refunds       Payment[]      @relation("PaymentRefunds")
+  recordedBy    User?          @relation(fields: [recordedByUserId], references: [id], onDelete: SetNull)
+  events        PaymentEvent[]
+  invoices      Invoice[]
+
+  // Conciliación y resolución de webhooks.
+  @@unique([provider, providerPaymentId])
+  @@index([bookingId, createdAt])
+  @@index([status, createdAt])
+  // A lo sumo un adelanto/pago total exitoso por reserva (evita doble cobro).
+  @@unique([bookingId, status], where: raw("status = 'succeeded' AND kind IN ('deposit','full')"), map: "payments_one_succeeded_deposit_or_full_key")
+  @@index([parentPaymentId])
+  @@map("payments")
+}
+
+/// Webhook / notificación entrante. Idempotencia por (provider, eventId).
+model PaymentEvent {
+  id               String                @id @default(uuid(7)) @db.Uuid
+  provider         PaymentProvider
+  eventId          String                @map("event_id") @db.VarChar(160)
+  eventType        String                @map("event_type") @db.VarChar(80)
+  paymentId        String?               @map("payment_id") @db.Uuid
+  signatureValid   Boolean               @map("signature_valid")
+  payload          Json
+  processingStatus EventProcessingStatus @default(received) @map("processing_status")
+  attempts         Int                   @default(0) @db.SmallInt
+  lastError        String?               @map("last_error")
+  receivedAt       DateTime              @default(now()) @map("received_at") @db.Timestamptz(6)
+  processedAt      DateTime?             @map("processed_at") @db.Timestamptz(6)
+
+  payment Payment? @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+
+  @@unique([provider, eventId])
+  @@index([paymentId])
+  // Reprocesamiento de eventos fallidos/pendientes.
+  @@index([receivedAt], where: raw("processing_status IN ('received','failed')"))
+  @@map("payment_events")
+}
+
+// -----------------------------------------------------------------------------
+// CLIENTES, STAFF Y AUTENTICACIÓN
+// -----------------------------------------------------------------------------
+
+/// Cliente (cuenta o invitado). PII mínima; teléfono cifrado. El email se guarda en
+/// minúsculas (CHECK). Al ejercer ARCO/cancelación se anonimiza (no se borra físicamente
+/// mientras existan reservas/comprobantes que exijan conservación).
+model Customer {
+  id              String    @id @default(uuid(7)) @db.Uuid
+  email           String    @unique @db.VarChar(254)
+  firstName       String    @map("first_name") @db.VarChar(100)
+  lastName        String    @map("last_name") @db.VarChar(100)
+  phoneEnc        Bytes?    @map("phone_enc")
+  /// ISO 3166-1 alfa-2.
+  country         String?   @db.Char(2)
+  preferredLocale Locale    @default(es) @map("preferred_locale")
+  /// Null = invitado (checkout sin cuenta).
+  passwordHash    String?   @map("password_hash")
+  emailVerifiedAt DateTime? @map("email_verified_at") @db.Timestamptz(6)
+  lastLoginAt     DateTime? @map("last_login_at") @db.Timestamptz(6)
+  anonymizedAt    DateTime? @map("anonymized_at") @db.Timestamptz(6)
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  carts        Cart[]
+  bookings     Booking[]
+  sessions     AuthSession[]
+  consents     Consent[]
+  testimonials Testimonial[]
+
+  @@map("customers")
+}
+
+/// Personal del backoffice.
+model User {
+  id           String        @id @default(uuid(7)) @db.Uuid
+  email        String        @unique @db.VarChar(254)
+  fullName     String        @map("full_name") @db.VarChar(160)
+  role         UserRole
+  status       AccountStatus @default(active)
+  passwordHash String        @map("password_hash")
+  /// Secreto TOTP cifrado (MFA obligatorio para admin).
+  mfaSecretEnc Bytes?        @map("mfa_secret_enc")
+  lastLoginAt  DateTime?     @map("last_login_at") @db.Timestamptz(6)
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt    DateTime?     @map("deleted_at") @db.Timestamptz(6)
+
+  sessions             AuthSession[]
+  bookingsCreated      Booking[]
+  paymentsRecorded     Payment[]
+  complaintsResponded  Complaint[]
+  testimonialsApproved Testimonial[]
+  blogPosts            BlogPost[]
+
+  @@map("users")
+}
+
+/// Refresh tokens con rotación. Solo se guarda el hash. `familyId` agrupa la cadena
+/// de rotación para revocar toda la familia si se detecta reutilización.
+model AuthSession {
+  id           String    @id @default(uuid(7)) @db.Uuid
+  customerId   String?   @map("customer_id") @db.Uuid
+  userId       String?   @map("user_id") @db.Uuid
+  tokenHash    Bytes     @unique @map("token_hash")
+  familyId     String    @map("family_id") @db.Uuid
+  replacedById String?   @map("replaced_by_id") @db.Uuid
+  ip           String?   @db.Inet
+  userAgent    String?   @map("user_agent") @db.VarChar(400)
+  expiresAt    DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt    DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([customerId], where: raw("revoked_at IS NULL"))
+  @@index([userId], where: raw("revoked_at IS NULL"))
+  @@index([familyId])
+  @@index([expiresAt])
+  @@map("auth_sessions")
+}
+
+/// Consentimiento (Ley 29733): una fila por otorgamiento o revocación (histórico).
+model Consent {
+  id            String         @id @default(uuid(7)) @db.Uuid
+  customerId    String         @map("customer_id") @db.Uuid
+  purpose       ConsentPurpose
+  policyVersion String         @map("policy_version") @db.VarChar(40)
+  granted       Boolean
+  ip            String?        @db.Inet
+  userAgent     String?        @map("user_agent") @db.VarChar(400)
+  /// Dónde se capturó: checkout, registro, banner de cookies, perfil.
+  source        String         @db.VarChar(40)
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  // Estado vigente = última fila por (customer, purpose).
+  @@index([customerId, purpose, createdAt(sort: Desc)])
+  @@map("consents")
+}
+
+// -----------------------------------------------------------------------------
+// LEGAL: LIBRO DE RECLAMACIONES Y COMPROBANTES
+// -----------------------------------------------------------------------------
+
+/// Contador transaccional sin huecos (UPDATE ... RETURNING bajo bloqueo de fila).
+/// Se usa para el correlativo de reclamaciones, series SUNAT y códigos de reserva.
+model DocumentSequence {
+  scope     SequenceScope
+  /// Año (reclamaciones/reservas) o 0 si no es anual (series SUNAT).
+  year      Int           @db.SmallInt
+  /// Serie SUNAT (B001, F001, BC01...) o '-' si no aplica.
+  series    String        @default("-") @db.VarChar(4)
+  lastValue Int           @default(0) @map("last_value")
+  updatedAt DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@id([scope, year, series])
+  @@map("document_sequences")
+}
+
+/// Libro de Reclamaciones virtual (Ley 29571 / D.S. 011-2011-PCM y modificatorias).
+/// Correlativo único por año. Nunca se borra (trigger bloquea DELETE).
+model Complaint {
+  id                 String             @id @default(uuid(7)) @db.Uuid
+  year               Int                @db.SmallInt
+  sequence           Int
+  /// Código visible, p. ej. "LR-2026-000045".
+  code               String             @unique @db.VarChar(20)
+  type               ComplaintType
+  status             ComplaintStatus    @default(received)
+  bookingId          String?            @map("booking_id") @db.Uuid
+  // Datos del consumidor (PII; documento y teléfono cifrados)
+  consumerName       String             @map("consumer_name") @db.VarChar(200)
+  consumerDocType    DocumentType       @map("consumer_doc_type")
+  consumerDocEnc     Bytes              @map("consumer_doc_enc")
+  consumerDocHash    Bytes              @map("consumer_doc_hash")
+  consumerAddress    String?            @map("consumer_address") @db.VarChar(300)
+  consumerEmail      String             @map("consumer_email") @db.VarChar(254)
+  consumerPhoneEnc   Bytes?             @map("consumer_phone_enc")
+  isMinor            Boolean            @default(false) @map("is_minor")
+  guardianName       String?            @map("guardian_name") @db.VarChar(200)
+  // Bien contratado
+  goodType           ContractedGoodType @default(service) @map("good_type")
+  goodDescription    String             @map("good_description") @db.VarChar(500)
+  claimedAmount      BigInt?            @map("claimed_amount")
+  claimedCurrency    String?            @map("claimed_currency") @db.Char(3)
+  // Detalle
+  detail             String
+  consumerRequest    String             @map("consumer_request")
+  // Respuesta del proveedor
+  responseText       String?            @map("response_text")
+  respondedAt        DateTime?          @map("responded_at") @db.Timestamptz(6)
+  respondedByUserId  String?            @map("responded_by_user_id") @db.Uuid
+  /// Plazo legal de respuesta calculado al registrar (días hábiles según norma vigente).
+  responseDueAt      DateTime           @map("response_due_at") @db.Timestamptz(6)
+  acknowledgmentSentAt DateTime?        @map("acknowledgment_sent_at") @db.Timestamptz(6)
+  ip                 String?            @db.Inet
+  submittedAt        DateTime           @default(now()) @map("submitted_at") @db.Timestamptz(6)
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  booking     Booking? @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  respondedBy User?    @relation(fields: [respondedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([year, sequence])
+  // Bandeja de pendientes ordenada por vencimiento.
+  @@index([status, responseDueAt])
+  @@index([bookingId])
+  @@map("complaints")
+}
+
+/// Comprobante electrónico SUNAT (vía OSE/PSE). Se emite por cada pago exitoso
+/// (adelanto y saldo); nota de crédito para reembolsos.
+model Invoice {
+  id                 String         @id @default(uuid(7)) @db.Uuid
+  bookingId          String         @map("booking_id") @db.Uuid
+  paymentId          String?        @map("payment_id") @db.Uuid
+  docType            InvoiceDocType @map("doc_type")
+  series             String         @db.VarChar(4)
+  number             Int
+  issueDate          DateTime       @map("issue_date") @db.Date
+  receiverDocType    DocumentType   @map("receiver_doc_type")
+  receiverDocEnc     Bytes          @map("receiver_doc_enc")
+  receiverName       String         @map("receiver_name") @db.VarChar(200)
+  receiverAddress    String?        @map("receiver_address") @db.VarChar(300)
+  currency           String         @db.Char(3)
+  /// Base imponible / operación exonerada o exportación de servicios (no domiciliados).
+  taxableAmount      BigInt         @map("taxable_amount")
+  exemptAmount       BigInt         @default(0) @map("exempt_amount")
+  igvAmount          BigInt         @map("igv_amount")
+  totalAmount        BigInt         @map("total_amount")
+  exchangeRate       Decimal?       @map("exchange_rate") @db.Decimal(18, 8)
+  sunatStatus        SunatStatus    @default(pending) @map("sunat_status")
+  sunatResponseCode  String?        @map("sunat_response_code") @db.VarChar(10)
+  sunatMessage       String?        @map("sunat_message") @db.VarChar(500)
+  /// Hash del XML firmado (código QR / resumen).
+  digestValue        String?        @map("digest_value") @db.VarChar(100)
+  xmlStorageKey      String?        @map("xml_storage_key")
+  cdrStorageKey      String?        @map("cdr_storage_key")
+  pdfStorageKey      String?        @map("pdf_storage_key")
+  /// Comprobante que se modifica (nota de crédito).
+  relatedInvoiceId   String?        @map("related_invoice_id") @db.Uuid
+  createdAt          DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  booking        Booking   @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  payment        Payment?  @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  relatedInvoice Invoice?  @relation("InvoiceCorrections", fields: [relatedInvoiceId], references: [id], onDelete: Restrict)
+  corrections    Invoice[] @relation("InvoiceCorrections")
+
+  @@unique([docType, series, number])
+  @@index([bookingId])
+  @@index([paymentId])
+  // Reintentos de envío/consulta a OSE.
+  @@index([createdAt], where: raw("sunat_status IN ('pending','sent')"))
+  @@map("invoices")
+}
+
+// -----------------------------------------------------------------------------
+// CONTENIDO
+// -----------------------------------------------------------------------------
+
+model BlogPost {
+  id            String            @id @default(uuid(7)) @db.Uuid
+  authorUserId  String?           @map("author_user_id") @db.Uuid
+  status        PublicationStatus @default(draft)
+  coverStorageKey String?         @map("cover_storage_key")
+  publishedAt   DateTime?         @map("published_at") @db.Timestamptz(6)
+  createdAt     DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt     DateTime?         @map("deleted_at") @db.Timestamptz(6)
+
+  author       User?                 @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+  translations BlogPostTranslation[]
+
+  @@index([status, publishedAt(sort: Desc)])
+  @@map("blog_posts")
+}
+
+model BlogPostTranslation {
+  id             String   @id @default(uuid(7)) @db.Uuid
+  blogPostId     String   @map("blog_post_id") @db.Uuid
+  locale         Locale
+  slug           String   @db.VarChar(160)
+  title          String   @db.VarChar(200)
+  excerpt        String?  @db.VarChar(400)
+  /// Contenido estructurado (bloques del editor) o Markdown.
+  body           String
+  seoTitle       String?  @map("seo_title") @db.VarChar(70)
+  seoDescription String?  @map("seo_description") @db.VarChar(170)
+  searchText     String?  @map("search_text")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  blogPost BlogPost @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+
+  @@unique([blogPostId, locale])
+  @@unique([locale, slug])
+  @@index([searchText(ops: raw("gin_trgm_ops"))], type: Gin)
+  @@map("blog_post_translations")
+}
+
+/// Testimonio con moderación. Solo se publica si `status = approved` y hay
+/// consentimiento de publicación del autor.
+model Testimonial {
+  id                String           @id @default(uuid(7)) @db.Uuid
+  customerId        String?          @map("customer_id") @db.Uuid
+  tourId            String?          @map("tour_id") @db.Uuid
+  authorName        String           @map("author_name") @db.VarChar(120)
+  authorCountry     String?          @map("author_country") @db.Char(2)
+  locale            Locale           @default(es)
+  rating            Int              @db.SmallInt
+  body              String           @db.VarChar(3000)
+  publishConsent    Boolean          @default(false) @map("publish_consent")
+  status            ModerationStatus @default(pending)
+  approvedByUserId  String?          @map("approved_by_user_id") @db.Uuid
+  approvedAt        DateTime?        @map("approved_at") @db.Timestamptz(6)
+  createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt         DateTime?        @map("deleted_at") @db.Timestamptz(6)
+
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  tour       Tour?     @relation(fields: [tourId], references: [id], onDelete: SetNull)
+  approvedBy User?     @relation(fields: [approvedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([tourId, status])
+  @@index([status, createdAt])
+  @@map("testimonials")
+}
+
+// -----------------------------------------------------------------------------
+// AUDITORÍA E INTEGRACIÓN
+// -----------------------------------------------------------------------------
+
+/// Bitácora append-only (UPDATE/DELETE/TRUNCATE bloqueados por trigger). La alimentan
+/// triggers sobre bookings, payments, customers, travelers, complaints, invoices y
+/// eventos de aplicación (login, exportación ARCO). Columnas cifradas (*_enc, *_hash,
+/// password_hash) se excluyen del snapshot: solo se registra que cambiaron.
+model AuditLog {
+  id         String    @id @default(uuid(7)) @db.Uuid
+  occurredAt DateTime  @default(now()) @map("occurred_at") @db.Timestamptz(6)
+  actorType  ActorType @map("actor_type")
+  actorId    String?   @map("actor_id") @db.Uuid
+  /// Nombre de tabla o agregado (bookings, payments, customers...).
+  entityType String    @map("entity_type") @db.VarChar(60)
+  entityId   String?   @map("entity_id") @db.Uuid
+  /// INSERT | UPDATE | DELETE | LOGIN | EXPORT | ANONYMIZE ...
+  action     String    @db.VarChar(40)
+  changedFields String[] @default([]) @map("changed_fields")
+  before     Json?
+  after      Json?
+  requestId  String?   @map("request_id") @db.VarChar(64)
+  ip         String?   @db.Inet
+
+  @@index([entityType, entityId, occurredAt])
+  @@index([actorId, occurredAt])
+  @@index([occurredAt])
+  @@map("audit_log")
+}
+
+/// Outbox transaccional: eventos de dominio escritos en la misma transacción que el cambio
+/// y publicados a BullMQ por un relay (emails, emisión de comprobantes, sincronización).
+model OutboxEvent {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  aggregateType String    @map("aggregate_type") @db.VarChar(60)
+  aggregateId   String    @map("aggregate_id") @db.Uuid
+  eventType     String    @map("event_type") @db.VarChar(80)
+  payload       Json
+  attempts      Int       @default(0) @db.SmallInt
+  availableAt   DateTime  @default(now()) @map("available_at") @db.Timestamptz(6)
+  publishedAt   DateTime? @map("published_at") @db.Timestamptz(6)
+  lastError     String?   @map("last_error")
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([availableAt], where: raw("published_at IS NULL"))
+  @@map("outbox_events")
+}

@@ -1,0 +1,518 @@
+{
+  "oldDomain": "https://www.andeanperutours.com",
+  "newDomain": "https://peruwonderstours.com",
+  "generatedAt": "2026-10-07",
+  "rules": [
+    {
+      "from": "https://www.andeanperutours.com/es/tours/arequipa-colca-profundo-condores-4d-3n",
+      "to": "/es/tours/arequipa-colca-profundo-condores-4d-3n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+      "to": "/es/tours/arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/aventura-andina-cusco-5d-4n",
+      "to": "/es/tours/aventura-andina-cusco-5d-4n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/canon-del-colca-y-arequipa-3d-2n",
+      "to": "/es/tours/canon-del-colca-y-arequipa-3d-2n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/city-tour-arequipa",
+      "to": "/es/tours/city-tour-arequipa",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/cultura-titicaca-uros-llachon-taquile-3d-2n",
+      "to": "/es/tours/cultura-titicaca-uros-llachon-taquile-3d-2n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/cusco-machu-picchu-premium-4d-3n",
+      "to": "/es/tours/cusco-machu-picchu-premium-4d-3n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/escapada-rapida-cusco-3d-2n",
+      "to": "/es/tours/escapada-rapida-cusco-3d-2n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/explorador-imperial-cusco-4d-3n",
+      "to": "/es/tours/explorador-imperial-cusco-4d-3n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/full-day-cataratas-pillones-bosque-piedras",
+      "to": "/es/tours/full-day-cataratas-pillones-bosque-piedras",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/full-day-machu-picchu-esencia-ciudadela",
+      "to": "/es/tours/full-day-machu-picchu-esencia-ciudadela",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/full-day-maras-moray-sal-anden",
+      "to": "/es/tours/full-day-maras-moray-sal-anden",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/full-day-ruta-sillar-arquitectura-volcanica",
+      "to": "/es/tours/full-day-ruta-sillar-arquitectura-volcanica",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/full-day-salinas-aguada-blanca-fauna-andina",
+      "to": "/es/tours/full-day-salinas-aguada-blanca-fauna-andina",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/full-day-valle-sur-cusco-descubrimiento",
+      "to": "/es/tours/full-day-valle-sur-cusco-descubrimiento",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/full-day-vinicunca-montana-arcoiris",
+      "to": "/es/tours/full-day-vinicunca-montana-arcoiris",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/laguna-humantay-espejo-turquesa",
+      "to": "/es/tours/laguna-humantay-espejo-turquesa",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/lo-mejor-peru-en-5-dias-5d-4n",
+      "to": "/es/tours/lo-mejor-peru-en-5-dias-5d-4n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/peru-de-ensueno-andes-incas-8d-7n",
+      "to": "/es/tours/peru-de-ensueno-andes-incas-8d-7n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches",
+      "to": "/es/tours/peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/peru-express-capital-de-reyes-y-legado-inca-5-dias-4-noches",
+      "to": "/es/tours/peru-express-capital-de-reyes-y-legado-inca-5-dias-4-noches",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/peru-magico-cusco-lima-6d-5n",
+      "to": "/es/tours/peru-magico-cusco-lima-6d-5n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+      "to": "/es/tours/peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/puno-clasico-lago-titicaca-3d-2n",
+      "to": "/es/tours/puno-clasico-lago-titicaca-3d-2n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/qeswachaka-experiencia-ultimo-puente-inca",
+      "to": "/es/tours/qeswachaka-experiencia-ultimo-puente-inca",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/ruta-del-sol-puno-desde-cusco-3d-2n",
+      "to": "/es/tours/ruta-del-sol-puno-desde-cusco-3d-2n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/rutas-andinas-un-viaje-esencial-por-peru-8-dias-7-noches",
+      "to": "/es/tours/rutas-andinas-un-viaje-esencial-por-peru-8-dias-7-noches",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/tour-campina-arequipa",
+      "to": "/es/tours/tour-campina-arequipa",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/tour-complejo-arqueologico-de-sillustani",
+      "to": "/es/tours/tour-complejo-arqueologico-de-sillustani",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/tour-full-day-canon-del-colca",
+      "to": "/es/tours/tour-full-day-canon-del-colca",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/tour-islas-de-los-uros-y-taquile-full-day",
+      "to": "/es/tours/tour-islas-de-los-uros-y-taquile-full-day",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/tour-islas-flotantes-de-los-uros",
+      "to": "/es/tours/tour-islas-flotantes-de-los-uros",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+      "to": "/es/tours/tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/tour-laguna-de-salinas-y-banos-termales-lojen-full-day",
+      "to": "/es/tours/tour-laguna-de-salinas-y-banos-termales-lojen-full-day",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/tour-privado-puerta-interdimensional-de-aramu-muru",
+      "to": "/es/tours/tour-privado-puerta-interdimensional-de-aramu-muru",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+      "to": "/es/tours/tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/trekking-7-lagunas-tour",
+      "to": "/es/tours/trekking-7-lagunas-tour",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/trekking-canon-del-colca-2-dias",
+      "to": "/es/tours/trekking-canon-del-colca-2-dias",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/valle-sagrado-incas",
+      "to": "/es/tours/valle-sagrado-incas",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/vivencia-titicaca-uros-amantani-taquile-3d-2n",
+      "to": "/es/tours/vivencia-titicaca-uros-amantani-taquile-3d-2n",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours/waqrapukara-fortaleza-entre-nubes",
+      "to": "/es/tours/waqrapukara-fortaleza-entre-nubes",
+      "status": 301,
+      "type": "tour",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/categorias/excursiones",
+      "to": "/es/categorias/excursiones",
+      "status": 301,
+      "type": "category",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/categorias/full-days",
+      "to": "/es/categorias/full-days",
+      "status": 301,
+      "type": "category",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/categorias/paquetes-turisticos-en-peru",
+      "to": "/es/categorias/paquetes-turisticos-en-peru",
+      "status": 301,
+      "type": "category",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/categorias/rutas-del-altiplano",
+      "to": "/es/categorias/rutas-del-altiplano",
+      "status": 301,
+      "type": "category",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/categorias/tours-a-machu-picchu",
+      "to": "/es/categorias/tours-a-machu-picchu",
+      "status": 301,
+      "type": "category",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/destinos/cuzco",
+      "to": "/es/destinos/cuzco",
+      "status": 301,
+      "type": "destination",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/destinos/tours-en-arequipa",
+      "to": "/es/destinos/tours-en-arequipa",
+      "status": 301,
+      "type": "destination",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/destinos/tours-en-ica-paracas",
+      "to": "/es/destinos/tours-en-ica-paracas",
+      "status": 301,
+      "type": "destination",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/destinos/tours-en-lima",
+      "to": "/es/destinos/tours-en-lima",
+      "status": 301,
+      "type": "destination",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/destinos/tours-en-puno",
+      "to": "/es/destinos/tours-en-puno",
+      "status": 301,
+      "type": "destination",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/blog/turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+      "to": "/es/blog/turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+      "status": 301,
+      "type": "blog-post",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/blog/paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+      "to": "/es/blog/paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+      "status": 301,
+      "type": "blog-post",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/blog/cusco-mejor-ciudad",
+      "to": "/es/blog/cusco-mejor-ciudad",
+      "status": 301,
+      "type": "blog-post",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/blog/boleto-turistico-del-cusco",
+      "to": "/es/blog/boleto-turistico-del-cusco",
+      "status": 301,
+      "type": "blog-post",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/blog/tipos-de-tren-e-ingreso-a-machu-picchu",
+      "to": "/es/blog/tipos-de-tren-e-ingreso-a-machu-picchu",
+      "status": 301,
+      "type": "blog-post",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/blog/datos-utiles-peru",
+      "to": "/es/blog/datos-utiles-peru",
+      "status": 301,
+      "type": "blog-post",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/",
+      "to": "/es",
+      "status": 301,
+      "type": "home",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es",
+      "to": "/es",
+      "status": 301,
+      "type": "home",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tours",
+      "to": "/es/tours",
+      "status": 301,
+      "type": "listing",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/destinos",
+      "to": "/es/destinos",
+      "status": 301,
+      "type": "listing",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/tipos-de-tours",
+      "to": "/es/tipos-de-tours",
+      "status": 301,
+      "type": "listing",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/blog",
+      "to": "/es/blog",
+      "status": 301,
+      "type": "listing",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/blog/categorias/informacion-turistica-del-peru",
+      "to": "/es/blog/categorias/informacion-turistica-del-peru",
+      "status": 301,
+      "type": "blog-category",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/contactenos",
+      "to": "/es/contactenos",
+      "status": 301,
+      "type": "page",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/testimonios",
+      "to": "/es/testimonios",
+      "status": 301,
+      "type": "page",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/dejar-testimonio",
+      "to": "/es/dejar-testimonio",
+      "status": 301,
+      "type": "page",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/andean-peru-tours/quienes-somos",
+      "to": "/es/nosotros",
+      "status": 301,
+      "type": "page",
+      "note": "Ruta con el nombre de la marca anterior; se propone ruta neutra."
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/andean-peru-tours/politicas-y-condiciones-de-pago",
+      "to": "/es/politicas/condiciones-de-pago",
+      "status": 301,
+      "type": "legal",
+      "note": "Ruta con marca anterior."
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/andean-peru-tours/proteccion-de-datos-personales",
+      "to": "/es/politicas/proteccion-de-datos-personales",
+      "status": 301,
+      "type": "legal",
+      "note": "Ruta con marca anterior."
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/libro-de-reclamaciones",
+      "to": "/es/libro-de-reclamaciones",
+      "status": 301,
+      "type": "legal",
+      "note": null
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/reservar-tour",
+      "to": "/es/carrito",
+      "status": 301,
+      "type": "form-endpoint",
+      "note": "Antiguo POST de cotización; GET redirige al carrito."
+    },
+    {
+      "from": "https://www.andeanperutours.com/es/resultados-busqueda",
+      "to": "/es/tours",
+      "status": 301,
+      "type": "form-endpoint",
+      "note": "Antiguo POST de búsqueda; nuevo buscador usa query string."
+    }
+  ]
+}

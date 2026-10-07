@@ -1,0 +1,263 @@
+@import "tailwindcss";
+@import "@pwt/ui/tokens.css";
+@import "@pwt/ui/theme.css";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *, .dark, .dark *));
+
+/*
+ * next/font genera nombres de familia con hash: se enlazan aquí a los tokens del sistema.
+ * Las variables --font-geist / --font-fraunces / --font-geist-mono las define el <html> (layout).
+ */
+:root {
+  --pwt-font-sans: var(--font-geist), "Geist", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --pwt-font-display: var(--font-fraunces), "Fraunces", Georgia, "Times New Roman", serif;
+  --pwt-font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Deja ver el foco bajo la barra sticky inferior de móvil (WCAG 2.4.11). */
+    scroll-padding-top: 88px;
+    scroll-padding-bottom: 96px;
+  }
+
+  body {
+    margin: 0;
+    background: var(--pwt-background);
+    color: var(--pwt-foreground);
+    font-family: var(--pwt-font-sans);
+    font-size: var(--pwt-text-body);
+    line-height: var(--pwt-leading-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img,
+  svg,
+  video {
+    display: block;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--pwt-ring);
+    outline-offset: 2px;
+    border-radius: var(--pwt-radius-xs);
+  }
+
+  /* Montos: cifras tabulares (MASTER §3). */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  .pwt-container {
+    width: 100%;
+    max-width: var(--pwt-container);
+    margin-inline: auto;
+    padding-inline: var(--pwt-gutter);
+  }
+
+  .pwt-container-narrow {
+    width: 100%;
+    max-width: var(--pwt-container-narrow);
+    margin-inline: auto;
+    padding-inline: var(--pwt-gutter);
+  }
+
+  .pwt-section {
+    padding-block: var(--pwt-section-y);
+  }
+
+  /* Enlaces en texto corrido: siempre subrayados (MASTER §2.2 link). */
+  .pwt-link {
+    color: var(--pwt-link);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+  .pwt-link:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  .pwt-skip-link {
+    position: absolute;
+    left: 12px;
+    top: -100px;
+    z-index: 100;
+    padding: 12px 16px;
+    border-radius: var(--pwt-radius-md);
+    background: var(--pwt-surface);
+    color: var(--pwt-foreground);
+    box-shadow: var(--pwt-shadow-lg);
+    font-weight: 500;
+  }
+  .pwt-skip-link:focus-visible,
+  .pwt-skip-link:focus {
+    top: 12px;
+  }
+
+  /* Texto largo del seed (saltos de línea del CMS viejo). */
+  .pwt-prose {
+    max-width: 70ch;
+    white-space: pre-line;
+  }
+
+  /* Tarjeta: el enlace del título cubre toda la tarjeta (home.md · Accesibilidad). */
+  .pwt-card-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+  }
+}
+
+/* Transición de página (template.tsx): solo opacidad y transform. */
+@keyframes pwt-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.pwt-page-in {
+  animation: pwt-page-in var(--pwt-duration-morph) var(--pwt-ease-out) both;
+}
+
+/* Buscador bajo el hero: y 24 → 0 + opacidad, 900 ms, delay 700 ms (home.md · Movimiento). */
+@keyframes pwt-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: none; }
+}
+.pwt-search-in {
+  animation: pwt-rise var(--pwt-duration-slow) var(--pwt-ease-out) 700ms both;
+}
+
+/* Cambio de paso del checkout: crossfade + x ±24 px + blur 4 px → 0 (MASTER §6.3.5). */
+@keyframes pwt-step-forward {
+  from { opacity: 0; transform: translateX(24px); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+@keyframes pwt-step-back {
+  from { opacity: 0; transform: translateX(-24px); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+.pwt-step-forward {
+  animation: pwt-step-forward var(--pwt-duration-morph) var(--pwt-ease-out) both;
+}
+.pwt-step-back {
+  animation: pwt-step-back var(--pwt-duration-morph) var(--pwt-ease-out) both;
+}
+
+/* Check de confirmación dibujado (600 ms). */
+@keyframes pwt-draw {
+  from { stroke-dashoffset: 40; }
+  to { stroke-dashoffset: 0; }
+}
+.pwt-check-draw {
+  stroke-dasharray: 40;
+  animation: pwt-draw 600ms var(--pwt-ease-out) 150ms both;
+}
+
+/* Toast y pulso del carrito (MASTER §6.3). */
+@keyframes pwt-toast-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+.pwt-toast {
+  animation: pwt-toast-in var(--pwt-duration-moderate) var(--pwt-ease-out) both;
+}
+@keyframes pwt-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+.pwt-pulse {
+  animation: pwt-pulse var(--pwt-duration-base) var(--pwt-ease-out);
+}
+
+/* Drawer del carrito y visor: entrada desde abajo (móvil) o la derecha (≥ 768). */
+@keyframes pwt-in-y { from { transform: translateY(100%); } }
+@keyframes pwt-in-x { from { transform: translateX(100%); } }
+@keyframes pwt-fade { from { opacity: 0; } }
+.pwt-drawer[open] {
+  animation: pwt-in-y var(--pwt-duration-morph) var(--pwt-ease-out);
+}
+.pwt-drawer[open]::backdrop,
+.pwt-modal[open]::backdrop {
+  animation: pwt-fade var(--pwt-duration-base) ease;
+}
+.pwt-modal[open] {
+  animation: pwt-fade var(--pwt-duration-moderate) var(--pwt-ease-out);
+}
+@media (min-width: 768px) {
+  .pwt-drawer[open] {
+    animation-name: pwt-in-x;
+  }
+}
+
+/* Con un <dialog> modal abierto no se desplaza la página de fondo. */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+/* Lenis (equivalente a lenis/dist/lenis.css, sin importar el CSS del paquete). */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
