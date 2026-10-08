@@ -150,6 +150,8 @@ enum PaymentProvider {
   mercadopago
   culqi
   manual
+  /// Pasarela simulada (solo desarrollo/pruebas; la configuración la prohíbe en producción).
+  sandbox
 
   @@map("payment_provider")
 }
@@ -243,8 +245,28 @@ enum ComplaintStatus {
   in_review
   answered
   closed
+  /// Solución directa aceptada por el consumidor (art. 6-A, D.S. 058-2017-PCM).
+  settled
 
   @@map("complaint_status")
+}
+
+/// Canal por el que el consumidor pidió recibir la respuesta (Anexo I, D.S. 101-2022-PCM).
+enum ComplaintResponseChannel {
+  email
+  letter
+
+  @@map("complaint_response_channel")
+}
+
+/// Origen de la hoja: libro virtual, transcripción del libro de respaldo (art. 4-A) o
+/// registro asistido en oficina.
+enum ComplaintChannel {
+  web
+  backup_book
+  office_assisted
+
+  @@map("complaint_channel")
 }
 
 enum ContractedGoodType {
@@ -740,6 +762,9 @@ model Booking {
   cancellationPolicyVersion String @map("cancellation_policy_version") @db.VarChar(40)
   termsVersion   String        @map("terms_version") @db.VarChar(40)
   customerNotes  String?       @map("customer_notes") @db.VarChar(2000)
+  /// SHA-256 (hex) del token de acceso del comprador (cabecera X-Booking-Token). El token
+  /// nunca se guarda; null = reserva sin acceso público (p. ej. creada antes de Sprint 1).
+  accessTokenHash String?      @map("access_token_hash") @db.Char(64)
   internalNotes  String?       @map("internal_notes")
   createdByUserId String?      @map("created_by_user_id") @db.Uuid
   confirmedAt    DateTime?     @map("confirmed_at") @db.Timestamptz(6)
@@ -1083,19 +1108,36 @@ model Complaint {
   sequence           Int
   /// Código visible, p. ej. "LR-2026-000045".
   code               String             @unique @db.VarChar(20)
+  /// Tipo con el que se tramita (puede reclasificarse; ver declaredType).
   type               ComplaintType
+  /// Tipo marcado por el consumidor (null = "no sé"); se conserva aunque se reclasifique.
+  declaredType       ComplaintType?     @map("declared_type")
   status             ComplaintStatus    @default(received)
+  channel            ComplaintChannel   @default(web)
+  /// N.º de la hoja física del libro de respaldo y fecha de transcripción (art. 4-A: 1 día).
+  backupSheetNumber  String?            @map("backup_sheet_number") @db.VarChar(40)
+  transcribedAt      DateTime?          @map("transcribed_at") @db.Timestamptz(6)
   bookingId          String?            @map("booking_id") @db.Uuid
+  // Proveedor y establecimiento congelados en la hoja (Anexo I).
+  providerLegalName  String             @map("provider_legal_name") @db.VarChar(200)
+  providerRuc        String             @map("provider_ruc") @db.VarChar(20)
+  establishmentAddress String           @map("establishment_address") @db.VarChar(300)
+  establishmentCode  String             @map("establishment_code") @db.VarChar(20)
   // Datos del consumidor (PII; documento y teléfono cifrados)
   consumerName       String             @map("consumer_name") @db.VarChar(200)
   consumerDocType    DocumentType       @map("consumer_doc_type")
   consumerDocEnc     Bytes              @map("consumer_doc_enc")
   consumerDocHash    Bytes              @map("consumer_doc_hash")
-  consumerAddress    String?            @map("consumer_address") @db.VarChar(300)
+  consumerAddress    String             @map("consumer_address") @db.VarChar(300)
   consumerEmail      String             @map("consumer_email") @db.VarChar(254)
+  /// Obligatorio en la API; nullable solo por hojas de respaldo incompletas.
   consumerPhoneEnc   Bytes?             @map("consumer_phone_enc")
   isMinor            Boolean            @default(false) @map("is_minor")
+  // Padre, madre o representante (obligatorio si is_minor; CHECK en SQL).
   guardianName       String?            @map("guardian_name") @db.VarChar(200)
+  guardianAddress    String?            @map("guardian_address") @db.VarChar(300)
+  guardianPhoneEnc   Bytes?             @map("guardian_phone_enc")
+  guardianEmail      String?            @map("guardian_email") @db.VarChar(254)
   // Bien contratado
   goodType           ContractedGoodType @default(service) @map("good_type")
   goodDescription    String             @map("good_description") @db.VarChar(500)
@@ -1104,13 +1146,34 @@ model Complaint {
   // Detalle
   detail             String
   consumerRequest    String             @map("consumer_request")
+  /// Canal de respuesta elegido por el consumidor.
+  responseChannel    ComplaintResponseChannel @default(email) @map("response_channel")
+  /// Mecanismo de conformidad que sustituye la firma en el libro virtual (casilla + fecha/hora/IP).
+  conformityAcceptedAt DateTime?        @map("conformity_accepted_at") @db.Timestamptz(6)
+  conformityTextVersion String?         @map("conformity_text_version") @db.VarChar(40)
+  privacyNoticeVersion String?          @map("privacy_notice_version") @db.VarChar(40)
   // Respuesta del proveedor
   responseText       String?            @map("response_text")
+  /// Redacción de la respuesta.
   respondedAt        DateTime?          @map("responded_at") @db.Timestamptz(6)
   respondedByUserId  String?            @map("responded_by_user_id") @db.Uuid
-  /// Plazo legal de respuesta calculado al registrar (días hábiles según norma vigente).
+  /// Comunicación efectiva al consumidor (fecha del Anexo I) y su referencia (id del correo / cargo).
+  responseSentAt     DateTime?          @map("response_sent_at") @db.Timestamptz(6)
+  responseDeliveryRef String?           @map("response_delivery_ref") @db.VarChar(200)
+  /// Plazo legal de respuesta calculado al registrar (15 días hábiles, improrrogable).
   responseDueAt      DateTime           @map("response_due_at") @db.Timestamptz(6)
+  // Solución directa (art. 6-A): suspende el plazo hasta 5 días hábiles.
+  settlementOfferText String?           @map("settlement_offer_text")
+  settlementOfferedAt DateTime?         @map("settlement_offered_at") @db.Timestamptz(6)
+  settlementAcceptedAt DateTime?        @map("settlement_accepted_at") @db.Timestamptz(6)
+  settlementAcceptanceEvidence String?  @map("settlement_acceptance_evidence")
+  // Constancia al consumidor
   acknowledgmentSentAt DateTime?        @map("acknowledgment_sent_at") @db.Timestamptz(6)
+  acknowledgmentDeliveryRef String?     @map("acknowledgment_delivery_ref") @db.VarChar(200)
+  /// SHA-256 (hex) del PDF de la hoja enviado al consumidor (integridad).
+  pdfSha256          String?            @map("pdf_sha256") @db.Char(64)
+  /// SHA-256 (hex) del token de consulta del consumidor (cabecera X-Complaint-Token).
+  accessTokenHash    String?            @map("access_token_hash") @db.Char(64)
   ip                 String?            @db.Inet
   submittedAt        DateTime           @default(now()) @map("submitted_at") @db.Timestamptz(6)
   createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -1291,4 +1354,38 @@ model OutboxEvent {
 
   @@index([availableAt], where: raw("published_at IS NULL"))
   @@map("outbox_events")
+}
+
+/// Idempotencia persistente de escrituras críticas (Idempotency-Key). Una fila por
+/// (alcance, clave); `request_hash` = SHA-256 del cuerpo canónico: la misma clave con otro
+/// cuerpo se rechaza. `response` guarda referencias para reconstruir la respuesta (nunca
+/// secretos como el token de acceso). Purga por `expires_at`.
+model IdempotencyKey {
+  scope       String   @db.VarChar(40)
+  key         String   @db.VarChar(100)
+  requestHash String   @map("request_hash") @db.Char(64)
+  resourceId  String?  @map("resource_id") @db.Uuid
+  response    Json?
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  expiresAt   DateTime @map("expires_at") @db.Timestamptz(6)
+
+  @@id([scope, key])
+  @@index([expiresAt])
+  @@map("idempotency_keys")
+}
+
+/// Calendario de días no hábiles para plazos legales (p. ej. 15 días hábiles del Libro de
+/// Reclamaciones). `scope` = "national" o un código de región (ISO 3166-2, p. ej. "PE-PUN").
+/// Los fines de semana no se guardan: se excluyen por regla.
+model BusinessHoliday {
+  id          String   @id @default(dbgenerated("uuid_generate_v7()")) @db.Uuid
+  holidayDate DateTime @map("holiday_date") @db.Date
+  scope       String   @default("national") @db.VarChar(10)
+  name        String   @db.VarChar(120)
+  /// Norma o fuente (ley, decreto supremo que declara día no laborable).
+  source      String?  @db.VarChar(300)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([holidayDate, scope])
+  @@map("business_holidays")
 }

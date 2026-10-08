@@ -1,6 +1,12 @@
 import { IDS } from '../../../../test/support/fixtures.js';
 import { createHarness } from '../../../../test/support/harness.js';
 import { InvalidWebhookSignatureError } from '../../payments/domain/payment-gateway.js';
+import {
+  BookingAccessNotFoundError,
+  bookingAccessTokenMatches,
+  generateBookingAccessToken,
+  hashBookingAccessToken,
+} from './booking-access.js';
 
 describe('Carrito', () => {
   it('crea carrito anónimo con token y protege el acceso por token', async () => {
@@ -168,44 +174,51 @@ describe('Checkout', () => {
 });
 
 describe('Pagos', () => {
+  /** Acceso del comprador (código + X-Booking-Token) por reserva creada en la prueba. */
+  const accessByBooking = new Map<string, { code: string; token: string }>();
+  const acc = (booking: { id: string }) => accessByBooking.get(booking.id)!;
+
   async function heldBooking(h: ReturnType<typeof createHarness>, key = 'checkout-key-p001') {
     const cart = await h.cartWith([{ tourId: IDS.valle, travelDate: '2026-11-10' }]);
-    return (await h.bookings.checkout(h.checkoutInput(cart, key))).booking;
+    const result = await h.bookings.checkout(h.checkoutInput(cart, key));
+    accessByBooking.set(result.booking.id, { code: result.booking.code, token: result.accessToken });
+    return result.booking;
   }
 
   it('adelanto confirmado => partially_paid y cupo vendido; saldo => paid', async () => {
     const h = createHarness();
     const booking = await heldBooking(h);
-    const intent = await h.payments.createPayment({ bookingId: booking.id, idempotencyKey: 'pay-key-0001' });
+    const intent = await h.payments.createPayment({ booking: acc(booking), idempotencyKey: 'pay-key-0001' });
     expect(intent.payment.kind).toBe('deposit');
     expect(intent.payment.status).toBe('requires_action');
     expect(intent.nextAction.type).toBe('redirect');
-    const confirmed = await h.payments.confirmPayment(intent.payment.id, {});
+    const confirmed = await h.payments.confirmPayment(acc(booking), intent.payment.id, {});
     expect(confirmed.status).toBe('succeeded');
     let current = await h.bookings.getById(booking.id);
     expect(current.status).toBe('partially_paid');
     expect(h.store.state.departures.get(IDS.depValleNov10)).toMatchObject({ held: 0, booked: 1 });
 
-    const balance = await h.payments.createPayment({ bookingId: booking.id, idempotencyKey: 'pay-key-0002' });
+    const balance = await h.payments.createPayment({ booking: acc(booking), idempotencyKey: 'pay-key-0002' });
     expect(balance.payment.kind).toBe('balance');
     expect(balance.payment.amount.amount).toBe(6_000n);
-    await h.payments.confirmPayment(balance.payment.id, {});
+    await h.payments.confirmPayment(acc(booking), balance.payment.id, {});
     current = await h.bookings.getById(booking.id);
     expect(current.status).toBe('paid');
-    await expect(h.payments.createPayment({ bookingId: booking.id, idempotencyKey: 'pay-key-0003' })).rejects.toMatchObject({ code: 'booking-already-paid' });
+    await expect(h.payments.createPayment({ booking: acc(booking), idempotencyKey: 'pay-key-0003' })).rejects.toMatchObject({ code: 'booking-already-paid' });
   });
 
   it('doble clic en "Pagar" (misma clave) => un solo intento', async () => {
     const h = createHarness();
     const booking = await heldBooking(h);
     const [a, b] = await Promise.all([
-      h.payments.createPayment({ bookingId: booking.id, idempotencyKey: 'pay-key-0004' }),
-      h.payments.createPayment({ bookingId: booking.id, idempotencyKey: 'pay-key-0004' }),
+      h.payments.createPayment({ booking: acc(booking), idempotencyKey: 'pay-key-0004' }),
+      h.payments.createPayment({ booking: acc(booking), idempotencyKey: 'pay-key-0004' }),
     ]);
     expect(a.payment.id).toBe(b.payment.id);
     expect([a.replayed, b.replayed].filter(Boolean)).toHaveLength(1);
     expect(h.store.state.payments.size).toBe(1);
-    await expect(h.payments.createPayment({ bookingId: '00000000-0000-7000-8000-ffffffffffff', idempotencyKey: 'pay-key-0004' })).rejects.toMatchObject({
+    const other = await heldBooking(h, 'checkout-key-p002');
+    await expect(h.payments.createPayment({ booking: acc(other), idempotencyKey: 'pay-key-0004' })).rejects.toMatchObject({
       code: 'idempotency-key-reused',
     });
   });
@@ -213,8 +226,8 @@ describe('Pagos', () => {
   it('pago rechazado: queda failed y la reserva sigue held para reintentar', async () => {
     const h = createHarness();
     const booking = await heldBooking(h);
-    const intent = await h.payments.createPayment({ bookingId: booking.id, idempotencyKey: 'pay-key-0005' });
-    const failed = await h.payments.confirmPayment(intent.payment.id, { simulate: 'fail' });
+    const intent = await h.payments.createPayment({ booking: acc(booking), idempotencyKey: 'pay-key-0005' });
+    const failed = await h.payments.confirmPayment(acc(booking), intent.payment.id, { simulate: 'fail' });
     expect(failed.toSnapshot()).toMatchObject({ status: 'failed', failureCode: 'card_declined' });
     expect((await h.bookings.getById(booking.id)).status).toBe('held');
   });
@@ -223,7 +236,7 @@ describe('Pagos', () => {
     const h = createHarness();
     const booking = await heldBooking(h);
     h.clock.advanceMinutes(20);
-    await expect(h.payments.createPayment({ bookingId: booking.id, idempotencyKey: 'pay-key-0006' })).rejects.toMatchObject({ code: 'hold-expired' });
+    await expect(h.payments.createPayment({ booking: acc(booking), idempotencyKey: 'pay-key-0006' })).rejects.toMatchObject({ code: 'hold-expired' });
     expect((await h.bookings.getById(booking.id)).status).toBe('cancelled');
     expect(h.store.state.departures.get(IDS.depValleNov10)?.held).toBe(0);
   });
@@ -231,7 +244,7 @@ describe('Pagos', () => {
   it('webhook: aplica una vez; duplicado devuelve duplicate sin efectos', async () => {
     const h = createHarness();
     const booking = await heldBooking(h);
-    const intent = await h.payments.createPayment({ bookingId: booking.id, idempotencyKey: 'pay-key-0007' });
+    const intent = await h.payments.createPayment({ booking: acc(booking), idempotencyKey: 'pay-key-0007' });
     const providerPaymentId = intent.payment.providerPaymentId!;
     await h.gateway.confirm(providerPaymentId, {});
     const event = h.webhook({ id: 'evt_0001', providerPaymentId, status: 'succeeded', amount: 6_000, currency: 'USD' });
@@ -250,7 +263,7 @@ describe('Pagos', () => {
   it('webhook con firma inválida, vencida o monto distinto no aplica nada', async () => {
     const h = createHarness();
     const booking = await heldBooking(h);
-    const intent = await h.payments.createPayment({ bookingId: booking.id, idempotencyKey: 'pay-key-0008' });
+    const intent = await h.payments.createPayment({ booking: acc(booking), idempotencyKey: 'pay-key-0008' });
     const providerPaymentId = intent.payment.providerPaymentId!;
     const event = h.webhook({ id: 'evt_0002', providerPaymentId, status: 'succeeded' });
     const tampered = Buffer.from(event.raw.toString().replace('succeeded', 'failed'));
@@ -275,7 +288,7 @@ describe('Pagos', () => {
   it('webhook tardío tras cancelar por hold vencido => reembolso automático y reserva refunded', async () => {
     const h = createHarness();
     const booking = await heldBooking(h);
-    const intent = await h.payments.createPayment({ bookingId: booking.id, idempotencyKey: 'pay-key-0009' });
+    const intent = await h.payments.createPayment({ booking: acc(booking), idempotencyKey: 'pay-key-0009' });
     h.clock.advanceMinutes(16);
     expect(await h.bookings.expireHolds()).toBe(1);
     const providerPaymentId = intent.payment.providerPaymentId!;
@@ -288,5 +301,77 @@ describe('Pagos', () => {
     const refunds = [...h.store.state.payments.values()].filter((p) => p.kind === 'refund');
     expect(refunds).toHaveLength(1);
     expect(refunds[0]).toMatchObject({ status: 'succeeded', parentPaymentId: intent.payment.id });
+  });
+});
+
+describe('Acceso del comprador a su reserva (X-Booking-Token)', () => {
+  async function checkout(h: ReturnType<typeof createHarness>, key = 'checkout-key-a001') {
+    const cart = await h.cartWith([{ tourId: IDS.valle, travelDate: '2026-11-10' }]);
+    return { cart, result: await h.bookings.checkout(h.checkoutInput(cart, key)) };
+  }
+
+  it('entrega un token de 256 bits y solo guarda su SHA-256', async () => {
+    const h = createHarness();
+    const { result } = await checkout(h);
+    expect(result.accessToken).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    expect(result.booking.accessTokenHash).toBe(hashBookingAccessToken(result.accessToken));
+    expect(JSON.stringify([...h.store.state.bookings.values()], (_k, v: unknown) => (typeof v === 'bigint' ? v.toString() : v))).not.toContain(result.accessToken);
+    const found = await h.bookings.getByCode({ code: result.booking.code, token: result.accessToken });
+    expect(found.id).toBe(result.booking.id);
+  });
+
+  it('token incorrecto y código inexistente devuelven el mismo 404 genérico; sin token => 401', async () => {
+    const h = createHarness();
+    const { result } = await checkout(h);
+    const other = generateBookingAccessToken().token;
+    const wrong = await h.bookings.getByCode({ code: result.booking.code, token: other }).catch((e: unknown) => e);
+    const missing = await h.bookings.getByCode({ code: 'PWT-2099-999999', token: result.accessToken }).catch((e: unknown) => e);
+    const malformed = await h.bookings.getByCode({ code: 'no-es-un-codigo', token: result.accessToken }).catch((e: unknown) => e);
+    for (const error of [wrong, missing, malformed]) {
+      expect(error).toBeInstanceOf(BookingAccessNotFoundError);
+      expect(error).toMatchObject({ code: 'booking-not-found', message: 'Reserva no encontrada.', details: {} });
+    }
+    await expect(h.bookings.getByCode({ code: result.booking.code, token: undefined })).rejects.toMatchObject({ code: 'booking-token-required' });
+    await expect(h.bookings.getByCode({ code: result.booking.code, token: 'corto' })).rejects.toMatchObject({ code: 'booking-token-required' });
+  });
+
+  it('replay idempotente: exige el X-Cart-Token y rota el token (el anterior deja de servir)', async () => {
+    const h = createHarness();
+    const { cart, result } = await checkout(h);
+    await expect(h.bookings.checkout({ ...h.checkoutInput(cart, 'checkout-key-a001'), cartToken: 'otro' })).rejects.toMatchObject({ code: 'cart-not-found' });
+    const replay = await h.bookings.checkout(h.checkoutInput(cart, 'checkout-key-a001'));
+    expect(replay.replayed).toBe(true);
+    expect(replay.booking.id).toBe(result.booking.id);
+    expect(replay.accessToken).not.toBe(result.accessToken);
+    await expect(h.bookings.getByCode({ code: result.booking.code, token: result.accessToken })).rejects.toBeInstanceOf(BookingAccessNotFoundError);
+    expect((await h.bookings.getByCode({ code: result.booking.code, token: replay.accessToken })).id).toBe(result.booking.id);
+    expect(h.store.state.idempotency.get(`checkout:checkout-key-a001`)?.response).toEqual({ bookingId: result.booking.id, bookingCode: result.booking.code });
+  });
+
+  it('los pagos solo se ven con el token de su reserva', async () => {
+    const h = createHarness();
+    const a = (await checkout(h, 'checkout-key-a002')).result;
+    const b = (await checkout(h, 'checkout-key-a003')).result;
+    const accessA = { code: a.booking.code, token: a.accessToken };
+    const accessB = { code: b.booking.code, token: b.accessToken };
+    const intent = await h.payments.createPayment({ booking: accessA, idempotencyKey: 'pay-key-a001' });
+    expect((await h.payments.getPayment(accessA, intent.payment.id)).id).toBe(intent.payment.id);
+    expect(await h.payments.listPayments(accessA)).toHaveLength(1);
+    expect(await h.payments.listPayments(accessB)).toHaveLength(0);
+    await expect(h.payments.getPayment(accessB, intent.payment.id)).rejects.toMatchObject({ code: 'payment-not-found' });
+    await expect(h.payments.confirmPayment(accessB, intent.payment.id, {})).rejects.toMatchObject({ code: 'payment-not-found' });
+    await expect(h.payments.createPayment({ booking: { ...accessA, token: b.accessToken }, idempotencyKey: 'pay-key-a002' })).rejects.toBeInstanceOf(
+      BookingAccessNotFoundError,
+    );
+  });
+});
+
+describe('bookingAccessTokenMatches', () => {
+  it('compara en tiempo constante y nunca acepta sin hash guardado', () => {
+    const { token, tokenHash } = generateBookingAccessToken();
+    expect(bookingAccessTokenMatches(token, tokenHash)).toBe(true);
+    expect(bookingAccessTokenMatches(token, null)).toBe(false);
+    expect(bookingAccessTokenMatches(token, '0'.repeat(64))).toBe(false);
+    expect(bookingAccessTokenMatches(token, 'no-hex')).toBe(false);
   });
 });

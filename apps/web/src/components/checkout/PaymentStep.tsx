@@ -2,18 +2,20 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { CreditCard, Landmark, Loader2, Lock, Smartphone } from "lucide-react";
+import { AlertTriangle, CreditCard, Landmark, Loader2, Lock, RefreshCw, Smartphone } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, type Ref } from "react";
+import { useEffect, useRef, useState, type Ref } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
-import type { CartLine } from "@/lib/cart/types";
-import { computePaymentPlan, type LinePlan, type PaymentOption } from "@/lib/checkout/payment-plan";
-import { paymentStepSchema, type ContactValues, type PaymentStepValues } from "@/lib/checkout/schemas";
-import { formatDate, formatMoney, todayInLima } from "@/lib/format";
-import type { PaymentMethod, PaymentRequest, PaymentResult, PaymentWidgetHandle } from "@/lib/payments/types";
+import { placeBookingAction, prepareCheckoutAction } from "@/app/es/(checkout)/checkout/actions";
+import type { UserError } from "@/lib/api/problems";
+import { describeTravelers, type CartLine } from "@/lib/cart/types";
+import type { ActionResult, CheckoutQuote, PlaceResult, PlanView } from "@/lib/checkout/api-checkout";
+import { lineTotalCents, type PaymentOption } from "@/lib/checkout/payment-plan";
+import { paymentStepSchema, type ContactValues, type PaymentStepValues, type TravelersValues } from "@/lib/checkout/schemas";
+import { formatDate, formatInstantDate, formatMoney } from "@/lib/format";
+import type { PaymentMethod, PaymentRequest, PaymentWidgetHandle } from "@/lib/payments/types";
 import { useUiStore } from "@/stores/ui-store";
-import { formatTotals } from "@/components/cart/cart-helpers";
 import { buttonClass } from "@/components/ui/button-styles";
 import { HoldTimer } from "./HoldTimer";
 import { SandboxPaymentWidget } from "./SandboxPaymentWidget";
@@ -25,67 +27,98 @@ const METHODS: { value: PaymentMethod; label: string; icon: typeof CreditCard; n
   { value: "pagoefectivo", label: "PagoEfectivo", icon: Landmark, note: "Banca por internet o agentes (código CIP 24 h)" },
 ];
 
-function lineNote(l: LinePlan): string {
-  if (l.totalCents === null) return "por cotizar";
-  if (l.fullPaymentReason === "policy") return "100 % (boletos)";
-  if (l.fullPaymentReason === "close-departure") return "100 % (sale en menos de 7 días)";
-  return `${l.percentNow} %`;
-}
-
-function lineMoney(l: LinePlan, key: "payNowCents" | "balanceCents" | "totalCents"): string {
-  const v = l[key];
-  return v === null || !l.currency ? "Por cotizar" : formatMoney(v, l.currency);
-}
-
-export interface PaymentSubmit {
-  option: PaymentOption;
-  method: PaymentMethod;
-  result: PaymentResult | null;
+/** Notas para la reserva: hotel, necesidades y bebés (la API no tiene tipo de pasajero "bebé"). */
+function buildNotes(lines: CartLine[], travelers: TravelersValues | null): string | undefined {
+  const parts: string[] = [];
+  if (travelers?.hotel) parts.push(`Hotel para el recojo: ${travelers.hotel}`);
+  if (travelers?.notes) parts.push(`Necesidades especiales: ${travelers.notes}`);
+  for (const l of lines) {
+    if (l.travelers.infants > 0) parts.push(`${l.title} (${l.date}): ${l.travelers.infants} bebé(s) de 0 a 2 años, sin costo.`);
+  }
+  return parts.length ? parts.join("\n") : undefined;
 }
 
 export function PaymentStep({
   lines,
   contact,
-  orderCode,
+  travelers,
   option,
   onOptionChange,
+  onQuote,
   onBackToContact,
   onBackToTravelers,
   onPaid,
   headingRef,
+  cardFeePercent,
 }: {
   lines: CartLine[];
   contact: ContactValues;
-  orderCode: string;
+  travelers: TravelersValues | null;
   option: PaymentOption;
   onOptionChange: (o: PaymentOption) => void;
+  onQuote: (quote: CheckoutQuote | null) => void;
   onBackToContact: () => void;
   onBackToTravelers: () => void;
-  onPaid: (submit: PaymentSubmit) => void;
+  onPaid: (result: PlaceResult) => void;
   headingRef: Ref<HTMLHeadingElement>;
+  /** Comisión por tarjeta (RN-03). null = no configurada → no se muestra ni se menciona. */
+  cardFeePercent: number | null;
 }) {
   const announce = useUiStore((s) => s.announce);
   const widgetRef = useRef<PaymentWidgetHandle>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
-  const [rejection, setRejection] = useState<string | null>(null);
+  const apiErrorRef = useRef<HTMLDivElement>(null);
+  const [apiError, setApiError] = useState<(UserError & { bookingCode?: string }) | null>(null);
+  const [expired, setExpired] = useState(false);
 
-  const today = useMemo(() => todayInLima(), []);
-  const depositPlan = useMemo(() => computePaymentPlan(lines, "deposit", today), [lines, today]);
-  const fullPlan = useMemo(() => computePaymentPlan(lines, "full", today), [lines, today]);
-  const effectiveOption: PaymentOption = depositPlan.depositAvailable ? option : "full";
-  const plan = effectiveOption === "deposit" ? depositPlan : fullPlan;
-  const multiCurrency = plan.totals.length > 1;
-  const payNow = plan.totals[0] ?? null;
-  const quoteOnly = !payNow || payNow.payNowCents === 0;
+  /* ---------- 1. Revalidación de precios y cupos en la API (BFF) ---------- */
+  const prepare = useMutation({
+    mutationFn: async (): Promise<ActionResult<CheckoutQuote>> =>
+      prepareCheckoutAction({
+        country: contact.country,
+        lines: lines.map((l) => ({
+          id: l.id,
+          tourSlug: l.tourSlug,
+          title: l.title,
+          date: l.date,
+          travelers: l.travelers,
+          expectedCents: lineTotalCents(l.unitPricing, l.travelers),
+          currency: l.unitPricing?.currency ?? null,
+        })),
+      }),
+    onSuccess: (res) => {
+      onQuote(res.ok ? res.data : null);
+      if (!res.ok) return;
+      const q = res.data;
+      if (q.issues.some((i) => i.blocking)) announce("Hay tours de tu carrito que no se pueden reservar. Revisa los avisos.");
+      else if (q.priceChanged) announce("El precio de tu pedido cambió. Revisa el nuevo total antes de pagar.");
+      else announce(`Precios y cupos confirmados. Total ${formatMoney(q.totalCents, q.currency)}.`);
+    },
+  });
+  const { mutate: runPrepare } = prepare;
+  // Se cotiza una vez al entrar al paso (las líneas no cambian dentro del checkout).
+  useEffect(() => {
+    runPrepare();
+  }, [runPrepare]);
+
+  const quote = prepare.data?.ok ? prepare.data.data : null;
+  const prepareError = prepare.data && !prepare.data.ok ? prepare.data.error : null;
+
+  const plans = quote?.plans ?? null;
+  const lockedOption = quote?.booking?.option ?? null;
+  const depositAvailable = !!plans?.deposit && !lockedOption;
+  const effectiveOption: PaymentOption = lockedOption ?? (depositAvailable ? option : "full");
+  const plan: PlanView | null = plans ? (effectiveOption === "deposit" ? plans.deposit : plans.full) ?? plans.full ?? plans.deposit : null;
 
   const {
     register,
     handleSubmit,
     control,
+    setError,
     formState: { errors, submitCount },
   } = useForm<PaymentStepValues>({
     resolver: zodResolver(paymentStepSchema),
-    defaultValues: { option: effectiveOption, method: "card", terms: false },
+    defaultValues: { option, method: "card", terms: false, ackPrice: false },
     mode: "onBlur",
   });
   const method = useWatch({ control, name: "method" });
@@ -95,56 +128,114 @@ export function PaymentStep({
     if (watchedOption && watchedOption !== option) onOptionChange(watchedOption);
   }, [watchedOption, option, onOptionChange]);
 
-  useEffect(() => {
-    if (!payNow) return;
-    announce(`Pagarás hoy ${formatMoney(payNow.payNowCents, payNow.currency)}.`);
-  }, [effectiveOption, payNow, announce]);
-
-  const request: PaymentRequest | null = payNow
-    ? {
-        orderCode,
-        amountCents: payNow.payNowCents,
-        currency: payNow.currency,
-        option: effectiveOption,
-        description: `Reserva ${orderCode} · ${lines.length} ${lines.length === 1 ? "tour" : "tours"}`,
-        customer: { firstName: contact.firstName, lastName: contact.lastName, email: contact.email },
-        providerSessionToken: null,
-      }
-    : null;
-
+  /* ---------- 2. Reserva + cobro sandbox (Server Action) ---------- */
   const pay = useMutation({
-    mutationFn: async (values: PaymentStepValues): Promise<PaymentSubmit> => {
-      // TODO(backend): POST /api/v1/bookings (crea orden + hold y congela precios) antes del widget.
-      if (quoteOnly || !widgetRef.current) return { option: effectiveOption, method: values.method, result: null };
-      const result = await widgetRef.current.confirm();
-      return { option: effectiveOption, method: values.method, result };
+    mutationFn: async (values: PaymentStepValues) => {
+      if (!quote || !plan) throw new Error("Sin cotización");
+      const confirmation = widgetRef.current ? await widgetRef.current.collect() : { simulate: "approved" as const };
+      return placeBookingAction({
+        option: effectiveOption,
+        method: values.method,
+        simulate: confirmation.simulate,
+        contact: { firstName: contact.firstName, lastName: contact.lastName, email: contact.email, country: contact.country },
+        notes: buildNotes(lines, travelers),
+        acceptTerms: values.terms,
+        // La casilla final incluye el acuse de lectura de la Política de privacidad (informativo, no consentimiento).
+        acceptPrivacy: values.terms,
+        expectedTotalCents: quote.totalCents,
+      });
     },
-    onSuccess: (submit) => {
-      if (submit.result?.status === "rejected") {
-        setRejection(submit.result.message);
-        announce(submit.result.message);
+    onSuccess: (res) => {
+      if (res.ok) {
+        setApiError(null);
+        onPaid(res.data);
         return;
       }
-      setRejection(null);
-      onPaid(submit);
+      setApiError({ ...res.error, bookingCode: res.bookingCode });
+      announce(res.error.message);
+      requestAnimationFrame(() => apiErrorRef.current?.focus());
+      // Precio o cupo cambió: se vuelve a cotizar para mostrar los montos vigentes.
+      if (res.requote) runPrepare();
+    },
+    onError: () => {
+      setApiError({ code: "api-unavailable", kind: "unavailable", message: "No pudimos conectar con el sistema de reservas. No se te cobró nada; intenta de nuevo." });
+      requestAnimationFrame(() => apiErrorRef.current?.focus());
     },
   });
 
-  const payLabel = quoteOnly
-    ? "Enviar solicitud de reserva"
-    : `Pagar ${formatTotals(plan.totals, "payNowCents")}`;
+  const blocking = quote?.issues.filter((i) => i.blocking) ?? [];
+  const canPay = !!quote && !!plan && quote.canCheckout && blocking.length === 0 && !expired;
+
+  const request: PaymentRequest | null =
+    quote && plan
+      ? {
+          orderCode: quote.booking?.code ?? null,
+          amountCents: plan.payNowCents + (cardFeePercent && method === "card" ? Math.round((plan.payNowCents * cardFeePercent) / 100) : 0),
+          currency: quote.currency,
+          option: effectiveOption,
+          description: `Reserva · ${lines.length} ${lines.length === 1 ? "tour" : "tours"}`,
+          providerSessionToken: null,
+        }
+      : null;
+
+  const onValid = (values: PaymentStepValues) => {
+    if (quote?.priceChanged && !values.ackPrice) {
+      setError("ackPrice", { type: "custom", message: "Confirma que aceptas el nuevo precio para continuar." });
+      requestAnimationFrame(() => summaryRef.current?.focus());
+      return;
+    }
+    pay.mutate(values);
+  };
+
+  /* ---------- Estados de carga / error de la cotización ---------- */
+  if (prepare.isPending || (!prepare.data && !prepare.isError)) {
+    return (
+      <div aria-busy="true">
+        <h2 id="step-payment-title" ref={headingRef} tabIndex={-1} className="font-display text-h2 font-medium focus:outline-none">
+          Pago
+        </h2>
+        <p className="mt-4 flex items-center gap-2 text-foreground-muted" role="status">
+          <Loader2 aria-hidden size={18} strokeWidth={1.5} className="animate-spin motion-reduce:animate-none" />
+          Confirmando precios y cupos en tiempo real…
+        </p>
+        <div className="mt-6 h-64 animate-pulse rounded-lg bg-surface-muted motion-reduce:animate-none" />
+      </div>
+    );
+  }
+
+  if (!quote) {
+    const message = prepareError?.message ?? "No pudimos conectar con el sistema de reservas. No se te cobró nada; intenta de nuevo.";
+    return (
+      <div>
+        <h2 id="step-payment-title" ref={headingRef} tabIndex={-1} className="font-display text-h2 font-medium focus:outline-none">
+          Pago
+        </h2>
+        <div role="alert" className="mt-6 rounded-md border border-danger bg-danger-soft p-4 text-danger">
+          <p className="font-medium">No pudimos preparar tu pago</p>
+          <p className="mt-1 text-sm">{message}</p>
+        </div>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <button type="button" className={buttonClass("primary", "lg")} onClick={() => runPrepare()}>
+            <RefreshCw aria-hidden size={18} strokeWidth={1.5} />
+            Intentar de nuevo
+          </button>
+          <Link href="/es/carrito" className={buttonClass("ghost", "lg")}>
+            Volver al carrito
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const money = (cents: number) => formatMoney(cents, quote.currency);
+  // Comisión por tarjeta: solo si está configurada, visible ANTES de pagar y sumada al total
+  // (Código del Consumidor art. 7). Requiere que la API la cobre antes de activarla (ver reporte).
+  const cardFee = cardFeePercent && method === "card" && plan ? Math.round((plan.payNowCents * cardFeePercent) / 100) : 0;
+  const payTodayCents = plan ? plan.payNowCents + cardFee : 0;
+  const payLabel = plan ? `Pagar ${money(payTodayCents)}` : "Pagar";
 
   return (
-    <form
-      noValidate
-      aria-labelledby="step-payment-title"
-      onSubmit={(e) =>
-        handleSubmit(
-          (values) => pay.mutate(values),
-          () => requestAnimationFrame(() => summaryRef.current?.focus()),
-        )(e)
-      }
-    >
+    <form noValidate aria-labelledby="step-payment-title" onSubmit={(e) => handleSubmit(onValid, () => requestAnimationFrame(() => summaryRef.current?.focus()))(e)}>
       <h2 id="step-payment-title" ref={headingRef} tabIndex={-1} className="font-display text-h2 font-medium focus:outline-none">
         Pago
       </h2>
@@ -152,15 +243,83 @@ export function PaymentStep({
 
       {submitCount > 0 ? <ErrorSummary ref={summaryRef} errors={flattenErrors(errors)} /> : null}
 
+      {apiError ? (
+        <ErrorSummary
+          ref={apiErrorRef}
+          title="No pudimos completar el pago:"
+          errors={[{ path: apiError.field ?? "submit", message: apiError.message }]}
+        >
+          {apiError.bookingCode ? (
+            <p className="mt-3 text-sm">
+              Tu reserva <span className="font-mono">{apiError.bookingCode}</span> sigue guardada mientras dure el tiempo de pago.{" "}
+              <Link href={`/es/reserva/${apiError.bookingCode}`} className="underline underline-offset-2">
+                Ver mi reserva
+              </Link>
+            </p>
+          ) : null}
+        </ErrorSummary>
+      ) : null}
+
+      {/* Incidencias de cupo / fecha / tours sin precio en línea */}
+      {blocking.length ? (
+        <div role="alert" className="mb-6 rounded-md border border-danger bg-danger-soft p-4 text-danger">
+          <p className="flex items-center gap-2 font-medium">
+            <AlertTriangle aria-hidden size={18} strokeWidth={1.5} />
+            Antes de pagar, corrige tu carrito:
+          </p>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
+            {blocking.map((i, n) => (
+              <li key={`${i.lineId}-${n}`}>{i.message}</li>
+            ))}
+          </ul>
+          <Link href="/es/carrito" className="mt-3 inline-flex min-h-11 items-center underline underline-offset-2">
+            Editar carrito
+          </Link>
+        </div>
+      ) : null}
+
+      {/* Cambios de precio detectados al revalidar */}
+      {quote.priceChanged ? (
+        <div className="mb-6 rounded-md border border-warning bg-warning-soft p-4 text-sm text-warning" role="status">
+          <p className="font-medium text-foreground">El precio cambió desde que agregaste estos tours:</p>
+          <ul className="mt-2 space-y-1 text-foreground">
+            {quote.lines
+              .filter((l) => l.priceChanged)
+              .map((l) => (
+                <li key={l.lineId}>
+                  {l.title}: <s className="text-foreground-muted">{l.previousCents !== null ? money(l.previousCents) : "por cotizar"}</s>{" "}
+                  <span className="tabular font-semibold">{money(l.subtotalCents)}</span>
+                </li>
+              ))}
+          </ul>
+          <label className="mt-3 flex cursor-pointer items-start gap-3 text-foreground">
+            <input
+              id={fieldId("ackPrice")}
+              type="checkbox"
+              className="mt-1 size-5 shrink-0"
+              aria-invalid={!!errors.ackPrice}
+              aria-describedby={errors.ackPrice ? `${fieldId("ackPrice")}-error` : undefined}
+              {...register("ackPrice")}
+            />
+            <span>Entiendo y acepto el nuevo total de {money(quote.totalCents)}.</span>
+          </label>
+          {errors.ackPrice ? (
+            <p id={`${fieldId("ackPrice")}-error`} className="mt-1 ml-8 text-danger">
+              {errors.ackPrice.message}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
       {/* 3.1 ¿Cuánto quieres pagar hoy? */}
-      {depositPlan.depositAvailable ? (
+      {plans && depositAvailable && plans.deposit && plans.full ? (
         <fieldset>
           <legend className="text-h4 font-medium">¿Cuánto quieres pagar hoy?</legend>
           <div className="mt-4 space-y-3">
             {(
               [
-                ["deposit", "Pagar 50 % ahora", "Reserva tus cupos hoy y paga el resto antes de viajar.", depositPlan],
-                ["full", "Pagar el 100 % ahora", "Sin saldos pendientes. Recibes un solo comprobante.", fullPlan],
+                ["deposit", `Pagar ${plans.deposit.depositPercent} % ahora`, "Reserva tus cupos hoy y paga el resto antes de viajar.", plans.deposit],
+                ["full", "Pagar el 100 % ahora", "Sin saldos pendientes. Recibes un solo comprobante.", plans.full],
               ] as const
             ).map(([value, label, help, p]) => (
               <label
@@ -172,7 +331,7 @@ export function PaymentStep({
                   <span className="flex-1">
                     <span className="flex flex-wrap items-baseline justify-between gap-2">
                       <span className="font-medium">{label}</span>
-                      <span className="tabular font-semibold">{formatTotals(p.totals, "payNowCents")}</span>
+                      <span className="tabular font-semibold">{money(p.payNowCents)}</span>
                     </span>
                     <span className="mt-1 block text-sm text-foreground-muted">{help}</span>
                   </span>
@@ -181,72 +340,74 @@ export function PaymentStep({
             ))}
           </div>
         </fieldset>
-      ) : (
+      ) : plan ? (
         <p className="rounded-md bg-surface-muted p-4">
-          Este pedido se paga completo: incluye boletos de terceros o salidas en menos de 7 días.
+          {lockedOption
+            ? `Tu reserva ${quote.booking?.code} ya está guardada: completa el pago de ${money(plan.payNowCents)}.`
+            : plans?.depositUnavailableReason
+              ? `Este pedido se paga completo: ${plans.depositUnavailableReason}`
+              : "Este pedido se paga completo: incluye boletos de terceros o salidas en menos de 7 días."}
         </p>
-      )}
+      ) : null}
 
-      {/* Desglose (siempre visible con 50 %) */}
-      <div className="mt-6 rounded-lg border border-border bg-surface p-5" aria-live="polite">
-        <h3 className="flex items-baseline justify-between font-medium">
-          <span>Hoy</span>
-          <span className="tabular">{formatTotals(plan.totals, "payNowCents")}</span>
-        </h3>
-        <ul className="mt-2 space-y-1 text-sm">
-          {plan.lines.map((l) => (
-            <li key={l.lineId} className="flex justify-between gap-4">
-              <span className="text-foreground-muted">
-                {l.title} · {lineNote(l)}
-              </span>
-              <span className="tabular">{lineMoney(l, "payNowCents")}</span>
-            </li>
-          ))}
-        </ul>
-        {plan.totals.some((t) => t.balanceCents > 0) ? (
-          <>
-            <h3 className="mt-4 flex items-baseline justify-between border-t border-border pt-3 font-medium">
-              <span>Saldo pendiente</span>
-              <span className="tabular">{formatTotals(plan.totals, "balanceCents")}</span>
-            </h3>
-            <ul className="mt-2 space-y-1 text-sm">
-              {plan.lines
-                .filter((l) => (l.balanceCents ?? 0) > 0 && l.balanceDueDate)
-                .map((l) => (
-                  <li key={l.lineId} className="text-foreground-muted">
-                    <span className="tabular text-foreground">{lineMoney(l, "balanceCents")}</span> hasta el{" "}
-                    {formatDate(l.balanceDueDate as string)} ({l.title})
-                  </li>
-                ))}
-            </ul>
-            <p className="mt-3 text-sm text-foreground-muted">
-              Cómo pagar el saldo: enlace de pago que te enviaremos por correo y WhatsApp, o en efectivo/transferencia en Puno.
-            </p>
-          </>
-        ) : null}
-        {plan.unpricedCount > 0 ? (
-          <p className="mt-3 rounded-md bg-warning-soft px-3 py-2 text-sm text-warning">
-            {plan.unpricedCount === lines.length
-              ? "Tus tours aún no tienen precio publicado: hoy no se cobra nada. Te enviaremos la cotización para confirmar."
-              : "Los tours por cotizar no se cobran hoy; te enviaremos su precio."}
+      {/* Desglose con montos de la API */}
+      {plan ? (
+        <div className="mt-6 rounded-lg border border-border bg-surface p-5" aria-live="polite">
+          <ul className="space-y-1 text-sm">
+            {quote.lines.map((l) => {
+              const local = lines.find((x) => x.id === l.lineId);
+              return (
+                <li key={l.lineId} className="flex justify-between gap-4">
+                  <span className="text-foreground-muted">
+                    {l.title} · {formatDate(l.date)}
+                    {local ? ` · ${describeTravelers(local.travelers)}` : ""}
+                  </span>
+                  <span className="tabular">{money(l.subtotalCents)}</span>
+                </li>
+              );
+            })}
+          </ul>
+          <p className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
+            <span>Total de la reserva</span>
+            <span className="tabular font-semibold">{money(quote.totalCents)}</span>
           </p>
-        ) : null}
-        {multiCurrency ? (
-          <p className="mt-3 rounded-md bg-danger-soft px-3 py-2 text-sm text-danger">
-            Tu carrito tiene tours en distintas monedas. Por ahora se cobra cada moneda por separado: escríbenos para completar la reserva.
+          {cardFee > 0 ? (
+            <>
+              <p className="mt-1 flex items-baseline justify-between">
+                <span>{effectiveOption === "deposit" ? "Adelanto" : "Pago"}</span>
+                <span className="tabular">{money(plan.payNowCents)}</span>
+              </p>
+              <p className="mt-1 flex items-baseline justify-between">
+                <span>Comisión por pago con tarjeta ({cardFeePercent} %)</span>
+                <span className="tabular">{money(cardFee)}</span>
+              </p>
+            </>
+          ) : null}
+          <p className="mt-1 flex items-baseline justify-between font-medium">
+            <span>Hoy pagas</span>
+            <span className="tabular text-success">{money(payTodayCents)}</span>
           </p>
-        ) : null}
-      </div>
+          {plan.balanceCents > 0 ? (
+            <>
+              <p className="mt-1 flex items-baseline justify-between">
+                <span>Saldo pendiente</span>
+                <span className="tabular">{money(plan.balanceCents)}</span>
+              </p>
+              {plan.balanceDueAt ? (
+                <p className="text-sm text-foreground-muted">Vence el {formatInstantDate(plan.balanceDueAt)}.</p>
+              ) : null}
+              <p className="mt-3 text-sm text-foreground-muted">
+                Cómo pagar el saldo: desde la página de tu reserva, con el enlace que te enviaremos por correo y WhatsApp.
+              </p>
+            </>
+          ) : null}
+        </div>
+      ) : null}
 
       {/* 3.2 Método de pago */}
-      {!quoteOnly && request ? (
+      {canPay && request ? (
         <fieldset className="mt-8">
           <legend className="text-h4 font-medium">Método de pago</legend>
-          {rejection ? (
-            <p role="alert" className="mt-3 rounded-md bg-danger-soft p-3 text-sm text-danger">
-              {rejection}
-            </p>
-          ) : null}
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
             {METHODS.map(({ value, label, icon: Icon, note }) => (
               <label
@@ -259,6 +420,9 @@ export function PaymentStep({
                   {label}
                 </span>
                 <span className="text-sm text-foreground-muted">{note}</span>
+                {value === "card" && cardFeePercent ? (
+                  <span className="text-sm text-foreground-muted">Comisión de {cardFeePercent} % sobre el monto a pagar</span>
+                ) : null}
               </label>
             ))}
           </div>
@@ -302,7 +466,11 @@ export function PaymentStep({
           </Link>
         </div>
 
-        <HoldTimer />
+        {quote.booking?.holdExpiresAt ? (
+          <HoldTimer expiresAt={quote.booking.holdExpiresAt} onExpire={() => setExpired(true)} />
+        ) : (
+          <p className="text-sm text-foreground-muted">Al confirmar guardamos tus cupos 15 minutos mientras se procesa el pago.</p>
+        )}
 
         <div>
           <label className="flex cursor-pointer items-start gap-3">
@@ -314,7 +482,21 @@ export function PaymentStep({
               aria-describedby={errors.terms ? `${fieldId("terms")}-error` : undefined}
               {...register("terms")}
             />
-            <span>Leí y acepto los Términos y condiciones y la Política de cancelación.</span>
+            <span>
+              Acepto los{" "}
+              <Link href="/es/politicas/terminos-y-condiciones" target="_blank" className="pwt-link">
+                Términos y condiciones
+              </Link>{" "}
+              y la{" "}
+              <Link href="/es/politicas/condiciones-de-pago" target="_blank" className="pwt-link">
+                Política de pagos y cancelación
+              </Link>
+              , y declaro haber leído la{" "}
+              <Link href="/es/politicas/proteccion-de-datos-personales" target="_blank" className="pwt-link">
+                Política de privacidad
+              </Link>
+              .
+            </span>
           </label>
           {errors.terms ? (
             <p id={`${fieldId("terms")}-error`} className="mt-1 ml-8 text-sm text-danger">
@@ -326,9 +508,10 @@ export function PaymentStep({
 
       {/* 3.4 Botón final */}
       <button
+        id={fieldId("submit")}
         type="submit"
         className={buttonClass("primary", "xl", "mt-8 w-full")}
-        disabled={pay.isPending || multiCurrency}
+        disabled={pay.isPending || !canPay}
         aria-busy={pay.isPending}
       >
         {pay.isPending ? (

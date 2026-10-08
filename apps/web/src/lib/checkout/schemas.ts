@@ -40,8 +40,13 @@ export const contactSchema = z
     receipt: z.enum(["boleta", "factura"]),
     ruc: z.string().trim().optional(),
     businessName: z.string().trim().optional(),
-    privacy: z.boolean().refine((v) => v, "Para continuar, acepta la Política de privacidad."),
-    marketing: z.boolean(),
+    /**
+     * Ley 29733: los datos necesarios para la reserva se tratan SIN consentimiento (art. 14.5,
+     * ejecución del contrato) y solo se informa. El marketing es consentimiento aparte, opcional,
+     * desmarcado y por canal (brain/wiki/normativa/proteccion-de-datos.md §2.3).
+     */
+    marketingEmail: z.boolean(),
+    marketingWhatsapp: z.boolean(),
   })
   .superRefine((v, ctx) => {
     const digits = v.phone.replace(/\D/g, "");
@@ -102,7 +107,9 @@ export type TravelerValues = z.infer<typeof travelerSchema>;
 export const paymentStepSchema = z.object({
   option: z.enum(["deposit", "full"]),
   method: z.enum(["card", "yape", "pagoefectivo"]),
-  terms: z.boolean().refine((v) => v, "Para pagar, acepta los Términos y la Política de cancelación."),
+  terms: z.boolean().refine((v) => v, "Para pagar, acepta los Términos y condiciones y la Política de cancelación."),
+  /** Solo se exige si la revalidación en la API detectó un cambio de precio. */
+  ackPrice: z.boolean(),
 });
 
 export type PaymentStepValues = z.infer<typeof paymentStepSchema>;

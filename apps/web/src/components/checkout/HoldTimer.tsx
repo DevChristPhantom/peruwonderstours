@@ -4,11 +4,6 @@ import { Clock } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { useUiStore } from "@/stores/ui-store";
-import { buttonClass } from "@/components/ui/button-styles";
-
-const HOLD_SECONDS = 15 * 60;
-const EXTEND_AT_SECONDS = 2 * 60;
-const MAX_EXTENSIONS = 3;
 
 function mmss(total: number): string {
   const m = Math.floor(total / 60);
@@ -17,14 +12,15 @@ function mmss(total: number): string {
 }
 
 /**
- * Temporizador honesto del bloqueo de cupos (checkout.md §3.3, WCAG 2.2.1): anuncia solo en los
- * minutos 5 y 1, permite extender 15 min hasta 3 veces. SIMULADO: el hold real lo crea el backend.
+ * Temporizador del bloqueo REAL de cupos (`holdExpiresAt` de la reserva en la API).
+ * Anuncia solo en los minutos 5 y 1 (checkout.md §3.3). La API no permite extender el hold:
+ * es un límite de tiempo real ligado al inventario (excepción de WCAG 2.2.1); al vencer se
+ * explica qué pasó y cómo seguir.
  */
-export function HoldTimer() {
+export function HoldTimer({ expiresAt, onExpire }: { expiresAt: string; onExpire?: () => void }) {
   const announce = useUiStore((s) => s.announce);
-  const [deadline, setDeadline] = useState(() => Date.now() + HOLD_SECONDS * 1000);
+  const deadline = new Date(expiresAt).getTime();
   const [now, setNow] = useState(() => Date.now());
-  const [extensions, setExtensions] = useState(0);
   const announced = useRef(new Set<number>());
 
   useEffect(() => {
@@ -43,24 +39,16 @@ export function HoldTimer() {
     }
     if (remaining === 0 && !announced.current.has(0)) {
       announced.current.add(0);
-      announce("Liberamos tus cupos. Revisamos la disponibilidad otra vez.");
+      announce("Se venció el tiempo para pagar y liberamos tus cupos.");
+      onExpire?.();
     }
-  }, [remaining, announce]);
-
-  const restart = () => {
-    announced.current.clear();
-    setDeadline(Date.now() + HOLD_SECONDS * 1000);
-    setNow(Date.now());
-  };
+  }, [remaining, announce, onExpire]);
 
   if (remaining === 0) {
     return (
-      <div className="rounded-md bg-warning-soft p-4 text-sm text-warning">
-        <p>Liberamos tus cupos. Revisamos la disponibilidad otra vez… (simulado)</p>
-        <button type="button" className={buttonClass("outline", "md", "mt-3")} onClick={restart}>
-          Volver a guardar mis cupos
-        </button>
-      </div>
+      <p className="rounded-md bg-warning-soft p-4 text-sm text-warning">
+        Se venció el tiempo para pagar y liberamos tus cupos. Vuelve a tu carrito para revisar la disponibilidad.
+      </p>
     );
   }
 
@@ -68,23 +56,8 @@ export function HoldTimer() {
     <div className="flex flex-wrap items-center gap-3 rounded-md bg-surface-muted px-4 py-3 text-sm">
       <Clock aria-hidden size={18} strokeWidth={1.5} className="text-foreground-muted" />
       <p>
-        Guardamos tus cupos <span className="tabular font-semibold">{mmss(remaining)}</span> min{" "}
-        <span className="text-foreground-muted">(simulado)</span>
+        Guardamos tus cupos por <span className="tabular font-semibold">{mmss(remaining)}</span> min más.
       </p>
-      {remaining <= EXTEND_AT_SECONDS && extensions < MAX_EXTENSIONS ? (
-        <button
-          type="button"
-          className={buttonClass("outline", "md")}
-          onClick={() => {
-            setExtensions((n) => n + 1);
-            setDeadline((d) => d + HOLD_SECONDS * 1000);
-            announced.current.clear();
-            announce("Extendimos el tiempo 15 minutos.");
-          }}
-        >
-          Necesito más tiempo
-        </button>
-      ) : null}
     </div>
   );
 }

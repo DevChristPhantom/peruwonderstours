@@ -22,6 +22,13 @@ This catalog is updated by completed knowledge operations.
 - [[negocio/reglas-reserva-y-pago]] — reglas publicadas (50 %, saldo 7 días, 3,5 % tarjeta, cancelación 20 días hábiles) y propuestas.
 - [[concepts/modelo-de-datos]] — esquema PostgreSQL/Prisma del MVP, ERD, máquina de estados reserva/pago, Postgres local sin admin.
 
+## Normativa
+
+- [[normativa/libro-de-reclamaciones]] — Libro de Reclamaciones virtual: Anexo I vigente (D.S. 101-2022-PCM), 15 días hábiles improrrogables, Ley 32495, especificación técnica, brechas de `complaints` y Gherkin.
+- [[normativa/proteccion-de-datos]] — Ley 29733 y D.S. 016-2024-JUS: consentimientos separados, cláusula informativa, flujo transfronterizo, ARCO (8/20/10 días hábiles), registro de bancos, cookies, brechas de `consents`.
+- [[normativa/informacion-al-consumidor]] — precio total, comisión por tarjeta, condiciones antes del pago, identificación del proveedor, D.S. 005-2020-MINCETUR (art. 22), ESNNA, SUNAT y checklist QA.
+- Borradores legales (fuera del vault): `docs/legal/` — privacidad, términos, cancelación y reembolso, cookies.
+
 ## Entities
 
 - [[entities/proyecto-turismo-peru]] — alcance, equipo y preguntas abiertas.

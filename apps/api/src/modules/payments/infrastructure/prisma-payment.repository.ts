@@ -1,23 +1,12 @@
 import { Prisma, type PaymentProvider } from '../../../generated/prisma/client.js';
 import type { PrismaTx } from '../../../persistence/prisma/prisma-client.js';
-import { DomainError } from '../../../shared/domain/domain-error.js';
 import { assertCurrencyCode } from '../../../shared/domain/money.js';
 import { DuplicatePaymentEventError } from '../application/payment.use-cases.js';
 import { Payment, type PaymentEvent, type PaymentProviderCode } from '../domain/payment.js';
 import type { PaymentEventRepository, PaymentRepository } from '../domain/payment.repository.js';
 
-/**
- * El enum `payment_provider` de PostgreSQL no incluye `sandbox` (pendiente DBA). Mientras
- * tanto la pasarela simulada solo funciona con DATA_SOURCE=seed|memory.
- */
+/** Todos los proveedores del dominio existen en el enum payment_provider (sandbox desde Sprint 1). */
 function toDbProvider(provider: PaymentProviderCode): PaymentProvider {
-  if (provider === 'sandbox') {
-    throw new DomainError(
-      'provider-not-persistable',
-      'El proveedor sandbox no existe en el enum payment_provider de la base de datos.',
-      'unavailable',
-    );
-  }
   return provider;
 }
 
@@ -59,7 +48,6 @@ export class PrismaPaymentRepository implements PaymentRepository {
   }
 
   async findByProviderPaymentId(provider: PaymentProviderCode, providerPaymentId: string): Promise<Payment | null> {
-    if (provider === 'sandbox') return null;
     const row = await this.db.payment.findUnique({ where: { provider_providerPaymentId: { provider, providerPaymentId } } });
     return row ? mapPayment(row) : null;
   }
@@ -103,7 +91,6 @@ export class PrismaPaymentEventRepository implements PaymentEventRepository {
   constructor(private readonly db: PrismaTx) {}
 
   async find(provider: PaymentProviderCode, eventId: string): Promise<PaymentEvent | null> {
-    if (provider === 'sandbox') return null;
     const row = await this.db.paymentEvent.findUnique({ where: { provider_eventId: { provider, eventId } } });
     if (!row) return null;
     return {

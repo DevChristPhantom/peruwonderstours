@@ -13,7 +13,9 @@ import { formatDuration } from "@/lib/catalog/rules";
 import { faqJsonLd, JsonLd, touristTripJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
 
-export const dynamicParams = false;
+// Slugs nuevos publicados en la API se generan bajo demanda (ISR); los desconocidos dan 404.
+export const dynamicParams = true;
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const tours = await getAllTours();

@@ -7,12 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { computePaymentPlan, type PaymentOption } from "@/lib/checkout/payment-plan";
-import {
-  createOrderCode,
-  maskEmail,
-  saveConfirmation,
-  type OrderConfirmation,
-} from "@/lib/checkout/sandbox-order";
+import type { CheckoutQuote, PlaceResult } from "@/lib/checkout/api-checkout";
 import type { ContactValues, TravelersValues } from "@/lib/checkout/schemas";
 import { todayInLima } from "@/lib/format";
 import { PAYMENTS_MODE } from "@/lib/payments/types";
@@ -24,7 +19,8 @@ import { formatTotals } from "@/components/cart/cart-helpers";
 import { OrderSummary } from "@/components/cart/OrderSummary";
 import { buttonClass } from "@/components/ui/button-styles";
 import { ContactStep, EMPTY_CONTACT } from "./ContactStep";
-import { PaymentStep, type PaymentSubmit } from "./PaymentStep";
+import { PaymentStep } from "./PaymentStep";
+import { QuoteSummary } from "./QuoteSummary";
 import { buildTravelerDefaults, TravelersStep } from "./TravelersStep";
 
 type Step = 1 | 2 | 3;
@@ -118,7 +114,7 @@ function StepIndicator({ step, maxReached, onGo }: { step: Step; maxReached: Ste
   );
 }
 
-export function CheckoutFlow() {
+export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: number | null }) {
   const router = useRouter();
   const hydrated = useCartHydrated();
   const lines = useCartStore((s) => s.lines);
@@ -134,7 +130,7 @@ export function CheckoutFlow() {
   );
   const isClient = useIsClient();
   const [option, setOption] = useState<PaymentOption>("deposit");
-  const [orderCode] = useState(() => (typeof crypto !== "undefined" && "getRandomValues" in crypto ? createOrderCode() : "PWT-00000"));
+  const [quote, setQuote] = useState<CheckoutQuote | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const firstRender = useRef(true);
 
@@ -179,46 +175,21 @@ export function CheckoutFlow() {
     );
   }
 
-  const onPaid = ({ option: paidOption, result }: PaymentSubmit) => {
-    const finalPlan = computePaymentPlan(lines, paidOption, today);
-    const contact = draft.contact ?? EMPTY_CONTACT;
-    const totals = finalPlan.totals[0];
-    const order: OrderConfirmation = {
-      code: orderCode,
-      createdAt: new Date().toISOString(),
-      firstName: contact.firstName,
-      emailMasked: maskEmail(contact.email),
-      status:
-        result === null
-          ? "quote_requested"
-          : result.status === "pending"
-            ? "pending_payment"
-            : totals && totals.balanceCents > 0
-              ? "confirmed"
-              : "paid",
-      option: paidOption,
-      payment:
-        result?.status === "approved" && totals
-          ? { reference: result.reference, methodLabel: result.methodLabel, amountCents: totals.payNowCents, currency: totals.currency }
-          : null,
-      pending: result?.status === "pending" ? { reference: result.reference, instructions: result.instructions, expiresAt: result.expiresAt } : null,
-      plan: finalPlan,
-      lines,
-      sandbox: true,
-    };
-    saveConfirmation(order);
+  const onPaid = ({ code }: PlaceResult) => {
     safeSessionStorage.removeItem(DRAFT_KEY);
     clearCart();
-    router.push("/es/reserva/confirmada");
+    // La reserva se lee en el servidor con el token de la cookie httpOnly (BFF).
+    router.replace(`/es/reserva/${encodeURIComponent(code)}`);
   };
 
-  const contact = draft.contact ?? EMPTY_CONTACT;
+  // Se fusiona con los valores por defecto: borradores antiguos pueden no tener campos nuevos.
+  const contact: ContactValues = { ...EMPTY_CONTACT, ...draft.contact };
 
   return (
     <div className="pwt-container py-8 md:py-12">
       {PAYMENTS_MODE === "sandbox" ? (
         <p className="mb-6 rounded-md border border-dashed border-warning bg-warning-soft px-4 py-2 text-sm text-warning">
-          Entorno de pruebas (sandbox): ningún pago es real y no se reservan cupos.
+          Entorno de pruebas (sandbox): los pagos son simulados; las reservas y cupos se registran en el sistema de pruebas.
         </p>
       ) : null}
       <h1 className="sr-only">Pago de tu reserva</h1>
@@ -269,9 +240,11 @@ export function CheckoutFlow() {
                 headingRef={headingRef}
                 lines={lines}
                 contact={contact}
-                orderCode={orderCode}
+                travelers={draft.travelers}
                 option={option}
                 onOptionChange={setOption}
+                onQuote={setQuote}
+                cardFeePercent={cardFeePercent}
                 onBackToContact={() => go(1)}
                 onBackToTravelers={() => go(2)}
                 onPaid={onPaid}
@@ -282,11 +255,19 @@ export function CheckoutFlow() {
 
         <aside className="hidden lg:block" aria-label="Resumen del pedido">
           <div className="sticky top-24">
-            <OrderSummary lines={lines} plan={plan} title="Tu pedido" showThumbnails>
-              <Link href="/es/carrito" className="pwt-link mt-4 inline-flex min-h-11 items-center text-sm">
-                Editar carrito
-              </Link>
-            </OrderSummary>
+            {step === 3 && quote ? (
+              <QuoteSummary quote={quote} option={option}>
+                <Link href="/es/carrito" className="pwt-link mt-4 inline-flex min-h-11 items-center text-sm">
+                  Editar carrito
+                </Link>
+              </QuoteSummary>
+            ) : (
+              <OrderSummary lines={lines} plan={plan} title="Tu pedido" showThumbnails>
+                <Link href="/es/carrito" className="pwt-link mt-4 inline-flex min-h-11 items-center text-sm">
+                  Editar carrito
+                </Link>
+              </OrderSummary>
+            )}
           </div>
         </aside>
       </div>

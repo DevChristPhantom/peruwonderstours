@@ -261,3 +261,19 @@ html.lenis body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Constancia del Libro de Reclamaciones: al imprimir solo sale la hoja (ComplaintReceiptView). */
+@media print {
+  body:has(.pwt-print-area) * {
+    visibility: hidden;
+  }
+  body:has(.pwt-print-area) .pwt-print-area,
+  body:has(.pwt-print-area) .pwt-print-area * {
+    visibility: visible;
+  }
+  body:has(.pwt-print-area) .pwt-print-area {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+  }
+}

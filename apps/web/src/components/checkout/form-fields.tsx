@@ -121,13 +121,15 @@ export function flattenErrors(errors: FieldErrors, prefix = ""): FlatError[] {
 }
 
 /** Resumen de errores enfocable (checkout.md · Estados y errores). */
-export const ErrorSummary = forwardRef<HTMLDivElement, { errors: FlatError[]; labels?: Record<string, string> }>(
-  function ErrorSummary({ errors, labels }, ref) {
+export const ErrorSummary = forwardRef<
+  HTMLDivElement,
+  { errors: FlatError[]; labels?: Record<string, string>; title?: string; children?: ReactNode }
+>(function ErrorSummary({ errors, labels, title, children }, ref) {
     if (!errors.length) return null;
     return (
       <div ref={ref} role="alert" tabIndex={-1} className="mb-6 rounded-md border border-danger bg-danger-soft p-4 text-danger focus:outline-2">
         <p className="font-medium">
-          Revisa {errors.length === 1 ? "este campo" : `estos ${errors.length} campos`} para continuar:
+          {title ?? `Revisa ${errors.length === 1 ? "este campo" : `estos ${errors.length} campos`} para continuar:`}
         </p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
           {errors.map((e) => (
@@ -146,7 +148,7 @@ export const ErrorSummary = forwardRef<HTMLDivElement, { errors: FlatError[]; la
             </li>
           ))}
         </ul>
+        {children}
       </div>
     );
-  },
-);
+});

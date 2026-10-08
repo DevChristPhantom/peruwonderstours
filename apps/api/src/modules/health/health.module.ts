@@ -1,9 +1,11 @@
 import { Controller, Get, Inject, Module, ServiceUnavailableException } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiServiceUnavailableResponse, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { PERSISTENCE_BACKEND } from '../../shared/application/tokens.js';
 import type { PersistenceBackend } from '../../persistence/persistence-backend.js';
 
 @ApiTags('health')
+@SkipThrottle()
 @Controller('health')
 export class HealthController {
   constructor(@Inject(PERSISTENCE_BACKEND) private readonly backend: PersistenceBackend) {}

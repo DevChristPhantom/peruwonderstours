@@ -17,3 +17,9 @@ export const RawBody = createParamDecorator((_data: unknown, ctx: ExecutionConte
   const request = ctx.switchToHttp().getRequest<Request & { rawBody?: Buffer }>();
   return request.rawBody ?? Buffer.alloc(0);
 });
+
+/** Cabecera `X-Booking-Token`: token de acceso del comprador a su reserva. */
+export const BookingToken = createParamDecorator((_data: unknown, ctx: ExecutionContext) => header(ctx, 'x-booking-token'));
+
+/** Cabecera `X-Complaint-Token`: token de consulta de la hoja de reclamación. */
+export const ComplaintToken = createParamDecorator((_data: unknown, ctx: ExecutionContext) => header(ctx, 'x-complaint-token'));

@@ -2,6 +2,8 @@ import "server-only";
 
 import { cache } from "react";
 
+import { env } from "@/lib/env";
+
 import { createApiCatalogRepository } from "./api-repository";
 import type { CatalogRepository } from "./repository";
 import { matchesQuery } from "./rules";
@@ -18,15 +20,12 @@ import type {
 export type * from "./types";
 
 /**
- * Fachada del catálogo (solo servidor). Fuente según `CATALOG_SOURCE`:
- * - `seed` (por defecto): data/seed/*.json
- * - `api`: `${API_BASE_URL}/api/v1`
+ * Fachada del catálogo (solo servidor). Fuente según `CATALOG_SOURCE` (validado en `lib/env.ts`):
+ * - `api` (por defecto): `${API_BASE_URL}` con ISR por tag `catalog` y degradación al seed si la API cae.
+ * - `seed`: data/seed/*.json (demo sin backend).
  */
 function selectRepository(): CatalogRepository {
-  if (process.env.CATALOG_SOURCE === "api" && process.env.API_BASE_URL) {
-    return createApiCatalogRepository(process.env.API_BASE_URL);
-  }
-  return seedCatalogRepository;
+  return env.CATALOG_SOURCE === "api" ? createApiCatalogRepository() : seedCatalogRepository;
 }
 
 const repo = selectRepository();

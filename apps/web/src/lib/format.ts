@@ -44,6 +44,26 @@ export function formatDate(isoDate: string): string {
   return longDate.format(parseIsoDate(isoDate));
 }
 
+const dateTime = new Intl.DateTimeFormat("es-PE", {
+  weekday: "short",
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  timeZone: DISPLAY_TIME_ZONE,
+});
+
+/** Instante ISO 8601 (UTC, de la API) o fecha `YYYY-MM-DD` → fecha en Lima. */
+export function formatInstantDate(value: string): string {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) ? formatDate(value) : longDate.format(new Date(value));
+}
+
+/** Instante ISO 8601 (UTC) → "sáb, 14 nov. 2026, 10:30 a. m." en hora de Lima. */
+export function formatDateTime(value: string): string {
+  return dateTime.format(new Date(value));
+}
+
 /** Fecha de hoy en Lima como `YYYY-MM-DD`. */
 export function todayInLima(now: Date = new Date()): string {
   const parts = new Intl.DateTimeFormat("en-CA", {

@@ -8,34 +8,36 @@ import type { PaymentOption } from "@/lib/checkout/payment-plan";
  * como un componente `PaymentWidget` que monta su formulario embebido (iframe / hosted fields):
  * los datos de tarjeta NUNCA pasan por formularios propios (PCI DSS SAQ-A).
  *
- * Flujo real previsto: el backend crea la orden + hold de cupos y devuelve un `PaymentRequest`
- * con el token de sesión del proveedor → el widget monta su formulario → `confirm()` devuelve el
- * resultado → la confirmación definitiva llega por webhook al backend.
+ * Flujo (Sprint 1, BFF): el widget solo recoge la "confirmación opaca" del proveedor con `collect()`;
+ * la Server Action crea la reserva (`POST /bookings`), el cobro (`POST /bookings/:id/payments`) y lo
+ * confirma servidor a servidor (`POST /payments/:id/confirm`). La confirmación definitiva de un
+ * proveedor real llega además por webhook a la API.
  */
 
-/** Alineado con el enum PaymentMethod de Prisma (apps/api). */
+/** Métodos que ofrece la UI (subconjunto del enum PaymentMethod de la API). */
 export type PaymentMethod = "card" | "yape" | "pagoefectivo";
 
 export interface PaymentRequest {
-  /** Código de la orden (p. ej. PWT-7K4Q2). */
-  orderCode: string;
+  /** Código de la reserva si ya existe (reintento); null antes de crearla. */
+  orderCode: string | null;
   amountCents: number;
   currency: Currency;
   option: PaymentOption;
   description: string;
-  customer: { firstName: string; lastName: string; email: string };
-  /** Token/sesión emitido por el backend para el proveedor. En sandbox es ficticio. */
+  /** Token/sesión emitido por el backend para el proveedor. En sandbox no existe. */
   providerSessionToken: string | null;
 }
 
-export type PaymentResult =
-  | { status: "approved"; reference: string; methodLabel: string }
-  | { status: "pending"; reference: string; instructions: string; expiresAt: string }
-  | { status: "rejected"; code: string; message: string };
+/** Resultado que el SANDBOX pide simular a la pasarela simulada de la API. */
+export type SimulatedOutcome = "approved" | "rejected" | "pending";
+
+export interface ProviderConfirmation {
+  simulate: SimulatedOutcome;
+}
 
 export interface PaymentWidgetHandle {
-  /** Envía el pago al proveedor y resuelve con el resultado (nunca lanza por rechazo). */
-  confirm(): Promise<PaymentResult>;
+  /** Recoge la confirmación del formulario del proveedor (nunca datos de tarjeta). */
+  collect(): Promise<ProviderConfirmation>;
 }
 
 export interface PaymentWidgetProps {

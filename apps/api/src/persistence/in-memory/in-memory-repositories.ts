@@ -1,4 +1,8 @@
 import type { TransactionalRepositories } from '../../shared/application/unit-of-work.js';
+import type { CalendarDate } from '../../shared/domain/calendar-date.js';
+import type { OutboxMessage, OutboxRepository } from '../../shared/domain/outbox.js';
+import type { ComplaintSnapshot } from '../../modules/complaints/domain/complaint.js';
+import type { ComplaintRepository, ComplaintSequence, HolidayCalendar } from '../../modules/complaints/domain/complaint.repository.js';
 import { IdempotencyConflictError, type IdempotencyRecord, type IdempotencyRepository } from '../../shared/domain/idempotency.js';
 import { Booking } from '../../modules/booking/domain/booking.js';
 import { formatBookingCode, type BookingCodeGenerator, type BookingRepository } from '../../modules/booking/domain/booking.repository.js';
@@ -156,7 +160,7 @@ class InMemoryPaymentEventRepository implements PaymentEventRepository {
   }
 }
 
-/** Idempotencia en memoria del proceso (también se usa con Prisma: ver informe/pendientes). */
+/** Idempotencia en memoria (modos seed/memory y pruebas). Con Prisma: PrismaIdempotencyRepository. */
 export class InMemoryIdempotencyRepository implements IdempotencyRepository {
   constructor(private readonly records: () => Map<string, IdempotencyRecord>) {}
   find(scope: string, key: string): Promise<IdempotencyRecord | null> {
@@ -169,6 +173,66 @@ export class InMemoryIdempotencyRepository implements IdempotencyRepository {
       return Promise.reject(new IdempotencyConflictError(record.key));
     }
     this.records().set(id, { ...record });
+    return Promise.resolve();
+  }
+  deleteExpired(now: Date, limit = 1000): Promise<number> {
+    let deleted = 0;
+    for (const [id, record] of this.records()) {
+      if (deleted >= limit) break;
+      if (record.expiresAt.getTime() <= now.getTime()) {
+        this.records().delete(id);
+        deleted += 1;
+      }
+    }
+    return Promise.resolve(deleted);
+  }
+}
+
+class InMemoryComplaintRepository implements ComplaintRepository {
+  constructor(private readonly store: InMemoryDataStore) {}
+  insert(complaint: ComplaintSnapshot): Promise<void> {
+    const all = [...this.store.state.complaints.values()];
+    if (this.store.state.complaints.has(complaint.id) || all.some((c) => c.code === complaint.code)) {
+      return Promise.reject(new ConflictError('unique-violation', 'La hoja ya existe.'));
+    }
+    this.store.state.complaints.set(complaint.id, structuredClone(complaint));
+    return Promise.resolve();
+  }
+  findByCode(code: string): Promise<ComplaintSnapshot | null> {
+    const found = [...this.store.state.complaints.values()].find((c) => c.code === code);
+    return Promise.resolve(found ? structuredClone(found) : null);
+  }
+  findById(id: string): Promise<ComplaintSnapshot | null> {
+    const found = this.store.state.complaints.get(id);
+    return Promise.resolve(found ? structuredClone(found) : null);
+  }
+  updateAccessTokenHash(id: string, accessTokenHash: string): Promise<void> {
+    const found = this.store.state.complaints.get(id);
+    if (found) found.accessTokenHash = accessTokenHash;
+    return Promise.resolve();
+  }
+}
+
+class InMemoryComplaintSequence implements ComplaintSequence {
+  constructor(private readonly store: InMemoryDataStore) {}
+  next(year: number): Promise<number> {
+    const value = (this.store.state.complaintSequences.get(year) ?? 0) + 1;
+    this.store.state.complaintSequences.set(year, value);
+    return Promise.resolve(value);
+  }
+}
+
+class InMemoryHolidayCalendar implements HolidayCalendar {
+  constructor(private readonly store: InMemoryDataStore) {}
+  holidaysBetween(from: CalendarDate, to: CalendarDate): Promise<Set<CalendarDate>> {
+    return Promise.resolve(new Set([...this.store.state.holidays].filter((d) => d >= from && d <= to)));
+  }
+}
+
+class InMemoryOutboxRepository implements OutboxRepository {
+  constructor(private readonly store: InMemoryDataStore) {}
+  add(message: OutboxMessage): Promise<void> {
+    this.store.state.outbox.set(message.id, structuredClone(message));
     return Promise.resolve();
   }
 }
@@ -184,5 +248,9 @@ export function createInMemoryRepositories(store: InMemoryDataStore): Transactio
     payments: new InMemoryPaymentRepository(store),
     paymentEvents: new InMemoryPaymentEventRepository(store),
     idempotency: new InMemoryIdempotencyRepository(() => store.state.idempotency),
+    complaints: new InMemoryComplaintRepository(store),
+    complaintSequence: new InMemoryComplaintSequence(store),
+    holidays: new InMemoryHolidayCalendar(store),
+    outbox: new InMemoryOutboxRepository(store),
   };
 }

@@ -7,9 +7,7 @@ export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 export type PaymentKind = 'deposit' | 'balance' | 'full' | 'refund';
 
 /**
- * Proveedores del enum `payment_provider` + `sandbox` (adaptador simulado).
- * PENDIENTE DBA: `sandbox` no existe en el enum de PostgreSQL; el repositorio Prisma
- * rechaza persistirlo hasta que se agregue (ver informe).
+ * Proveedores del enum `payment_provider` (incluye `sandbox`, la pasarela simulada de desarrollo).
  */
 export type PaymentProviderCode = 'izipay' | 'niubiz' | 'mercadopago' | 'culqi' | 'manual' | 'sandbox';
 export type PaymentMethod = 'card' | 'yape' | 'plin' | 'pagoefectivo' | 'bank_transfer' | 'cash';

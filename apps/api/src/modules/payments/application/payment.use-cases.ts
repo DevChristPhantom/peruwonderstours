@@ -2,7 +2,8 @@ import type { UnitOfWork } from '../../../shared/application/unit-of-work.js';
 import { ConflictError, DomainError, NotFoundError } from '../../../shared/domain/domain-error.js';
 import { assertIdempotencyKey, IdempotencyKeyReusedError } from '../../../shared/domain/idempotency.js';
 import type { Clock, IdGenerator } from '../../../shared/domain/ports.js';
-import { BookingLifecycle, BookingNotFoundError } from '../../booking/application/booking-lifecycle.js';
+import { loadBookingWithAccess, type BookingAccess } from '../../booking/application/booking-access.js';
+import { BookingLifecycle } from '../../booking/application/booking-lifecycle.js';
 import { HoldExpiredError, type Booking } from '../../booking/domain/booking.js';
 import { isTerminalPaymentStatus, Payment, type PaymentEvent, type PaymentMethod } from '../domain/payment.js';
 import {
@@ -56,7 +57,8 @@ export class PaymentUseCases {
    * La llamada al proveedor ocurre fuera de la transacción de base de datos.
    */
   async createPayment(input: {
-    bookingId: string;
+    /** Código legible + X-Booking-Token del comprador. */
+    booking: BookingAccess;
     idempotencyKey: string | undefined;
     method?: PaymentMethod | null;
     returnUrl?: string;
@@ -66,14 +68,12 @@ export class PaymentUseCases {
 
     const prepared = await this.unitOfWork.run(async (repos) => {
       const now = this.clock.now();
+      const booking = await loadBookingWithAccess(repos, input.booking);
       const existing = await repos.payments.findByIdempotencyKey(key);
       if (existing) {
-        if (existing.bookingId !== input.bookingId) throw new IdempotencyKeyReusedError(key);
-        const booking = await repos.bookings.findById(existing.bookingId);
-        return { kind: 'replay' as const, payment: existing, booking: booking! };
+        if (existing.bookingId !== booking.id) throw new IdempotencyKeyReusedError(key);
+        return { kind: 'replay' as const, payment: existing, booking };
       }
-      const booking = await repos.bookings.findById(input.bookingId);
-      if (!booking) throw new BookingNotFoundError(input.bookingId);
       if (await this.lifecycle.expireIfNeeded(repos, booking, now)) return { kind: 'expired' as const, booking };
       const next = booking.nextPayment(now);
       const payment = Payment.create({
@@ -124,9 +124,8 @@ export class PaymentUseCases {
   }
 
   /** Completa el cobro con la confirmación del formulario del proveedor (consulta servidor a servidor). */
-  async confirmPayment(paymentId: string, confirmation: Record<string, string>): Promise<Payment> {
-    const payment = await this.unitOfWork.run((repos) => repos.payments.findById(paymentId));
-    if (!payment) throw new PaymentNotFoundError(paymentId);
+  async confirmPayment(access: BookingAccess, paymentId: string, confirmation: Record<string, string>): Promise<Payment> {
+    const payment = await this.getPayment(access, paymentId);
     if (!payment.providerPaymentId) {
       throw new ConflictError('payment-not-started', 'El pago aún no tiene un intento en la pasarela.');
     }
@@ -136,11 +135,21 @@ export class PaymentUseCases {
     return (await this.syncFromProvider(payment.id, state, 'customer')).payment;
   }
 
-  getPayment(paymentId: string): Promise<Payment> {
+  /** Pago de la reserva indicada (404 si no existe o pertenece a otra reserva). */
+  getPayment(access: BookingAccess, paymentId: string): Promise<Payment> {
     return this.unitOfWork.run(async (repos) => {
+      const booking = await loadBookingWithAccess(repos, access);
       const payment = await repos.payments.findById(paymentId);
-      if (!payment) throw new PaymentNotFoundError(paymentId);
+      if (!payment || payment.bookingId !== booking.id) throw new PaymentNotFoundError(paymentId);
       return payment;
+    });
+  }
+
+  /** Pagos y reembolsos de la reserva, del más antiguo al más reciente. */
+  listPayments(access: BookingAccess): Promise<Payment[]> {
+    return this.unitOfWork.run(async (repos) => {
+      const booking = await loadBookingWithAccess(repos, access);
+      return repos.payments.findByBooking(booking.id);
     });
   }
 

@@ -1,0 +1,68 @@
+# Peru Wonders Tours — Información que necesitamos de Jorge
+
+Hola Jorge: para dejar la nueva web completa, legal y lista para vender, necesitamos estos
+datos. Están ordenados por prioridad. Puedes respondernos por partes.
+
+## 1. Urgente — sin esto no se puede vender online
+
+1. **Precios de todos los tours y paquetes.** Lo ideal es exportarlos desde tu sistema OTM a
+   Excel. Por cada tour necesitamos:
+   - precio por adulto, niño, estudiante y adulto mayor;
+   - precio para peruanos y para extranjeros, si es diferente;
+   - moneda (soles o dólares) y temporadas (alta y baja), si cambian los precios.
+2. **Datos legales de la empresa:**
+   - **RUC** (la web antigua muestra 20000000000, que no es real), razón social, nombre
+     comercial y domicilio fiscal. En la web antigua también aparece "TURINET CUZCO EIRL":
+     ¿qué empresa es la que va a vender?
+   - Constancia de inscripción en el **Directorio Nacional de MINCETUR** (número y fecha), la
+     clasificación de la agencia y el archivo del distintivo.
+   - **Declaración Jurada ESNNA** firmada y el afiche ESNNA vigente.
+3. **¿Qué pasarela de pagos prefieres?** Izipay, Niubiz, Mercado Pago o Culqi. ¿Ya tienes una
+   cuenta abierta con alguna?
+4. **Logo de Peru Wonders Tours**, en el mejor formato que tengas (SVG, AI o PNG grande). Te
+   proponemos la paleta "Titicaca y telar": azul `#10304D` y terracota `#A34224`.
+
+## 2. Reglas de reserva y pago
+
+La web antigua dice dos cosas que se contradicen: que se reserva con el 50 % y que "la reserva
+solo es válida con el pago total". Necesitamos que nos confirmes:
+
+5. ¿La reserva queda **confirmada al pagar el 50 %**?
+6. ¿**Cuándo se paga el saldo**: 7 días antes del viaje, al llegar, o ambas opciones?
+7. ¿Los tours con boletos de terceros (Machu Picchu, tren, sobrevuelo de Nazca) se pagan al
+   **100 %** al reservar?
+8. ¿Cobras la **comisión de 3,5 %** por pago con tarjeta? Por ley, si se cobra hay que
+   mostrarla antes de pagar.
+9. **Política de cancelación:** cuánto se devuelve según los días de anticipación. Por
+   ejemplo: más de 30 días, 100 %; de 15 a 30 días, 50 %; menos de 15 días, sin devolución.
+   También: si hay penalidad por cambio de fecha, cómo y en qué plazo se hace el reembolso, y
+   qué pasa si el cliente no paga el saldo.
+10. ¿Qué monedas aceptas y qué tipo de cambio usas?
+11. ¿Cómo manejas el **IGV para turistas extranjeros**? Conviene definirlo con tu contador.
+
+## 3. Libro de Reclamaciones y atención
+
+12. ¿Tu oficina de Puno ya tiene **libro de reclamaciones físico** y el aviso? Es obligatorio
+    junto con el virtual.
+13. ¿Tienes otras oficinas (Cusco, Arequipa)? Pásanos sus direcciones.
+14. **Correo y responsable** de atender los reclamos. Por ley, se responden en un máximo de
+    15 días hábiles.
+
+## 4. Protección de datos personales (Ley 29733)
+
+15. ¿Ya inscribiste tus **bancos de datos** (clientes) ante la Autoridad de Protección de Datos?
+16. ¿Pides datos de **salud o alimentación** de los viajeros (alergias, dietas)?
+17. Correo y responsable de **privacidad**.
+18. ¿Usas Google Analytics, Meta Pixel u otras herramientas de publicidad?
+19. Ventas anuales aproximadas (para saber qué obligaciones aplican según el tamaño).
+
+## 5. Contenido
+
+20. **Testimonios reales** de clientes, con su permiso para publicarlos.
+21. Fotos propias en buena calidad. Algunas de la web antigua están alojadas en otro dominio.
+22. ¿Los 9 tours que no aparecen en la web antigua siguen vigentes?
+
+---
+*Los borradores de Política de Privacidad, Términos y Condiciones, Política de Cancelación y
+Política de Cookies ya están preparados. Se completarán con estos datos y conviene que los
+revise un abogado antes de publicarlos.*

@@ -1,0 +1,2685 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "operationId": "HealthController_live",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "`{ status: \"ok\", dataSource, uptimeSeconds }`"
+          }
+        },
+        "summary": "Liveness: el proceso responde.",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/v1/health/ready": {
+      "get": {
+        "operationId": "HealthController_ready",
+        "parameters": [],
+        "responses": {
+          "503": {
+            "description": "problem+json 503"
+          }
+        },
+        "summary": "Readiness: la persistencia responde (SELECT 1 en PostgreSQL).",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/v1/tours": {
+      "get": {
+        "operationId": "CatalogController_listTours",
+        "parameters": [
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "es",
+              "type": "string",
+              "enum": [
+                "es",
+                "en"
+              ]
+            }
+          },
+          {
+            "name": "currency",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "PEN",
+              "type": "string",
+              "enum": [
+                "PEN",
+                "USD"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Texto libre tolerante a tildes y errores (\"cuzco machupichu\").",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "destination",
+            "required": false,
+            "in": "query",
+            "description": "Slug de destino",
+            "schema": {
+              "example": "cuzco",
+              "type": "string"
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "Slug de categoría",
+            "schema": {
+              "example": "full-days",
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "tour",
+                "package",
+                "transfer"
+              ]
+            }
+          },
+          {
+            "name": "difficulty",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "easy",
+                "moderate",
+                "challenging",
+                "extreme"
+              ]
+            }
+          },
+          {
+            "name": "minDays",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxDays",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "featured",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "minPrice",
+            "required": false,
+            "in": "query",
+            "description": "Precio desde mínimo, en céntimos de `currency`.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "required": false,
+            "in": "query",
+            "description": "Precio desde máximo, en céntimos de `currency`.",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "relevance",
+              "type": "string",
+              "enum": [
+                "relevance",
+                "featured",
+                "price_asc",
+                "price_desc",
+                "duration_asc",
+                "duration_desc"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maximum": 50,
+              "default": 12,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "`{ data: TourCard[], meta }`. Montos en céntimos."
+          }
+        },
+        "summary": "Listar y buscar tours publicados (filtros, orden y paginación).",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/v1/tours/{slug}": {
+      "get": {
+        "operationId": "CatalogController_getTour",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "es",
+              "type": "string",
+              "enum": [
+                "es",
+                "en"
+              ]
+            }
+          },
+          {
+            "name": "currency",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "PEN",
+              "type": "string",
+              "enum": [
+                "PEN",
+                "USD"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "problem+json `tour-not-found` (también si no hay traducción en el idioma pedido)."
+          }
+        },
+        "summary": "Ficha del tour por slug (canónico o del idioma).",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/v1/tours/{slug}/departures": {
+      "get": {
+        "operationId": "CatalogController_listDepartures",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "description": "Fecha inicial (YYYY-MM-DD, por defecto hoy en Lima).",
+            "schema": {
+              "example": "2026-11-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "2026-12-31",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Calendario de salidas con cupo disponible.",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/v1/destinations": {
+      "get": {
+        "operationId": "CatalogController_listDestinations",
+        "parameters": [
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "es",
+              "type": "string",
+              "enum": [
+                "es",
+                "en"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Destinos publicados con cantidad de tours.",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/v1/categories": {
+      "get": {
+        "operationId": "CatalogController_listCategories",
+        "parameters": [
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "es",
+              "type": "string",
+              "enum": [
+                "es",
+                "en"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Categorías con cantidad de tours publicados.",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/v1/carts": {
+      "post": {
+        "operationId": "CartsController_create",
+        "parameters": [
+          {
+            "name": "X-Cart-Token",
+            "in": "header",
+            "description": "Token opaco devuelto al crear el carrito (obligatorio salvo en POST /carts).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCartDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "`{ data: { token, cart } }`"
+          }
+        },
+        "summary": "Crear carrito anónimo. Devuelve `token` UNA sola vez: guárdalo y envíalo en X-Cart-Token.",
+        "tags": [
+          "cart"
+        ]
+      }
+    },
+    "/api/v1/carts/{cartId}": {
+      "get": {
+        "operationId": "CartsController_get",
+        "parameters": [
+          {
+            "name": "X-Cart-Token",
+            "in": "header",
+            "description": "Token opaco devuelto al crear el carrito (obligatorio salvo en POST /carts).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cartId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Ver carrito con revalidación de cupo, fecha y precio (sin modificarlo).",
+        "tags": [
+          "cart"
+        ]
+      }
+    },
+    "/api/v1/carts/{cartId}/items": {
+      "post": {
+        "operationId": "CartsController_addItem",
+        "parameters": [
+          {
+            "name": "X-Cart-Token",
+            "in": "header",
+            "description": "Token opaco devuelto al crear el carrito (obligatorio salvo en POST /carts).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cartId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCartItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "`{ data: { itemId, cart } }`"
+          }
+        },
+        "summary": "Añadir un tour con fecha y pasajeros (cotiza y congela el precio).",
+        "tags": [
+          "cart"
+        ]
+      }
+    },
+    "/api/v1/carts/{cartId}/items/{itemId}": {
+      "delete": {
+        "operationId": "CartsController_removeItem",
+        "parameters": [
+          {
+            "name": "X-Cart-Token",
+            "in": "header",
+            "description": "Token opaco devuelto al crear el carrito (obligatorio salvo en POST /carts).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cartId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "itemId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Quitar un ítem del carrito.",
+        "tags": [
+          "cart"
+        ]
+      }
+    },
+    "/api/v1/carts/{cartId}/recalculate": {
+      "post": {
+        "operationId": "CartsController_recalculate",
+        "parameters": [
+          {
+            "name": "X-Cart-Token",
+            "in": "header",
+            "description": "Token opaco devuelto al crear el carrito (obligatorio salvo en POST /carts).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cartId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Recotizar ítems y aplicar precios actualizados (RN-12).",
+        "tags": [
+          "cart"
+        ]
+      }
+    },
+    "/api/v1/carts/{cartId}/payment-options": {
+      "get": {
+        "operationId": "CartsController_paymentOptions",
+        "parameters": [
+          {
+            "name": "X-Cart-Token",
+            "in": "header",
+            "description": "Token opaco devuelto al crear el carrito (obligatorio salvo en POST /carts).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cartId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Incluye motivo cuando el adelanto no está disponible."
+          }
+        },
+        "summary": "Opciones de pago (adelanto vs 100 %) antes del checkout (HU-4.2).",
+        "tags": [
+          "cart"
+        ]
+      }
+    },
+    "/api/v1/bookings": {
+      "post": {
+        "operationId": "BookingsController_checkout",
+        "parameters": [
+          {
+            "name": "X-Cart-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "UUID u otro valor único por intento (8-100: letras, números, . _ : -).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Replay idempotente (cabecera Idempotent-Replayed: true).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedBookingResponseDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Reserva en estado `held` + `accessToken`. Repetir con la misma clave y X-Cart-Token devuelve 200 + `Idempotent-Replayed: true` con un token NUEVO (el anterior se invalida).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedBookingResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "validation-failed, idempotency-key-required, consent-required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "cart-not-found (carrito inexistente o X-Cart-Token incorrecto)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "sold-out, cart-has-issues, total-changed, cart-already-checked-out, idempotency-in-progress",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "deposit-not-available, idempotency-key-reused, currency-mismatch, cart-empty",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Checkout desde el carrito: retiene cupo (hold), calcula el plan de pago y entrega el token de acceso del comprador.",
+        "tags": [
+          "bookings"
+        ]
+      }
+    },
+    "/api/v1/bookings/{code}": {
+      "get": {
+        "operationId": "BookingsController_get",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "PWT-2026-000123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Booking-Token",
+            "in": "header",
+            "description": "Token entregado en POST /bookings.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "booking-token-required (falta la cabecera o formato inválido)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "booking-not-found (genérico: código inexistente o token incorrecto)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Estado, montos y plan de pago de la reserva por su código (sin datos personales).",
+        "tags": [
+          "bookings"
+        ]
+      }
+    },
+    "/api/v1/bookings/{code}/payments": {
+      "post": {
+        "operationId": "PaymentsController_create",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "PWT-2026-000123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Booking-Token",
+            "in": "header",
+            "description": "Token entregado en POST /bookings.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Replay idempotente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedPaymentResponseDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Misma clave => mismo intento (200 + Idempotent-Replayed: true).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedPaymentResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "booking-token-required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "booking-not-found (genérico)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "hold-expired, booking-already-paid, invalid-booking-state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "idempotency-key-reused",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Iniciar el cobro que toca (adelanto, total o saldo) y obtener la acción siguiente (redirect/SDK).",
+        "tags": [
+          "payments"
+        ]
+      },
+      "get": {
+        "operationId": "PaymentsController_list",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "PWT-2026-000123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Booking-Token",
+            "in": "header",
+            "description": "Token entregado en POST /bookings.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentListResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "booking-token-required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "booking-not-found (genérico)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Pagos y reembolsos de la reserva.",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/api/v1/bookings/{code}/payments/{paymentId}": {
+      "get": {
+        "operationId": "PaymentsController_get",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "PWT-2026-000123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "paymentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Booking-Token",
+            "in": "header",
+            "description": "Token entregado en POST /bookings.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "booking-token-required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "booking-not-found (genérico) o payment-not-found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Estado de un pago de la reserva.",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/api/v1/bookings/{code}/payments/{paymentId}/confirm": {
+      "post": {
+        "operationId": "PaymentsController_confirm",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "PWT-2026-000123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "paymentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Booking-Token",
+            "in": "header",
+            "description": "Token entregado en POST /bookings.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmPaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "booking-token-required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "booking-not-found (genérico) o payment-not-found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "payment-not-started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Confirmar el cobro con la respuesta del formulario del proveedor (verificación servidor a servidor).",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/api/v1/payments/webhooks/{provider}": {
+      "post": {
+        "operationId": "PaymentsController_webhook",
+        "parameters": [
+          {
+            "name": "provider",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Payload del proveedor (sandbox: `{ id, type, created, data: { providerPaymentId, status, amount, currency } }`).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookAckDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Webhook del proveedor (firma HMAC sobre el cuerpo crudo; idempotente por eventId).",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
+    "/api/v1/complaints": {
+      "post": {
+        "operationId": "ComplaintsController_submit",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Una sola hoja ante doble envío (8-100: letras, números, . _ : -).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitComplaintDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Replay idempotente (Idempotent-Replayed: true).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintReceiptResponseDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Mismo cuerpo + misma clave => 200, misma hoja, token NUEVO.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintReceiptResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "validation-failed (con `errors` por campo), idempotency-key-required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "idempotency-in-progress",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "idempotency-key-reused",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Registrar una hoja del Libro de Reclamaciones (sin cuenta). Devuelve la constancia con fecha/hora, número y vencimiento.",
+        "tags": [
+          "complaints"
+        ]
+      }
+    },
+    "/api/v1/complaints/{code}": {
+      "get": {
+        "operationId": "ComplaintsController_get",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "LR-2026-000045",
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-Complaint-Token",
+            "in": "header",
+            "description": "Token entregado en POST /complaints.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplaintSheetResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "complaint-token-required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "complaint-not-found (genérico: código inexistente o token incorrecto)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Hoja de reclamación completa para su titular (constancia imprimible).",
+        "tags": [
+          "complaints"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Peru Wonders Tours API",
+    "description": "API v1. Montos en céntimos (enteros) + moneda ISO 4217. Fechas-hora en UTC (ISO 8601); fechas de viaje YYYY-MM-DD (America/Lima). Errores en RFC 9457 application/problem+json (campo `code` estable). Pensada para llamarse desde el servidor de Next: `X-Cart-Token` y `X-Booking-Token` son secretos del comprador y no deben exponerse al navegador ni a logs. Rate limiting por IP (429 + Retry-After).",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Object": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateCartDto": {
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string",
+            "enum": [
+              "PEN",
+              "USD"
+            ],
+            "example": "USD"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ],
+            "default": "es"
+          }
+        },
+        "required": [
+          "currency"
+        ]
+      },
+      "PaxLineDto": {
+        "type": "object",
+        "properties": {
+          "paxType": {
+            "type": "string",
+            "enum": [
+              "adult",
+              "child",
+              "student",
+              "senior"
+            ],
+            "example": "adult"
+          },
+          "residency": {
+            "type": "string",
+            "enum": [
+              "national",
+              "foreign"
+            ],
+            "example": "foreign"
+          },
+          "quantity": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 50,
+            "example": 2
+          }
+        },
+        "required": [
+          "paxType",
+          "residency",
+          "quantity"
+        ]
+      },
+      "AddCartItemDto": {
+        "type": "object",
+        "properties": {
+          "tourId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "travelDate": {
+            "type": "string",
+            "example": "2026-11-20",
+            "description": "Fecha de inicio del servicio (Lima)."
+          },
+          "departureId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Obligatorio si hay varias salidas ese día."
+          },
+          "pax": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaxLineDto"
+            }
+          }
+        },
+        "required": [
+          "tourId",
+          "travelDate",
+          "pax"
+        ]
+      },
+      "CheckoutCustomerDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "viajero@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Ana"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Quispe"
+          },
+          "country": {
+            "type": "string",
+            "example": "PE",
+            "description": "ISO 3166-1 alfa-2"
+          }
+        },
+        "required": [
+          "email",
+          "firstName",
+          "lastName"
+        ]
+      },
+      "CheckoutDto": {
+        "type": "object",
+        "properties": {
+          "cartId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "paymentOption": {
+            "type": "string",
+            "enum": [
+              "deposit",
+              "full"
+            ],
+            "description": "deposit = adelanto (50 % por defecto); full = 100 %."
+          },
+          "customer": {
+            "$ref": "#/components/schemas/CheckoutCustomerDto"
+          },
+          "acceptTerms": {
+            "type": "boolean",
+            "description": "Aceptación de términos y condiciones (obligatoria)."
+          },
+          "acceptPrivacyPolicy": {
+            "type": "boolean",
+            "description": "Aceptación de la política de privacidad, Ley 29733 (obligatoria)."
+          },
+          "customerNotes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "expectedTotalAmount": {
+            "type": "number",
+            "description": "Total que el cliente vio (céntimos). Si cambió => 409 total-changed."
+          }
+        },
+        "required": [
+          "cartId",
+          "paymentOption",
+          "customer",
+          "acceptTerms",
+          "acceptPrivacyPolicy"
+        ]
+      },
+      "MoneyDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "example": 49950,
+            "description": "Monto en céntimos (entero; nunca decimales).",
+            "format": "int64"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "PEN",
+              "USD"
+            ],
+            "example": "USD"
+          }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ]
+      },
+      "NextPaymentDto": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "deposit",
+              "balance",
+              "full"
+            ]
+          },
+          "amount": {
+            "$ref": "#/components/schemas/MoneyDto"
+          }
+        },
+        "required": [
+          "kind",
+          "amount"
+        ]
+      },
+      "BookingPaxLineDto": {
+        "type": "object",
+        "properties": {
+          "paxType": {
+            "type": "string",
+            "enum": [
+              "adult",
+              "child",
+              "student",
+              "senior"
+            ]
+          },
+          "residency": {
+            "type": "string",
+            "enum": [
+              "national",
+              "foreign"
+            ]
+          },
+          "quantity": {
+            "type": "integer"
+          },
+          "unitAmount": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "lineAmount": {
+            "$ref": "#/components/schemas/MoneyDto"
+          }
+        },
+        "required": [
+          "paxType",
+          "residency",
+          "quantity",
+          "unitAmount",
+          "lineAmount"
+        ]
+      },
+      "BookingItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tourId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "tourTitle": {
+            "type": "string",
+            "description": "Título del tour congelado al reservar."
+          },
+          "departureId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "travelDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-11-10",
+            "description": "Fecha de viaje (America/Lima)."
+          },
+          "paxCount": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "cancelled"
+            ]
+          },
+          "subtotal": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "pax": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookingPaxLineDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "tourId",
+          "tourTitle",
+          "departureId",
+          "travelDate",
+          "paxCount",
+          "status",
+          "subtotal",
+          "pax"
+        ]
+      },
+      "CreatedBookingDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string",
+            "example": "PWT-2026-000123",
+            "pattern": "^PWT-\\d{4}-\\d{6}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "held",
+              "confirmed",
+              "partially_paid",
+              "paid",
+              "cancelled",
+              "refunded",
+              "completed"
+            ]
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "PEN",
+              "USD"
+            ]
+          },
+          "total": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "paymentOption": {
+            "type": "string",
+            "enum": [
+              "deposit",
+              "full"
+            ]
+          },
+          "depositPercent": {
+            "type": "integer",
+            "example": 50
+          },
+          "deposit": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "balance": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "balanceDueAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "paid": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "refunded": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "outstanding": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "nextPayment": {
+            "nullable": true,
+            "description": "Cobro que toca ahora; null si no hay nada que pagar.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NextPaymentDto"
+              }
+            ]
+          },
+          "holdExpiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Fin de la retención de cupo (estado held)."
+          },
+          "firstServiceDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "lastServiceDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "termsVersion": {
+            "type": "string"
+          },
+          "cancellationPolicyVersion": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookingItemDto"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "accessToken": {
+            "type": "string",
+            "example": "q3b0VnS9j1mJ8m2c3Qx0u7p6YwX4Z1aB2cD3eF4gH5i",
+            "description": "Token de acceso del comprador (43 caracteres base64url). Se entrega SOLO aquí: guárdalo del lado servidor y envíalo en `X-Booking-Token`. Un replay idempotente emite uno nuevo e invalida el anterior."
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "status",
+          "locale",
+          "currency",
+          "total",
+          "paymentOption",
+          "depositPercent",
+          "deposit",
+          "balance",
+          "balanceDueAt",
+          "paid",
+          "refunded",
+          "outstanding",
+          "nextPayment",
+          "holdExpiresAt",
+          "firstServiceDate",
+          "lastServiceDate",
+          "termsVersion",
+          "cancellationPolicyVersion",
+          "items",
+          "createdAt",
+          "accessToken"
+        ]
+      },
+      "CreatedBookingResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CreatedBookingDto"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "ProblemDetailsDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "https://peruwonderstours.com/problems/booking-not-found"
+          },
+          "title": {
+            "type": "string",
+            "example": "No encontrado"
+          },
+          "status": {
+            "type": "integer",
+            "example": 404
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "example": "booking-not-found",
+            "description": "Código estable (kebab-case) para lógica del cliente."
+          },
+          "traceId": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string"
+                },
+                "messages": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code"
+        ]
+      },
+      "BookingDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string",
+            "example": "PWT-2026-000123",
+            "pattern": "^PWT-\\d{4}-\\d{6}$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "held",
+              "confirmed",
+              "partially_paid",
+              "paid",
+              "cancelled",
+              "refunded",
+              "completed"
+            ]
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "PEN",
+              "USD"
+            ]
+          },
+          "total": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "paymentOption": {
+            "type": "string",
+            "enum": [
+              "deposit",
+              "full"
+            ]
+          },
+          "depositPercent": {
+            "type": "integer",
+            "example": 50
+          },
+          "deposit": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "balance": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "balanceDueAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "paid": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "refunded": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "outstanding": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "nextPayment": {
+            "nullable": true,
+            "description": "Cobro que toca ahora; null si no hay nada que pagar.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NextPaymentDto"
+              }
+            ]
+          },
+          "holdExpiresAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Fin de la retención de cupo (estado held)."
+          },
+          "firstServiceDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "lastServiceDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "termsVersion": {
+            "type": "string"
+          },
+          "cancellationPolicyVersion": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BookingItemDto"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "status",
+          "locale",
+          "currency",
+          "total",
+          "paymentOption",
+          "depositPercent",
+          "deposit",
+          "balance",
+          "balanceDueAt",
+          "paid",
+          "refunded",
+          "outstanding",
+          "nextPayment",
+          "holdExpiresAt",
+          "firstServiceDate",
+          "lastServiceDate",
+          "termsVersion",
+          "cancellationPolicyVersion",
+          "items",
+          "createdAt"
+        ]
+      },
+      "BookingResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/BookingDto"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "CreatePaymentDto": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": [
+              "card",
+              "yape",
+              "plin",
+              "pagoefectivo"
+            ]
+          },
+          "returnUrl": {
+            "type": "string",
+            "description": "URL de retorno tras el formulario del proveedor."
+          }
+        }
+      },
+      "PaymentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "bookingId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "deposit",
+              "balance",
+              "full",
+              "refund"
+            ]
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "izipay",
+              "niubiz",
+              "mercadopago",
+              "culqi",
+              "manual",
+              "sandbox"
+            ]
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "card",
+              "yape",
+              "plin",
+              "pagoefectivo",
+              "bank_transfer",
+              "cash"
+            ],
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "requires_action",
+              "authorized",
+              "succeeded",
+              "failed",
+              "cancelled",
+              "expired"
+            ]
+          },
+          "amount": {
+            "$ref": "#/components/schemas/MoneyDto"
+          },
+          "failureCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "failureMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "succeededAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "bookingId",
+          "kind",
+          "provider",
+          "method",
+          "status",
+          "amount",
+          "failureCode",
+          "failureMessage",
+          "succeededAt",
+          "createdAt"
+        ]
+      },
+      "NextActionDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "redirect",
+              "sdk",
+              "none"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "description": "Solo type=redirect."
+          },
+          "token": {
+            "type": "string",
+            "description": "Solo type=sdk."
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "CreatedPaymentDto": {
+        "type": "object",
+        "properties": {
+          "payment": {
+            "$ref": "#/components/schemas/PaymentDto"
+          },
+          "nextAction": {
+            "$ref": "#/components/schemas/NextActionDto"
+          }
+        },
+        "required": [
+          "payment",
+          "nextAction"
+        ]
+      },
+      "CreatedPaymentResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CreatedPaymentDto"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "PaymentListResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentDto"
+            }
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "PaymentResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/PaymentDto"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "ConfirmPaymentDto": {
+        "type": "object",
+        "properties": {
+          "confirmation": {
+            "type": "object",
+            "description": "Confirmación opaca del formulario del proveedor. En sandbox: `{ \"simulate\": \"fail\" }` simula rechazo.",
+            "example": {
+              "simulate": "succeed"
+            }
+          }
+        }
+      },
+      "WebhookAckDto": {
+        "type": "object",
+        "properties": {
+          "received": {
+            "type": "boolean",
+            "example": true
+          },
+          "eventId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "processed",
+              "duplicate",
+              "ignored",
+              "failed"
+            ]
+          }
+        },
+        "required": [
+          "received",
+          "eventId",
+          "status"
+        ]
+      },
+      "ComplaintConsumerDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "Ana Quispe Mamani",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "docType": {
+            "type": "string",
+            "enum": [
+              "dni",
+              "ce",
+              "passport",
+              "other"
+            ],
+            "example": "dni"
+          },
+          "docNumber": {
+            "type": "string",
+            "example": "45678912",
+            "description": "DNI 8 dígitos; CE 9-12; pasaporte 5-20 alfanuméricos."
+          },
+          "address": {
+            "type": "string",
+            "example": "Jr. Lima 123, Puno",
+            "minLength": 5,
+            "maxLength": 300
+          },
+          "phone": {
+            "type": "string",
+            "example": "+51987654321",
+            "description": "Formato E.164 (con código de país)."
+          },
+          "email": {
+            "type": "string",
+            "example": "ana@example.com"
+          },
+          "isMinor": {
+            "type": "boolean",
+            "description": "Si es true, `guardian` es obligatorio."
+          }
+        },
+        "required": [
+          "fullName",
+          "docType",
+          "docNumber",
+          "address",
+          "phone",
+          "email",
+          "isMinor"
+        ]
+      },
+      "ComplaintGuardianDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "address": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 300
+          },
+          "phone": {
+            "type": "string",
+            "example": "+51987654321"
+          },
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "fullName",
+          "address",
+          "phone",
+          "email"
+        ]
+      },
+      "ComplaintGoodDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "product",
+              "service"
+            ],
+            "default": "service"
+          },
+          "claimedAmount": {
+            "type": "integer",
+            "example": 45000,
+            "description": "Monto reclamado en céntimos. Obligatorio si declaredType = reclamo."
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "PEN",
+              "USD"
+            ],
+            "description": "Obligatoria si hay monto."
+          },
+          "description": {
+            "type": "string",
+            "example": "Tour Uros y Taquile del 12/10/2026 (reserva PWT-2026-000123)",
+            "minLength": 5,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "type",
+          "description"
+        ]
+      },
+      "SubmitComplaintDto": {
+        "type": "object",
+        "properties": {
+          "consumer": {
+            "$ref": "#/components/schemas/ComplaintConsumerDto"
+          },
+          "guardian": {
+            "description": "Padre, madre o representante (solo si consumer.isMinor).",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ComplaintGuardianDto"
+              }
+            ]
+          },
+          "good": {
+            "$ref": "#/components/schemas/ComplaintGoodDto"
+          },
+          "bookingCode": {
+            "type": "string",
+            "example": "PWT-2026-000123",
+            "description": "Opcional; nunca obligatorio para reclamar."
+          },
+          "declaredType": {
+            "type": "string",
+            "enum": [
+              "reclamo",
+              "queja"
+            ],
+            "nullable": true,
+            "description": "null = \"no sé\" (se tramita como reclamo)."
+          },
+          "detail": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 5000
+          },
+          "consumerRequest": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 2000
+          },
+          "responseChannel": {
+            "type": "string",
+            "enum": [
+              "email",
+              "letter"
+            ],
+            "default": "email"
+          },
+          "conformityAccepted": {
+            "type": "boolean",
+            "description": "Declaración de conformidad que sustituye la firma (debe ser true)."
+          }
+        },
+        "required": [
+          "consumer",
+          "good",
+          "declaredType",
+          "detail",
+          "consumerRequest",
+          "responseChannel",
+          "conformityAccepted"
+        ]
+      },
+      "ComplaintReceiptDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "LR-2026-000045"
+          },
+          "sheetNumber": {
+            "type": "string",
+            "example": "000000045-2026",
+            "description": "Número de hoja como en el Anexo I."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Constancia: fecha y hora de presentación (UTC)."
+          },
+          "responseDueAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Vence la respuesta: fin del 15.º día hábil (America/Lima)."
+          },
+          "accessToken": {
+            "type": "string",
+            "description": "Token de consulta (X-Complaint-Token). Solo se entrega aquí."
+          }
+        },
+        "required": [
+          "code",
+          "sheetNumber",
+          "createdAt",
+          "responseDueAt",
+          "accessToken"
+        ]
+      },
+      "ComplaintReceiptResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ComplaintReceiptDto"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "ComplaintProviderViewDto": {
+        "type": "object",
+        "properties": {
+          "legalName": {
+            "type": "string"
+          },
+          "ruc": {
+            "type": "string"
+          },
+          "establishmentAddress": {
+            "type": "string"
+          },
+          "establishmentCode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "legalName",
+          "ruc",
+          "establishmentAddress",
+          "establishmentCode"
+        ]
+      },
+      "ComplaintConsumerViewDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "docType": {
+            "type": "string",
+            "enum": [
+              "dni",
+              "ce",
+              "passport",
+              "other",
+              "ruc"
+            ]
+          },
+          "docNumber": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string"
+          },
+          "isMinor": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "fullName",
+          "docType",
+          "docNumber",
+          "address",
+          "phone",
+          "email",
+          "isMinor"
+        ]
+      },
+      "ComplaintGuardianViewDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "fullName",
+          "address",
+          "phone",
+          "email"
+        ]
+      },
+      "ComplaintGoodViewDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "product",
+              "service"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "claimedAmount": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MoneyDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "description",
+          "claimedAmount"
+        ]
+      },
+      "ComplaintAnswerViewDto": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "sentAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "text",
+          "sentAt"
+        ]
+      },
+      "ComplaintSheetDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "LR-2026-000045"
+          },
+          "sheetNumber": {
+            "type": "string",
+            "example": "000000045-2026"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "received",
+              "in_review",
+              "answered",
+              "closed",
+              "settled"
+            ]
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "responseDueAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/ComplaintProviderViewDto"
+          },
+          "consumer": {
+            "$ref": "#/components/schemas/ComplaintConsumerViewDto"
+          },
+          "guardian": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ComplaintGuardianViewDto"
+              }
+            ]
+          },
+          "good": {
+            "$ref": "#/components/schemas/ComplaintGoodViewDto"
+          },
+          "declaredType": {
+            "type": "string",
+            "enum": [
+              "reclamo",
+              "queja"
+            ],
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "reclamo",
+              "queja"
+            ],
+            "description": "Tipo con el que se tramita."
+          },
+          "detail": {
+            "type": "string"
+          },
+          "consumerRequest": {
+            "type": "string"
+          },
+          "responseChannel": {
+            "type": "string",
+            "enum": [
+              "email",
+              "letter"
+            ]
+          },
+          "conformityAcceptedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "legalNotices": {
+            "description": "Leyendas obligatorias del pie del Anexo I.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "answer": {
+            "nullable": true,
+            "description": "Respuesta del proveedor una vez comunicada.",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ComplaintAnswerViewDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "sheetNumber",
+          "status",
+          "submittedAt",
+          "responseDueAt",
+          "provider",
+          "consumer",
+          "guardian",
+          "good",
+          "declaredType",
+          "type",
+          "detail",
+          "consumerRequest",
+          "responseChannel",
+          "conformityAcceptedAt",
+          "legalNotices",
+          "answer"
+        ]
+      },
+      "ComplaintSheetResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ComplaintSheetDto"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      }
+    }
+  }
+}

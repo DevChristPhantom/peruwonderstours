@@ -10,6 +10,8 @@ export interface IdempotencyRecord {
   fingerprint: string;
   /** Id del recurso creado (p. ej. booking.id) para reconstruir la respuesta. */
   resourceId: string;
+  /** Referencias para reconstruir la respuesta (nunca secretos). */
+  response?: Record<string, unknown> | null;
   createdAt: Date;
   expiresAt: Date;
 }
@@ -18,6 +20,8 @@ export interface IdempotencyRepository {
   find(scope: string, key: string): Promise<IdempotencyRecord | null>;
   /** Inserta; lanza IdempotencyConflictError si (scope, key) ya existe. */
   insert(record: IdempotencyRecord): Promise<void>;
+  /** Purga registros vencidos; devuelve cuántos eliminó. */
+  deleteExpired(now: Date, limit?: number): Promise<number>;
 }
 
 const KEY_PATTERN = /^[A-Za-z0-9._:-]{8,100}$/;

@@ -5,7 +5,9 @@ import { CollectionPage } from "@/components/tours/CollectionPage";
 import { getDestination, getDestinations, getToursBySlugs } from "@/lib/catalog";
 import { pageMetadata } from "@/lib/seo/metadata";
 
-export const dynamicParams = false;
+// Slugs nuevos publicados en la API se generan bajo demanda (ISR); los desconocidos dan 404.
+export const dynamicParams = true;
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const destinations = await getDestinations();
