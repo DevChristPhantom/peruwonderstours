@@ -58,5 +58,15 @@ tags:
     ioredis/bullmq; ADR de pasarela; logo nuevo; imágenes re-alojadas.
 - Bloqueo: WSL para el modo transaccional del vault (opcional).
 - Pendiente: respuestas del cliente (ver preguntas abiertas en el proyecto).
-- Siguiente (Sprint 1): conectar web ↔ API, seguridad (helmet, rate limit, auth), formulario
-  del Libro de Reclamaciones, pasarela real (según elección del cliente), primer commit en git.
+- 2026-10-07 FIN DE SPRINT 1 (commit ca52edc, mergeado a develop): web conectada a la API
+  vía BFF, seguridad base, acceso a reservas por token, idempotencia en BD, Libro de
+  Reclamaciones (API + formulario), políticas en borrador. E2E real con Postgres verificado:
+  reserva PWT-2026-000001 (50 % + saldo, stock 2/12). Precios DEMO en `pwt_dev`
+  (`db:seed -- --remove-demo-pricing` para quitarlos).
+  Arrancar API: `pnpm --filter @pwt/api dev:prisma` (3001); web: `next dev` (3000).
+- Pedido al cliente: `docs/cliente/solicitud-de-informacion.md` (22 puntos).
+- Siguiente (Sprint 2): auth + backoffice (tours, precios, reservas, responder reclamos),
+  correo transaccional (constancias, vouchers), consents v2, pasarela real, QA/E2E Playwright,
+  revisión de seguridad.
+- Detalle a revisar: `balanceDueAt` = 00:00 Lima del día −7 → la web dice "vence el 13 nov"
+  pero en rigor vence al inicio del 13; aclarar regla con el cliente.
