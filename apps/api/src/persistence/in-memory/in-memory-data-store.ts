@@ -1,4 +1,7 @@
 import type { IdempotencyRecord } from '../../shared/domain/idempotency.js';
+import type { OutboxMessage } from '../../shared/domain/outbox.js';
+import type { ComplaintSnapshot } from '../../modules/complaints/domain/complaint.js';
+import { PERU_NATIONAL_HOLIDAYS } from '../../modules/complaints/infrastructure/peru-national-holidays.js';
 import type { BookingSnapshot } from '../../modules/booking/domain/booking.js';
 import type { CartSnapshot } from '../../modules/cart/domain/cart.js';
 import type { DepartureSnapshot, InventoryHold } from '../../modules/catalog/domain/departure.js';
@@ -27,6 +30,11 @@ export interface InMemoryState {
   payments: Map<string, PaymentSnapshot>;
   paymentEvents: Map<string, PaymentEvent>;
   idempotency: Map<string, IdempotencyRecord>;
+  complaints: Map<string, ComplaintSnapshot>;
+  complaintSequences: Map<number, number>;
+  outbox: Map<string, OutboxMessage>;
+  /** Días no hábiles (CalendarDate) del ámbito nacional. */
+  holidays: Set<string>;
 }
 
 export function emptyState(): InMemoryState {
@@ -40,6 +48,10 @@ export function emptyState(): InMemoryState {
     payments: new Map(),
     paymentEvents: new Map(),
     idempotency: new Map(),
+    complaints: new Map(),
+    complaintSequences: new Map(),
+    outbox: new Map(),
+    holidays: new Set(PERU_NATIONAL_HOLIDAYS),
   };
 }
 

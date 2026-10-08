@@ -6,8 +6,8 @@ import type { PaxType, Residency, Tour } from '../../domain/tour.js';
 import { deterministicUuid } from './seed-mapper.js';
 
 /**
- * DATOS FICTICIOS para el modo demo (`DEMO_PRICING=true`). El cliente aún no entregó
- * precios ni cupos (0 de 41 tours con precio): nada de esto se carga en PostgreSQL.
+ * DATOS FICTICIOS para el modo demo (`DEMO_PRICING=true`) y para `db:seed -- --demo-pricing`
+ * (PostgreSQL, marcados con la temporada DEMO). El cliente aún no entregó precios ni cupos.
  */
 export interface DemoPricingOptions {
   today: CalendarDate;
@@ -21,7 +21,14 @@ const BASE_PER_DAY: Record<CurrencyCode, Record<Residency, bigint>> = {
   PEN: { foreign: 36_900n, national: 29_900n },
 };
 
-export function generateDemoPricing(tours: readonly Tour[], options: DemoPricingOptions): { rates: Rate[]; departures: DepartureSnapshot[] } {
+/** Lo mínimo del tour que necesita el generador (sirve para el dominio y para filas de la base). */
+export type DemoPricingTour = Pick<Tour, 'id' | 'slug' | 'durationDays'>;
+
+export const demoRateId = (slug: string, currency: CurrencyCode, residency: Residency, paxType: PaxType): string =>
+  deterministicUuid('demo-rate', `${slug}:${currency}:${residency}:${paxType}`);
+export const demoDepartureId = (slug: string, date: CalendarDate): string => deterministicUuid('demo-departure', `${slug}:${date}`);
+
+export function generateDemoPricing(tours: readonly DemoPricingTour[], options: DemoPricingOptions): { rates: Rate[]; departures: DepartureSnapshot[] } {
   const rates: Rate[] = [];
   const departures: DepartureSnapshot[] = [];
   const validFrom = addDays(options.today, -30);
@@ -33,7 +40,7 @@ export function generateDemoPricing(tours: readonly Tour[], options: DemoPricing
         for (const paxType of Object.keys(PAX_FACTORS) as PaxType[]) {
           const amount = (BASE_PER_DAY[currency][residency] * days * BigInt(PAX_FACTORS[paxType])) / 100n;
           rates.push({
-            id: deterministicUuid('demo-rate', `${tour.slug}:${currency}:${residency}:${paxType}`),
+            id: demoRateId(tour.slug, currency, residency, paxType),
             tourId: tour.id,
             paxType,
             residency,
@@ -52,7 +59,7 @@ export function generateDemoPricing(tours: readonly Tour[], options: DemoPricing
     for (let i = 0; i < options.departureDays; i += 1) {
       const date = addDays(options.today, i);
       departures.push({
-        id: deterministicUuid('demo-departure', `${tour.slug}:${date}`),
+        id: demoDepartureId(tour.slug, date),
         tourId: tour.id,
         departureDate: date,
         startTime: '00:00',

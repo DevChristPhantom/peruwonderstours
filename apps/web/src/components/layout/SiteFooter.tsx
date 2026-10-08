@@ -13,11 +13,13 @@ const DESTINATIONS = [
   { label: "Lima", href: "/es/destinos/tours-en-lima" },
 ];
 
-// TODO(E8): las páginas legales se publican cuando cumplimiento entregue los textos.
+// Textos legales publicados como BORRADOR desde docs/legal (E8).
 const HELP = [
   { label: "Todos los tours", href: "/es/tours" },
-  { label: "Condiciones de pago", href: "/es/politicas/condiciones-de-pago" },
+  { label: "Términos y condiciones", href: "/es/politicas/terminos-y-condiciones" },
+  { label: "Pagos, cancelación y reembolsos", href: "/es/politicas/condiciones-de-pago" },
   { label: "Protección de datos personales", href: "/es/politicas/proteccion-de-datos-personales" },
+  { label: "Política de cookies", href: "/es/politicas/cookies" },
   { label: "Nosotros", href: "/es/nosotros" },
 ];
 
@@ -45,8 +47,13 @@ export function SiteFooter({ variant = "full" }: { variant?: "full" | "minimal" 
           </p>
           <ul className="flex flex-wrap gap-x-5 gap-y-2">
             <li>
+              <Link className="pwt-link" href="/es/politicas/terminos-y-condiciones">
+                Términos
+              </Link>
+            </li>
+            <li>
               <Link className="pwt-link" href="/es/politicas/condiciones-de-pago">
-                Condiciones de pago
+                Pagos y cancelación
               </Link>
             </li>
             <li>

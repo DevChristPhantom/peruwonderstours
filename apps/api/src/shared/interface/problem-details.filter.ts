@@ -76,6 +76,21 @@ export class ProblemDetailsFilter implements ExceptionFilter {
     }
     if (exception instanceof DomainError) {
       const status = STATUS_BY_KIND[exception.kind];
+      // Reglas de dominio con lista de campos: mismo formato que la validación de DTO.
+      const { errors, ...rest } = exception.details as { errors?: ProblemDetails['errors'] } & Record<string, unknown>;
+      if (Array.isArray(errors)) {
+        return {
+          type: `${this.typeBaseUrl}/${exception.code}`,
+          title: exception.code === 'validation-failed' ? 'Datos de entrada inválidos' : (TITLES[status] ?? 'Error'),
+          status,
+          detail: exception.message,
+          instance,
+          code: exception.code,
+          traceId,
+          errors,
+          ...(Object.keys(rest).length > 0 ? { details: rest } : {}),
+        };
+      }
       return {
         type: `${this.typeBaseUrl}/${exception.code}`,
         title: TITLES[status] ?? 'Error',

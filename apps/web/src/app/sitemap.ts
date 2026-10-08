@@ -3,6 +3,8 @@ import type { MetadataRoute } from "next";
 import { getAllTours, getCategories, getDestinations } from "@/lib/catalog";
 import { absoluteUrl } from "@/lib/site";
 
+export const revalidate = 3600;
+
 /** Sitemap propio (HU-0.4). Solo es-PE por ahora; `en` se agrega con E10. */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [tours, destinations, categories] = await Promise.all([getAllTours(), getDestinations(), getCategories()]);
@@ -22,6 +24,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry("/es/nosotros", 0.4, "monthly"),
     entry("/es/politicas/condiciones-de-pago", 0.3, "monthly"),
     entry("/es/politicas/proteccion-de-datos-personales", 0.3, "monthly"),
+    entry("/es/politicas/terminos-y-condiciones", 0.3, "monthly"),
+    entry("/es/politicas/cookies", 0.3, "monthly"),
     entry("/es/libro-de-reclamaciones", 0.3, "monthly"),
   ];
 }

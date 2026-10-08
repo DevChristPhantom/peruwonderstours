@@ -1,12 +1,30 @@
 import { Body, Controller, Get, Headers, HttpCode, Inject, Param, ParseUUIDPipe, Post, Res } from '@nestjs/common';
-import { ApiBody, ApiCreatedResponse, ApiExcludeEndpoint, ApiHeader, ApiOkResponse, ApiOperation, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiExcludeEndpoint,
+  ApiHeader,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiProperty,
+  ApiPropertyOptional,
+  ApiTags,
+  ApiTooManyRequestsResponse,
+  ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import { IsIn, IsObject, IsOptional, IsUrl, MaxLength } from 'class-validator';
 import type { Response } from 'express';
 import { DomainError } from '../../../shared/domain/domain-error.js';
-import { money } from '../../../shared/interface/common.dto.js';
-import { IdempotencyKey, RawBody } from '../../../shared/interface/http-params.js';
+import { money, MoneyDto } from '../../../shared/interface/common.dto.js';
+import { BookingToken, IdempotencyKey, RawBody } from '../../../shared/interface/http-params.js';
+import { ProblemDetailsDto } from '../../../shared/interface/problem-details.dto.js';
+import { StrictThrottle } from '../../../shared/interface/throttling.js';
 import { PaymentUseCases } from '../application/payment.use-cases.js';
-import type { Payment, PaymentMethod } from '../domain/payment.js';
+import { PAYMENT_STATUSES, type Payment, type PaymentMethod } from '../domain/payment.js';
 import type { WebhookHeaders } from '../domain/payment-gateway.js';
 
 const METHODS: PaymentMethod[] = ['card', 'yape', 'plin', 'pagoefectivo'];
@@ -59,44 +77,136 @@ function toStringRecord(value: Record<string, unknown> | undefined): Record<stri
   return Object.fromEntries(entries) as Record<string, string>;
 }
 
+export class PaymentDto {
+  @ApiProperty({ format: 'uuid' }) id: string;
+  @ApiProperty({ format: 'uuid' }) bookingId: string;
+  @ApiProperty({ enum: ['deposit', 'balance', 'full', 'refund'] }) kind: string;
+  @ApiProperty({ enum: ['izipay', 'niubiz', 'mercadopago', 'culqi', 'manual', 'sandbox'] }) provider: string;
+  @ApiProperty({ enum: ['card', 'yape', 'plin', 'pagoefectivo', 'bank_transfer', 'cash'], nullable: true, type: String }) method: string | null;
+  @ApiProperty({ enum: PAYMENT_STATUSES }) status: string;
+  @ApiProperty({ type: MoneyDto }) amount: MoneyDto;
+  @ApiProperty({ type: String, nullable: true }) failureCode: string | null;
+  @ApiProperty({ type: String, nullable: true }) failureMessage: string | null;
+  @ApiProperty({ type: String, format: 'date-time', nullable: true }) succeededAt: string | null;
+  @ApiProperty({ format: 'date-time' }) createdAt: string;
+}
+
+export class NextActionDto {
+  @ApiProperty({ enum: ['redirect', 'sdk', 'none'] }) type: string;
+  @ApiPropertyOptional({ description: 'Solo type=redirect.' }) url?: string;
+  @ApiPropertyOptional({ description: 'Solo type=sdk.' }) token?: string;
+}
+
+export class CreatedPaymentDto {
+  @ApiProperty({ type: PaymentDto }) payment: PaymentDto;
+  @ApiProperty({ type: NextActionDto }) nextAction: NextActionDto;
+}
+
+export class CreatedPaymentResponseDto {
+  @ApiProperty({ type: CreatedPaymentDto }) data: CreatedPaymentDto;
+}
+
+export class PaymentResponseDto {
+  @ApiProperty({ type: PaymentDto }) data: PaymentDto;
+}
+
+export class PaymentListResponseDto {
+  @ApiProperty({ type: [PaymentDto] }) data: PaymentDto[];
+}
+
+export class WebhookAckDto {
+  @ApiProperty({ example: true }) received: boolean;
+  @ApiProperty() eventId: string;
+  @ApiProperty({ enum: ['processed', 'duplicate', 'ignored', 'failed'] }) status: string;
+}
+
+const BOOKING_TOKEN_HEADER = { name: 'X-Booking-Token', required: true, description: 'Token entregado en POST /bookings.' };
+const BOOKING_CODE_PARAM = { name: 'code', example: 'PWT-2026-000123' };
+
 @ApiTags('payments')
 @Controller()
 export class PaymentsController {
   constructor(@Inject(PaymentUseCases) private readonly payments: PaymentUseCases) {}
 
-  @Post('bookings/:bookingId/payments')
+  @Post('bookings/:code/payments')
+  @StrictThrottle()
   @ApiOperation({ summary: 'Iniciar el cobro que toca (adelanto, total o saldo) y obtener la acción siguiente (redirect/SDK).' })
+  @ApiParam(BOOKING_CODE_PARAM)
+  @ApiHeader(BOOKING_TOKEN_HEADER)
   @ApiHeader({ name: 'Idempotency-Key', required: true })
-  @ApiCreatedResponse({ description: '`{ data: { payment, nextAction } }`. Misma clave => mismo intento (200 + Idempotent-Replayed).' })
+  @ApiCreatedResponse({ type: CreatedPaymentResponseDto, description: 'Misma clave => mismo intento (200 + Idempotent-Replayed: true).' })
+  @ApiOkResponse({ type: CreatedPaymentResponseDto, description: 'Replay idempotente.' })
+  @ApiUnauthorizedResponse({ type: ProblemDetailsDto, description: 'booking-token-required' })
+  @ApiNotFoundResponse({ type: ProblemDetailsDto, description: 'booking-not-found (genérico)' })
+  @ApiConflictResponse({ type: ProblemDetailsDto, description: 'hold-expired, booking-already-paid, invalid-booking-state' })
+  @ApiUnprocessableEntityResponse({ type: ProblemDetailsDto, description: 'idempotency-key-reused' })
+  @ApiTooManyRequestsResponse({ type: ProblemDetailsDto })
   async create(
-    @Param('bookingId', new ParseUUIDPipe()) bookingId: string,
+    @Param('code') code: string,
+    @BookingToken() token: string | undefined,
     @IdempotencyKey() idempotencyKey: string | undefined,
     @Body() body: CreatePaymentDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.payments.createPayment({ bookingId, idempotencyKey, method: body.method ?? null, returnUrl: body.returnUrl });
+    const result = await this.payments.createPayment({ booking: { code, token }, idempotencyKey, method: body.method ?? null, returnUrl: body.returnUrl });
     if (result.replayed) res.status(200).setHeader('Idempotent-Replayed', 'true');
+    res.setHeader('Cache-Control', 'no-store');
     return { data: { payment: presentPayment(result.payment), nextAction: result.nextAction } };
   }
 
-  @Get('payments/:paymentId')
-  @ApiOperation({ summary: 'Estado de un pago.' })
-  async get(@Param('paymentId', new ParseUUIDPipe()) paymentId: string) {
-    return { data: presentPayment(await this.payments.getPayment(paymentId)) };
+  @Get('bookings/:code/payments')
+  @ApiOperation({ summary: 'Pagos y reembolsos de la reserva.' })
+  @ApiParam(BOOKING_CODE_PARAM)
+  @ApiHeader(BOOKING_TOKEN_HEADER)
+  @ApiOkResponse({ type: PaymentListResponseDto })
+  @ApiUnauthorizedResponse({ type: ProblemDetailsDto, description: 'booking-token-required' })
+  @ApiNotFoundResponse({ type: ProblemDetailsDto, description: 'booking-not-found (genérico)' })
+  async list(@Param('code') code: string, @BookingToken() token: string | undefined, @Res({ passthrough: true }) res: Response) {
+    res.setHeader('Cache-Control', 'no-store');
+    return { data: (await this.payments.listPayments({ code, token })).map(presentPayment) };
   }
 
-  @Post('payments/:paymentId/confirm')
+  @Get('bookings/:code/payments/:paymentId')
+  @ApiOperation({ summary: 'Estado de un pago de la reserva.' })
+  @ApiParam(BOOKING_CODE_PARAM)
+  @ApiHeader(BOOKING_TOKEN_HEADER)
+  @ApiOkResponse({ type: PaymentResponseDto })
+  @ApiUnauthorizedResponse({ type: ProblemDetailsDto, description: 'booking-token-required' })
+  @ApiNotFoundResponse({ type: ProblemDetailsDto, description: 'booking-not-found (genérico) o payment-not-found' })
+  async get(
+    @Param('code') code: string,
+    @Param('paymentId', new ParseUUIDPipe()) paymentId: string,
+    @BookingToken() token: string | undefined,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    res.setHeader('Cache-Control', 'no-store');
+    return { data: presentPayment(await this.payments.getPayment({ code, token }, paymentId)) };
+  }
+
+  @Post('bookings/:code/payments/:paymentId/confirm')
   @HttpCode(200)
+  @StrictThrottle()
   @ApiOperation({ summary: 'Confirmar el cobro con la respuesta del formulario del proveedor (verificación servidor a servidor).' })
-  async confirm(@Param('paymentId', new ParseUUIDPipe()) paymentId: string, @Body() body: ConfirmPaymentDto) {
-    return { data: presentPayment(await this.payments.confirmPayment(paymentId, toStringRecord(body.confirmation))) };
+  @ApiParam(BOOKING_CODE_PARAM)
+  @ApiHeader(BOOKING_TOKEN_HEADER)
+  @ApiOkResponse({ type: PaymentResponseDto })
+  @ApiUnauthorizedResponse({ type: ProblemDetailsDto, description: 'booking-token-required' })
+  @ApiNotFoundResponse({ type: ProblemDetailsDto, description: 'booking-not-found (genérico) o payment-not-found' })
+  @ApiConflictResponse({ type: ProblemDetailsDto, description: 'payment-not-started' })
+  async confirm(
+    @Param('code') code: string,
+    @Param('paymentId', new ParseUUIDPipe()) paymentId: string,
+    @BookingToken() token: string | undefined,
+    @Body() body: ConfirmPaymentDto,
+  ) {
+    return { data: presentPayment(await this.payments.confirmPayment({ code, token }, paymentId, toStringRecord(body.confirmation))) };
   }
 
   @Post('payments/webhooks/:provider')
   @HttpCode(200)
   @ApiOperation({ summary: 'Webhook del proveedor (firma HMAC sobre el cuerpo crudo; idempotente por eventId).' })
   @ApiBody({ description: 'Payload del proveedor (sandbox: `{ id, type, created, data: { providerPaymentId, status, amount, currency } }`).' })
-  @ApiOkResponse({ description: '`{ received: true, status: processed|duplicate|ignored|failed }`' })
+  @ApiOkResponse({ type: WebhookAckDto })
   async webhook(@Param('provider') provider: string, @RawBody() rawBody: Buffer, @Headers() headers: WebhookHeaders) {
     const result = await this.payments.handleWebhook(provider, rawBody, headers);
     return { received: true, eventId: result.eventId, status: result.status };
@@ -109,7 +219,7 @@ export class PaymentsController {
     return {
       sandbox: true,
       providerPaymentId,
-      message: 'Pasarela simulada: confirma con POST /api/v1/payments/{paymentId}/confirm.',
+      message: 'Pasarela simulada: confirma con POST /api/v1/bookings/{code}/payments/{paymentId}/confirm.',
     };
   }
 }

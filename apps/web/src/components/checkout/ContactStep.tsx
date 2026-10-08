@@ -17,7 +17,6 @@ const LABELS: Record<string, string> = {
   country: "País",
   ruc: "RUC",
   businessName: "Razón social",
-  privacy: "Privacidad",
 };
 
 export const EMPTY_CONTACT: ContactValues = {
@@ -30,8 +29,8 @@ export const EMPTY_CONTACT: ContactValues = {
   receipt: "boleta",
   ruc: "",
   businessName: "",
-  privacy: false,
-  marketing: false,
+  marketingEmail: false,
+  marketingWhatsapp: false,
 };
 
 export function ContactStep({
@@ -135,36 +134,36 @@ export function ContactStep({
         </div>
       ) : null}
 
-      <div className="mt-8 space-y-3">
-        <div>
-          <label className="flex cursor-pointer items-start gap-3">
-            <input
-              id={fieldId("privacy")}
-              type="checkbox"
-              className="mt-1 size-5 shrink-0"
-              aria-invalid={!!errors.privacy}
-              aria-describedby={errors.privacy ? `${fieldId("privacy")}-error` : undefined}
-              {...register("privacy")}
-            />
-            <span>
-              Acepto la{" "}
-              <Link href="/es/politicas/proteccion-de-datos-personales" className="pwt-link" target="_blank">
-                Política de privacidad
-              </Link>{" "}
-              y el tratamiento de mis datos para gestionar mi reserva (Ley 29733).
-            </span>
-          </label>
-          {errors.privacy ? (
-            <p id={`${fieldId("privacy")}-error`} className="mt-1 ml-8 text-sm text-danger">
-              {errors.privacy.message}
-            </p>
-          ) : null}
-        </div>
-        <label className="flex cursor-pointer items-start gap-3">
-          <input id={fieldId("marketing")} type="checkbox" className="mt-1 size-5 shrink-0" {...register("marketing")} />
-          <span>Quiero recibir ofertas y novedades. (Opcional)</span>
-        </label>
+      {/* Datos para la reserva: solo se INFORMA (Ley 29733 art. 18), sin casilla de consentimiento. */}
+      <div className="mt-8 rounded-md bg-surface-muted p-4 text-sm" id="aviso-privacidad">
+        <p className="font-medium">Cómo usamos tus datos</p>
+        <p className="mt-1 text-foreground-muted">
+          Usamos los datos de este formulario y de los viajeros solo para gestionar tu reserva, emitir tu comprobante y
+          contactarte sobre tu viaje (ejecución del contrato). Más detalle sobre responsable, destinatarios, plazos y tus
+          derechos en la{" "}
+          <Link href="/es/politicas/proteccion-de-datos-personales" className="pwt-link" target="_blank">
+            Política de privacidad
+          </Link>
+          .
+        </p>
       </div>
+
+      {/* Marketing: consentimiento aparte, opcional, desmarcado y por canal. */}
+      <fieldset className="mt-6">
+        <legend className="text-sm font-medium">
+          Novedades y ofertas <span className="font-normal text-foreground-muted">(opcional, puedes darte de baja cuando quieras)</span>
+        </legend>
+        <div className="mt-2 space-y-2">
+          <label className="flex min-h-11 cursor-pointer items-start gap-3">
+            <input id={fieldId("marketingEmail")} type="checkbox" className="mt-1 size-5 shrink-0" {...register("marketingEmail")} />
+            <span>Quiero recibir ofertas y novedades por correo.</span>
+          </label>
+          <label className="flex min-h-11 cursor-pointer items-start gap-3">
+            <input id={fieldId("marketingWhatsapp")} type="checkbox" className="mt-1 size-5 shrink-0" {...register("marketingWhatsapp")} />
+            <span>Quiero recibir ofertas y novedades por WhatsApp.</span>
+          </label>
+        </div>
+      </fieldset>
 
       <button type="submit" className={buttonClass("primary", "lg", "mt-8 w-full md:w-auto")}>
         Continuar a viajeros

@@ -63,6 +63,8 @@ export interface BookingSnapshot {
   cancellationPolicyVersion: string;
   termsVersion: string;
   customerNotes: string | null;
+  /** SHA-256 (hex) del token de acceso del comprador; el token en claro nunca se guarda. */
+  accessTokenHash: string | null;
   confirmedAt: Date | null;
   cancelledAt: Date | null;
   cancellationReason: string | null;
@@ -101,6 +103,12 @@ export interface StatusTransitionResult {
   changed: boolean;
 }
 
+const ACCESS_TOKEN_HASH = /^[0-9a-f]{64}$/;
+
+function assertAccessTokenHash(hash: string): void {
+  if (!ACCESS_TOKEN_HASH.test(hash)) throw new BusinessRuleError('invalid-access-token-hash', 'Hash de token de acceso inválido.');
+}
+
 /** Agregado reserva con plan de pago embebido (adelanto/saldo). */
 export class Booking {
   private constructor(private props: BookingSnapshot) {}
@@ -117,8 +125,12 @@ export class Booking {
     cancellationPolicyVersion: string;
     termsVersion: string;
     customerNotes: string | null;
+    /** SHA-256 (hex) del token de acceso entregado al comprador. */
+    accessTokenHash?: string | null;
     now: Date;
   }): Booking {
+    const accessTokenHash = params.accessTokenHash ?? null;
+    if (accessTokenHash !== null) assertAccessTokenHash(accessTokenHash);
     const { plan, now } = params;
     const itemsTotal = Money.sum(params.items.map((i) => Money.of(i.subtotalAmount, i.currency)));
     if (!itemsTotal.equals(plan.total)) {
@@ -149,6 +161,7 @@ export class Booking {
       cancellationPolicyVersion: params.cancellationPolicyVersion,
       termsVersion: params.termsVersion,
       customerNotes: params.customerNotes,
+      accessTokenHash,
       confirmedAt: null,
       cancelledAt: null,
       cancellationReason: null,
@@ -206,6 +219,21 @@ export class Booking {
   }
 
   /** pending -> held: los cupos quedaron retenidos hasta `expiresAt`. */
+  get cartId(): string | null {
+    return this.props.cartId;
+  }
+
+  get accessTokenHash(): string | null {
+    return this.props.accessTokenHash;
+  }
+
+  /** Reemplaza el token de acceso (el anterior deja de servir). */
+  rotateAccessToken(accessTokenHash: string, now: Date): void {
+    assertAccessTokenHash(accessTokenHash);
+    this.props.accessTokenHash = accessTokenHash;
+    this.props.updatedAt = now;
+  }
+
   placeHold(expiresAt: Date, now: Date): void {
     this.transition('held', now, 'inventory_held', 'customer');
     this.props.holdExpiresAt = expiresAt;

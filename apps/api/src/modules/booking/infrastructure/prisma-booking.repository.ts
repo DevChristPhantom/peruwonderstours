@@ -34,6 +34,7 @@ function mapBooking(row: BookingRow): Booking {
     cancellationPolicyVersion: row.cancellationPolicyVersion,
     termsVersion: row.termsVersion,
     customerNotes: row.customerNotes,
+    accessTokenHash: row.accessTokenHash,
     confirmedAt: row.confirmedAt,
     cancelledAt: row.cancelledAt,
     cancellationReason: row.cancellationReason,
@@ -97,6 +98,7 @@ export class PrismaBookingRepository implements BookingRepository {
       cancelledAt: s.cancelledAt,
       cancellationReason: s.cancellationReason,
       completedAt: s.completedAt,
+      accessTokenHash: s.accessTokenHash,
     };
     const exists = await this.db.booking.findUnique({ where: { id: s.id }, select: { id: true } });
     if (exists) {

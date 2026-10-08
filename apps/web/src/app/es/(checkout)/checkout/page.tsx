@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { CheckoutFlow } from "@/components/checkout/CheckoutFlow";
+import { env } from "@/lib/env";
 
 export const metadata: Metadata = {
   title: "Pago",
@@ -9,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function CheckoutPage() {
-  return <CheckoutFlow />;
+  return <CheckoutFlow cardFeePercent={env.CARD_FEE_PERCENT ?? null} />;
 }

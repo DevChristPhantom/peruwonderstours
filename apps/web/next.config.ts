@@ -26,6 +26,10 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@pwt/ui"],
   // Monorepo pnpm: la raíz incluye data/seed y packages/ui.
   outputFileTracingRoot: path.join(__dirname, "../.."),
+  // Borradores legales leídos con fs (lib/legal/documents.ts) al regenerar las páginas de políticas.
+  outputFileTracingIncludes: {
+    "/es/politicas/**": ["../../docs/legal/**/*.md"],
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     // TEMPORAL (HU-0.3): fotos del cliente servidas desde su sitio actual hasta re-alojarlas.

@@ -1,5 +1,20 @@
-import { Body, Controller, Get, Inject, Param, ParseUUIDPipe, Post, Res } from '@nestjs/common';
-import { ApiConflictResponse, ApiCreatedResponse, ApiHeader, ApiOperation, ApiProperty, ApiPropertyOptional, ApiTags, ApiUnprocessableEntityResponse } from '@nestjs/swagger';
+import { Body, Controller, Get, Inject, Param, Post, Res } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiHeader,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiProperty,
+  ApiPropertyOptional,
+  ApiTags,
+  ApiTooManyRequestsResponse,
+  ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   Equals,
@@ -18,7 +33,10 @@ import {
 } from 'class-validator';
 import type { Response } from 'express';
 import { money } from '../../../shared/interface/common.dto.js';
-import { CartToken, IdempotencyKey } from '../../../shared/interface/http-params.js';
+import { BookingToken, CartToken, IdempotencyKey } from '../../../shared/interface/http-params.js';
+import { ProblemDetailsDto } from '../../../shared/interface/problem-details.dto.js';
+import { StrictThrottle } from '../../../shared/interface/throttling.js';
+import { BookingResponseDto, CreatedBookingResponseDto } from './booking.responses.js';
 import { BookingUseCases } from '../application/booking.use-cases.js';
 import type { Booking } from '../domain/booking.js';
 import type { PaymentOption } from '../domain/payment-plan.js';
@@ -146,12 +164,23 @@ export class BookingsController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Checkout desde el carrito: retiene cupo (hold) y calcula el plan de pago.' })
-  @ApiHeader({ name: 'Idempotency-Key', required: true, description: 'UUID u otro valor único por intento (8-100 caracteres).' })
+  @StrictThrottle()
+  @ApiOperation({
+    summary: 'Checkout desde el carrito: retiene cupo (hold), calcula el plan de pago y entrega el token de acceso del comprador.',
+  })
+  @ApiHeader({ name: 'Idempotency-Key', required: true, description: 'UUID u otro valor único por intento (8-100: letras, números, . _ : -).' })
   @ApiHeader({ name: 'X-Cart-Token', required: true })
-  @ApiCreatedResponse({ description: 'Reserva en estado `held`. Repetir con la misma clave devuelve 200 + `Idempotent-Replayed: true`.' })
-  @ApiConflictResponse({ description: 'sold-out, cart-has-issues, total-changed, cart-already-checked-out, idempotency-in-progress' })
-  @ApiUnprocessableEntityResponse({ description: 'deposit-not-available, idempotency-key-reused, currency-mismatch' })
+  @ApiCreatedResponse({
+    type: CreatedBookingResponseDto,
+    description:
+      'Reserva en estado `held` + `accessToken`. Repetir con la misma clave y X-Cart-Token devuelve 200 + `Idempotent-Replayed: true` con un token NUEVO (el anterior se invalida).',
+  })
+  @ApiOkResponse({ type: CreatedBookingResponseDto, description: 'Replay idempotente (cabecera Idempotent-Replayed: true).' })
+  @ApiBadRequestResponse({ type: ProblemDetailsDto, description: 'validation-failed, idempotency-key-required, consent-required' })
+  @ApiNotFoundResponse({ type: ProblemDetailsDto, description: 'cart-not-found (carrito inexistente o X-Cart-Token incorrecto)' })
+  @ApiConflictResponse({ type: ProblemDetailsDto, description: 'sold-out, cart-has-issues, total-changed, cart-already-checked-out, idempotency-in-progress' })
+  @ApiUnprocessableEntityResponse({ type: ProblemDetailsDto, description: 'deposit-not-available, idempotency-key-reused, currency-mismatch, cart-empty' })
+  @ApiTooManyRequestsResponse({ type: ProblemDetailsDto })
   async checkout(
     @Body() body: CheckoutDto,
     @IdempotencyKey() idempotencyKey: string | undefined,
@@ -172,13 +201,20 @@ export class BookingsController {
     if (result.replayed) {
       res.status(200).setHeader('Idempotent-Replayed', 'true');
     }
-    res.setHeader('Location', `/api/v1/bookings/${result.booking.id}`);
-    return { data: presentBooking(result.booking, this.clock.now()) };
+    res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('Location', `/api/v1/bookings/${result.booking.code}`);
+    return { data: { ...presentBooking(result.booking, this.clock.now()), accessToken: result.accessToken } };
   }
 
-  @Get(':bookingId')
-  @ApiOperation({ summary: 'Estado, montos y plan de pago de la reserva (sin datos personales).' })
-  async get(@Param('bookingId', new ParseUUIDPipe()) bookingId: string) {
-    return { data: presentBooking(await this.bookings.getById(bookingId), this.clock.now()) };
+  @Get(':code')
+  @ApiOperation({ summary: 'Estado, montos y plan de pago de la reserva por su código (sin datos personales).' })
+  @ApiParam({ name: 'code', example: 'PWT-2026-000123' })
+  @ApiHeader({ name: 'X-Booking-Token', required: true, description: 'Token entregado en POST /bookings.' })
+  @ApiOkResponse({ type: BookingResponseDto })
+  @ApiUnauthorizedResponse({ type: ProblemDetailsDto, description: 'booking-token-required (falta la cabecera o formato inválido)' })
+  @ApiNotFoundResponse({ type: ProblemDetailsDto, description: 'booking-not-found (genérico: código inexistente o token incorrecto)' })
+  async get(@Param('code') code: string, @BookingToken() token: string | undefined, @Res({ passthrough: true }) res: Response) {
+    res.setHeader('Cache-Control', 'no-store');
+    return { data: presentBooking(await this.bookings.getByCode({ code, token }), this.clock.now()) };
   }
 }

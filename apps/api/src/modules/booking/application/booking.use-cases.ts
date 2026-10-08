@@ -14,6 +14,7 @@ import { CartHasIssuesError, loadCartWithToken, paymentPlanItems, type CartUseCa
 import { createCustomer, normalizeEmail } from '../../customers/domain/customer.js';
 import { Booking, type BookingItemSnapshot } from '../domain/booking.js';
 import { calculatePaymentPlan, type PaymentOption, type PaymentPlanPolicy } from '../domain/payment-plan.js';
+import { generateBookingAccessToken, loadBookingWithAccess, type BookingAccess } from './booking-access.js';
 import { BookingLifecycle, BookingNotFoundError } from './booking-lifecycle.js';
 
 export interface BookingSettings {
@@ -42,6 +43,12 @@ export interface CheckoutInput {
 export interface CheckoutResult {
   booking: Booking;
   replayed: boolean;
+  /**
+   * Token de acceso del comprador (X-Booking-Token). Solo existe en esta respuesta: en la
+   * base se guarda su SHA-256. En un replay idempotente se emite uno nuevo y el anterior
+   * queda invalidado (la respuesta original pudo perderse).
+   */
+  accessToken: string;
 }
 
 const CHECKOUT_SCOPE = 'checkout';
@@ -80,7 +87,15 @@ export class BookingUseCases {
     return this.unitOfWork.run(async (repos) => {
       const now = this.clock.now();
       const replay = await this.findReplay(repos, idempotencyKey, fingerprint);
-      if (replay) return { booking: replay, replayed: true };
+      if (replay) {
+        // El replay exige el mismo X-Cart-Token: sin él no se entrega un token de acceso nuevo.
+        const cart = await loadCartWithToken(repos, input.cartId, input.cartToken);
+        if (replay.cartId !== cart.id) throw new IdempotencyKeyReusedError(idempotencyKey);
+        const access = generateBookingAccessToken();
+        replay.rotateAccessToken(access.tokenHash, now);
+        await repos.bookings.save(replay);
+        return { booking: replay, replayed: true, accessToken: access.token };
+      }
 
       const cart = await loadCartWithToken(repos, input.cartId, input.cartToken);
       if (cart.status === 'converted') {
@@ -141,6 +156,7 @@ export class BookingUseCases {
         }),
       );
 
+      const access = generateBookingAccessToken();
       const code = await repos.bookingCodes.next(Number(toLimaCalendarDate(now).slice(0, 4)));
       const booking = Booking.create({
         id: this.ids.next(),
@@ -154,6 +170,7 @@ export class BookingUseCases {
         cancellationPolicyVersion: this.settings.cancellationPolicyVersion,
         termsVersion: this.settings.termsVersion,
         customerNotes: input.customerNotes?.slice(0, 2000) ?? null,
+        accessTokenHash: access.tokenHash,
         now,
       });
       await repos.bookings.save(booking);
@@ -189,11 +206,17 @@ export class BookingUseCases {
         key: idempotencyKey,
         fingerprint,
         resourceId: booking.id,
+        response: { bookingId: booking.id, bookingCode: booking.code },
         createdAt: now,
         expiresAt: addMinutes(now, this.settings.idempotencyTtlMinutes),
       });
-      return { booking, replayed: false };
+      return { booking, replayed: false, accessToken: access.token };
     });
+  }
+
+  /** Reserva por código legible + token de acceso (404 genérico si no coinciden). */
+  getByCode(access: BookingAccess): Promise<Booking> {
+    return this.unitOfWork.run((repos) => loadBookingWithAccess(repos, access));
   }
 
   getById(bookingId: string): Promise<Booking> {

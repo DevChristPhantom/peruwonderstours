@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { ComplaintsBookNotice } from "@/components/complaints/ComplaintsBookNotice";
 import { DestinationsSection } from "@/components/home/DestinationsSection";
 import { FeaturedTours, type FeaturedGroup } from "@/components/home/FeaturedTours";
 import { Hero } from "@/components/home/Hero";
@@ -62,6 +63,7 @@ export default async function HomePage() {
       <div className="pwt-container">
         <SearchBar options={searchOptions} />
       </div>
+      <ComplaintsBookNotice />
       <DestinationsSection destinations={destinations} />
       <FeaturedTours groups={groups} totalTours={allTours.length} />
       <WhyUsSection tourCount={allTours.length} destinationCount={destinations.length} />

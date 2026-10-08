@@ -1,22 +1,19 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import type { PrismaClient } from '../../generated/prisma/client.js';
 import type { TransactionalRepositories, UnitOfWork } from '../../shared/application/unit-of-work.js';
-import type { IdempotencyRecord } from '../../shared/domain/idempotency.js';
 import { PrismaBookingCodeGenerator, PrismaBookingRepository } from '../../modules/booking/infrastructure/prisma-booking.repository.js';
 import { PrismaCartRepository } from '../../modules/cart/infrastructure/prisma-cart.repository.js';
 import { PrismaCatalogRepository, PrismaInventoryRepository } from '../../modules/catalog/infrastructure/prisma-catalog.repository.js';
 import { PrismaCustomerRepository } from '../../modules/customers/infrastructure/prisma-customer.repository.js';
 import { PrismaPaymentEventRepository, PrismaPaymentRepository } from '../../modules/payments/infrastructure/prisma-payment.repository.js';
-import { InMemoryIdempotencyRepository } from '../in-memory/in-memory-repositories.js';
 import { mapPrismaError, type PrismaTx } from './prisma-client.js';
-
-/**
- * PENDIENTE: el schema no tiene tabla de idempotencia. Las claves de checkout se guardan
- * en memoria del proceso; entre instancias, UNIQUE(bookings.cart_id) y
- * UNIQUE(payments.idempotency_key) siguen impidiendo duplicados. Migrar a Redis o a una
- * tabla `idempotency_keys`.
- */
-const processIdempotency = new Map<string, IdempotencyRecord>();
+import { PrismaIdempotencyRepository } from './prisma-idempotency.repository.js';
+import { PrismaOutboxRepository } from './prisma-outbox.repository.js';
+import {
+  PrismaComplaintRepository,
+  PrismaComplaintSequence,
+  PrismaHolidayCalendar,
+} from '../../modules/complaints/infrastructure/prisma-complaint.repository.js';
 
 export function createPrismaRepositories(tx: PrismaTx): TransactionalRepositories {
   return {
@@ -28,7 +25,11 @@ export function createPrismaRepositories(tx: PrismaTx): TransactionalRepositorie
     bookingCodes: new PrismaBookingCodeGenerator(tx),
     payments: new PrismaPaymentRepository(tx),
     paymentEvents: new PrismaPaymentEventRepository(tx),
-    idempotency: new InMemoryIdempotencyRepository(() => processIdempotency),
+    idempotency: new PrismaIdempotencyRepository(tx),
+    complaints: new PrismaComplaintRepository(tx),
+    complaintSequence: new PrismaComplaintSequence(tx),
+    holidays: new PrismaHolidayCalendar(tx),
+    outbox: new PrismaOutboxRepository(tx),
   };
 }
 
