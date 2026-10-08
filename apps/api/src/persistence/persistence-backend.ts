@@ -1,5 +1,6 @@
 import { Logger } from '@nestjs/common';
 import type { AppSettings } from '../config/app-settings.js';
+import type { PrismaClient } from '../generated/prisma/client.js';
 import type { UnitOfWork } from '../shared/application/unit-of-work.js';
 import { toLimaCalendarDate } from '../shared/domain/calendar-date.js';
 import type { Clock } from '../shared/domain/ports.js';
@@ -16,6 +17,10 @@ export interface PersistenceBackend {
   kind: 'prisma' | 'seed' | 'memory';
   unitOfWork: UnitOfWork;
   catalog: CatalogRepository;
+  /** Cliente PostgreSQL (solo `prisma`): backoffice, auth del staff y consultas de reporte. */
+  prisma: PrismaClient | null;
+  /** Almacén en memoria (solo `seed`/`memory`): auth del staff en modo demo/pruebas. */
+  memory: InMemoryDataStore | null;
   ping(): Promise<void>;
   close(): Promise<void>;
 }
@@ -25,6 +30,8 @@ export function inMemoryBackend(store: InMemoryDataStore, kind: 'seed' | 'memory
     kind,
     unitOfWork: new InMemoryUnitOfWork(store),
     catalog: new InMemoryCatalogRepository(store.catalog),
+    prisma: null,
+    memory: store,
     ping: () => Promise.resolve(),
     close: () => Promise.resolve(),
   };
@@ -58,6 +65,8 @@ export async function createPersistenceBackend(settings: AppSettings, clock: Clo
     kind: 'prisma',
     unitOfWork: new PrismaUnitOfWork(client),
     catalog: new PrismaCatalogRepository(client),
+    prisma: client,
+    memory: null,
     ping: async () => {
       await client.$queryRaw`SELECT 1`;
     },

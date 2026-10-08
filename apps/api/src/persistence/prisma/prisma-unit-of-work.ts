@@ -8,7 +8,8 @@ import { PrismaCustomerRepository } from '../../modules/customers/infrastructure
 import { PrismaPaymentEventRepository, PrismaPaymentRepository } from '../../modules/payments/infrastructure/prisma-payment.repository.js';
 import { mapPrismaError, type PrismaTx } from './prisma-client.js';
 import { PrismaIdempotencyRepository } from './prisma-idempotency.repository.js';
-import { PrismaOutboxRepository } from './prisma-outbox.repository.js';
+import { PrismaEmailDeliveryRepository, PrismaOutboxRepository } from './prisma-outbox.repository.js';
+import { PrismaConsentRepository, PrismaLegalAcceptanceRepository } from '../../modules/privacy/infrastructure/prisma-consent.repository.js';
 import {
   PrismaComplaintRepository,
   PrismaComplaintSequence,
@@ -16,6 +17,7 @@ import {
 } from '../../modules/complaints/infrastructure/prisma-complaint.repository.js';
 
 export function createPrismaRepositories(tx: PrismaTx): TransactionalRepositories {
+  const outbox = new PrismaOutboxRepository(tx);
   return {
     catalog: new PrismaCatalogRepository(tx),
     inventory: new PrismaInventoryRepository(tx),
@@ -29,7 +31,11 @@ export function createPrismaRepositories(tx: PrismaTx): TransactionalRepositorie
     complaints: new PrismaComplaintRepository(tx),
     complaintSequence: new PrismaComplaintSequence(tx),
     holidays: new PrismaHolidayCalendar(tx),
-    outbox: new PrismaOutboxRepository(tx),
+    outbox,
+    outboxQueue: outbox,
+    emailDeliveries: new PrismaEmailDeliveryRepository(tx),
+    consents: new PrismaConsentRepository(tx),
+    legalAcceptances: new PrismaLegalAcceptanceRepository(tx),
   };
 }
 

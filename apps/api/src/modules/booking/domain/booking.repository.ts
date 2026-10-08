@@ -8,6 +8,8 @@ export interface BookingRepository {
   save(booking: Booking): Promise<void>;
   /** Reservas `held` con retención vencida (job de expiración). */
   findWithExpiredHold(now: Date, limit: number): Promise<Booking[]>;
+  /** Reservas `partially_paid` cuyo saldo vence en [from, to] (recordatorios). */
+  findBalanceDueBetween(from: Date, to: Date, limit: number): Promise<Booking[]>;
 }
 
 /** Correlativo sin huecos PWT-AAAA-NNNNNN (en PostgreSQL: next_document_number('booking', año)). */

@@ -24,6 +24,11 @@ export function mapPrismaError(error: unknown): unknown {
     if (error.code === 'P2034') return new ConcurrencyError();
   }
   const message = error instanceof Error ? error.message : '';
+  if (/exclusion constraint|exclusion_violation|23P01/i.test(message)) {
+    return new ConflictError('exclusion-violation', 'La operación se superpone con otro registro vigente (restricción de exclusión).', {
+      constraint: /rates_no_overlap_ex/.test(message) ? 'rates_no_overlap_ex' : null,
+    });
+  }
   if (/check_violation|violates check constraint|Transición de reserva no permitida/i.test(message)) {
     return new ConflictError('constraint-violation', 'La operación viola una regla de integridad de la base de datos.');
   }

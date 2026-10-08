@@ -2,6 +2,7 @@ import type { ConfigService } from '@nestjs/config';
 import type { BookingSettings } from '../modules/booking/application/booking.use-cases.js';
 import type { CartSettings } from '../modules/cart/application/cart.use-cases.js';
 import type { ComplaintSettings } from '../modules/complaints/application/complaint.use-cases.js';
+import { parseRefundTiersJson, type RefundTier } from '../modules/backoffice/domain/cancellation-policy.js';
 import type { DataSource, EnvironmentVariables } from './environment.js';
 
 export const APP_SETTINGS = Symbol('APP_SETTINGS');
@@ -26,6 +27,50 @@ export interface AppSettings {
   complaints: ComplaintSettings;
   /** Clave maestra base64 para PII; undefined => clave de desarrollo (prohibido en producción). */
   piiEncryptionKey?: string;
+  auth: StaffAuthSettings;
+  mail: MailSettings;
+  outbox: OutboxSettings;
+  privacy: PrivacySettings;
+  backoffice: { refundTiers: RefundTier[]; cancellationPolicyVersion: string };
+}
+
+export interface StaffAuthSettings {
+  /** undefined => secreto efímero de desarrollo (prohibido en producción). */
+  jwtSecret?: string;
+  issuer: string;
+  accessTokenTtlSeconds: number;
+  refreshIdleTtlSeconds: number;
+  refreshAbsoluteTtlSeconds: number;
+  lockout: { threshold: number; baseSeconds: number; maxSeconds: number };
+  mfaIssuer: string;
+}
+
+export interface MailSettings {
+  transport: 'file' | 'smtp' | 'memory' | 'disabled';
+  outboxDir: string;
+  from: string;
+  replyTo?: string;
+  smtp: { host?: string; port: number; secure: boolean; user?: string; password?: string };
+  publicWebBaseUrl: string;
+  contactEmail: string;
+  contactPhone: string;
+}
+
+export interface OutboxSettings {
+  relayEnabled: boolean;
+  intervalMs: number;
+  maxAttempts: number;
+  batchSize: number;
+  reminderIntervalMs: number;
+}
+
+export interface PrivacySettings {
+  /** undefined => secreto efímero de desarrollo. */
+  marketingLinkSecret?: string;
+  marketingConsentVersion: string;
+  privacyNoticeVersion: string;
+  termsVersion: string;
+  cancellationPolicyVersion: string;
 }
 
 /** "false"/"true" => booleano; "2" => saltos; otro texto => lista/alias de Express. */
@@ -81,6 +126,40 @@ export function settingsFromEnvironment(env: EnvironmentVariables): AppSettings 
       idempotencyTtlMinutes: env.IDEMPOTENCY_TTL_HOURS * 60,
     },
     piiEncryptionKey: env.PII_ENCRYPTION_KEY,
+    auth: {
+      jwtSecret: env.JWT_ACCESS_SECRET,
+      issuer: env.JWT_ISSUER,
+      accessTokenTtlSeconds: env.ACCESS_TOKEN_TTL_SECONDS,
+      refreshIdleTtlSeconds: env.REFRESH_IDLE_TTL_HOURS * 3600,
+      refreshAbsoluteTtlSeconds: env.REFRESH_ABSOLUTE_TTL_HOURS * 3600,
+      lockout: { threshold: env.LOGIN_LOCK_THRESHOLD, baseSeconds: env.LOGIN_LOCK_BASE_SECONDS, maxSeconds: env.LOGIN_LOCK_MAX_SECONDS },
+      mfaIssuer: env.MFA_ISSUER,
+    },
+    mail: {
+      transport: env.MAIL_TRANSPORT,
+      outboxDir: env.MAIL_OUTBOX_DIR,
+      from: env.MAIL_FROM,
+      replyTo: env.MAIL_REPLY_TO || undefined,
+      smtp: { host: env.SMTP_HOST, port: env.SMTP_PORT, secure: env.SMTP_SECURE, user: env.SMTP_USER || undefined, password: env.SMTP_PASSWORD || undefined },
+      publicWebBaseUrl: env.PUBLIC_WEB_BASE_URL.replace(/\/$/, ''),
+      contactEmail: env.CONTACT_EMAIL,
+      contactPhone: env.CONTACT_PHONE,
+    },
+    outbox: {
+      relayEnabled: env.OUTBOX_RELAY_ENABLED,
+      intervalMs: env.OUTBOX_RELAY_INTERVAL_MS,
+      maxAttempts: env.OUTBOX_MAX_ATTEMPTS,
+      batchSize: env.OUTBOX_BATCH_SIZE,
+      reminderIntervalMs: env.REMINDER_JOB_INTERVAL_MS,
+    },
+    privacy: {
+      marketingLinkSecret: env.MARKETING_LINK_SECRET,
+      marketingConsentVersion: env.MARKETING_CONSENT_VERSION,
+      privacyNoticeVersion: env.PRIVACY_NOTICE_VERSION,
+      termsVersion: env.TERMS_VERSION,
+      cancellationPolicyVersion: env.CANCELLATION_POLICY_VERSION,
+    },
+    backoffice: { refundTiers: parseRefundTiersJson(env.CANCELLATION_REFUND_TIERS), cancellationPolicyVersion: env.CANCELLATION_POLICY_VERSION },
   };
 }
 
@@ -94,6 +173,11 @@ export function settingsFromConfigService(config: ConfigService): AppSettings {
     'HOLD_TTL_MINUTES', 'CART_TTL_DAYS', 'PRICE_LOCK_MINUTES', 'IDEMPOTENCY_TTL_HOURS', 'TERMS_VERSION', 'CANCELLATION_POLICY_VERSION',
     'PROVIDER_LEGAL_NAME', 'PROVIDER_RUC', 'ESTABLISHMENT_ADDRESS', 'ESTABLISHMENT_CODE', 'COMPLAINT_CONFORMITY_TEXT_VERSION',
     'PRIVACY_NOTICE_VERSION', 'PII_ENCRYPTION_KEY',
+    'JWT_ACCESS_SECRET', 'JWT_ISSUER', 'ACCESS_TOKEN_TTL_SECONDS', 'REFRESH_IDLE_TTL_HOURS', 'REFRESH_ABSOLUTE_TTL_HOURS',
+    'LOGIN_LOCK_THRESHOLD', 'LOGIN_LOCK_BASE_SECONDS', 'LOGIN_LOCK_MAX_SECONDS', 'MFA_ISSUER',
+    'MAIL_TRANSPORT', 'MAIL_OUTBOX_DIR', 'MAIL_FROM', 'MAIL_REPLY_TO', 'SMTP_HOST', 'SMTP_PORT', 'SMTP_SECURE', 'SMTP_USER', 'SMTP_PASSWORD',
+    'OUTBOX_RELAY_ENABLED', 'OUTBOX_RELAY_INTERVAL_MS', 'OUTBOX_MAX_ATTEMPTS', 'OUTBOX_BATCH_SIZE', 'REMINDER_JOB_INTERVAL_MS',
+    'PUBLIC_WEB_BASE_URL', 'CONTACT_EMAIL', 'CONTACT_PHONE', 'MARKETING_LINK_SECRET', 'MARKETING_CONSENT_VERSION', 'CANCELLATION_REFUND_TIERS',
   ] as const;
   const env = Object.fromEntries(keys.map((k) => [k, config.get<unknown>(k)])) as unknown as EnvironmentVariables;
   return settingsFromEnvironment(env);

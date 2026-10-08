@@ -25,7 +25,8 @@ pnpm build && pnpm start:prod # PORT por defecto 3001
 | `pnpm typecheck` / `pnpm lint` | `tsc --noEmit` / oxlint type-aware |
 | `pnpm test` | Unitarios de dominio y casos de uso (repos en memoria) |
 | `pnpm test:e2e` | API completa en modo seed (supertest) |
-| `pnpm test:integration` | Repos Prisma contra PostgreSQL real; cada caso en transacción revertida (se omite sin `DATABASE_URL`) |
+| `pnpm test:integration` | PostgreSQL real (se omite sin `DATABASE_URL`): `*.int-spec.ts` en transacción revertida sobre `pwt_dev` y `*.db-e2e-spec.ts` (API HTTP completa en modo prisma) sobre `pwt_test`, que se **recrea y migra** en cada corrida |
+| `pnpm admin:create -- --email a@b.pe --name "Nombre" [--generate]` | Crea el primer admin (contraseña por stdin o generada e impresa una sola vez; nunca a archivo). MFA se enrola al primer ingreso |
 | `pnpm dev:prisma` | API con `DATA_SOURCE=prisma` en el puerto 3001 (`nest start --watch`; lee `DATABASE_URL` de `.env`) |
 | `pnpm openapi:export` | Compila y escribe `openapi.json` (contrato para generar tipos en el front) |
 | `pnpm build && pnpm db:seed` | Carga idempotente de `data/seed` (tours en borrador, HU-0.1). `-- --publish` publica, `-- --refresh` sobrescribe textos |
@@ -64,3 +65,29 @@ en ese salto (`TRUST_PROXY=loopback` si comparten host). Datos personales de rec
 
 Reglas de adelanto/saldo: `src/modules/booking/domain/payment-plan.ts` (configurables por entorno;
 supuestos pendientes del cliente, ver `brain/wiki/negocio/reglas-reserva-y-pago.md`).
+
+## Sprint 2: auth del staff, backoffice, correo y privacidad
+
+### Auth del staff (`/api/v1/auth/staff/*`)
+
+1. `POST login` {email, password} -> `{status: "mfa_required", mfaToken}` o `{status: "mfa_enrollment_required", enrollmentToken}` (desafíos JWT de 5 min; nunca tokens de sesión).
+2. Primer ingreso: `POST mfa/enrollment` {enrollmentToken} -> `otpauthUri` (QR) + `secret`; `POST mfa/enrollment/confirm` {enrollmentToken, code} -> sesión + 10 `recoveryCodes` (una sola vez).
+3. Siguientes: `POST mfa/verify` {mfaToken, code} (TOTP de 6 dígitos o código de recuperación `XXXXX-XXXXX`) -> sesión.
+4. Sesión = `accessToken` (JWT HS256, 10 min, cabecera `Authorization: Bearer`) + `refreshToken` opaco (rotativo, 12 h de inactividad, 72 h absolutas). `POST refresh` {refreshToken} rota; reusar uno rotado revoca toda la sesión (`refresh-token-reused`).
+5. `POST logout`, `POST logout-all`, `GET me`, `GET sessions`, `DELETE sessions/:id`, `POST mfa/recovery-codes`, `POST password`.
+
+Contraseñas Argon2id (m=19 MiB, t=2, p=1); bloqueo progresivo (5 fallos de contraseña o TOTP -> 1, 2, 4... min, tope 1 h; `429 account-locked` + `Retry-After`); TOTP anti-replay (`mfa_last_time_step`); RBAC por **permisos** (`src/modules/identity/domain/permissions.ts`) con roles admin/operator/agent; el guard valida la sesión en BD en cada petición (logout y cambios de rol aplican de inmediato) y audita los 403 (`ACCESS_DENIED`).
+
+**Cómo debe guardarlos el BFF (Next)**: los tokens nunca llegan al navegador. El servidor de Next guarda `{accessToken, refreshToken, accessTokenExpiresAt, sessionId}` en una cookie de sesión propia **cifrada** (p. ej. iron-session/JWE), `HttpOnly; Secure; SameSite=Lax; Path=/admin`, o en un store de servidor con id opaco en la cookie. Llama a la API con `Authorization: Bearer`; ante `401 access-token-expired` (o 1 min antes del vencimiento) hace `POST /auth/staff/refresh` **serializado por sesión** (mutex: dos refresh simultáneos con el mismo token disparan la detección de reutilización) y reemplaza ambos tokens; ante `refresh-token-reused`/`refresh-token-expired`/`session-revoked` borra la cookie y redirige al login. Reenviar `X-Forwarded-For` (bloqueo y rate limit por IP) y `X-Request-Id`. Protección CSRF en las acciones del BFF (SameSite + token o Server Actions).
+
+### Backoffice (`/api/v1/admin/*`, requiere `DATA_SOURCE=prisma`; si no, 503 `backoffice-requires-database`)
+
+Tours (CRUD, publicar/despublicar con checklist, traducciones, medios por URL, 301 al cambiar slug, bloqueo optimista `version`), temporadas y tarifas (solapes con mensaje claro antes del EXCLUDE), salidas (lote por rango/días de semana, capacidad >= vendido, cierre de ventas), reservas (filtros, detalle, cancelación con política `CANCELLATION_REFUND_TIERS`, pagos y reembolsos manuales idempotentes, reenvío de voucher), Libro de Reclamaciones (semáforo 10/13/15 días hábiles, respuesta, reclasificación, solución directa art. 6-A, transcripción del libro de respaldo), ARCO, auditoría, usuarios y tablero. Toda escritura corre en una transacción con `app.actor_id` (los triggers de `audit_log` registran al usuario) y además escribe la acción semántica en `audit_log`.
+
+### Correo transaccional
+
+Outbox -> relay en proceso (`OUTBOX_RELAY_INTERVAL_MS`): reclamo con lease y `FOR UPDATE SKIP LOCKED`, idempotente por `email_deliveries` (UNIQUE evento + plantilla, Message-ID determinista), reintentos con backoff 30 s x 2^n (tope 1 h) hasta `OUTBOX_MAX_ATTEMPTS`. Plantillas HTML + texto (es-PE): confirmación/voucher, pago recibido, recordatorio de saldo 7 y 2 días (dedupe `outbox_events.dedupe_key`), cancelación, constancia del Libro de Reclamaciones (hoja imprimible HTML adjunta; PDF pendiente), oferta de solución directa y respuesta. Desarrollo: `.eml` en `apps/api/.mail-outbox/` (gitignored); producción: SMTP con TLS.
+
+### Privacidad (Consents v2)
+
+`consents` admite titular sin cuenta (`subject_email_hash` = HMAC del correo, `anonymous_id`), método y hash del texto; `legal_acceptances` separa acuse de privacidad y aceptación de T&C/política de cancelación (se registran en el checkout junto con `marketingEmailOptIn`/`marketingWhatsappOptIn`, desmarcados por defecto). Baja pública: `GET/POST /api/v1/privacy/unsubscribe` con enlace firmado (HMAC, sin correo en claro). Solicitudes ARCO en `/admin/privacy/requests`.

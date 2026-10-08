@@ -1,5 +1,6 @@
 import type { IdempotencyRepository } from '../domain/idempotency.js';
-import type { OutboxRepository } from '../domain/outbox.js';
+import type { EmailDeliveryRepository, OutboxQueue, OutboxRepository } from '../domain/outbox.js';
+import type { ConsentRepository, LegalAcceptanceRepository } from '../../modules/privacy/domain/consent.js';
 import type { ComplaintRepository, ComplaintSequence, HolidayCalendar } from '../../modules/complaints/domain/complaint.repository.js';
 import type { BookingCodeGenerator, BookingRepository } from '../../modules/booking/domain/booking.repository.js';
 import type { CartRepository } from '../../modules/cart/domain/cart.repository.js';
@@ -22,6 +23,10 @@ export interface TransactionalRepositories {
   complaintSequence: ComplaintSequence;
   holidays: HolidayCalendar;
   outbox: OutboxRepository;
+  outboxQueue: OutboxQueue;
+  emailDeliveries: EmailDeliveryRepository;
+  consents: ConsentRepository;
+  legalAcceptances: LegalAcceptanceRepository;
 }
 
 /**

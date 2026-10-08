@@ -12,11 +12,13 @@ import type { ContactValues, TravelersValues } from "@/lib/checkout/schemas";
 import { todayInLima } from "@/lib/format";
 import { PAYMENTS_MODE } from "@/lib/payments/types";
 import { useCartHydrated, useCartStore } from "@/stores/cart-store";
+import { useTripGate } from "@/stores/trip-store";
 import { useIsClient } from "@/hooks/useClientOnly";
 import { safeSessionStorage } from "@/stores/safe-storage";
 import { useUiStore } from "@/stores/ui-store";
 import { formatTotals } from "@/components/cart/cart-helpers";
 import { OrderSummary } from "@/components/cart/OrderSummary";
+import { TripConflictAlert } from "@/components/trip/TripConflictAlert";
 import { buttonClass } from "@/components/ui/button-styles";
 import { ContactStep, EMPTY_CONTACT } from "./ContactStep";
 import { PaymentStep } from "./PaymentStep";
@@ -145,6 +147,7 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
 
   const today = useMemo(() => todayInLima(), []);
   const plan = useMemo(() => computePaymentPlan(lines, option, today), [lines, option, today]);
+  const { pending: pendingConflicts } = useTripGate(lines);
 
   const go = (next: Step) => {
     setDirection(next > step ? 1 : -1);
@@ -170,6 +173,19 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
         <p className="mt-3 text-foreground-muted">Tu carrito está vacío. Elige un tour para continuar.</p>
         <Link href="/es/tours" className={buttonClass("secondary", "lg", "mt-6")}>
           Ver tours
+        </Link>
+      </div>
+    );
+  }
+
+  // HU-B.A5: tours superpuestos sin confirmar → no se paga hasta cambiar uno o confirmar.
+  if (pendingConflicts.length) {
+    return (
+      <div className="pwt-container-narrow py-12">
+        <h1 className="mb-6 font-display text-h1 font-medium">Antes de pagar</h1>
+        <TripConflictAlert lines={lines} />
+        <Link href="/es/mi-viaje" className="pwt-link mt-4 inline-flex min-h-11 items-center">
+          Ver mi viaje día a día
         </Link>
       </div>
     );

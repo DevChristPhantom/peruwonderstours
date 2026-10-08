@@ -10,7 +10,7 @@ import type { CatalogImage, PaymentPolicy, TourPricing } from "@/lib/catalog/typ
 import { lineTotalCents, percentOfCentsCeil } from "@/lib/checkout/payment-plan";
 import { addDays, daysBetween, formatDate, formatMoney } from "@/lib/format";
 import { useLimaToday } from "@/hooks/useClientOnly";
-import { whatsappHref } from "@/lib/site";
+import { tourHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
 import { useCartStore } from "@/stores/cart-store";
 import { useUiStore } from "@/stores/ui-store";
 import { buttonClass } from "@/components/ui/button-styles";
@@ -26,6 +26,9 @@ export interface BookableTour {
   minPax: number;
   pricing: TourPricing | null;
   paymentPolicy: PaymentPolicy;
+  durationDays: number | null;
+  destinationSlugs: string[];
+  difficulty: string | null;
 }
 
 const BALANCE_DAYS = 7;
@@ -96,6 +99,9 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
       travelers,
       unitPricing: tour.pricing,
       paymentPolicy: tour.paymentPolicy,
+      durationDays: tour.durationDays,
+      destinationSlugs: tour.destinationSlugs,
+      difficulty: tour.difficulty,
     });
     const n = useCartStore.getState().lines.length;
     pulseCart();
@@ -269,7 +275,7 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
         Sin cargos ocultos · Pago seguro · Confirmación por correo
       </p>
       <a
-        href={whatsappHref(`Hola, tengo dudas sobre el tour "${tour.title}".`)}
+        href={whatsappHref(tourHelpMessage({ title: tour.title, date: date || null, travelers: date ? travelers : null }))}
         target="_blank"
         rel="noopener noreferrer"
         className="pwt-link mt-2 inline-flex min-h-11 items-center gap-2 text-sm"

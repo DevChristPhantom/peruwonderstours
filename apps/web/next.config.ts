@@ -44,6 +44,18 @@ const nextConfig: NextConfig = {
   async redirects() {
     return buildLegacyRedirects();
   },
+  async headers() {
+    return [
+      {
+        // Service worker del voucher offline (HU-B.A2): siempre la versión más reciente.
+        source: "/sw-voucher.js",
+        headers: [
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

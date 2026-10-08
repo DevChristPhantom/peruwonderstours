@@ -1,0 +1,2 @@
+# Correos de desarrollo (MAIL_TRANSPORT=file): contienen datos personales de prueba.
+.mail-outbox/

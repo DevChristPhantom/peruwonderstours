@@ -13,7 +13,7 @@ export const API_PREFIX = 'api/v1';
 export const DOCS_PATH = 'api/docs';
 
 /** Cabeceras que el front (servidor Next) envía y lee. */
-const ALLOWED_HEADERS = ['Content-Type', 'Idempotency-Key', 'X-Cart-Token', 'X-Booking-Token', 'X-Complaint-Token', 'X-Request-Id'];
+const ALLOWED_HEADERS = ['Authorization', 'Content-Type', 'Idempotency-Key', 'X-Cart-Token', 'X-Booking-Token', 'X-Complaint-Token', 'X-Request-Id'];
 const EXPOSED_HEADERS = ['Idempotent-Replayed', 'Location', 'Retry-After', 'Retry-After-strict'];
 
 /** API JSON: nada que renderizar => CSP mínima que no permite cargar ningún recurso. */
@@ -88,7 +88,7 @@ export function configureApp(app: INestApplication): AppSettings {
   app.enableCors({
     // Sin cabecera Origin (servidor a servidor, curl) no aplica CORS; con Origin, solo la allowlist.
     origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => callback(null, !origin || allowed.has(origin)),
-    methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ALLOWED_HEADERS,
     exposedHeaders: EXPOSED_HEADERS,
     credentials: true,
@@ -127,6 +127,7 @@ export function buildOpenApiDocument(app: INestApplication): OpenAPIObject {
     )
     .setVersion('1.0.0')
     .addServer('/')
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT', description: 'Access token del staff (POST /auth/staff/mfa/verify).' })
     .build();
   return SwaggerModule.createDocument(app, config);
 }

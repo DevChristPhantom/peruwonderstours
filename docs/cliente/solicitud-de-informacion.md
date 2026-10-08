@@ -62,6 +62,25 @@ solo es válida con el pago total". Necesitamos que nos confirmes:
 21. Fotos propias en buena calidad. Algunas de la web antigua están alojadas en otro dominio.
 22. ¿Los 9 tours que no aparecen en la web antigua siguen vigentes?
 
+## 6. Funciones nuevas (como las grandes plataformas de 2026)
+
+23. **Cancelación por tour:** ¿qué tours se pueden cancelar sin costo y hasta cuándo? Las
+    grandes plataformas muestran "cancelación gratis hasta el día X" en cada tour y eso ayuda
+    mucho a vender.
+24. ¿Aceptarías **"reserva ahora, paga después"** (0 % al reservar) en algunos tours? ¿Con
+    cuántos días de anticipación como mínimo?
+25. **Extras** que podríamos ofrecer al reservar (traslado desde el aeropuerto de Juliaca,
+    almuerzo, noche extra, fotos) y sus precios.
+26. Por cada tour: **altitud máxima, nivel de esfuerzo, edad mínima y si es accesible** en
+    silla de ruedas o con movilidad reducida.
+27. ¿Quieres vender también en **Viator, GetYourGuide o Civitatis**? ¿Qué comisión máxima
+    aceptarías?
+28. ¿Qué presupuesto mensual tienes para **WhatsApp Business** (mensajes automáticos) y para
+    un **asistente con IA** que responda consultas?
+29. ¿Te interesan las **tarjetas de regalo**? Habría que definir vigencia y reembolso con tu
+    contador.
+30. ¿Podemos pedir **reseñas** por correo o WhatsApp después de cada viaje?
+
 ---
 *Los borradores de Política de Privacidad, Términos y Condiciones, Política de Cancelación y
 Política de Cookies ya están preparados. Se completarán con estos datos y conviene que los

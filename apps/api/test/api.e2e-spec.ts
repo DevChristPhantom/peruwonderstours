@@ -29,6 +29,8 @@ describe('API v1 en modo seed (e2e)', () => {
       WEB_ORIGIN: 'http://localhost:3000',
       THROTTLE_STRICT_LIMIT: String(STRICT_LIMIT),
       BODY_LIMIT_KB: '16',
+      OUTBOX_RELAY_ENABLED: 'false',
+      MAIL_TRANSPORT: 'memory',
     });
     // Import diferido: ConfigModule.forRoot lee el entorno al importar el módulo.
     const { AppModule } = await import('../src/app.module.js');

@@ -3,11 +3,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { CompareToggle } from "@/components/compare/CompareToggle";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { BookingPanel, MobileBookingBar, type BookableTour } from "@/components/tours/BookingPanel";
 import { TourCard } from "@/components/tours/TourCard";
 import { TourGallery } from "@/components/tours/TourGallery";
 import { Accordion } from "@/components/ui/Accordion";
+import { FavoriteButton } from "@/components/wishlist/FavoriteButton";
 import { getAllTours, getDestinations, getRelatedTours, getTour } from "@/lib/catalog";
 import { formatDuration } from "@/lib/catalog/rules";
 import { faqJsonLd, JsonLd, touristTripJsonLd } from "@/lib/seo/json-ld";
@@ -69,6 +71,9 @@ export default async function TourPage({ params }: PageProps<"/es/tours/[slug]">
     minPax: tour.minPax,
     pricing: tour.pricing,
     paymentPolicy: tour.paymentPolicy,
+    durationDays: tour.durationDays,
+    destinationSlugs: tour.destinationSlugs,
+    difficulty: tour.difficulty,
   };
 
   const sections = [
@@ -134,6 +139,10 @@ export default async function TourPage({ params }: PageProps<"/es/tours/[slug]">
               Pago completo al reservar: {tour.paymentPolicy.fullPaymentReason?.toLowerCase()}
             </p>
           )}
+          <div className="mt-5 flex flex-wrap gap-2">
+            <FavoriteButton slug={tour.slug} title={tour.shortTitle} destinationSlugs={tour.destinationSlugs} variant="inline" />
+            <CompareToggle slug={tour.slug} title={tour.shortTitle} />
+          </div>
         </header>
       </div>
 

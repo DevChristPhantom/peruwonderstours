@@ -223,14 +223,74 @@ enum DocumentType {
   @@map("document_type")
 }
 
+/// Finalidades que requieren consentimiento (Ley 29733; brain/wiki/normativa/proteccion-de-datos.md §2.3).
+/// OBSOLETOS desde Sprint 2 (PostgreSQL no permite DROP VALUE): `privacy_policy` y
+/// `terms_and_conditions` (son acuse/aceptación contractual -> `legal_acceptances`) y
+/// `marketing` (separado por canal: `marketing_email`, `marketing_whatsapp`). La API ya no los escribe.
 enum ConsentPurpose {
   privacy_policy
   terms_and_conditions
   marketing
   international_transfer
   analytics_cookies
+  marketing_email
+  marketing_whatsapp
+  advertising_cookies
+  personalization
+  sensitive_data_health
+  testimonial_publication
 
   @@map("consent_purpose")
+}
+
+/// Cómo se capturó el consentimiento o su revocación (prueba a cargo del responsable, art. 9 Reglamento).
+enum ConsentMethod {
+  checkbox
+  banner
+  email_link
+  otp_signature
+  staff_recorded
+
+  @@map("consent_method")
+}
+
+/// Documentos que se aceptan o acusan (no son consentimientos: art. 7 Reglamento / contrato).
+enum LegalDocument {
+  privacy_policy_ack
+  terms_and_conditions
+  cancellation_policy
+
+  @@map("legal_document")
+}
+
+/// Derechos del titular (Ley 29733 arts. 18-25; Reglamento arts. 61-87).
+enum DataSubjectRequestType {
+  information
+  access
+  portability
+  rectification
+  cancellation
+  opposition
+  revoke_consent
+
+  @@map("data_subject_request_type")
+}
+
+enum DataSubjectRequestStatus {
+  received
+  in_progress
+  answered
+  rejected
+  withdrawn
+
+  @@map("data_subject_request_status")
+}
+
+enum EmailDeliveryStatus {
+  sent
+  failed
+
+  @@map("email_delivery_status")
 }
 
 enum ComplaintType {
@@ -307,6 +367,7 @@ enum SequenceScope {
   booking
   complaint
   invoice
+  data_subject_request
 
   @@map("sequence_scope")
 }
@@ -416,11 +477,16 @@ model Tour {
   /// Versión de la política de cancelación aplicable (se congela en la reserva).
   cancellationPolicyCode String?   @map("cancellation_policy_code") @db.VarChar(40)
   publishedAt    DateTime?         @map("published_at") @db.Timestamptz(6)
+  /// Bloqueo optimista del backoffice (HU-7.1 edición concurrente).
+  version        Int               @default(0)
+  /// Último usuario del staff que modificó el tour (mensaje de conflicto de edición).
+  updatedByUserId String?          @map("updated_by_user_id") @db.Uuid
   createdAt      DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
   deletedAt      DateTime?         @map("deleted_at") @db.Timestamptz(6)
 
   category     Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  updatedBy    User?             @relation("TourUpdatedBy", fields: [updatedByUserId], references: [id], onDelete: SetNull)
   translations TourTranslation[]
   media        TourMedia[]
   destinations TourDestination[]
@@ -544,6 +610,7 @@ model Season {
   endDate   DateTime @map("end_date") @db.Date
   /// Mayor prioridad gana si dos temporadas se solapan.
   priority  Int      @default(0) @db.SmallInt
+  version   Int      @default(0)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
@@ -570,6 +637,7 @@ model Rate {
   minGroupSize Int      @default(1) @map("min_group_size") @db.SmallInt
   maxGroupSize Int?     @map("max_group_size") @db.SmallInt
   isActive    Boolean   @default(true) @map("is_active")
+  version     Int       @default(0)
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
   deletedAt   DateTime? @map("deleted_at") @db.Timestamptz(6)
@@ -770,6 +838,9 @@ model Booking {
   confirmedAt    DateTime?     @map("confirmed_at") @db.Timestamptz(6)
   cancelledAt    DateTime?     @map("cancelled_at") @db.Timestamptz(6)
   cancellationReason String?   @map("cancellation_reason") @db.VarChar(500)
+  /// Reembolso adeudado según la política de cancelación vigente al cancelar (céntimos).
+  /// Lo calcula el backoffice; los reembolsos efectivos suman refundedAmount.
+  refundDueAmount BigInt?      @map("refund_due_amount")
   completedAt    DateTime?     @map("completed_at") @db.Timestamptz(6)
   createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -785,6 +856,7 @@ model Booking {
   payments      Payment[]
   invoices      Invoice[]
   complaints    Complaint[]
+  legalAcceptances LegalAcceptance[]
 
   // "Mis reservas".
   @@index([customerId, createdAt(sort: Desc)])
@@ -1006,6 +1078,8 @@ model Customer {
   bookings     Booking[]
   sessions     AuthSession[]
   consents     Consent[]
+  legalAcceptances LegalAcceptance[]
+  dataSubjectRequests DataSubjectRequest[]
   testimonials Testimonial[]
 
   @@map("customers")
@@ -1019,21 +1093,50 @@ model User {
   role         UserRole
   status       AccountStatus @default(active)
   passwordHash String        @map("password_hash")
-  /// Secreto TOTP cifrado (MFA obligatorio para admin).
+  /// Secreto TOTP cifrado (AES-256-GCM). MFA obligatorio para todo el staff (Sprint 2).
   mfaSecretEnc Bytes?        @map("mfa_secret_enc")
+  /// null = enrolamiento pendiente (el secreto puede existir sin confirmar).
+  mfaEnabledAt DateTime?     @map("mfa_enabled_at") @db.Timestamptz(6)
+  /// Último time step TOTP aceptado (anti-replay del mismo código).
+  mfaLastTimeStep BigInt?    @map("mfa_last_time_step")
+  /// Intentos fallidos consecutivos (contraseña o segundo factor) para el bloqueo progresivo.
+  failedLoginCount Int       @default(0) @map("failed_login_count")
+  lockedUntil  DateTime?     @map("locked_until") @db.Timestamptz(6)
+  lastFailedLoginAt DateTime? @map("last_failed_login_at") @db.Timestamptz(6)
+  passwordChangedAt DateTime? @map("password_changed_at") @db.Timestamptz(6)
+  version      Int           @default(0)
   lastLoginAt  DateTime?     @map("last_login_at") @db.Timestamptz(6)
   createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
   deletedAt    DateTime?     @map("deleted_at") @db.Timestamptz(6)
 
+  recoveryCodes        UserRecoveryCode[]
+  toursUpdated         Tour[]          @relation("TourUpdatedBy")
+  complaintsReclassified Complaint[]   @relation("ComplaintReclassifiedBy")
+  dataSubjectRequestsResponded DataSubjectRequest[] @relation("DsrRespondedBy")
   sessions             AuthSession[]
   bookingsCreated      Booking[]
   paymentsRecorded     Payment[]
-  complaintsResponded  Complaint[]
+  complaintsResponded  Complaint[]    @relation("ComplaintRespondedBy")
   testimonialsApproved Testimonial[]
   blogPosts            BlogPost[]
 
   @@map("users")
+}
+
+/// Códigos de recuperación del segundo factor (un solo uso). Solo se guarda SHA-256 (hex);
+/// los códigos se muestran una única vez al enrolar o regenerar.
+model UserRecoveryCode {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  codeHash  String    @map("code_hash") @db.Char(64)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, codeHash])
+  @@map("user_recovery_codes")
 }
 
 /// Refresh tokens con rotación. Solo se guarda el hash. `familyId` agrupa la cadena
@@ -1047,8 +1150,13 @@ model AuthSession {
   replacedById String?   @map("replaced_by_id") @db.Uuid
   ip           String?   @db.Inet
   userAgent    String?   @map("user_agent") @db.VarChar(400)
+  /// Vencimiento por inactividad de este refresh token.
   expiresAt    DateTime  @map("expires_at") @db.Timestamptz(6)
+  /// Vencimiento absoluto de la familia (no se extiende al rotar).
+  absoluteExpiresAt DateTime @map("absolute_expires_at") @db.Timestamptz(6)
   revokedAt    DateTime? @map("revoked_at") @db.Timestamptz(6)
+  /// rotated | logout | logout_all | reuse_detected | admin | password_changed | mfa_reset
+  revokedReason String?  @map("revoked_reason") @db.VarChar(40)
   createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
   customer Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
@@ -1061,24 +1169,98 @@ model AuthSession {
   @@map("auth_sessions")
 }
 
-/// Consentimiento (Ley 29733): una fila por otorgamiento o revocación (histórico).
+/// Consentimiento v2 (Ley 29733): una fila por otorgamiento o revocación (histórico, append-only).
+/// El titular puede no tener cuenta: se identifica por `subjectEmailHash` (HMAC del correo
+/// normalizado) y/o `anonymousId` (cookie de consentimiento); CHECK de al menos un identificador.
 model Consent {
-  id            String         @id @default(uuid(7)) @db.Uuid
-  customerId    String         @map("customer_id") @db.Uuid
-  purpose       ConsentPurpose
-  policyVersion String         @map("policy_version") @db.VarChar(40)
-  granted       Boolean
-  ip            String?        @db.Inet
-  userAgent     String?        @map("user_agent") @db.VarChar(400)
-  /// Dónde se capturó: checkout, registro, banner de cookies, perfil.
-  source        String         @db.VarChar(40)
-  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  id               String         @id @default(uuid(7)) @db.Uuid
+  customerId       String?        @map("customer_id") @db.Uuid
+  /// HMAC-SHA256 (clave PII) del correo en minúsculas: permite revocar sin cuenta.
+  subjectEmailHash Bytes?         @map("subject_email_hash")
+  /// Identificador del navegador para el banner de cookies (sin correo).
+  anonymousId      String?        @map("anonymous_id") @db.Uuid
+  purpose          ConsentPurpose
+  policyVersion    String         @map("policy_version") @db.VarChar(40)
+  /// SHA-256 (hex) del texto exacto mostrado al titular.
+  textHash         String?        @map("text_hash") @db.Char(64)
+  locale           Locale?
+  granted          Boolean
+  method           ConsentMethod  @default(checkbox)
+  ip               String?        @db.Inet
+  userAgent        String?        @map("user_agent") @db.VarChar(400)
+  /// Dónde se capturó: checkout, registro, banner de cookies, perfil, unsubscribe_link, backoffice.
+  source           String         @db.VarChar(40)
+  createdAt        DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Restrict)
 
-  // Estado vigente = última fila por (customer, purpose).
+  // Estado vigente = última fila por (titular, purpose).
   @@index([customerId, purpose, createdAt(sort: Desc)])
+  @@index([subjectEmailHash, purpose, createdAt(sort: Desc)])
+  @@index([anonymousId, purpose, createdAt(sort: Desc)])
   @@map("consents")
+}
+
+/// Acuse de la política de privacidad y aceptación de T&C / política de cancelación
+/// (no son consentimientos: art. 7 Reglamento Ley 29733; art. 47 Código del Consumidor).
+/// Append-only.
+model LegalAcceptance {
+  id               String        @id @default(uuid(7)) @db.Uuid
+  customerId       String?       @map("customer_id") @db.Uuid
+  bookingId        String?       @map("booking_id") @db.Uuid
+  subjectEmailHash Bytes         @map("subject_email_hash")
+  document         LegalDocument
+  documentVersion  String        @map("document_version") @db.VarChar(40)
+  textHash         String?       @map("text_hash") @db.Char(64)
+  locale           Locale?
+  ip               String?       @db.Inet
+  userAgent        String?       @map("user_agent") @db.VarChar(400)
+  source           String        @db.VarChar(40)
+  createdAt        DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  customer Customer? @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  booking  Booking?  @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+
+  @@index([customerId, document, createdAt(sort: Desc)])
+  @@index([bookingId])
+  @@index([subjectEmailHash, document])
+  @@map("legal_acceptances")
+}
+
+/// Solicitudes de derechos del titular (ARCO + portabilidad + revocación). Plazos en días
+/// hábiles desde el día siguiente a la recepción: información 8, acceso/portabilidad 20,
+/// rectificación/cancelación/oposición/revocación 10; ampliable una vez (salvo información).
+model DataSubjectRequest {
+  id                String                   @id @default(uuid(7)) @db.Uuid
+  /// ARCO-2026-000001 (document_sequences, scope data_subject_request).
+  code              String                   @unique @db.VarChar(20)
+  type              DataSubjectRequestType
+  status            DataSubjectRequestStatus @default(received)
+  subjectName       String                   @map("subject_name") @db.VarChar(200)
+  subjectEmail      String                   @map("subject_email") @db.VarChar(254)
+  subjectEmailHash  Bytes                    @map("subject_email_hash")
+  customerId        String?                  @map("customer_id") @db.Uuid
+  /// email | web | office | phone | letter
+  channel           String                   @db.VarChar(20)
+  detail            String
+  receivedAt        DateTime                 @map("received_at") @db.Timestamptz(6)
+  dueAt             DateTime                 @map("due_at") @db.Timestamptz(6)
+  extendedAt        DateTime?                @map("extended_at") @db.Timestamptz(6)
+  extensionReason   String?                  @map("extension_reason") @db.VarChar(1000)
+  responseText      String?                  @map("response_text")
+  respondedAt       DateTime?                @map("responded_at") @db.Timestamptz(6)
+  respondedByUserId String?                  @map("responded_by_user_id") @db.Uuid
+  createdByUserId   String?                  @map("created_by_user_id") @db.Uuid
+  version           Int                      @default(0)
+  createdAt         DateTime                 @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime                 @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  customer    Customer? @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  respondedBy User?     @relation("DsrRespondedBy", fields: [respondedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([status, dueAt])
+  @@index([subjectEmailHash])
+  @@map("data_subject_requests")
 }
 
 // -----------------------------------------------------------------------------
@@ -1165,8 +1347,18 @@ model Complaint {
   // Solución directa (art. 6-A): suspende el plazo hasta 5 días hábiles.
   settlementOfferText String?           @map("settlement_offer_text")
   settlementOfferedAt DateTime?         @map("settlement_offered_at") @db.Timestamptz(6)
+  /// Fin de la suspensión: 5.º día hábil después de la oferta (si no acepta, se reanuda el plazo).
+  settlementExpiresAt DateTime?         @map("settlement_expires_at") @db.Timestamptz(6)
   settlementAcceptedAt DateTime?        @map("settlement_accepted_at") @db.Timestamptz(6)
   settlementAcceptanceEvidence String?  @map("settlement_acceptance_evidence")
+  /// Rechazo expreso o vencimiento sin respuesta: el plazo de respuesta se reanuda.
+  settlementRejectedAt DateTime?        @map("settlement_rejected_at") @db.Timestamptz(6)
+  /// Vencimiento original (15 días hábiles) antes de suspensiones por solución directa.
+  originalResponseDueAt DateTime?       @map("original_response_due_at") @db.Timestamptz(6)
+  // Reclasificación queja <-> reclamo (se conserva declaredType).
+  reclassifiedAt     DateTime?          @map("reclassified_at") @db.Timestamptz(6)
+  reclassifiedByUserId String?          @map("reclassified_by_user_id") @db.Uuid
+  reclassificationReason String?        @map("reclassification_reason") @db.VarChar(500)
   // Constancia al consumidor
   acknowledgmentSentAt DateTime?        @map("acknowledgment_sent_at") @db.Timestamptz(6)
   acknowledgmentDeliveryRef String?     @map("acknowledgment_delivery_ref") @db.VarChar(200)
@@ -1179,8 +1371,9 @@ model Complaint {
   createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt          DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  booking     Booking? @relation(fields: [bookingId], references: [id], onDelete: Restrict)
-  respondedBy User?    @relation(fields: [respondedByUserId], references: [id], onDelete: SetNull)
+  booking        Booking? @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  respondedBy    User?    @relation("ComplaintRespondedBy", fields: [respondedByUserId], references: [id], onDelete: SetNull)
+  reclassifiedBy User?    @relation("ComplaintReclassifiedBy", fields: [reclassifiedByUserId], references: [id], onDelete: SetNull)
 
   @@unique([year, sequence])
   // Bandeja de pendientes ordenada por vencimiento.
@@ -1350,10 +1543,35 @@ model OutboxEvent {
   availableAt   DateTime  @default(now()) @map("available_at") @db.Timestamptz(6)
   publishedAt   DateTime? @map("published_at") @db.Timestamptz(6)
   lastError     String?   @map("last_error")
+  /// Clave de deduplicación (p. ej. recordatorio de saldo por reserva y umbral). NULL = sin dedupe.
+  dedupeKey     String?   @unique @map("dedupe_key") @db.VarChar(160)
   createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  deliveries EmailDelivery[]
 
   @@index([availableAt], where: raw("published_at IS NULL"))
   @@map("outbox_events")
+}
+
+/// Correos enviados por el relay del outbox. UNIQUE (evento, plantilla): un reintento del
+/// relay nunca vuelve a enviar un correo ya entregado al transporte (idempotencia).
+/// Sin direcciones en claro: `recipientHash` = HMAC del destinatario.
+model EmailDelivery {
+  id            String              @id @default(uuid(7)) @db.Uuid
+  outboxEventId String              @map("outbox_event_id") @db.Uuid
+  template      String              @db.VarChar(60)
+  status        EmailDeliveryStatus
+  /// Message-ID determinista del correo (referencia de entrega).
+  messageId     String              @map("message_id") @db.VarChar(200)
+  recipientHash Bytes               @map("recipient_hash")
+  /// Respuesta del transporte (SMTP: id del servidor) o archivo .eml en desarrollo.
+  transportRef  String?             @map("transport_ref") @db.VarChar(300)
+  sentAt        DateTime            @default(now()) @map("sent_at") @db.Timestamptz(6)
+
+  outboxEvent OutboxEvent @relation(fields: [outboxEventId], references: [id], onDelete: Restrict)
+
+  @@unique([outboxEventId, template])
+  @@map("email_deliveries")
 }
 
 /// Idempotencia persistente de escrituras críticas (Idempotency-Key). Una fila por

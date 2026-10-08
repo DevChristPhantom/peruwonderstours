@@ -247,7 +247,7 @@ export class PaymentUseCases {
       let outcome: SyncOutcome = change.ignored ? 'ignored' : 'no_change';
       let booking: Booking | null = null;
       if (change.changed && change.to === 'succeeded') {
-        const applied = await this.lifecycle.applySucceededPayment(repos, payment.bookingId, payment.bookingCurrencyAmount, now, actor);
+        const applied = await this.lifecycle.applySucceededPayment(repos, payment.bookingId, payment.bookingCurrencyAmount, now, actor, payment.id);
         outcome = applied.outcome;
         booking = applied.booking;
       }

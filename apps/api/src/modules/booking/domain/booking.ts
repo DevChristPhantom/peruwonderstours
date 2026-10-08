@@ -68,6 +68,8 @@ export interface BookingSnapshot {
   confirmedAt: Date | null;
   cancelledAt: Date | null;
   cancellationReason: string | null;
+  /** Reembolso adeudado según la política de cancelación (lo fija el backoffice al cancelar). */
+  refundDueAmount?: bigint | null;
   completedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -165,6 +167,7 @@ export class Booking {
       confirmedAt: null,
       cancelledAt: null,
       cancellationReason: null,
+      refundDueAmount: null,
       completedAt: null,
       createdAt: now,
       updatedAt: now,
@@ -333,6 +336,30 @@ export class Booking {
     this.props.cancellationReason = reason.slice(0, 500);
     this.props.holdExpiresAt = null;
     return { from, to: 'cancelled', changed: from !== 'cancelled' };
+  }
+
+  /**
+   * Cancelación por el staff (HU-7.5): fija el reembolso adeudado según la política vigente
+   * y marca los ítems como cancelados. El inventario lo libera BookingLifecycle.
+   */
+  cancelByStaff(reason: string, now: Date, refundDue: Money): StatusTransitionResult {
+    if (refundDue.currency !== this.props.currency) throw new CurrencyMismatchError(this.props.currency, refundDue.currency);
+    const maxRefundable = this.paid.subtract(this.refunded);
+    if (refundDue.amount < 0n || refundDue.greaterThan(maxRefundable)) {
+      throw new BusinessRuleError('refund-exceeds-paid', 'El reembolso no puede superar lo pagado neto.', {
+        paid: this.props.paidAmount,
+        refunded: this.props.refundedAmount,
+        attempted: refundDue.amount,
+      });
+    }
+    const result = this.cancel(reason, now, 'user');
+    this.props.refundDueAmount = refundDue.amount + this.props.refundedAmount;
+    for (const item of this.props.items) item.status = 'cancelled';
+    return result;
+  }
+
+  get snapshot(): Readonly<BookingSnapshot> {
+    return this.props;
   }
 
   complete(now: Date): void {

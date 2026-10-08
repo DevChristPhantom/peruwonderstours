@@ -9,7 +9,7 @@ import {
 } from '../../../shared/domain/idempotency.js';
 import { Money } from '../../../shared/domain/money.js';
 import type { Clock, IdGenerator } from '../../../shared/domain/ports.js';
-import { serviceEndDate, snapshotTitle } from '../../catalog/domain/tour.js';
+import { serviceEndDate, snapshotTitle, type Locale } from '../../catalog/domain/tour.js';
 import { CartHasIssuesError, loadCartWithToken, paymentPlanItems, type CartUseCases } from '../../cart/application/cart.use-cases.js';
 import { createCustomer, normalizeEmail } from '../../customers/domain/customer.js';
 import { Booking, type BookingItemSnapshot } from '../domain/booking.js';
@@ -35,6 +35,11 @@ export interface CheckoutInput {
   customer: { email: string; firstName: string; lastName: string; country?: string | null };
   acceptTerms: boolean;
   acceptPrivacyPolicy: boolean;
+  /** Consentimientos opcionales de marketing por canal (Ley 29733; nunca obligatorios). */
+  marketingEmailOptIn?: boolean;
+  marketingWhatsappOptIn?: boolean;
+  /** IP y User-Agent del comprador (prueba de la aceptación). */
+  meta?: { ip: string | null; userAgent: string | null };
   customerNotes?: string | null;
   /** Total que el cliente vio y aceptó (céntimos). Si difiere del actual: 409. */
   expectedTotalAmount?: bigint;
@@ -53,6 +58,14 @@ export interface CheckoutResult {
 
 const CHECKOUT_SCOPE = 'checkout';
 
+/** Registro de aceptaciones legales y consentimientos en la transacción del checkout. */
+export interface CheckoutPrivacyRecorder {
+  recordCheckout(
+    repos: TransactionalRepositories,
+    params: { customerId: string; bookingId: string; email: string; locale: Locale; marketingEmail: boolean; marketingWhatsapp: boolean; meta: { ip: string | null; userAgent: string | null }; now: Date },
+  ): Promise<void>;
+}
+
 export class BookingUseCases {
   private readonly lifecycle = new BookingLifecycle();
 
@@ -62,6 +75,7 @@ export class BookingUseCases {
     private readonly ids: IdGenerator,
     private readonly carts: CartUseCases,
     private readonly settings: BookingSettings,
+    private readonly privacy: CheckoutPrivacyRecorder | null = null,
   ) {}
 
   /**
@@ -200,6 +214,17 @@ export class BookingUseCases {
 
       cart.markConverted(now);
       await repos.carts.save(cart);
+
+      await this.privacy?.recordCheckout(repos, {
+        customerId: customer.id,
+        bookingId: booking.id,
+        email: customer.email,
+        locale: cart.locale,
+        marketingEmail: input.marketingEmailOptIn ?? false,
+        marketingWhatsapp: input.marketingWhatsappOptIn ?? false,
+        meta: input.meta ?? { ip: null, userAgent: null },
+        now,
+      });
 
       await repos.idempotency.insert({
         scope: CHECKOUT_SCOPE,

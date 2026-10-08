@@ -211,7 +211,7 @@ function clean(value: string): string {
 }
 
 /** Normaliza espacios y correos (minúsculas) antes de validar y de calcular la huella. */
-function normalizeDraft(draft: ComplaintDraft): ComplaintDraft {
+export function normalizeDraft(draft: ComplaintDraft): ComplaintDraft {
   return {
     ...draft,
     consumer: {

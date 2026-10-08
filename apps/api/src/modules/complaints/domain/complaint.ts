@@ -151,4 +151,13 @@ export interface ComplaintSnapshot {
   submittedAt: Date;
   ip: string | null;
   accessTokenHash: string | null;
+  /** Libro de respaldo (art. 4-A): n.º de hoja física y fecha de transcripción. */
+  backupSheetNumber?: string | null;
+  transcribedAt?: Date | null;
+  acknowledgmentSentAt?: Date | null;
+  acknowledgmentDeliveryRef?: string | null;
+  responseDeliveryRef?: string | null;
+  respondedAt?: Date | null;
+  settlementOfferText?: string | null;
+  settlementExpiresAt?: Date | null;
 }

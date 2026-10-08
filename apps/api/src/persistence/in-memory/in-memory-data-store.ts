@@ -1,5 +1,6 @@
 import type { IdempotencyRecord } from '../../shared/domain/idempotency.js';
-import type { OutboxMessage } from '../../shared/domain/outbox.js';
+import type { EmailDeliveryRecord, OutboxMessage } from '../../shared/domain/outbox.js';
+import type { ConsentRecord, LegalAcceptanceRecord } from '../../modules/privacy/domain/consent.js';
 import type { ComplaintSnapshot } from '../../modules/complaints/domain/complaint.js';
 import { PERU_NATIONAL_HOLIDAYS } from '../../modules/complaints/infrastructure/peru-national-holidays.js';
 import type { BookingSnapshot } from '../../modules/booking/domain/booking.js';
@@ -19,6 +20,13 @@ export interface CatalogData {
   categories: Category[];
 }
 
+/** Evento del outbox con su estado de publicación (equivalente a la fila de outbox_events). */
+export interface StoredOutboxMessage extends OutboxMessage {
+  attempts: number;
+  publishedAt: Date | null;
+  lastError: string | null;
+}
+
 /** Estado mutable transaccional: se guarda como registros planos clonables. */
 export interface InMemoryState {
   departures: Map<string, DepartureSnapshot>;
@@ -32,7 +40,10 @@ export interface InMemoryState {
   idempotency: Map<string, IdempotencyRecord>;
   complaints: Map<string, ComplaintSnapshot>;
   complaintSequences: Map<number, number>;
-  outbox: Map<string, OutboxMessage>;
+  outbox: Map<string, StoredOutboxMessage>;
+  emailDeliveries: Map<string, EmailDeliveryRecord>;
+  consents: ConsentRecord[];
+  legalAcceptances: LegalAcceptanceRecord[];
   /** Días no hábiles (CalendarDate) del ámbito nacional. */
   holidays: Set<string>;
 }
@@ -51,6 +62,9 @@ export function emptyState(): InMemoryState {
     complaints: new Map(),
     complaintSequences: new Map(),
     outbox: new Map(),
+    emailDeliveries: new Map(),
+    consents: [],
+    legalAcceptances: [],
     holidays: new Set(PERU_NATIONAL_HOLIDAYS),
   };
 }

@@ -1,20 +1,33 @@
-import { Clock } from "lucide-react";
+import { Clock, MapPin, MessageCircle, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PayBookingForm } from "@/components/checkout/PayBookingForm";
 import { buttonClass } from "@/components/ui/button-styles";
+import { QrCode } from "@/components/voucher/QrCode";
+import { VoucherCalendarButton } from "@/components/voucher/VoucherCalendarButton";
+import { VoucherOffline, type VoucherSnapshot } from "@/components/voucher/VoucherOffline";
 import { getBookingByCode, type Booking, type BookingStatus } from "@/lib/api/bookings";
-import { readBookingToken } from "@/lib/checkout/session";
+import { BOOKING_CODE_RE, readBookingToken } from "@/lib/checkout/session";
 import { formatDate, formatDateTime, formatInstantDate, formatMoney } from "@/lib/format";
 import { PAYMENTS_MODE } from "@/lib/payments/types";
-import { SITE, whatsappHref } from "@/lib/site";
+import { SITE } from "@/lib/site";
+import { bookingHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
 
-export const metadata: Metadata = {
-  title: "Tu reserva",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata({ params }: PageProps<"/es/reserva/[codigo]">): Promise<Metadata> {
+  const { codigo } = await params;
+  const code = decodeURIComponent(codigo).toUpperCase();
+  return {
+    title: "Tu reserva",
+    robots: { index: false, follow: false },
+    // HU-B.A2: voucher instalable; el manifest solo contiene el código (sin datos personales).
+    ...(BOOKING_CODE_RE.test(code) ? { manifest: `/es/reserva/${code}/manifest.webmanifest` } : {}),
+  };
+}
+
+/** Estados con voucher utilizable (reserva confirmada). */
+const VOUCHER_STATUSES: BookingStatus[] = ["confirmed", "partially_paid", "paid", "completed"];
 
 /** SSR en cada visita: estado y montos cambian con cada pago. */
 export const dynamic = "force-dynamic";
@@ -50,11 +63,23 @@ export default async function BookingPage({ params }: PageProps<"/es/reserva/[co
   const status = STATUS[booking.status] ?? { label: booking.status, tone: "neutral" as const };
   const unpaidHold = (booking.status === "held" || booking.status === "pending") && booking.paid.amount === 0;
   const canPay = booking.nextPayment !== null && !["cancelled", "refunded", "completed", "paid"].includes(booking.status);
+  const hasVoucher = VOUCHER_STATUSES.includes(booking.status);
+  // Momento de esta respuesta: queda impreso en la copia sin conexión ("Actualizado el …").
+  const renderedAt = new Date().toISOString();
+  const snapshot: VoucherSnapshot = {
+    status: status.label,
+    items: booking.items.map((i) => ({ id: i.id, title: i.tourTitle, date: i.travelDate, pax: i.paxCount })),
+  };
+  const helpMessage = bookingHelpMessage(
+    booking.code,
+    booking.items.map((i) => ({ title: i.tourTitle, date: i.travelDate })),
+  );
   const toneClass =
     status.tone === "ok" ? "bg-success-soft text-success" : status.tone === "warn" ? "bg-warning-soft text-warning" : "bg-surface-muted text-foreground-muted";
 
   return (
-    <div className="pwt-container py-12">
+    // data-pwt-voucher: marcador que el service worker exige para guardar la página de ESTE código.
+    <div className="pwt-container py-12" data-pwt-voucher={booking.code}>
       {PAYMENTS_MODE === "sandbox" ? (
         <p className="mx-auto mb-8 max-w-[720px] rounded-md border border-dashed border-warning bg-warning-soft px-4 py-2 text-center text-sm text-warning">
           Sandbox: los pagos de esta reserva son simulados; no se cobró dinero real.
@@ -79,6 +104,53 @@ export default async function BookingPage({ params }: PageProps<"/es/reserva/[co
 
       <div className="mx-auto mt-12 grid max-w-[1120px] gap-8 lg:grid-cols-[1fr_360px]">
         <div className="space-y-8">
+          {hasVoucher ? (
+            <section aria-labelledby="voucher-title" className="rounded-lg border-2 border-primary bg-surface p-6">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
+                <div className="mx-auto shrink-0 sm:mx-0">
+                  <QrCode value={booking.code} label={`Código QR de la reserva ${booking.code}`} size={176} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h2 id="voucher-title" className="text-h4 font-medium">
+                    Mi voucher
+                  </h2>
+                  <p className="mt-1 font-mono text-h3 tracking-wide">{booking.code}</p>
+                  <p className="mt-1 text-sm text-foreground-muted">
+                    Muéstralo al guía al inicio del tour. El QR solo contiene el código de reserva.
+                  </p>
+                  <ul className="mt-4 space-y-3">
+                    {booking.items.map((item) => (
+                      <li key={item.id} className="border-l-2 border-primary pl-3">
+                        <p className="font-medium">{item.tourTitle}</p>
+                        <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-foreground-muted">
+                          <span>{formatDate(item.travelDate)}</span>
+                          <span className="inline-flex items-center gap-1">
+                            <Users aria-hidden size={14} strokeWidth={1.5} />
+                            {item.paxCount} {item.paxCount === 1 ? "viajero" : "viajeros"}
+                          </span>
+                        </p>
+                        {/* TODO(API): hora y punto de recojo por ítem cuando operaciones los cargue. */}
+                        <p className="mt-1 inline-flex items-center gap-1 text-sm text-foreground-muted">
+                          <MapPin aria-hidden size={14} strokeWidth={1.5} />
+                          Hora y punto de recojo: te los confirmamos por WhatsApp.
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-4 text-sm text-foreground-muted">
+                    Actualizado el {formatDateTime(renderedAt)} (hora de Lima).
+                  </p>
+                </div>
+              </div>
+              <div className="mt-6 space-y-4 border-t border-border pt-4">
+                <VoucherOffline code={booking.code} renderedAt={renderedAt} snapshot={snapshot} autoSave />
+                <VoucherCalendarButton code={booking.code} items={snapshot.items} />
+              </div>
+            </section>
+          ) : (
+            <VoucherOffline code={booking.code} renderedAt={renderedAt} snapshot={snapshot} autoSave={false} />
+          )}
+
           <section aria-labelledby="pay-status" className="rounded-lg border border-border bg-surface p-6">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <h2 id="pay-status" className="text-h4 font-medium">
@@ -168,11 +240,12 @@ export default async function BookingPage({ params }: PageProps<"/es/reserva/[co
               ¿Necesitas cambiar algo?
             </h2>
             <a
-              href={whatsappHref(`Hola, tengo una consulta sobre mi reserva ${booking.code}.`)}
+              href={whatsappHref(helpMessage)}
               target="_blank"
               rel="noopener noreferrer"
-              className="pwt-link mt-1 inline-flex min-h-11 items-center"
+              className="pwt-link mt-1 inline-flex min-h-11 items-center gap-2"
             >
+              <MessageCircle aria-hidden size={18} strokeWidth={1.5} />
               Escríbenos por WhatsApp {SITE.whatsapp.display}
             </a>
             <p>

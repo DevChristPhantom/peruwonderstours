@@ -10,6 +10,10 @@ import { CatalogModule } from './modules/catalog/catalog.module.js';
 import { ComplaintsModule } from './modules/complaints/complaints.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { PaymentsModule } from './modules/payments/payments.module.js';
+import { BackofficeModule } from './modules/backoffice/backoffice.module.js';
+import { IdentityModule } from './modules/identity/identity.module.js';
+import { NotificationsModule } from './modules/notifications/notifications.module.js';
+import { PrivacyModule } from './modules/privacy/privacy.module.js';
 import { PersistenceModule } from './persistence/persistence.module.js';
 import { throttlerOptions } from './shared/interface/throttling.js';
 
@@ -21,12 +25,16 @@ import { throttlerOptions } from './shared/interface/throttling.js';
       useFactory: (config: ConfigService) => throttlerOptions(settingsFromConfigService(config).throttle),
     }),
     PersistenceModule,
+    IdentityModule,
+    PrivacyModule,
     HealthModule,
     CatalogModule,
     CartModule,
     BookingModule,
     PaymentsModule,
     ComplaintsModule,
+    NotificationsModule,
+    BackofficeModule,
   ],
   // Rate limiting global (429 problem+json vía ProblemDetailsFilter).
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
