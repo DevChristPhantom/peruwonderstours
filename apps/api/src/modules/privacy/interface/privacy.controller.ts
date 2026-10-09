@@ -41,6 +41,25 @@ export class PrivacyController {
     return { data: await this.privacy.previewUnsubscribe(query.token) };
   }
 
+  @Get('marketing-confirmation')
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({ summary: 'Doble opt-in (H-05): estado de las finalidades del enlace de confirmación.' })
+  @ApiUnauthorizedResponse({ type: ProblemDetailsDto, description: 'invalid-confirmation-link (firma inválida o vencido: 7 días)' })
+  async previewConfirmation(@Query() query: UnsubscribeQueryDto) {
+    return { data: await this.privacy.previewConfirmation(query.token) };
+  }
+
+  @Post('marketing-confirmation')
+  @HttpCode(200)
+  @StrictThrottle()
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({ summary: 'Doble opt-in (H-05): el titular confirma el marketing pedido en el checkout. Idempotente.' })
+  @ApiOkResponse({ description: '`{ data: { confirmed: [...], alreadyConfirmed: [...], notPending: [...] } }`' })
+  @ApiUnauthorizedResponse({ type: ProblemDetailsDto, description: 'invalid-confirmation-link' })
+  async confirm(@Body() body: UnsubscribeQueryDto, @ReqMeta() meta: RequestMeta) {
+    return { data: await this.privacy.confirmMarketing(body.token, meta) };
+  }
+
   @Post('unsubscribe')
   @HttpCode(200)
   @StrictThrottle()

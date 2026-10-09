@@ -27,7 +27,7 @@ import type { Customer, CustomerRepository } from '../../modules/customers/domai
 import { DuplicatePaymentEventError } from '../../modules/payments/application/payment.use-cases.js';
 import { Payment, type PaymentEvent, type PaymentProviderCode } from '../../modules/payments/domain/payment.js';
 import type { PaymentEventRepository, PaymentRepository } from '../../modules/payments/domain/payment.repository.js';
-import { ConflictError } from '../../shared/domain/domain-error.js';
+import { ConcurrencyError, ConflictError } from '../../shared/domain/domain-error.js';
 import type { InMemoryDataStore } from './in-memory-data-store.js';
 
 class InMemoryCartRepository implements CartRepository {
@@ -74,6 +74,10 @@ class InMemoryBookingRepository implements BookingRepository {
     const s = this.store.state.bookings.get(id);
     return Promise.resolve(s ? Booking.restore(s) : null);
   }
+  findByIdForUpdate(id: string): Promise<Booking | null> {
+    // La unidad de trabajo en memoria serializa las transacciones: equivale a FOR UPDATE.
+    return this.findById(id);
+  }
   findByCartId(cartId: string): Promise<Booking | null> {
     const s = [...this.store.state.bookings.values()].find((b) => b.cartId === cartId);
     return Promise.resolve(s ? Booking.restore(s) : null);
@@ -87,7 +91,16 @@ class InMemoryBookingRepository implements BookingRepository {
     // Igual que UNIQUE(cart_id) en PostgreSQL: un carrito genera a lo sumo una reserva.
     const clash = [...this.store.state.bookings.values()].find((b) => b.cartId !== null && b.cartId === snapshot.cartId && b.id !== snapshot.id);
     if (clash) return Promise.reject(new ConflictError('cart-already-checked-out', 'Este carrito ya generó una reserva.'));
-    this.store.state.bookings.set(snapshot.id, snapshot);
+    const stored = this.store.state.bookings.get(snapshot.id);
+    if (stored) {
+      // Espejo del UPDATE ... WHERE version = $leida de PostgreSQL.
+      if ((stored.version ?? 0) !== (snapshot.version ?? 0)) return Promise.reject(new ConcurrencyError());
+      const next = (snapshot.version ?? 0) + 1;
+      this.store.state.bookings.set(snapshot.id, { ...snapshot, version: next });
+      booking.markPersisted(next);
+      return Promise.resolve();
+    }
+    this.store.state.bookings.set(snapshot.id, { ...snapshot, version: snapshot.version ?? 0 });
     return Promise.resolve();
   }
   findBalanceDueBetween(from: Date, to: Date, limit: number): Promise<Booking[]> {
@@ -134,6 +147,21 @@ class InMemoryPaymentRepository implements PaymentRepository {
     const s = this.all().find((p) => p.provider === provider && p.providerPaymentId === providerPaymentId);
     return Promise.resolve(s ? Payment.restore(s) : null);
   }
+  findActiveByBooking(bookingId: string): Promise<Payment | null> {
+    const s = this.all()
+      .filter((p) => p.bookingId === bookingId && p.kind !== 'refund' && ['pending', 'requires_action', 'authorized'].includes(p.status))
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0];
+    return Promise.resolve(s ? Payment.restore(s) : null);
+  }
+  findStaleActive(before: Date, limit: number): Promise<Payment[]> {
+    return Promise.resolve(
+      this.all()
+        .filter((p) => p.kind !== 'refund' && ['pending', 'requires_action', 'authorized'].includes(p.status) && p.createdAt.getTime() < before.getTime())
+        .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+        .slice(0, limit)
+        .map((p) => Payment.restore(p)),
+    );
+  }
   findByBooking(bookingId: string): Promise<Payment[]> {
     return Promise.resolve(
       this.all()
@@ -155,6 +183,10 @@ class InMemoryPaymentRepository implements PaymentRepository {
       others.some((p) => p.bookingId === s.bookingId && p.status === 'succeeded' && (p.kind === 'deposit' || p.kind === 'full'))
     ) {
       return Promise.reject(new ConflictError('duplicate-initial-payment', 'La reserva ya tiene un adelanto o pago total exitoso.'));
+    }
+    const active = (p: { kind: string; status: string }) => p.kind !== 'refund' && ['pending', 'requires_action', 'authorized'].includes(p.status);
+    if (active(s) && others.some((p) => p.bookingId === s.bookingId && active(p))) {
+      return Promise.reject(new ConflictError('unique-violation', 'La reserva ya tiene un intento de cobro activo.'));
     }
     this.store.state.payments.set(s.id, s);
     return Promise.resolve();

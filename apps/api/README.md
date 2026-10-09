@@ -91,3 +91,30 @@ Outbox -> relay en proceso (`OUTBOX_RELAY_INTERVAL_MS`): reclamo con lease y `FO
 ### Privacidad (Consents v2)
 
 `consents` admite titular sin cuenta (`subject_email_hash` = HMAC del correo, `anonymous_id`), método y hash del texto; `legal_acceptances` separa acuse de privacidad y aceptación de T&C/política de cancelación (se registran en el checkout junto con `marketingEmailOptIn`/`marketingWhatsappOptIn`, desmarcados por defecto). Baja pública: `GET/POST /api/v1/privacy/unsubscribe` con enlace firmado (HMAC, sin correo en claro). Solicitudes ARCO en `/admin/privacy/requests`.
+
+## Endurecimiento de seguridad (revisión Sprint 2, `brain/wiki/concepts/revision-seguridad-sprint2.md`)
+
+### Cambios de CONTRATO para `apps/admin` y `apps/web`
+
+| Hallazgo | Antes | Ahora |
+|---|---|---|
+| H-14 | `POST /auth/staff/login` devolvía `mfa_required` o `mfa_enrollment_required` | Nuevo estado **`password_change_required`** con `passwordChangeToken` (5 min) cuando la contraseña es temporal (alta desde el backoffice, `--generate` del CLI o reinicio por un admin). El BFF muestra "elige tu contraseña" y llama a **`POST /auth/staff/password/initial`** `{passwordChangeToken, newPassword}`, que devuelve el paso siguiente (`mfa_required` / `mfa_enrollment_required`). Errores: 400 `weak-password` / `password-unchanged`, 401 `invalid-mfa-token`. |
+| H-15 | `GET /admin/bookings?email=` | `GET /admin/bookings` ya **no** acepta `email` (400). Búsqueda con correo: **`POST /admin/bookings/search`** con los mismos filtros en el cuerpo + `email`. `GET /admin/bookings/:code` queda auditado (`BOOKING_PII_VIEWED`). |
+| H-15 | `GET /admin/privacy/consents?email=` | **`POST /admin/privacy/consents/search`** `{email}` (el GET se eliminó). |
+| H-13 | `429 account-locked` solo con correos existentes; bloqueo de la cuenta hasta 1 h | Mismo código, mensaje y `Retry-After` para correos existentes o no. Bloqueo **por cuenta+IP** (5 fallos -> 1, 2, 4... min, tope 1 h) + límite **por cuenta** (20 fallos -> tope 15 min). |
+| H-12 | — | `POST /auth/staff/mfa/recovery-codes` y `POST /auth/staff/password` respetan el bloqueo (429) y, al bloquearse, cierran la sesión actual. |
+| H-01 | Un segundo `POST /bookings/:code/payments` con otra clave creaba otro cobro | Retoma el intento activo (200 + `Idempotent-Replayed: true`, mismo `payment.id`) o 409 `payment-in-progress` si cambió el monto. Pago manual del staff con un cobro en línea en curso: 409 `payment-in-progress`. Nuevo `POST /admin/payments/reconcile` (`payments:refund`). |
+| H-10 | Webhook aprobado sin monto se aceptaba | Se rechaza (`failed`, `amount_missing`); confirmación con otro monto: 422 `payment-amount-mismatch`. |
+| H-16 | `returnUrl` cualquiera | Solo bajo el origen de `PUBLIC_WEB_BASE_URL` (400 `invalid-return-url`). |
+| H-17 | `bookingCode` vinculaba cualquier reserva | `POST /complaints` acepta `X-Booking-Token` opcional; se vincula solo con el token o si el correo coincide con el del comprador; si no, queda en `declaredBookingCode` (detalle admin). |
+| H-05 | Marcar marketing en el checkout otorgaba el consentimiento | Queda **pendiente**: se envía un correo con enlace firmado (7 días). Nuevos públicos **`GET/POST /privacy/marketing-confirmation`** `{token}` (página web `/es/privacidad/confirmar?token=` pendiente en `apps/web`). Sin confirmar no hay marketing ni enlace de baja. |
+| H-19 | CORS con `credentials: true` | `credentials: false` (la API usa Bearer, nunca cookies). |
+
+### Cambios internos
+- H-01: `bookings.version` (UPDATE condicionado) + `SELECT ... FOR UPDATE` en pagos, webhooks, expiración y cancelación; índice único "un cobro activo por reserva"; excedentes y pagos tardíos se reembolsan solos; conciliación cada 5 min (`reconcileStalePayments`).
+- H-03/H-04: contador atómico en SQL (`auth_login_throttle` + `users.failed_login_count = failed_login_count + 1`); `users` se actualiza solo en las columnas que cambian y condicionado por `version`.
+- H-06: `audit_log` con **allowlist** de columnas por tabla (`audit_allowed_columns`) y limpieza de filas existentes.
+- H-11: `SWAGGER_ENABLED` se apaga por defecto en producción y encenderlo falla la validación.
+- H-19: AES-256-GCM con AAD `tabla:columna:id` (formato v2; v1 se sigue leyendo) en hojas de reclamación y secretos TOTP; permisos del guard con `getAllAndMerge`.
+- H-08 (no hecho, sin Redis en este entorno): el rate limiting por IP sigue en memoria del proceso; con más de una réplica hay que usar `ThrottlerStorageRedisService` y exigir `REDIS_URL` en producción. El limitador de login ya es compartido (PostgreSQL).
+- H-09 (sin cambios, decisión de negocio): el rol `agent` sigue registrando pagos manuales.

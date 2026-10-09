@@ -8,6 +8,9 @@ import type {
   AuthSessionRepository,
   IdentityRepositories,
   IdentityStore,
+  LoginThrottleRepository,
+  StaffUserFields,
+  ThrottleKey,
   RecoveryCodeRepository,
   RevocationReason,
   StaffUserRepository,
@@ -35,6 +38,7 @@ function mapUser(row: UserRow): StaffUser {
     lockedUntil: row.lockedUntil,
     lastFailedLoginAt: row.lastFailedLoginAt,
     passwordChangedAt: row.passwordChangedAt,
+    mustChangePassword: row.mustChangePassword,
     lastLoginAt: row.lastLoginAt,
     version: row.version,
     createdAt: row.createdAt,
@@ -72,10 +76,23 @@ function mutableUser(u: StaffUser) {
     lockedUntil: u.lockedUntil,
     lastFailedLoginAt: u.lastFailedLoginAt,
     passwordChangedAt: u.passwordChangedAt,
+    mustChangePassword: u.mustChangePassword,
     lastLoginAt: u.lastLoginAt,
     version: u.version,
     deletedAt: u.deletedAt,
   };
+}
+
+/** Solo las columnas pedidas, en el formato de Prisma (bytea / bigint). */
+function fieldsData(fields: StaffUserFields): Prisma.UserUpdateManyMutationInput {
+  const data: Prisma.UserUpdateManyMutationInput = {};
+  for (const [key, value] of Object.entries(fields)) {
+    if (value === undefined) continue;
+    if (key === 'mfaSecretEnc') data.mfaSecretEnc = value ? bytes(value as Uint8Array) : null;
+    else if (key === 'mfaLastTimeStep') data.mfaLastTimeStep = value === null ? null : BigInt(value as number);
+    else (data as Record<string, unknown>)[key] = value;
+  }
+  return data;
 }
 
 class PrismaStaffUserRepository implements StaffUserRepository {
@@ -91,8 +108,17 @@ class PrismaStaffUserRepository implements StaffUserRepository {
   async insert(u: StaffUser): Promise<void> {
     await this.db.user.create({ data: { id: u.id, email: u.email, createdAt: u.createdAt, ...mutableUser(u) } });
   }
-  async update(u: StaffUser): Promise<void> {
-    await this.db.user.update({ where: { id: u.id }, data: mutableUser(u) });
+  async updateFields(id: string, fields: StaffUserFields, options: { expectedVersion?: number; bumpVersion?: boolean } = {}): Promise<boolean> {
+    const data = fieldsData(fields);
+    if (options.bumpVersion) data.version = { increment: 1 };
+    const result = await this.db.user.updateMany({
+      where: { id, ...(options.expectedVersion !== undefined ? { version: options.expectedVersion } : {}) },
+      data,
+    });
+    return result.count === 1;
+  }
+  async incrementFailedLogins(id: string, now: Date): Promise<void> {
+    await this.db.$executeRaw`UPDATE users SET failed_login_count = failed_login_count + 1, last_failed_login_at = ${now} WHERE id = ${id}::uuid`;
   }
   async list(): Promise<StaffUser[]> {
     return (await this.db.user.findMany({ orderBy: { createdAt: 'asc' } })).map(mapUser);
@@ -146,6 +172,47 @@ class PrismaAuthSessionRepository implements AuthSessionRepository {
   }
 }
 
+/** Contadores atómicos en SQL: N intentos concurrentes cuentan N (H-03). */
+class PrismaLoginThrottleRepository implements LoginThrottleRepository {
+  constructor(private readonly db: PrismaTx) {}
+
+  async retryAfterSeconds(keys: readonly ThrottleKey[], now: Date): Promise<number> {
+    const rows = await this.db.authLoginThrottle.findMany({ where: { key: { in: keys.map((k) => k.key) }, blockedUntil: { gt: now } }, select: { blockedUntil: true } });
+    return Math.max(0, ...rows.map((r) => Math.ceil((r.blockedUntil!.getTime() - now.getTime()) / 1000)));
+  }
+
+  async registerFailure(keys: readonly ThrottleKey[], now: Date): Promise<number> {
+    let wait = 0;
+    for (const k of keys) {
+      // Ventana de 24 h: un fallo viejo no suma. Desde el umbral, espera = base * 2^(n - umbral) con tope.
+      const rows = await this.db.$queryRaw<Array<{ blocked_until: Date | null }>>`
+        INSERT INTO auth_login_throttle AS t (key, account_key, failures, last_failure_at, blocked_until)
+        VALUES (${k.key}, ${k.accountKey}, 1, ${now},
+                CASE WHEN 1 >= ${k.policy.threshold}::int THEN ${now}::timestamptz + make_interval(secs => ${k.policy.baseSeconds}::int) END)
+        ON CONFLICT (key) DO UPDATE SET
+          failures = CASE WHEN t.last_failure_at < ${now}::timestamptz - interval '24 hours' THEN 1 ELSE t.failures + 1 END,
+          last_failure_at = ${now},
+          blocked_until = CASE
+            WHEN (CASE WHEN t.last_failure_at < ${now}::timestamptz - interval '24 hours' THEN 1 ELSE t.failures + 1 END) >= ${k.policy.threshold}::int
+            THEN ${now}::timestamptz + make_interval(secs => LEAST(${k.policy.maxSeconds}::int,
+                   ${k.policy.baseSeconds}::int * power(2, LEAST((CASE WHEN t.last_failure_at < ${now}::timestamptz - interval '24 hours' THEN 1 ELSE t.failures + 1 END) - ${k.policy.threshold}::int, 20))::int))
+            ELSE t.blocked_until END
+        RETURNING blocked_until`;
+      const until = rows[0]?.blocked_until;
+      if (until && until.getTime() > now.getTime()) wait = Math.max(wait, Math.ceil((until.getTime() - now.getTime()) / 1000));
+    }
+    return wait;
+  }
+
+  async reset(keys: readonly ThrottleKey[]): Promise<void> {
+    await this.db.authLoginThrottle.deleteMany({ where: { key: { in: keys.map((k) => k.key) } } });
+  }
+
+  async resetAccount(accountKey: string): Promise<void> {
+    await this.db.authLoginThrottle.deleteMany({ where: { accountKey } });
+  }
+}
+
 class PrismaRecoveryCodeRepository implements RecoveryCodeRepository {
   constructor(private readonly db: PrismaTx) {}
   async replaceAll(userId: string, codeHashes: readonly string[], now: Date): Promise<void> {
@@ -178,6 +245,7 @@ export class PrismaIdentityStore implements IdentityStore {
             users: new PrismaStaffUserRepository(tx),
             sessions: new PrismaAuthSessionRepository(tx),
             recoveryCodes: new PrismaRecoveryCodeRepository(tx),
+            throttle: new PrismaLoginThrottleRepository(tx),
             audit: new PrismaAuditTrail(tx),
           };
           return this.context.run(repos, () => work(repos));
@@ -197,10 +265,11 @@ export interface InMemoryIdentityState {
   users: Map<string, StaffUser>;
   sessions: Map<string, AuthSessionRecord>;
   recoveryCodes: Array<{ userId: string; codeHash: string; usedAt: Date | null }>;
+  throttle: Map<string, { accountKey: string; failures: number; lastFailureAt: Date; blockedUntil: Date | null }>;
 }
 
 export class InMemoryIdentityStore implements IdentityStore {
-  state: InMemoryIdentityState = { users: new Map(), sessions: new Map(), recoveryCodes: [] };
+  state: InMemoryIdentityState = { users: new Map(), sessions: new Map(), recoveryCodes: [], throttle: new Map() };
   readonly audit = new InMemoryAuditTrail();
   private queue: Promise<unknown> = Promise.resolve();
   private readonly context = new AsyncLocalStorage<boolean>();
@@ -217,8 +286,19 @@ export class InMemoryIdentityStore implements IdentityStore {
           this.state.users.set(u.id, clone(u));
           return Promise.resolve();
         },
-        update: (u) => {
-          this.state.users.set(u.id, clone(u));
+        updateFields: (id, fields, options = {}) => {
+          const u = this.state.users.get(id);
+          if (!u || (options.expectedVersion !== undefined && u.version !== options.expectedVersion)) return Promise.resolve(false);
+          for (const [k, v] of Object.entries(fields)) if (v !== undefined) (u as unknown as Record<string, unknown>)[k] = clone(v);
+          if (options.bumpVersion) u.version += 1;
+          return Promise.resolve(true);
+        },
+        incrementFailedLogins: (id, now) => {
+          const u = this.state.users.get(id);
+          if (u) {
+            u.failedLoginCount += 1;
+            u.lastFailedLoginAt = now;
+          }
           return Promise.resolve();
         },
         list: () => Promise.resolve([...this.state.users.values()].map(clone)),
@@ -267,6 +347,35 @@ export class InMemoryIdentityStore implements IdentityStore {
           return Promise.resolve(Boolean(c));
         },
         countUnused: (userId) => Promise.resolve(this.state.recoveryCodes.filter((c) => c.userId === userId && !c.usedAt).length),
+      },
+      throttle: {
+        retryAfterSeconds: (keys, now) =>
+          Promise.resolve(
+            Math.max(0, ...keys.map((k) => this.state.throttle.get(k.key)?.blockedUntil).filter((d): d is Date => !!d && d > now).map((d) => Math.ceil((d.getTime() - now.getTime()) / 1000))),
+          ),
+        registerFailure: (keys, now) => {
+          let wait = 0;
+          for (const k of keys) {
+            const prev = this.state.throttle.get(k.key);
+            const failures = prev && now.getTime() - prev.lastFailureAt.getTime() <= 24 * 3600_000 ? prev.failures + 1 : 1;
+            let blockedUntil = prev?.blockedUntil ?? null;
+            if (failures >= k.policy.threshold) {
+              const secs = Math.min(k.policy.maxSeconds, k.policy.baseSeconds * 2 ** Math.min(failures - k.policy.threshold, 20));
+              blockedUntil = new Date(now.getTime() + secs * 1000);
+              wait = Math.max(wait, secs);
+            }
+            this.state.throttle.set(k.key, { accountKey: k.accountKey, failures, lastFailureAt: now, blockedUntil });
+          }
+          return Promise.resolve(wait);
+        },
+        reset: (keys) => {
+          for (const k of keys) this.state.throttle.delete(k.key);
+          return Promise.resolve();
+        },
+        resetAccount: (accountKey) => {
+          for (const [key, v] of this.state.throttle) if (v.accountKey === accountKey) this.state.throttle.delete(key);
+          return Promise.resolve();
+        },
       },
       audit: this.audit,
     };

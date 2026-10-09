@@ -57,9 +57,27 @@ export class PrismaPaymentRepository implements PaymentRepository {
     return rows.map(mapPayment);
   }
 
+  async findActiveByBooking(bookingId: string): Promise<Payment | null> {
+    const row = await this.db.payment.findFirst({
+      where: { bookingId, kind: { not: 'refund' }, status: { in: ['pending', 'requires_action', 'authorized'] } },
+      orderBy: { createdAt: 'desc' },
+    });
+    return row ? mapPayment(row) : null;
+  }
+
+  async findStaleActive(before: Date, limit: number): Promise<Payment[]> {
+    const rows = await this.db.payment.findMany({
+      where: { kind: { not: 'refund' }, status: { in: ['pending', 'requires_action', 'authorized'] }, createdAt: { lt: before } },
+      orderBy: { createdAt: 'asc' },
+      take: limit,
+    });
+    return rows.map(mapPayment);
+  }
+
   async save(payment: Payment): Promise<void> {
     const s = payment.toSnapshot();
     const data = {
+      kind: s.kind,
       status: s.status,
       method: s.method,
       providerPaymentId: s.providerPaymentId,
@@ -72,7 +90,6 @@ export class PrismaPaymentRepository implements PaymentRepository {
       create: {
         id: s.id,
         bookingId: s.bookingId,
-        kind: s.kind,
         provider: toDbProvider(s.provider),
         amount: s.amount,
         currency: s.currency,

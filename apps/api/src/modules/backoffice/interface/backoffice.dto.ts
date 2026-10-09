@@ -347,6 +347,10 @@ export class BookingListQueryDto extends PageQueryDto {
   @ApiPropertyOptional({ example: '2026-11-01', description: 'Primer día de servicio desde.' }) @IsOptional() @Matches(DATE) travelDateFrom?: string;
   @ApiPropertyOptional({ example: '2026-11-30' }) @IsOptional() @Matches(DATE) travelDateTo?: string;
   @ApiPropertyOptional({ example: 'PWT-2026-0000', description: 'Prefijo del código.' }) @IsOptional() @Transform(trim) @Matches(/^[A-Za-z0-9-]{3,20}$/) code?: string;
+}
+
+/** H-15: la búsqueda por correo va en el cuerpo (POST), nunca en la URL (logs de proxies). */
+export class BookingSearchDto extends BookingListQueryDto {
   @ApiPropertyOptional({ description: 'Correo exacto del cliente.' }) @IsOptional() @Transform(trim) @IsEmail() email?: string;
 }
 

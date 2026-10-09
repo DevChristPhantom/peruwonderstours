@@ -44,6 +44,19 @@ export class EnrollmentConfirmDto extends EnrollmentStartDto {
   code: string;
 }
 
+/** H-14: primer ingreso con contraseña temporal. */
+export class InitialPasswordDto {
+  @ApiProperty({ description: '`passwordChangeToken` devuelto por POST /auth/staff/login (5 min).' })
+  @IsString()
+  @Length(20, 2048)
+  passwordChangeToken: string;
+
+  @ApiProperty({ format: 'password', minLength: 12, maxLength: 128 })
+  @IsString()
+  @Length(12, 128)
+  newPassword: string;
+}
+
 export class RefreshDto {
   @ApiProperty({ description: 'Refresh token opaco (43 caracteres base64url). Se rota en cada uso.' })
   @IsString()
@@ -82,7 +95,8 @@ export class StaffProfileDto {
 }
 
 export class LoginResponseDataDto {
-  @ApiProperty({ enum: ['mfa_required', 'mfa_enrollment_required'] }) status: string;
+  @ApiProperty({ enum: ['mfa_required', 'mfa_enrollment_required', 'password_change_required'] }) status: string;
+  @ApiPropertyOptional({ description: 'Si status = password_change_required (H-14): enviar a POST /auth/staff/password/initial.' }) passwordChangeToken?: string;
   @ApiPropertyOptional({ description: 'Si status = mfa_required: enviar a POST /auth/staff/mfa/verify.' }) mfaToken?: string;
   @ApiPropertyOptional({ description: 'Si status = mfa_enrollment_required: enviar a /auth/staff/mfa/enrollment/*.' }) enrollmentToken?: string;
   @ApiProperty({ format: 'date-time' }) expiresAt: string;

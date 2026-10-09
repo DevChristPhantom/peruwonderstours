@@ -115,6 +115,27 @@ describeDb('Sprint 2: outbox, consentimientos y restricciones en PostgreSQL', ()
     expect((mapped as ConflictError).code).toBe('exclusion-violation');
   });
 
+  it('H-06: el audit de fila solo copia columnas permitidas (sin PII de reclamos, clientes ni reservas)', async () => {
+    await inRollback(async (tx) => {
+      const customer = await tx.customer.create({ data: { id: ids.next(), email: `h06-${randomUUID().slice(0, 6)}@example.com`, firstName: 'Ana', lastName: 'Quispe', country: 'PE' } });
+      await tx.customer.update({ where: { id: customer.id }, data: { firstName: 'Ana María' } });
+      const rows = await tx.auditLog.findMany({ where: { entityType: 'customers', entityId: customer.id } });
+      expect(rows).toHaveLength(2);
+      for (const row of rows) {
+        const snapshot = JSON.stringify([row.before, row.after]);
+        expect(snapshot).not.toMatch(/Ana|Quispe|example\.com/);
+      }
+      expect(rows.find((r) => r.action === 'UPDATE')?.changedFields).toEqual(['first_name']);
+      expect(rows.find((r) => r.action === 'INSERT')?.after).toMatchObject({ id: customer.id, country: 'PE' });
+      // Tabla sin allowlist => objeto vacío.
+      const [{ redacted }] = await tx.$queryRaw<Array<{ redacted: unknown }>>`SELECT audit_redact('desconocida', '{"guardian_email":"x@y.z"}'::jsonb) AS redacted`;
+      expect(redacted).toEqual({});
+      const [{ complaint }] = await tx.$queryRaw<Array<{ complaint: Record<string, unknown> }>>`
+        SELECT audit_redact('complaints', '{"code":"LR-2026-000001","guardian_email":"x@y.z","guardian_address":"Jr. 1","ip":"1.2.3.4","response_text":"t","settlement_offer_text":"o"}'::jsonb) AS complaint`;
+      expect(complaint).toEqual({ code: 'LR-2026-000001' });
+    });
+  });
+
   it('auth_sessions y users: CHECK de hash de 32 bytes, motivo de revocación y MFA con secreto', async () => {
     await inRollback(async (tx) => {
       const user = await tx.user.create({ data: { id: ids.next(), email: `int-${randomUUID().slice(0, 6)}@pwt.test`, fullName: 'Int', role: 'agent', passwordHash: 'x' } });

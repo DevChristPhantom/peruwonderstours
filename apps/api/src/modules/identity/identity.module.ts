@@ -41,6 +41,7 @@ import { StaffAuthGuard } from './interface/staff-auth.guard.js';
           refreshIdleTtlSeconds: settings.auth.refreshIdleTtlSeconds,
           refreshAbsoluteTtlSeconds: settings.auth.refreshAbsoluteTtlSeconds,
           lockout: settings.auth.lockout,
+          accountLockout: settings.auth.accountLockout,
           mfaIssuer: settings.auth.mfaIssuer,
         });
       },

@@ -841,6 +841,8 @@ model Booking {
   /// Reembolso adeudado según la política de cancelación vigente al cancelar (céntimos).
   /// Lo calcula el backoffice; los reembolsos efectivos suman refundedAmount.
   refundDueAmount BigInt?      @map("refund_due_amount")
+  /// Bloqueo optimista de la reserva (H-01): todo guardado compara y aumenta la versión.
+  version        Int           @default(0)
   completedAt    DateTime?     @map("completed_at") @db.Timestamptz(6)
   createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -1021,6 +1023,8 @@ model Payment {
   @@index([status, createdAt])
   // A lo sumo un adelanto/pago total exitoso por reserva (evita doble cobro).
   @@unique([bookingId, status], where: raw("status = 'succeeded' AND kind IN ('deposit','full')"), map: "payments_one_succeeded_deposit_or_full_key")
+  // Un solo intento de cobro no terminal por reserva (H-01): evita dos cobros en paralelo.
+  @@unique([bookingId], where: raw("status IN ('pending','requires_action','authorized') AND kind <> 'refund'"), map: "payments_one_active_per_booking_key")
   @@index([parentPaymentId])
   @@map("payments")
 }
@@ -1104,6 +1108,8 @@ model User {
   lockedUntil  DateTime?     @map("locked_until") @db.Timestamptz(6)
   lastFailedLoginAt DateTime? @map("last_failed_login_at") @db.Timestamptz(6)
   passwordChangedAt DateTime? @map("password_changed_at") @db.Timestamptz(6)
+  /// H-14: contraseña temporal (alta o reinicio por un admin): debe cambiarse antes de emitir sesión.
+  mustChangePassword Boolean @default(false) @map("must_change_password")
   version      Int           @default(0)
   lastLoginAt  DateTime?     @map("last_login_at") @db.Timestamptz(6)
   createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
@@ -1122,6 +1128,22 @@ model User {
   blogPosts            BlogPost[]
 
   @@map("users")
+}
+
+/// H-03/H-13: limitador de intentos de autenticación (contraseña o segundo factor) con contadores
+/// atómicos en SQL. Claves = SHA-256 de "pair:<correo>|<ip>" (bloqueo con backoff por par cuenta+IP)
+/// y de "acct:<correo>" (límite de la cuenta desde cualquier IP, con tope corto para que nadie pueda
+/// dejar fuera a un admin por mucho tiempo). Funciona igual para correos inexistentes (sin enumeración).
+model AuthLoginThrottle {
+  key           String    @id @db.Char(64)
+  /// Clave de la cuenta (SHA-256 de "acct:<correo>") para desbloquear todas sus filas.
+  accountKey    String    @map("account_key") @db.Char(64)
+  failures      Int       @default(0)
+  lastFailureAt DateTime  @map("last_failure_at") @db.Timestamptz(6)
+  blockedUntil  DateTime? @map("blocked_until") @db.Timestamptz(6)
+
+  @@index([accountKey])
+  @@map("auth_login_throttle")
 }
 
 /// Códigos de recuperación del segundo factor (un solo uso). Solo se guarda SHA-256 (hex);
@@ -1300,6 +1322,8 @@ model Complaint {
   backupSheetNumber  String?            @map("backup_sheet_number") @db.VarChar(40)
   transcribedAt      DateTime?          @map("transcribed_at") @db.Timestamptz(6)
   bookingId          String?            @map("booking_id") @db.Uuid
+  /// H-17: código de reserva escrito por el consumidor y NO verificado (no se vincula a bookingId).
+  declaredBookingCode String?           @map("declared_booking_code") @db.VarChar(20)
   // Proveedor y establecimiento congelados en la hoja (Anexo I).
   providerLegalName  String             @map("provider_legal_name") @db.VarChar(200)
   providerRuc        String             @map("provider_ruc") @db.VarChar(20)

@@ -20,6 +20,13 @@ export class PaymentNotFoundError extends NotFoundError {
   }
 }
 
+/** H-10: la pasarela informó un cobro con otro monto/moneda (o sin monto): no se aplica. */
+export class PaymentAmountMismatchError extends DomainError {
+  constructor(paymentId: string) {
+    super('payment-amount-mismatch', 'El monto confirmado por la pasarela no coincide con el del pago.', 'unprocessable', { paymentId });
+  }
+}
+
 export class DuplicatePaymentEventError extends ConflictError {
   constructor(provider: string, eventId: string) {
     super('duplicate-payment-event', 'Evento de pago ya registrado.', { provider, eventId });
@@ -38,7 +45,7 @@ export interface WebhookResult {
   paymentId: string | null;
 }
 
-type SyncOutcome = 'applied' | 'late_payment' | 'no_change' | 'ignored';
+type SyncOutcome = 'applied' | 'late_payment' | 'excess' | 'no_change' | 'ignored';
 
 /** Casos de uso de cobro: intento, confirmación, webhook idempotente y reembolso automático. */
 export class PaymentUseCases {
@@ -74,8 +81,19 @@ export class PaymentUseCases {
         if (existing.bookingId !== booking.id) throw new IdempotencyKeyReusedError(key);
         return { kind: 'replay' as const, payment: existing, booking };
       }
-      if (await this.lifecycle.expireIfNeeded(repos, booking, now)) return { kind: 'expired' as const, booking };
-      const next = booking.nextPayment(now);
+      // Reserva bloqueada (H-01): serializa intentos de cobro, webhooks y cambios del staff.
+      const locked = (await repos.bookings.findByIdForUpdate(booking.id)) ?? booking;
+      if (await this.lifecycle.expireIfNeeded(repos, locked, now)) return { kind: 'expired' as const, booking: locked };
+      const next = locked.nextPayment(now);
+      // Un solo intento activo por reserva: un segundo "Pagar" (otra pestaña, otra clave) retoma
+      // el intento en curso en vez de abrir otro cobro en paralelo.
+      const active = await repos.payments.findActiveByBooking(locked.id);
+      if (active) {
+        if (active.kind === next.kind && active.amount.equals(next.amount)) return { kind: 'resume' as const, payment: active, booking: locked };
+        throw new ConflictError('payment-in-progress', 'Ya hay un pago en curso para esta reserva. Termínalo o espera unos minutos.', {
+          paymentId: active.id,
+        });
+      }
       const payment = Payment.create({
         id: this.ids.next(),
         bookingId: booking.id,
@@ -92,7 +110,7 @@ export class PaymentUseCases {
 
     if (prepared.kind === 'expired') throw new HoldExpiredError(prepared.booking.code);
     const { payment, booking } = prepared;
-    if (prepared.kind === 'replay' && isTerminalPaymentStatus(payment.status)) {
+    if (prepared.kind !== 'created' && isTerminalPaymentStatus(payment.status)) {
       return { payment, nextAction: { type: 'none' }, replayed: true };
     }
 
@@ -102,7 +120,7 @@ export class PaymentUseCases {
       intent = await gateway.createIntent({
         paymentId: payment.id,
         amount: payment.amount,
-        idempotencyKey: key,
+        idempotencyKey: payment.idempotencyKey,
         reference: booking.code,
         description: `Reserva ${booking.code} (${payment.kind})`,
         returnUrl: input.returnUrl,
@@ -120,7 +138,7 @@ export class PaymentUseCases {
     }
 
     const synced = await this.syncFromProvider(payment.id, { ...intent, amount: payment.amount }, 'customer', intent.providerPaymentId);
-    return { payment: synced.payment, nextAction: intent.nextAction, replayed: prepared.kind === 'replay' };
+    return { payment: synced.payment, nextAction: intent.nextAction, replayed: prepared.kind !== 'created' };
   }
 
   /** Completa el cobro con la confirmación del formulario del proveedor (consulta servidor a servidor). */
@@ -209,6 +227,11 @@ export class PaymentUseCases {
         await this.finishEvent(record, 'failed', null, 'payment_not_found');
         return { eventId: event.eventId, status: 'failed', paymentId: null };
       }
+      // H-10: un cobro aprobado debe traer monto y moneda y coincidir con el intento.
+      if (event.status === 'succeeded' && !event.amount) {
+        await this.finishEvent(record, 'failed', payment.id, 'amount_missing');
+        return { eventId: event.eventId, status: 'failed', paymentId: payment.id };
+      }
       if (event.amount && !event.amount.equals(payment.amount)) {
         await this.finishEvent(record, 'failed', payment.id, 'amount_mismatch');
         return { eventId: event.eventId, status: 'failed', paymentId: payment.id };
@@ -240,8 +263,16 @@ export class PaymentUseCases {
   ): Promise<{ payment: Payment; outcome: SyncOutcome }> {
     const result = await this.unitOfWork.run(async (repos) => {
       const now = this.clock.now();
-      const payment = await repos.payments.findById(paymentId);
-      if (!payment) throw new PaymentNotFoundError(paymentId);
+      const located = await repos.payments.findById(paymentId);
+      if (!located) throw new PaymentNotFoundError(paymentId);
+      // H-01: todo cambio de un pago se hace con la reserva bloqueada y releyendo el pago, así la
+      // confirmación del cliente y el webhook del mismo cobro no lo aplican dos veces.
+      await repos.bookings.findByIdForUpdate(located.bookingId);
+      const payment = (await repos.payments.findById(paymentId))!;
+      // H-10: monto y moneda confirmados por la pasarela deben coincidir con el intento.
+      if (state.status === 'succeeded' && !isTerminalPaymentStatus(payment.status) && (!state.amount || !state.amount.equals(payment.amount))) {
+        throw new PaymentAmountMismatchError(payment.id);
+      }
       if (providerPaymentId) payment.attachProviderPayment(providerPaymentId, now);
       const change = payment.applyProviderStatus(state.status, now, { code: state.failureCode, message: state.failureMessage });
       let outcome: SyncOutcome = change.ignored ? 'ignored' : 'no_change';
@@ -250,23 +281,62 @@ export class PaymentUseCases {
         const applied = await this.lifecycle.applySucceededPayment(repos, payment.bookingId, payment.bookingCurrencyAmount, now, actor, payment.id);
         outcome = applied.outcome;
         booking = applied.booking;
+        if (outcome === 'excess') payment.reclassifyAsAdditional(now);
       }
       await repos.payments.save(payment);
       return { payment, outcome, booking };
     });
-    if (result.outcome === 'late_payment' && result.booking) await this.refundLatePayment(result.payment);
+    // Pago tardío (reserva cancelada) o excedente (ya pagada / sobrepago): reembolso automático.
+    if (result.outcome === 'late_payment') await this.refundPayment(result.payment, 'late_payment_after_cancellation', true);
+    if (result.outcome === 'excess') await this.refundPayment(result.payment, 'excess_payment', false);
     return { payment: result.payment, outcome: result.outcome };
   }
 
-  /** HU-4.4: pago confirmado sobre una reserva ya cancelada => reembolso automático. */
-  private async refundLatePayment(payment: Payment): Promise<void> {
+  /**
+   * Conciliación (H-01): intentos de cobro no terminales más viejos que `staleBefore` se consultan a
+   * la pasarela y se sincronizan (aplicando o reembolsando). Los que siguen pendientes después de
+   * `expireBefore` se marcan `expired` (liberan el "un pago activo por reserva").
+   */
+  async reconcileStalePayments(params: { staleBefore: Date; expireBefore: Date; limit?: number }): Promise<{ checked: number; synced: number; expired: number; failed: number }> {
+    const stale = await this.unitOfWork.run((repos) => repos.payments.findStaleActive(params.staleBefore, params.limit ?? 100));
+    const summary = { checked: stale.length, synced: 0, expired: 0, failed: 0 };
+    for (const payment of stale) {
+      try {
+        let state: ProviderPaymentState | null = null;
+        if (payment.providerPaymentId) state = await this.gateways.get(payment.provider).getStatus(payment.providerPaymentId);
+        if (state && isTerminalPaymentStatus(state.status)) {
+          await this.syncFromProvider(payment.id, state, 'webhook');
+          summary.synced += 1;
+        } else if (payment.createdAt.getTime() < params.expireBefore.getTime()) {
+          await this.unitOfWork.run(async (repos) => {
+            await repos.bookings.findByIdForUpdate(payment.bookingId);
+            const current = await repos.payments.findById(payment.id);
+            if (current && !isTerminalPaymentStatus(current.status)) {
+              current.applyProviderStatus('expired', this.clock.now());
+              await repos.payments.save(current);
+            }
+          });
+          summary.expired += 1;
+        }
+      } catch {
+        summary.failed += 1;
+      }
+    }
+    return summary;
+  }
+
+  /**
+   * Reembolso automático en la pasarela. `affectsBooking`: el cobro se sumó al pagado de la reserva
+   * (pago tardío) y el reembolso se descuenta; un excedente nunca tocó la reserva.
+   */
+  private async refundPayment(payment: Payment, reason: string, affectsBooking: boolean): Promise<void> {
     const gateway = this.gateways.get(payment.provider);
     const refundKey = `refund-${payment.id}`;
     const refund = await gateway.refund({
       providerPaymentId: payment.providerPaymentId!,
       amount: payment.amount,
       idempotencyKey: refundKey,
-      reason: 'late_payment_after_hold_expired',
+      reason,
     });
     await this.unitOfWork.run(async (repos) => {
       const now = this.clock.now();
@@ -285,8 +355,8 @@ export class PaymentUseCases {
       refundPayment.attachProviderPayment(refund.providerRefundId, now);
       refundPayment.applyProviderStatus(refund.status, now);
       await repos.payments.save(refundPayment);
-      if (refund.status === 'succeeded') {
-        const booking = await repos.bookings.findById(payment.bookingId);
+      if (refund.status === 'succeeded' && affectsBooking) {
+        const booking = await repos.bookings.findByIdForUpdate(payment.bookingId);
         if (booking) {
           booking.registerRefund(payment.bookingCurrencyAmount, now, 'late_payment_refunded');
           await repos.bookings.save(booking);

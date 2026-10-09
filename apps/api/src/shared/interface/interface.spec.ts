@@ -106,4 +106,19 @@ describe('Validación de entorno', () => {
     expect(() => validateEnvironment({ ...base, NODE_ENV: 'production', DATA_SOURCE: 'seed' })).toThrow(/producción/);
     expect(() => validateEnvironment({ ...base, DATA_SOURCE: 'prisma', DATABASE_URL: 'postgresql://u@h/db', DEMO_PRICING: 'true' })).toThrow(/DEMO_PRICING/);
   });
+
+  it('H-11: Swagger apagado por defecto en producción y prohibido si se enciende', () => {
+    const prod = { ...base, NODE_ENV: 'production', DATA_SOURCE: 'prisma', DATABASE_URL: 'postgresql://u@h/db' };
+    const messages = (config: Record<string, unknown>) => {
+      try {
+        validateEnvironment(config);
+        return '';
+      } catch (e) {
+        return (e as Error).message;
+      }
+    };
+    expect(messages(prod)).not.toMatch(/SWAGGER_ENABLED/);
+    expect(messages({ ...prod, SWAGGER_ENABLED: 'true' })).toMatch(/SWAGGER_ENABLED debe ser false/);
+    expect(validateEnvironment({ ...base }).SWAGGER_ENABLED).toBe(true); // desarrollo
+  });
 });

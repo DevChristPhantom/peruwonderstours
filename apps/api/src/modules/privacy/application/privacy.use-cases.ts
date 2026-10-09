@@ -5,11 +5,15 @@ import type { TransactionalRepositories, UnitOfWork } from '../../../shared/appl
 import { UnauthorizedError } from '../../../shared/domain/domain-error.js';
 import type { Clock, IdGenerator } from '../../../shared/domain/ports.js';
 import type { Locale } from '../../catalog/domain/tour.js';
+import { MAIL_EVENTS, outboxMessage } from '../../notifications/domain/mail-events.js';
 import {
   MARKETING_PURPOSES,
   normalizeSubjectEmail,
+  signConfirmationToken,
   signUnsubscribeToken,
+  verifyConfirmationToken,
   verifyUnsubscribeToken,
+  type UnsubscribeClaims,
   type ConsentPurpose,
   type LegalDocument,
   type MarketingPurpose,
@@ -83,7 +87,7 @@ export class PrivacyUseCases {
   }
 
   /** Estado actual de las finalidades del enlace (para la página de baja del BFF). */
-  previewUnsubscribe(token: string): Promise<{ purposes: Array<{ purpose: MarketingPurpose; granted: boolean }> }> {
+  async previewUnsubscribe(token: string): Promise<{ purposes: Array<{ purpose: MarketingPurpose; granted: boolean }> }> {
     const claims = verifyUnsubscribeToken(token, this.settings.marketingLinkSecret);
     if (!claims) throw new InvalidUnsubscribeLinkError();
     const hash = Buffer.from(claims.subjectHash, 'hex');
@@ -167,11 +171,16 @@ export class PrivacyUseCases {
       ['marketing_email', params.marketingEmail],
       ['marketing_whatsapp', params.marketingWhatsapp],
     ];
-    for (const [purpose, granted] of choices) {
+    const toConfirm: MarketingPurpose[] = [];
+    for (const [purpose, wants] of choices) {
       const latest = await repos.consents.latestBySubject(hash, purpose);
-      // Sin cambios no se agrega ruido; una casilla desmarcada no revoca un consentimiento previo
-      // (la revocación es explícita: enlace de baja o perfil). La primera elección "no" sí queda registrada.
-      if (granted ? latest?.granted === true : latest !== null) continue;
+      // Ya vigente (confirmado antes): nada que hacer. Casilla desmarcada: no revoca lo anterior
+      // (la revocación es explícita) y la primera elección "no" sí queda registrada.
+      if (latest?.granted) continue;
+      if (!wants && latest !== null) continue;
+      // H-05 (doble opt-in): quien escribe el correo en el checkout puede no ser su titular. La
+      // casilla marcada NO otorga el consentimiento: queda una solicitud pendiente (granted=false)
+      // hasta que el titular confirme con el enlace firmado enviado a ESE correo.
       await repos.consents.insert({
         id: this.ids.next(),
         customerId: params.customerId,
@@ -181,13 +190,103 @@ export class PrivacyUseCases {
         policyVersion: this.settings.marketingConsentVersion,
         textHash: sha256Hex(CONSENT_TEXTS[purpose]),
         locale: params.locale,
-        granted,
+        granted: false,
         method: 'checkbox',
         ip,
         userAgent,
-        source: 'checkout',
+        source: wants ? PENDING_CONFIRMATION_SOURCE : 'checkout',
         createdAt: params.now,
       });
+      if (wants) toConfirm.push(purpose);
     }
+    if (toConfirm.length > 0) {
+      await repos.outbox.add(
+        outboxMessage(this.ids, {
+          aggregateType: 'customer',
+          aggregateId: params.customerId,
+          eventType: MAIL_EVENTS.privacyMarketingConfirmation,
+          payload: { customerId: params.customerId, purposes: toConfirm },
+          now: params.now,
+        }),
+      );
+    }
+  }
+
+  buildConfirmationUrl(email: string, purposes: readonly MarketingPurpose[]): string {
+    const token = signConfirmationToken(
+      { subjectHash: Buffer.from(this.subjectHash(email)).toString('hex'), purposes: [...purposes], issuedAt: Math.floor(this.clock.now().getTime() / 1000) },
+      this.settings.marketingLinkSecret,
+    );
+    return `${this.settings.publicWebBaseUrl}/es/privacidad/confirmar?token=${encodeURIComponent(token)}`;
+  }
+
+  private confirmationClaims(token: string) {
+    const claims = verifyConfirmationToken(token, this.settings.marketingLinkSecret, Math.floor(this.clock.now().getTime() / 1000));
+    if (!claims) throw new InvalidConfirmationLinkError();
+    return claims;
+  }
+
+  /** Estado de las finalidades del enlace de confirmación (para la página del BFF). */
+  async previewConfirmation(token: string): Promise<{ purposes: Array<{ purpose: MarketingPurpose; granted: boolean; pending: boolean }> }> {
+    const claims = this.confirmationClaims(token);
+    const hash = Buffer.from(claims.subjectHash, 'hex');
+    return this.uow.run(async (r) => ({
+      purposes: await Promise.all(
+        claims.purposes.map(async (purpose) => {
+          const latest = await r.consents.latestBySubject(hash, purpose);
+          return { purpose, granted: latest?.granted ?? false, pending: latest?.source === PENDING_CONFIRMATION_SOURCE };
+        }),
+      ),
+    }));
+  }
+
+  /**
+   * Confirmación del doble opt-in: el titular abrió el enlace enviado a su correo. Solo confirma
+   * finalidades con una solicitud pendiente (no reactiva una baja posterior). Idempotente.
+   */
+  confirmMarketing(token: string, meta: ConsentMeta): Promise<{ confirmed: MarketingPurpose[]; alreadyConfirmed: MarketingPurpose[]; notPending: MarketingPurpose[] }> {
+    let claims: UnsubscribeClaims;
+    try {
+      claims = this.confirmationClaims(token);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+    const hash = Buffer.from(claims.subjectHash, 'hex');
+    return this.uow.run(async (r) => {
+      const now = this.clock.now();
+      const result = { confirmed: [] as MarketingPurpose[], alreadyConfirmed: [] as MarketingPurpose[], notPending: [] as MarketingPurpose[] };
+      for (const purpose of claims.purposes) {
+        const latest = await r.consents.latestBySubject(hash, purpose);
+        if (latest?.granted) {
+          result.alreadyConfirmed.push(purpose);
+          continue;
+        }
+        if (!latest || latest.source !== PENDING_CONFIRMATION_SOURCE) {
+          result.notPending.push(purpose);
+          continue;
+        }
+        await r.consents.insert({
+          ...latest,
+          id: this.ids.next(),
+          granted: true,
+          method: 'email_link',
+          ip: auditIp(meta.ip),
+          userAgent: meta.userAgent?.slice(0, 400) ?? null,
+          source: 'double_opt_in',
+          createdAt: now,
+        });
+        result.confirmed.push(purpose);
+      }
+      return result;
+    });
+  }
+}
+
+/** Fuente de la fila que registra una solicitud de marketing aún NO confirmada (doble opt-in). */
+export const PENDING_CONFIRMATION_SOURCE = 'checkout_pending';
+
+export class InvalidConfirmationLinkError extends UnauthorizedError {
+  constructor() {
+    super('invalid-confirmation-link', 'El enlace de confirmación no es válido o venció. Vuelve a suscribirte.');
   }
 }

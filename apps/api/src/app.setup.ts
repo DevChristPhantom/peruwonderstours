@@ -91,7 +91,8 @@ export function configureApp(app: INestApplication): AppSettings {
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ALLOWED_HEADERS,
     exposedHeaders: EXPOSED_HEADERS,
-    credentials: true,
+    // H-19: la API autentica con Bearer (nunca cookies): sin credenciales CORS.
+    credentials: false,
     maxAge: 600,
   });
 

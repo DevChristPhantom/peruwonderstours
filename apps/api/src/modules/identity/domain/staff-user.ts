@@ -19,6 +19,8 @@ export interface StaffUser {
   lockedUntil: Date | null;
   lastFailedLoginAt: Date | null;
   passwordChangedAt: Date | null;
+  /** H-14: contraseña temporal pendiente de cambio. */
+  mustChangePassword: boolean;
   lastLoginAt: Date | null;
   version: number;
   createdAt: Date;

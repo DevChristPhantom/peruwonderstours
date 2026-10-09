@@ -14,6 +14,8 @@ export const MAIL_EVENTS = {
   bookingVoucherRequested: 'booking.voucher_requested',
   bookingBalanceReminder: 'booking.balance_reminder',
   bookingCancelled: 'booking.cancelled',
+  /** H-05: enlace del doble opt-in de marketing al correo del titular. */
+  privacyMarketingConfirmation: 'privacy.marketing_confirmation',
 } as const;
 
 export type MailEventType = (typeof MAIL_EVENTS)[keyof typeof MAIL_EVENTS];

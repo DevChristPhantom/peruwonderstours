@@ -20,6 +20,7 @@ import {
   CreateStaffUserDto,
   EnrollmentConfirmDto,
   EnrollmentStartDto,
+  InitialPasswordDto,
   LoginResponseDto,
   MfaEnrollmentResponseDto,
   MfaVerifyDto,
@@ -51,6 +52,20 @@ export class StaffAuthController {
   @ApiTooManyRequestsResponse({ type: ProblemDetailsDto, description: 'account-locked (Retry-After) o límite por IP' })
   async login(@Body() body: StaffLoginDto, @ReqMeta() meta: RequestMeta) {
     return { data: await this.auth.login(body, meta) };
+  }
+
+  @Post('password/initial')
+  @HttpCode(200)
+  @StrictThrottle()
+  @Header('Cache-Control', 'no-store')
+  @ApiOperation({
+    summary: 'H-14: cambio obligatorio de la contraseña temporal en el primer ingreso. Devuelve el paso siguiente (mfa_required o mfa_enrollment_required).',
+  })
+  @ApiOkResponse({ type: LoginResponseDto })
+  @ApiBadRequestResponse({ type: ProblemDetailsDto, description: 'weak-password, password-unchanged' })
+  @ApiUnauthorizedResponse({ type: ProblemDetailsDto, description: 'invalid-mfa-token (desafío vencido o ya usado)' })
+  async initialPassword(@Body() body: InitialPasswordDto, @ReqMeta() meta: RequestMeta) {
+    return { data: await this.auth.completeInitialPasswordChange(body, meta) };
   }
 
   @Post('mfa/verify')

@@ -103,12 +103,14 @@ export class BookingsAdminService {
     });
   }
 
-  async detail(code: string) {
+  async detail(code: string, actor?: StaffActor, meta?: RequestMeta) {
     const row = await this.db.read(async (prisma) => {
       const normalized = code.trim().toUpperCase();
       return BOOKING_CODE_PATTERN.test(normalized) ? prisma.booking.findUnique({ where: { code: normalized }, include: DETAIL_INCLUDE }) : null;
     });
     if (!row || row.deletedAt) throw new AdminBookingNotFoundError();
+    // H-15: lectura de datos personales (cliente y viajeros) auditada.
+    if (actor && meta) await this.db.run(actor, meta, (ctx) => ctx.audit({ entityType: 'bookings', entityId: row.id, action: 'BOOKING_PII_VIEWED' }));
     const outbox = await this.db.read((prisma) => prisma.outboxEvent.findMany({ where: { aggregateType: 'booking', aggregateId: row.id }, orderBy: { createdAt: 'asc' } }));
     const quote = CANCELLABLE.includes(row.status) ? await this.quote(row) : null;
     return {
@@ -216,10 +218,11 @@ export class BookingsAdminService {
         action: 'BOOKING_CANCELLED',
         before: { status: snapshot.status },
         after: auditJson({
-          reason: input.reason,
+          // H-06: sin textos libres (motivos) en audit_log; el motivo queda en bookings.cancellation_reason.
+          hasReason: input.reason.length > 0,
           policyRefund: quote.refundAmount,
           refundDue,
-          override: input.refundAmountOverride !== undefined ? { amount: input.refundAmountOverride, reason: input.overrideReason } : null,
+          override: input.refundAmountOverride !== undefined ? { amount: input.refundAmountOverride } : null,
           businessDaysBefore: quote.businessDaysBefore,
           tier: quote.tier,
           releasedSeats: released,
@@ -264,8 +267,15 @@ export class BookingsAdminService {
       const kind = before.paidAmount > 0n ? 'balance' : before.paymentOption === 'full' ? 'full' : 'deposit';
       const amount = Money.of(input.amount, booking.currency);
       const paymentId = this.ids.next();
+      // H-01: con un cobro en línea en curso, un pago manual podría duplicar el cobro.
+      const active = await ctx.repos.payments.findActiveByBooking(booking.id);
+      if (active) {
+        throw new ConflictError('payment-in-progress', 'Hay un cobro en línea en curso para esta reserva. Espera a que termine o concílialo antes de registrar un pago manual.', {
+          paymentId: active.id,
+        });
+      }
       // Primero la reserva (valida estado, adelanto mínimo y que no supere el saldo).
-      const applied = await this.lifecycle.applySucceededPayment(ctx.repos, booking.id, amount, ctx.now, 'user', paymentId);
+      const applied = await this.lifecycle.applySucceededPayment(ctx.repos, booking.id, amount, ctx.now, 'user', paymentId, { onExcess: 'throw' });
       if (applied.outcome !== 'applied') throw new ConflictError('booking-not-payable', 'La reserva no admite pagos en su estado actual.');
       await ctx.tx.payment.create({
         data: {

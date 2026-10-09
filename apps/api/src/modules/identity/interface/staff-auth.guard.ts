@@ -44,7 +44,7 @@ export class StaffAuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<StaffRequest>();
     const actor = await this.auth.authenticate(bearerToken(request));
     request.staff = actor;
-    const required = this.reflector.getAllAndOverride<Permission[] | undefined>(REQUIRED_PERMISSIONS, [context.getHandler(), context.getClass()]) ?? [];
+    const required = [...new Set(this.reflector.getAllAndMerge<Permission[]>(REQUIRED_PERMISSIONS, [context.getHandler(), context.getClass()]) ?? [])]; // H-19: clase + método (un @StaffAuth() vacío no anula)
     if (!hasAllPermissions(actor.permissions, required)) {
       await this.auth.recordAccessDenied(actor, required, `${request.method} ${request.route?.path ?? request.path}`, requestMeta(request));
       throw new ForbiddenError('insufficient-permissions', 'No tienes permiso para realizar esta acción.', { required });

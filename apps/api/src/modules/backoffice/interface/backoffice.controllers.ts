@@ -19,6 +19,7 @@ import { ToursAdminService } from '../application/tours-admin.service.js';
 import {
   AuditQueryDto,
   BookingListQueryDto,
+  BookingSearchDto,
   BulkDeparturesDto,
   CancelBookingDto,
   ComplaintListQueryDto,
@@ -351,7 +352,16 @@ export class BookingsAdminController {
   @StaffAuth('bookings:read')
   @ApiOperation({ summary: 'Listado con filtros: estado, fecha de viaje (primer servicio), prefijo de código y correo exacto.' })
   async list(@Query() query: BookingListQueryDto) {
-    const q = { ...page(query), status: query.status, travelDateFrom: query.travelDateFrom, travelDateTo: query.travelDateTo, code: query.code, email: query.email };
+    const q = { ...page(query), status: query.status, travelDateFrom: query.travelDateFrom, travelDateTo: query.travelDateTo, code: query.code };
+    return paged(q, await this.bookings.list(q));
+  }
+
+  @Post('search')
+  @HttpCode(200)
+  @StaffAuth('bookings:read')
+  @ApiOperation({ summary: 'H-15: búsqueda con datos personales (correo) en el cuerpo, no en la URL. Mismos filtros que GET + `email`.' })
+  async search(@Body() body: BookingSearchDto) {
+    const q = { ...page(body), status: body.status, travelDateFrom: body.travelDateFrom, travelDateTo: body.travelDateTo, code: body.code, email: body.email };
     return paged(q, await this.bookings.list(q));
   }
 
@@ -359,9 +369,9 @@ export class BookingsAdminController {
   @StaffAuth('bookings:read')
   @Header('Cache-Control', 'no-store')
   @ApiParam({ name: 'code', example: 'PWT-2026-000123' })
-  @ApiOperation({ summary: 'Detalle: ítems, viajeros, pagos, historial, aceptaciones legales, correos enviados y cotización de cancelación.' })
-  async detail(@Param('code') code: string) {
-    return { data: await this.bookings.detail(code) };
+  @ApiOperation({ summary: 'Detalle: ítems, viajeros, pagos, historial, aceptaciones legales, correos enviados y cotización de cancelación. La consulta queda auditada (BOOKING_PII_VIEWED).' })
+  async detail(@CurrentStaff() actor: StaffActor, @ReqMeta() meta: RequestMeta, @Param('code') code: string) {
+    return { data: await this.bookings.detail(code, actor, meta) };
   }
 
   @Get(':code/cancellation-quote')
@@ -617,12 +627,13 @@ export class PrivacyAdminController {
     return { data: await this.privacy.respond(actor, meta, id, body) };
   }
 
-  @Get('consents')
+  @Post('consents/search')
+  @HttpCode(200)
   @StaffAuth('privacy:read')
   @Header('Cache-Control', 'no-store')
-  @ApiOperation({ summary: 'Historial de consentimientos y aceptaciones de un titular (por correo; consulta auditada).' })
-  async consents(@CurrentStaff() actor: StaffActor, @ReqMeta() meta: RequestMeta, @Query() query: ConsentHistoryQueryDto) {
-    return { data: await this.privacy.consentHistory(actor, meta, query.email) };
+  @ApiOperation({ summary: 'Historial de consentimientos y aceptaciones de un titular. H-15: el correo va en el cuerpo (consulta auditada).' })
+  async consents(@CurrentStaff() actor: StaffActor, @ReqMeta() meta: RequestMeta, @Body() body: ConsentHistoryQueryDto) {
+    return { data: await this.privacy.consentHistory(actor, meta, body.email) };
   }
 }
 

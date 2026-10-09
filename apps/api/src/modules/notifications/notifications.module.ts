@@ -102,6 +102,7 @@ export class NotificationsScheduler implements OnApplicationBootstrap, OnApplica
           },
           cipher,
           unsubscribeUrl: (repos, email) => privacy.unsubscribeUrlIfGranted(repos, email),
+          marketingConfirmationUrl: (email, purposes) => privacy.buildConfirmationUrl(email, purposes),
         }),
     },
     {

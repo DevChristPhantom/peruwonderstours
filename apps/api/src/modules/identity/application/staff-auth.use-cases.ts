@@ -2,6 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { auditIp, type AuditEntry, type RequestMeta } from '../../../shared/application/audit.js';
 import type { PiiCipher } from '../../../shared/application/pii-cipher.js';
 import {
+  ConcurrencyError,
   ConflictError,
   ForbiddenError,
   NotFoundError,
@@ -17,9 +18,7 @@ import {
   hashRecoveryCode,
   isRecoveryCodeFormat,
   isTotpFormat,
-  lockRemainingSeconds,
   normalizeStaffEmail,
-  registerFailedAttempt,
   type LockoutPolicy,
   type StaffUser,
 } from '../domain/staff-user.js';
@@ -29,6 +28,8 @@ import type {
   IdentityStore,
   PasswordHasher,
   RevocationReason,
+  StaffUserFields,
+  ThrottleKey,
   TokenService,
   TotpService,
 } from './ports.js';
@@ -39,6 +40,8 @@ export interface StaffAuthConfig {
   refreshAbsoluteTtlSeconds: number;
   lockout: LockoutPolicy;
   mfaIssuer: string;
+  /** H-13: límite de la cuenta desde cualquier IP (tope corto: nadie deja fuera a un admin por horas). */
+  accountLockout?: LockoutPolicy;
 }
 
 /** Usuario autenticado del backoffice (lo adjunta el guard a la petición). */
@@ -64,7 +67,9 @@ export interface StaffProfile {
 
 export type LoginResult =
   | { status: 'mfa_required'; mfaToken: string; expiresAt: Date }
-  | { status: 'mfa_enrollment_required'; enrollmentToken: string; expiresAt: Date };
+  | { status: 'mfa_enrollment_required'; enrollmentToken: string; expiresAt: Date }
+  /** H-14: contraseña temporal; hay que cambiarla (POST /auth/staff/password/initial) antes de seguir. */
+  | { status: 'password_change_required'; passwordChangeToken: string; expiresAt: Date };
 
 export interface SessionTokens {
   tokenType: 'Bearer';
@@ -103,7 +108,8 @@ export class InvalidCredentialsError extends UnauthorizedError {
 }
 export class AccountLockedError extends RateLimitedError {
   constructor(retryAfterSeconds: number) {
-    super('account-locked', 'Demasiados intentos fallidos. Tu cuenta está bloqueada temporalmente.', retryAfterSeconds);
+    // H-13: mismo mensaje y código para correos existentes e inexistentes.
+    super('account-locked', 'Demasiados intentos fallidos. Espera antes de volver a intentarlo.', retryAfterSeconds);
   }
 }
 export class AccountDisabledError extends ForbiddenError {
@@ -168,23 +174,25 @@ export class StaffAuthUseCases {
   // ---------------------------------------------------------------------------
   async login(input: { email: string; password: string }, meta: RequestMeta): Promise<LoginResult> {
     let email: string;
+    let wellFormed = true;
     try {
       email = normalizeStaffEmail(input.email);
     } catch {
-      throw new InvalidCredentialsError();
+      wellFormed = false;
+      email = String(input.email ?? '').trim().toLowerCase().slice(0, 254);
     }
     const now = this.clock.now();
-    const user = await this.store.run((r) => r.users.findByEmail(email));
-    if (user) {
-      const remaining = lockRemainingSeconds(user, now);
-      if (remaining > 0) throw new AccountLockedError(remaining);
-    }
+    // H-03/H-13: limitador por cuenta+IP y por cuenta, igual exista o no el correo.
+    const keys = this.throttleKeys(email, meta.ip);
+    const wait = await this.store.run((r) => r.throttle.retryAfterSeconds(keys, now));
+    if (wait > 0) throw new AccountLockedError(wait);
+    const user = wellFormed ? await this.store.run((r) => r.users.findByEmail(email)) : null;
     let valid = false;
     if (user) valid = await this.hasher.verify(user.passwordHash, input.password);
     else await this.hasher.verify(await this.getDummyHash(), input.password);
 
     if (!user || !valid) {
-      if (user) await this.recordFailure(user.id, 'LOGIN_FAILED', meta);
+      await this.recordFailure(user, keys, 'LOGIN_FAILED', meta);
       throw new InvalidCredentialsError();
     }
     if (user.status !== 'active') {
@@ -192,23 +200,39 @@ export class StaffAuthUseCases {
       throw new AccountDisabledError();
     }
 
-    const result = await this.store.run(async (r) => {
-      const current = await r.users.findById(user.id);
-      if (!current) throw new InvalidCredentialsError();
-      if (this.hasher.needsRehash(current.passwordHash)) {
-        current.passwordHash = await this.hasher.hash(input.password);
-        await r.users.update(current);
-      }
-      await r.audit.record(this.entry({ action: 'LOGIN_PASSWORD_OK', user: current, meta, now }));
-      return current;
+    await this.store.run(async (r) => {
+      // H-04: solo se escribe la columna que cambia (sin pisar estado/rol/secretos).
+      if (this.hasher.needsRehash(user.passwordHash)) await r.users.updateFields(user.id, { passwordHash: await this.hasher.hash(input.password) });
+      await r.audit.record(this.entry({ action: 'LOGIN_PASSWORD_OK', user, meta, now }));
     });
+    return this.nextStep(user, now);
+  }
 
-    if (!result.mfaEnabledAt) {
-      const challenge = this.tokens.signChallenge({ sub: result.id, kind: 'enroll', ver: result.version }, now);
-      return { status: 'mfa_enrollment_required', enrollmentToken: challenge.token, expiresAt: challenge.expiresAt };
+  /**
+   * H-14: primer ingreso con contraseña temporal. Cambia la contraseña con el desafío
+   * `passwordChangeToken` y devuelve el paso siguiente (MFA o enrolamiento).
+   */
+  async completeInitialPasswordChange(input: { passwordChangeToken: string; newPassword: string }, meta: RequestMeta): Promise<LoginResult> {
+    const now = this.clock.now();
+    const claims = this.tokens.verifyChallenge(input.passwordChangeToken, 'pwchange', now);
+    const user = await this.store.run((r) => this.loadChallengeUser(r, claims));
+    if (!user.mustChangePassword) throw new ConflictError('password-change-not-required', 'La contraseña ya fue cambiada. Inicia sesión.');
+    assertPasswordPolicy(input.newPassword, { email: user.email, fullName: user.fullName });
+    if (await this.hasher.verify(user.passwordHash, input.newPassword)) {
+      throw new ValidationError('password-unchanged', 'La nueva contraseña debe ser distinta de la temporal.');
     }
-    const challenge = this.tokens.signChallenge({ sub: result.id, kind: 'mfa', ver: result.version }, now);
-    return { status: 'mfa_required', mfaToken: challenge.token, expiresAt: challenge.expiresAt };
+    const passwordHash = await this.hasher.hash(input.newPassword);
+    const updated = await this.store.run(async (r) => {
+      const ok = await r.users.updateFields(
+        user.id,
+        { passwordHash, passwordChangedAt: now, mustChangePassword: false },
+        { expectedVersion: user.version, bumpVersion: true },
+      );
+      if (!ok) throw new UnauthorizedError('invalid-mfa-token', 'El desafío de verificación expiró. Inicia sesión de nuevo.');
+      await r.audit.record(this.entry({ action: 'PASSWORD_INITIAL_CHANGED', user, meta, now }));
+      return (await r.users.findById(user.id))!;
+    });
+    return this.nextStep(updated, now);
   }
 
   // ---------------------------------------------------------------------------
@@ -220,27 +244,23 @@ export class StaffAuthUseCases {
     const outcome = await this.store.run(async (r): Promise<Outcome<{ tokens: SessionTokens; remaining: number; recovery: boolean }>> => {
       const user = await this.loadChallengeUser(r, claims);
       if (!user.mfaEnabledAt || !user.mfaSecretEnc) return { ok: false, error: new UnauthorizedError('invalid-mfa-token', 'Debes enrolar el segundo factor.') };
-      const remaining = lockRemainingSeconds(user, now);
-      if (remaining > 0) return { ok: false, error: new AccountLockedError(remaining) };
+      const keys = this.throttleKeys(user.email, meta.ip);
+      const wait = await r.throttle.retryAfterSeconds(keys, now);
+      if (wait > 0) return { ok: false, error: new AccountLockedError(wait) };
 
       const code = input.code.trim();
-      let accepted = false;
+      let step: number | null = null;
       let usedRecovery = false;
       if (isTotpFormat(code)) {
-        const step = await this.totp.verify({ secret: this.cipher.decrypt(user.mfaSecretEnc), code: code.replace(/\s/g, ''), afterTimeStep: user.mfaLastTimeStep, now });
-        if (step !== null) {
-          accepted = true;
-          user.mfaLastTimeStep = step;
-        }
+        step = await this.totp.verify({ secret: this.decryptMfaSecret(user), code: code.replace(/\s/g, ''), afterTimeStep: user.mfaLastTimeStep, now });
       } else if (isRecoveryCodeFormat(code)) {
-        accepted = await r.recoveryCodes.consume(user.id, hashRecoveryCode(code), now);
-        usedRecovery = accepted;
+        usedRecovery = await r.recoveryCodes.consume(user.id, hashRecoveryCode(code), now);
       }
-      if (!accepted) {
-        await this.applyFailure(r, user, 'MFA_FAILED', meta, now);
+      if (step === null && !usedRecovery) {
+        await this.applyFailure(r, user, keys, 'MFA_FAILED', meta, now);
         return { ok: false, error: new InvalidMfaCodeError() };
       }
-      const tokens = await this.completeLogin(r, user, meta, now, usedRecovery ? 'LOGIN_RECOVERY_CODE' : 'LOGIN');
+      const tokens = await this.completeLogin(r, user, meta, now, usedRecovery ? 'LOGIN_RECOVERY_CODE' : 'LOGIN', step !== null ? { mfaLastTimeStep: step } : {});
       return { ok: true, value: { tokens, remaining: await r.recoveryCodes.countUnused(user.id), recovery: usedRecovery } };
     });
     if (!outcome.ok) throw outcome.error;
@@ -257,9 +277,8 @@ export class StaffAuthUseCases {
       const user = await this.loadChallengeUser(r, claims);
       if (user.mfaEnabledAt) throw new ConflictError('mfa-already-enrolled', 'El segundo factor ya está activo.');
       const secret = this.totp.generateSecret();
-      user.mfaSecretEnc = this.cipher.encrypt(secret);
-      user.mfaLastTimeStep = null;
-      await r.users.update(user);
+      const ok = await r.users.updateFields(user.id, { mfaSecretEnc: this.encryptMfaSecret(user.id, secret), mfaLastTimeStep: null }, { expectedVersion: user.version });
+      if (!ok) throw new UnauthorizedError('invalid-mfa-token', 'El desafío de verificación expiró. Inicia sesión de nuevo.');
       await r.audit.record(this.entry({ action: 'MFA_ENROLL_STARTED', user, meta, now }));
       const label = user.email;
       return { otpauthUri: this.totp.buildUri({ issuer: this.config.mfaIssuer, label, secret }), secret, issuer: this.config.mfaIssuer, label };
@@ -273,22 +292,21 @@ export class StaffAuthUseCases {
       const user = await this.loadChallengeUser(r, claims);
       if (user.mfaEnabledAt) return { ok: false, error: new ConflictError('mfa-already-enrolled', 'El segundo factor ya está activo.') };
       if (!user.mfaSecretEnc) return { ok: false, error: new ConflictError('mfa-enrollment-not-started', 'Primero inicia el enrolamiento.') };
-      const remaining = lockRemainingSeconds(user, now);
-      if (remaining > 0) return { ok: false, error: new AccountLockedError(remaining) };
+      const keys = this.throttleKeys(user.email, meta.ip);
+      const wait = await r.throttle.retryAfterSeconds(keys, now);
+      if (wait > 0) return { ok: false, error: new AccountLockedError(wait) };
       const code = input.code.replace(/\s/g, '');
       const step = isTotpFormat(code)
-        ? await this.totp.verify({ secret: this.cipher.decrypt(user.mfaSecretEnc), code, afterTimeStep: user.mfaLastTimeStep, now })
+        ? await this.totp.verify({ secret: this.decryptMfaSecret(user), code, afterTimeStep: user.mfaLastTimeStep, now })
         : null;
       if (step === null) {
-        await this.applyFailure(r, user, 'MFA_ENROLL_FAILED', meta, now);
+        await this.applyFailure(r, user, keys, 'MFA_ENROLL_FAILED', meta, now);
         return { ok: false, error: new InvalidMfaCodeError() };
       }
-      user.mfaEnabledAt = now;
-      user.mfaLastTimeStep = step;
       const recoveryCodes = generateRecoveryCodes();
       await r.recoveryCodes.replaceAll(user.id, recoveryCodes.map(hashRecoveryCode), now);
       await r.audit.record(this.entry({ action: 'MFA_ENROLLED', user, meta, now }));
-      const tokens = await this.completeLogin(r, user, meta, now, 'LOGIN');
+      const tokens = await this.completeLogin(r, user, meta, now, 'LOGIN', { mfaEnabledAt: now, mfaLastTimeStep: step });
       return { ok: true, value: { ...tokens, recoveryCodes } };
     });
     if (!outcome.ok) throw outcome.error;
@@ -412,23 +430,26 @@ export class StaffAuthUseCases {
     });
   }
 
-  /** Regenera los códigos de recuperación (exige un TOTP vigente). */
+  /** Regenera los códigos de recuperación (exige un TOTP vigente; H-12: respeta el limitador). */
   async regenerateRecoveryCodes(actor: StaffActor, code: string, meta: RequestMeta): Promise<{ recoveryCodes: string[] }> {
     const now = this.clock.now();
+    const keys = this.throttleKeys(actor.email, meta.ip);
     const outcome = await this.store.run(async (r): Promise<Outcome<string[]>> => {
+      const wait = await r.throttle.retryAfterSeconds(keys, now);
+      if (wait > 0) return { ok: false, error: new AccountLockedError(wait) };
       const user = await r.users.findById(actor.userId);
       if (!user?.mfaSecretEnc) return { ok: false, error: new SessionRevokedError() };
       const step = isTotpFormat(code)
-        ? await this.totp.verify({ secret: this.cipher.decrypt(user.mfaSecretEnc), code: code.replace(/\s/g, ''), afterTimeStep: user.mfaLastTimeStep, now })
+        ? await this.totp.verify({ secret: this.decryptMfaSecret(user), code: code.replace(/\s/g, ''), afterTimeStep: user.mfaLastTimeStep, now })
         : null;
       if (step === null) {
-        await this.applyFailure(r, user, 'MFA_FAILED', meta, now);
+        const blocked = await this.applyFailure(r, user, keys, 'MFA_FAILED', meta, now);
+        // Con un token de acceso posiblemente robado: al bloquearse se cierra la sesión.
+        if (blocked > 0) await r.sessions.revokeFamily(actor.sessionId, 'logout', now);
         return { ok: false, error: new InvalidMfaCodeError() };
       }
-      user.mfaLastTimeStep = step;
-      user.failedLoginCount = 0;
-      user.lockedUntil = null;
-      await r.users.update(user);
+      await r.users.updateFields(user.id, { mfaLastTimeStep: step });
+      await r.throttle.reset(keys);
       const codes = generateRecoveryCodes();
       await r.recoveryCodes.replaceAll(user.id, codes.map(hashRecoveryCode), now);
       await r.audit.record(this.actorEntry(actor, 'MFA_RECOVERY_CODES_REGENERATED', meta, now));
@@ -438,13 +459,17 @@ export class StaffAuthUseCases {
     return { recoveryCodes: outcome.value };
   }
 
-  /** Cambio de contraseña: exige la actual; cierra las demás sesiones del usuario. */
+  /** Cambio de contraseña: exige la actual (H-12: respeta el limitador); cierra las demás sesiones. */
   async changePassword(actor: StaffActor, input: { currentPassword: string; newPassword: string }, meta: RequestMeta): Promise<void> {
     const now = this.clock.now();
+    const keys = this.throttleKeys(actor.email, meta.ip);
+    const wait = await this.store.run((r) => r.throttle.retryAfterSeconds(keys, now));
+    if (wait > 0) throw new AccountLockedError(wait);
     const user = await this.store.run((r) => r.users.findById(actor.userId));
     if (!user) throw new SessionRevokedError();
     if (!(await this.hasher.verify(user.passwordHash, input.currentPassword))) {
-      await this.recordFailure(user.id, 'PASSWORD_CHANGE_FAILED', meta);
+      const blocked = await this.recordFailure(user, keys, 'PASSWORD_CHANGE_FAILED', meta);
+      if (blocked > 0) await this.store.run((r) => r.sessions.revokeFamily(actor.sessionId, 'logout', now));
       throw new InvalidCredentialsError();
     }
     assertPasswordPolicy(input.newPassword, { email: user.email, fullName: user.fullName });
@@ -453,13 +478,14 @@ export class StaffAuthUseCases {
     }
     const newHash = await this.hasher.hash(input.newPassword);
     await this.store.run(async (r) => {
-      const current = await r.users.findById(user.id);
-      if (!current) throw new SessionRevokedError();
-      current.passwordHash = newHash;
-      current.passwordChangedAt = now;
-      current.version += 1;
-      await r.users.update(current);
-      const sessions = await r.sessions.listActiveForUser(current.id, now);
+      const ok = await r.users.updateFields(
+        user.id,
+        { passwordHash: newHash, passwordChangedAt: now, mustChangePassword: false },
+        { expectedVersion: user.version, bumpVersion: true },
+      );
+      if (!ok) throw new ConcurrencyError('Tu cuenta cambió mientras tanto. Vuelve a intentarlo.');
+      await r.throttle.reset(keys);
+      const sessions = await r.sessions.listActiveForUser(user.id, now);
       for (const s of sessions) if (s.familyId !== actor.sessionId) await r.sessions.revokeFamily(s.familyId, 'password_changed', now);
       await r.audit.record(this.actorEntry(actor, 'PASSWORD_CHANGED', meta, now));
     });
@@ -477,16 +503,57 @@ export class StaffAuthUseCases {
     return user;
   }
 
-  private async completeLogin(r: IdentityRepositories, user: StaffUser, meta: RequestMeta, now: Date, action: string): Promise<SessionTokens> {
-    user.failedLoginCount = 0;
-    user.lockedUntil = null;
-    user.lastLoginAt = now;
-    user.version += 1;
-    await r.users.update(user);
+  private async completeLogin(
+    r: IdentityRepositories,
+    user: StaffUser,
+    meta: RequestMeta,
+    now: Date,
+    action: string,
+    extra: StaffUserFields = {},
+  ): Promise<SessionTokens> {
+    // H-04: escritura condicionada a la versión del desafío; `bumpVersion` invalida el desafío usado.
+    const fields: StaffUserFields = { failedLoginCount: 0, lockedUntil: null, lastLoginAt: now, ...extra };
+    const ok = await r.users.updateFields(user.id, fields, { expectedVersion: user.version, bumpVersion: true });
+    if (!ok) throw new UnauthorizedError('invalid-mfa-token', 'El desafío de verificación expiró. Inicia sesión de nuevo.');
+    await r.throttle.reset(this.throttleKeys(user.email, meta.ip));
+    const updated: StaffUser = { ...user, ...fields, version: user.version + 1 };
     const absolute = new Date(now.getTime() + this.config.refreshAbsoluteTtlSeconds * 1000);
     const issued = await this.issueRefresh(r, user.id, this.ids.next(), absolute, meta, now);
     await r.audit.record(this.entry({ action, user, meta, now, after: { sessionId: issued.record.familyId } }));
-    return this.sessionTokens(user, issued.record, issued.token, now);
+    return this.sessionTokens(updated, issued.record, issued.token, now);
+  }
+
+  /** Paso siguiente tras validar la contraseña (o tras cambiar la temporal). */
+  private nextStep(user: StaffUser, now: Date): LoginResult {
+    if (user.mustChangePassword) {
+      const challenge = this.tokens.signChallenge({ sub: user.id, kind: 'pwchange', ver: user.version }, now);
+      return { status: 'password_change_required', passwordChangeToken: challenge.token, expiresAt: challenge.expiresAt };
+    }
+    if (!user.mfaEnabledAt) {
+      const challenge = this.tokens.signChallenge({ sub: user.id, kind: 'enroll', ver: user.version }, now);
+      return { status: 'mfa_enrollment_required', enrollmentToken: challenge.token, expiresAt: challenge.expiresAt };
+    }
+    const challenge = this.tokens.signChallenge({ sub: user.id, kind: 'mfa', ver: user.version }, now);
+    return { status: 'mfa_required', mfaToken: challenge.token, expiresAt: challenge.expiresAt };
+  }
+
+  /** Claves del limitador: par cuenta+IP (backoff largo) y cuenta (tope corto). */
+  private throttleKeys(email: string, ip: string | null): ThrottleKey[] {
+    const accountKey = createHash('sha256').update(`acct:${email}`).digest('hex');
+    const pairKey = createHash('sha256').update(`pair:${email}|${ip ?? '-'}`).digest('hex');
+    return [
+      { key: pairKey, accountKey, policy: this.config.lockout },
+      { key: accountKey, accountKey, policy: this.config.accountLockout ?? { threshold: 20, baseSeconds: 60, maxSeconds: 900 } },
+    ];
+  }
+
+  /** Cifrado del secreto TOTP ligado al usuario (AAD, H-19); lee también el formato anterior. */
+  private encryptMfaSecret(userId: string, secret: string): Uint8Array {
+    return this.cipher.encrypt(secret, `users:mfa_secret_enc:${userId}`);
+  }
+
+  private decryptMfaSecret(user: StaffUser): string {
+    return this.cipher.decrypt(user.mfaSecretEnc!, `users:mfa_secret_enc:${user.id}`);
   }
 
   private async issueRefresh(
@@ -530,23 +597,26 @@ export class StaffAuthUseCases {
     };
   }
 
-  /** Suma un fallo y lo CONFIRMA (transacción propia) antes de que el llamador lance el error. */
-  private async recordFailure(userId: string, action: string, meta: RequestMeta): Promise<void> {
+  /**
+   * Suma un fallo y lo CONFIRMA (transacción propia) antes de que el llamador lance el error.
+   * Devuelve los segundos de bloqueo resultantes (0 si aún no se bloquea).
+   */
+  private async recordFailure(user: StaffUser | null, keys: ThrottleKey[], action: string, meta: RequestMeta): Promise<number> {
     const now = this.clock.now();
-    await this.store.run(async (r) => {
-      const user = await r.users.findById(userId);
-      if (user) await this.applyFailure(r, user, action, meta, now);
+    return this.store.run(async (r) => {
+      if (user) return this.applyFailure(r, user, keys, action, meta, now);
+      // Correo inexistente: mismo contador y misma respuesta (H-13), sin fila en users.
+      return r.throttle.registerFailure(keys, now);
     });
   }
 
-  private async applyFailure(r: IdentityRepositories, user: StaffUser, action: string, meta: RequestMeta, now: Date): Promise<void> {
-    const next = registerFailedAttempt(user, now, this.config.lockout);
-    user.failedLoginCount = next.failedLoginCount;
-    user.lockedUntil = next.lockedUntil ?? user.lockedUntil;
-    user.lastFailedLoginAt = next.lastFailedLoginAt;
-    await r.users.update(user);
-    await r.audit.record(this.entry({ action, user, meta, now, after: { failedLoginCount: next.failedLoginCount, locked: next.lockedUntil !== null } }));
-    if (next.lockedUntil) await r.audit.record(this.entry({ action: 'ACCOUNT_LOCKED', user, meta, now, after: { lockedUntil: next.lockedUntil.toISOString() } }));
+  /** H-03: contadores atómicos en SQL (limitador + users.failed_login_count). */
+  private async applyFailure(r: IdentityRepositories, user: StaffUser, keys: ThrottleKey[], action: string, meta: RequestMeta, now: Date): Promise<number> {
+    const wait = await r.throttle.registerFailure(keys, now);
+    await r.users.incrementFailedLogins(user.id, now);
+    await r.audit.record(this.entry({ action, user, meta, now, after: { blockedSeconds: wait } }));
+    if (wait > 0) await r.audit.record(this.entry({ action: 'ACCOUNT_LOCKED', user, meta, now, after: { retryAfterSeconds: wait } }));
+    return wait;
   }
 
   private async audit(params: { action: string; user: StaffUser; meta: RequestMeta }): Promise<void> {

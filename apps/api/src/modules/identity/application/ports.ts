@@ -21,13 +21,66 @@ export interface AuthSessionRecord {
 
 export type RevocationReason = 'rotated' | 'logout' | 'logout_all' | 'reuse_detected' | 'admin' | 'password_changed' | 'mfa_reset' | 'user_disabled';
 
+/** Columnas de `users` que se pueden actualizar (H-04: solo las que cambia cada operación). */
+export type StaffUserFields = Partial<
+  Pick<
+    StaffUser,
+    | 'fullName'
+    | 'role'
+    | 'status'
+    | 'passwordHash'
+    | 'mfaSecretEnc'
+    | 'mfaEnabledAt'
+    | 'mfaLastTimeStep'
+    | 'failedLoginCount'
+    | 'lockedUntil'
+    | 'lastFailedLoginAt'
+    | 'passwordChangedAt'
+    | 'mustChangePassword'
+    | 'lastLoginAt'
+    | 'deletedAt'
+  >
+>;
+
 export interface StaffUserRepository {
   findByEmail(email: string): Promise<StaffUser | null>;
   findById(id: string): Promise<StaffUser | null>;
   insert(user: StaffUser): Promise<void>;
-  /** Actualiza los campos mutables (rol, estado, secretos, contadores, versión). */
-  update(user: StaffUser): Promise<void>;
+  /**
+   * H-04: UPDATE solo de `fields`. Con `expectedVersion` la escritura se condiciona a la versión
+   * leída (`WHERE version = $v`); `bumpVersion` la incrementa. Devuelve false si no se aplicó.
+   */
+  updateFields(id: string, fields: StaffUserFields, options?: { expectedVersion?: number; bumpVersion?: boolean }): Promise<boolean>;
+  /** H-03: incremento atómico en SQL (`failed_login_count = failed_login_count + 1`). */
+  incrementFailedLogins(id: string, now: Date): Promise<void>;
   list(): Promise<StaffUser[]>;
+}
+
+/** Política de una clave del limitador (umbral, espera inicial y tope, en segundos). */
+export interface ThrottlePolicy {
+  threshold: number;
+  baseSeconds: number;
+  maxSeconds: number;
+}
+
+export interface ThrottleKey {
+  /** SHA-256 hex de la clave lógica. */
+  key: string;
+  /** SHA-256 hex de la cuenta (para desbloquear todas sus filas). */
+  accountKey: string;
+  policy: ThrottlePolicy;
+}
+
+/** H-03/H-13: limitador de intentos con contadores atómicos (PostgreSQL) por cuenta y cuenta+IP. */
+export interface LoginThrottleRepository {
+  /** Segundos que faltan para poder reintentar (máximo entre las claves); 0 si no hay bloqueo. */
+  retryAfterSeconds(keys: readonly ThrottleKey[], now: Date): Promise<number>;
+  /** Suma un fallo a cada clave (INSERT ... ON CONFLICT DO UPDATE) y devuelve la espera resultante. */
+  registerFailure(keys: readonly ThrottleKey[], now: Date): Promise<number>;
+  /** Borra los contadores de las claves (login exitoso). */
+  reset(keys: readonly ThrottleKey[]): Promise<void>;
+  /** Borra todos los contadores de una cuenta (desbloqueo por un admin). */
+  resetAccount(accountKey: string): Promise<void>;
 }
 
 export interface AuthSessionRepository {
@@ -54,6 +107,7 @@ export interface IdentityRepositories {
   users: StaffUserRepository;
   sessions: AuthSessionRepository;
   recoveryCodes: RecoveryCodeRepository;
+  throttle: LoginThrottleRepository;
   audit: AuditTrail;
 }
 
@@ -83,7 +137,8 @@ export interface AccessClaims {
   role: StaffRole;
 }
 
-export type ChallengeKind = 'mfa' | 'enroll';
+/** mfa = verificar TOTP; enroll = enrolar TOTP; pwchange = cambio obligatorio de contraseña (H-14). */
+export type ChallengeKind = 'mfa' | 'enroll' | 'pwchange';
 
 export interface TokenService {
   signAccess(claims: AccessClaims, now: Date): { token: string; expiresAt: Date };

@@ -42,6 +42,7 @@ export interface StaffAuthSettings {
   refreshIdleTtlSeconds: number;
   refreshAbsoluteTtlSeconds: number;
   lockout: { threshold: number; baseSeconds: number; maxSeconds: number };
+  accountLockout: { threshold: number; baseSeconds: number; maxSeconds: number };
   mfaIssuer: string;
 }
 
@@ -133,6 +134,7 @@ export function settingsFromEnvironment(env: EnvironmentVariables): AppSettings 
       refreshIdleTtlSeconds: env.REFRESH_IDLE_TTL_HOURS * 3600,
       refreshAbsoluteTtlSeconds: env.REFRESH_ABSOLUTE_TTL_HOURS * 3600,
       lockout: { threshold: env.LOGIN_LOCK_THRESHOLD, baseSeconds: env.LOGIN_LOCK_BASE_SECONDS, maxSeconds: env.LOGIN_LOCK_MAX_SECONDS },
+      accountLockout: { threshold: env.LOGIN_ACCOUNT_LOCK_THRESHOLD, baseSeconds: env.LOGIN_LOCK_BASE_SECONDS, maxSeconds: env.LOGIN_ACCOUNT_LOCK_MAX_SECONDS },
       mfaIssuer: env.MFA_ISSUER,
     },
     mail: {
@@ -174,7 +176,7 @@ export function settingsFromConfigService(config: ConfigService): AppSettings {
     'PROVIDER_LEGAL_NAME', 'PROVIDER_RUC', 'ESTABLISHMENT_ADDRESS', 'ESTABLISHMENT_CODE', 'COMPLAINT_CONFORMITY_TEXT_VERSION',
     'PRIVACY_NOTICE_VERSION', 'PII_ENCRYPTION_KEY',
     'JWT_ACCESS_SECRET', 'JWT_ISSUER', 'ACCESS_TOKEN_TTL_SECONDS', 'REFRESH_IDLE_TTL_HOURS', 'REFRESH_ABSOLUTE_TTL_HOURS',
-    'LOGIN_LOCK_THRESHOLD', 'LOGIN_LOCK_BASE_SECONDS', 'LOGIN_LOCK_MAX_SECONDS', 'MFA_ISSUER',
+    'LOGIN_LOCK_THRESHOLD', 'LOGIN_LOCK_BASE_SECONDS', 'LOGIN_LOCK_MAX_SECONDS', 'LOGIN_ACCOUNT_LOCK_THRESHOLD', 'LOGIN_ACCOUNT_LOCK_MAX_SECONDS', 'MFA_ISSUER',
     'MAIL_TRANSPORT', 'MAIL_OUTBOX_DIR', 'MAIL_FROM', 'MAIL_REPLY_TO', 'SMTP_HOST', 'SMTP_PORT', 'SMTP_SECURE', 'SMTP_USER', 'SMTP_PASSWORD',
     'OUTBOX_RELAY_ENABLED', 'OUTBOX_RELAY_INTERVAL_MS', 'OUTBOX_MAX_ATTEMPTS', 'OUTBOX_BATCH_SIZE', 'REMINDER_JOB_INTERVAL_MS',
     'PUBLIC_WEB_BASE_URL', 'CONTACT_EMAIL', 'CONTACT_PHONE', 'MARKETING_LINK_SECRET', 'MARKETING_CONSENT_VERSION', 'CANCELLATION_REFUND_TIERS',

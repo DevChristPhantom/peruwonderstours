@@ -275,6 +275,7 @@ describeDb('Backoffice /admin y /auth contra PostgreSQL (db-e2e)', () => {
     const detail = await http.get(`/api/v1/admin/bookings/${booking.code}`).set(as('agent')).expect(200);
     expect(detail.body.data).toMatchObject({ status: 'paid', customer: { email: 'cliente.db@example.com' } });
     expect(detail.body.data.payments).toHaveLength(2);
+    expect(await prisma.auditLog.count({ where: { action: 'BOOKING_PII_VIEWED', actorId: userIds['agent'] } })).toBeGreaterThanOrEqual(1);
     expect(detail.body.data.payments[0].recordedBy.fullName).toBe('Ángel Asesor');
     expect(detail.body.data.legalAcceptances).toHaveLength(3);
     expect(detail.body.data.statusHistory.map((h: { to: string }) => h.to)).toEqual(['pending', 'held', 'partially_paid', 'paid']);
@@ -283,7 +284,9 @@ describeDb('Backoffice /admin y /auth contra PostgreSQL (db-e2e)', () => {
     const voucher = await http.post(`/api/v1/admin/bookings/${booking.code}/resend-voucher`).set(as('agent')).expect(202);
     expect(voucher.body.data.queued).toBe(true);
 
-    const filtered = await http.get('/api/v1/admin/bookings').set(as('agent')).query({ status: 'paid', email: 'CLIENTE.DB@example.com', travelDateFrom: travelDate, travelDateTo: travelDate }).expect(200);
+    // H-15: el correo nunca va en la URL (GET con ?email= se rechaza); la búsqueda es POST.
+    await http.get('/api/v1/admin/bookings').set(as('agent')).query({ email: 'cliente.db@example.com' }).expect(400);
+    const filtered = await http.post('/api/v1/admin/bookings/search').set(as('agent')).send({ status: 'paid', email: 'CLIENTE.DB@example.com', travelDateFrom: travelDate, travelDateTo: travelDate }).expect(200);
     expect(filtered.body.meta.total).toBe(1);
     expect(filtered.body.data[0].code).toBe(booking.code);
     const byCode = await http.get('/api/v1/admin/bookings').set(as('agent')).query({ code: booking.code.slice(0, 9) }).expect(200);
@@ -432,7 +435,7 @@ describeDb('Backoffice /admin y /auth contra PostgreSQL (db-e2e)', () => {
     const templates = mail.sent.map((m) => m.template);
     expect(templates).toEqual(
       expect.arrayContaining([
-        'booking-confirmation', 'payment-received', 'booking-voucher', 'booking-cancelled', 'balance-reminder-7d',
+        'booking-confirmation', 'payment-received', 'booking-voucher', 'booking-cancelled', 'balance-reminder-7d', 'marketing-confirmation',
         'complaint-acknowledgment', 'complaint-settlement-offer', 'complaint-response',
       ]),
     );
@@ -446,7 +449,8 @@ describeDb('Backoffice /admin y /auth contra PostgreSQL (db-e2e)', () => {
     expect(letter.responseDeliveryRef).toBe('carta:CARGO-0001');
     // Ningún correo de marketing para quien no lo aceptó; la confirmación incluye enlace de baja (aceptó).
     const confirmation = mail.sent.find((m) => m.template === 'booking-confirmation' && m.to[0] === 'cliente.db@example.com');
-    expect(confirmation?.text).toContain('/es/privacidad/baja?token=');
+    // H-05: sin confirmar el doble opt-in no hay consentimiento vigente (ni enlace de baja).
+    expect(confirmation?.text).not.toContain('/es/privacidad/baja?token=');
   });
 
   it('protección de datos: ARCO con plazos, ampliación única, historial de consentimientos y baja por enlace', async () => {
@@ -469,8 +473,16 @@ describeDb('Backoffice /admin y /auth contra PostgreSQL (db-e2e)', () => {
     const list = await http.get('/api/v1/admin/privacy/requests').set(as('operator')).expect(200);
     expect(list.body.meta.total).toBe(1);
 
-    const history = await http.get('/api/v1/admin/privacy/consents').set(as('operator')).query({ email: 'cliente.db@example.com' }).expect(200);
-    expect(history.body.data.current).toMatchObject({ marketing_email: true, marketing_whatsapp: false });
+    const history = await http.post('/api/v1/admin/privacy/consents/search').set(as('operator')).send({ email: 'cliente.db@example.com' }).expect(200);
+    // H-05: la casilla del checkout solo deja la solicitud pendiente.
+    expect(history.body.data.current).toMatchObject({ marketing_email: false, marketing_whatsapp: false });
+    const optIn = mail.sent.find((m) => m.template === 'marketing-confirmation' && m.to[0] === 'cliente.db@example.com')!;
+    const confirmToken = decodeURIComponent(/confirmar\?token=(\S+)/.exec(optIn.text)![1]!);
+    const confirmed = await http.post('/api/v1/privacy/marketing-confirmation').send({ token: confirmToken }).expect(200);
+    expect(confirmed.body.data.confirmed).toEqual(['marketing_email']);
+    await http.post('/api/v1/privacy/marketing-confirmation').send({ token: 'x'.repeat(40) }).expect(401);
+    const afterConfirm = await http.post('/api/v1/admin/privacy/consents/search').set(as('operator')).send({ email: 'cliente.db@example.com' }).expect(200);
+    expect(afterConfirm.body.data.current.marketing_email).toBe(true);
     expect(history.body.data.legalAcceptances.length).toBe(3);
 
     const token = privacy.buildUnsubscribeToken('cliente.db@example.com');
@@ -478,9 +490,9 @@ describeDb('Backoffice /admin y /auth contra PostgreSQL (db-e2e)', () => {
     expect(preview.body.data.purposes).toEqual([{ purpose: 'marketing_email', granted: true }, { purpose: 'marketing_whatsapp', granted: false }]);
     const revoked = await http.post('/api/v1/privacy/unsubscribe').send({ token }).expect(200);
     expect(revoked.body.data).toEqual({ revoked: ['marketing_email'], alreadyRevoked: ['marketing_whatsapp'] });
-    const after = await http.get('/api/v1/admin/privacy/consents').set(as('operator')).query({ email: 'cliente.db@example.com' }).expect(200);
+    const after = await http.post('/api/v1/admin/privacy/consents/search').set(as('operator')).send({ email: 'cliente.db@example.com' }).expect(200);
     expect(after.body.data.current.marketing_email).toBe(false);
-    const revocation = await prisma.consent.findFirstOrThrow({ where: { purpose: 'marketing_email', granted: false } });
+    const revocation = await prisma.consent.findFirstOrThrow({ where: { purpose: 'marketing_email', granted: false, source: 'unsubscribe_link' } });
     expect(revocation).toMatchObject({ method: 'email_link', source: 'unsubscribe_link' });
     // consents es append-only (trigger).
     await expect(prisma.consent.delete({ where: { id: revocation.id } })).rejects.toThrow();
@@ -492,8 +504,11 @@ describeDb('Backoffice /admin y /auth contra PostgreSQL (db-e2e)', () => {
     const d = res.body.data;
     const usdMonth = d.sales.month.find((s: { currency: string }) => s.currency === 'USD');
     expect(usdMonth.amount).toBeGreaterThan(0);
-    expect(d.sales.refundsMonth.find((s: { currency: string }) => s.currency === 'USD').count).toBe(1);
-    expect(d.bookingsByStatus).toMatchObject({ paid: 1, refunded: 1, partially_paid: 1 });
+    expect(d.sales.refundsMonth.find((s: { currency: string }) => s.currency === 'USD').count).toBeGreaterThanOrEqual(1);
+    // pwt_test es compartida con test/concurrency.db-e2e-spec.ts: conteos mínimos.
+    expect(d.bookingsByStatus.paid).toBeGreaterThanOrEqual(1);
+    expect(d.bookingsByStatus.refunded).toBeGreaterThanOrEqual(1);
+    expect(d.bookingsByStatus.partially_paid).toBeGreaterThanOrEqual(1);
     expect(d.balances.dueNext7Days.bookings.map((b: { code: string }) => b.code)).toContain(state.reminderCode);
     expect(d.complaints.open).toBe(1); // la transcrita
     expect(d.upcomingDepartures.length).toBeGreaterThan(0);

@@ -70,6 +70,8 @@ export interface BookingSnapshot {
   cancellationReason: string | null;
   /** Reembolso adeudado según la política de cancelación (lo fija el backoffice al cancelar). */
   refundDueAmount?: bigint | null;
+  /** Bloqueo optimista (H-01): versión persistida; el repositorio guarda con WHERE version = esta. */
+  version?: number;
   completedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -168,6 +170,7 @@ export class Booking {
       cancelledAt: null,
       cancellationReason: null,
       refundDueAmount: null,
+      version: 0,
       completedAt: null,
       createdAt: now,
       updatedAt: now,
@@ -356,6 +359,24 @@ export class Booking {
     this.props.refundDueAmount = refundDue.amount + this.props.refundedAmount;
     for (const item of this.props.items) item.status = 'cancelled';
     return result;
+  }
+
+  get version(): number {
+    return this.props.version ?? 0;
+  }
+
+  /** Lo llama el repositorio tras un UPDATE condicionado exitoso. */
+  markPersisted(version: number): void {
+    this.props.version = version;
+  }
+
+  /** ¿Admite aplicar `amount` como cobro sin sobrepasar el total ni salir de un estado cobrable? */
+  canAcceptPayment(amount: Money): boolean {
+    if (amount.currency !== this.props.currency || !amount.isPositive()) return false;
+    if (!['held', 'confirmed', 'partially_paid'].includes(this.props.status)) return false;
+    const newPaid = this.paid.add(amount);
+    if (newPaid.greaterThan(this.total)) return false;
+    return newPaid.equals(this.total) || !newPaid.lessThan(this.deposit);
   }
 
   get snapshot(): Readonly<BookingSnapshot> {

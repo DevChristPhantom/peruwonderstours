@@ -5,10 +5,11 @@ import { addDays, toLimaCalendarDate, type CalendarDate } from '../../../shared/
 import { BusinessRuleError, ConflictError, NotFoundError, ValidationError } from '../../../shared/domain/domain-error.js';
 import { assertCurrencyCode } from '../../../shared/domain/money.js';
 import type { IdGenerator } from '../../../shared/domain/ports.js';
-import { normalizeDraft, type ComplaintSettings } from '../../complaints/application/complaint.use-cases.js';
+import { normalizeDraft, resolveBookingLink, type ComplaintSettings } from '../../complaints/application/complaint.use-cases.js';
 import { businessDaysLookahead, COMPLAINT_RESPONSE_BUSINESS_DAYS, complaintResponseDue } from '../../complaints/domain/business-days.js';
 import {
   assertComplaintRules,
+  complaintAad,
   COMPLAINT_LEGAL_NOTICES,
   formatComplaintCode,
   formatSheetNumber,
@@ -164,14 +165,15 @@ export class ComplaintsAdminService {
         transcribedAt: row.transcribedAt,
         lateTranscription: row.channel === 'backup_book' && row.transcribedAt ? isLateTranscription(row.submittedAt, row.transcribedAt) : false,
         bookingId: row.bookingId,
+        declaredBookingCode: row.declaredBookingCode,
         provider: { legalName: row.providerLegalName, ruc: row.providerRuc, establishmentAddress: row.establishmentAddress, establishmentCode: row.establishmentCode },
         consumer: {
           fullName: row.consumerName,
           docType: row.consumerDocType,
-          docNumber: this.cipher.decrypt(row.consumerDocEnc),
+          docNumber: this.cipher.decrypt(row.consumerDocEnc, complaintAad(row.id, 'consumer_doc_enc')),
           address: row.consumerAddress,
           email: row.consumerEmail,
-          phone: row.consumerPhoneEnc ? this.cipher.decrypt(row.consumerPhoneEnc) : null,
+          phone: row.consumerPhoneEnc ? this.cipher.decrypt(row.consumerPhoneEnc, complaintAad(row.id, 'consumer_phone_enc')) : null,
           isMinor: row.isMinor,
         },
         guardian: row.isMinor
@@ -179,7 +181,7 @@ export class ComplaintsAdminService {
               fullName: row.guardianName,
               address: row.guardianAddress,
               email: row.guardianEmail,
-              phone: row.guardianPhoneEnc ? this.cipher.decrypt(row.guardianPhoneEnc) : null,
+              phone: row.guardianPhoneEnc ? this.cipher.decrypt(row.guardianPhoneEnc, complaintAad(row.id, 'guardian_phone_enc')) : null,
             }
           : null,
         good: {
@@ -359,7 +361,7 @@ export class ComplaintsAdminService {
   }
 
   /** Rechazo (o silencio): el plazo se reanuda; el vencimiento se corre lo que duró la suspensión. */
-  rejectSettlement(actor: StaffActor, meta: RequestMeta, id: string, input: { note?: string }) {
+  rejectSettlement(actor: StaffActor, meta: RequestMeta, id: string, _input: { note?: string }) {
     return this.db.run(actor, meta, async (ctx) => {
       const row = await this.load(ctx, id, true);
       const offeredAt = this.pendingOffer(row);
@@ -372,7 +374,7 @@ export class ComplaintsAdminService {
         entityType: 'complaints',
         entityId: row.id,
         action: 'COMPLAINT_SETTLEMENT_REJECTED',
-        after: { resolvedAt: resolvedAt.toISOString(), responseDueAt: newDue.toISOString(), note: input.note?.slice(0, 500) ?? null },
+        after: { resolvedAt: resolvedAt.toISOString(), responseDueAt: newDue.toISOString() },
       });
       return { id: row.id, responseDueAt: newDue, settlementRejectedAt: resolvedAt };
     });
@@ -400,10 +402,11 @@ export class ComplaintsAdminService {
       const holidays: Set<CalendarDate> = await ctx.repos.holidays.holidaysBetween(submittedDate, addDays(submittedDate, businessDaysLookahead(COMPLAINT_RESPONSE_BUSINESS_DAYS)));
       const { dueAt } = complaintResponseDue(submittedAt, holidays);
       const bookingCode = input.bookingCode?.trim().toUpperCase() || null;
-      const booking = bookingCode ? await ctx.repos.bookings.findByCode(bookingCode) : null;
+      const link = await resolveBookingLink(ctx.repos, bookingCode, draft.consumer.email, null);
       const docNumber = normalizeDocNumber(draft.consumer.docNumber);
+      const id = this.ids.next();
       const complaint: ComplaintSnapshot = {
-        id: this.ids.next(),
+        id,
         year,
         sequence,
         code: formatComplaintCode(year, sequence),
@@ -411,20 +414,21 @@ export class ComplaintsAdminService {
         declaredType: draft.declaredType,
         status: 'received',
         channel: 'backup_book',
-        bookingId: booking?.id ?? null,
+        bookingId: link.bookingId,
+        declaredBookingCode: link.declaredBookingCode,
         provider: { ...this.settings.provider },
         consumer: {
           fullName: draft.consumer.fullName,
           docType: draft.consumer.docType,
-          docEnc: this.cipher.encrypt(docNumber),
+          docEnc: this.cipher.encrypt(docNumber, complaintAad(id, 'consumer_doc_enc')),
           docHash: this.cipher.hash(`${draft.consumer.docType}:${docNumber}`),
           address: draft.consumer.address,
           email: draft.consumer.email,
-          phoneEnc: this.cipher.encrypt(draft.consumer.phone),
+          phoneEnc: this.cipher.encrypt(draft.consumer.phone, complaintAad(id, 'consumer_phone_enc')),
           isMinor: draft.consumer.isMinor,
         },
         guardian: draft.guardian
-          ? { fullName: draft.guardian.fullName, address: draft.guardian.address, phoneEnc: this.cipher.encrypt(draft.guardian.phone), email: draft.guardian.email }
+          ? { fullName: draft.guardian.fullName, address: draft.guardian.address, phoneEnc: this.cipher.encrypt(draft.guardian.phone, complaintAad(id, 'guardian_phone_enc')), email: draft.guardian.email }
           : null,
         good: { ...draft.good },
         detail: draft.detail,

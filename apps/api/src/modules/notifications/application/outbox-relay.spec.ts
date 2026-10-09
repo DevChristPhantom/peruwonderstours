@@ -43,6 +43,7 @@ function setup() {
     brand: { providerLegalName: 'Peru Wonders Tours E.I.R.L.', providerRuc: '20000000001', contactEmail: 'reservas@pwt.test', contactPhone: '+51 999', publicWebBaseUrl: 'https://pwt.test' },
     cipher,
     unsubscribeUrl: (repos, email) => privacy.unsubscribeUrlIfGranted(repos, email),
+    marketingConfirmationUrl: (email, purposes) => privacy.buildConfirmationUrl(email, purposes),
   });
   const relay = new OutboxRelay(h.uow, h.clock, h.ids, composer, transport, cipher, {
     batchSize: 10,
@@ -141,22 +142,45 @@ describe('Relay del outbox -> correo', () => {
     expect(ctx.h.store.state.complaints.get(event.aggregateId)?.acknowledgmentDeliveryRef).toBe('<previo@pwt.test>');
   });
 
-  it('confirmación + voucher al pagar el adelanto; incluye enlace de baja si aceptó marketing', async () => {
+  it('confirmación + voucher al pagar el adelanto; el marketing queda pendiente del doble opt-in (H-05)', async () => {
     const ctx = setup();
     const { booking } = await paidDepositBooking(ctx);
     const events = [...ctx.h.store.state.outbox.values()];
-    expect(events.map((e) => e.eventType)).toEqual([MAIL_EVENTS.bookingConfirmed]);
+    expect(events.map((e) => e.eventType)).toEqual([MAIL_EVENTS.privacyMarketingConfirmation, MAIL_EVENTS.bookingConfirmed]);
     await ctx.relay.runOnce();
-    const mail = ctx.transport.sent[0]!;
-    expect(mail.template).toBe('booking-confirmation');
+    const optIn = ctx.transport.sent.find((m) => m.template === 'marketing-confirmation')!;
+    expect(optIn.to).toEqual(['ana.quispe@example.com']);
+    expect(optIn.text).toContain('https://pwt.test/es/privacidad/confirmar?token=');
+    const mail = ctx.transport.sent.find((m) => m.template === 'booking-confirmation')!;
     expect(mail.to).toEqual(['ana.quispe@example.com']);
     expect(mail.text).toContain(booking.code);
     expect(mail.text).toContain('US$ 60.00'); // pagado (adelanto 50 % de 120.00)
     expect(mail.text).toContain('Saldo pendiente: US$ 60.00');
-    expect(mail.text).toContain('https://pwt.test/es/privacidad/baja?token=');
-    // Aceptaciones legales y consentimientos guardados en el checkout.
+    // Sin confirmar, no hay consentimiento vigente: ningún enlace de baja (no hay nada de qué darse de baja).
+    expect(mail.text).not.toContain('/es/privacidad/baja');
     expect(ctx.h.store.state.legalAcceptances.map((a) => a.document).sort()).toEqual(['cancellation_policy', 'privacy_policy_ack', 'terms_and_conditions']);
-    expect(ctx.h.store.state.consents.map((c) => [c.purpose, c.granted])).toEqual([['marketing_email', true], ['marketing_whatsapp', false]]);
+    expect(ctx.h.store.state.consents.map((c) => [c.purpose, c.granted, c.source])).toEqual([
+      ['marketing_email', false, 'checkout_pending'],
+      ['marketing_whatsapp', false, 'checkout'],
+    ]);
+  });
+
+  it('doble opt-in: el enlace del correo activa el marketing; enlaces alterados, vencidos o de baja no sirven', async () => {
+    const ctx = setup();
+    await paidDepositBooking(ctx);
+    await ctx.relay.runOnce();
+    const link = ctx.transport.sent.find((m) => m.template === 'marketing-confirmation')!.text.match(/confirmar\?token=([^\s]+)/)![1]!;
+    const token = decodeURIComponent(link);
+    expect(await ctx.privacy.previewConfirmation(token)).toEqual({ purposes: [{ purpose: 'marketing_email', granted: false, pending: true }] });
+    // Un enlace de baja no confirma (firmas con propósito distinto).
+    await expect(ctx.privacy.confirmMarketing(ctx.privacy.buildUnsubscribeToken('ana.quispe@example.com'), { ip: null, userAgent: null })).rejects.toMatchObject({ code: 'invalid-confirmation-link' });
+    expect(await ctx.privacy.confirmMarketing(token, { ip: '203.0.113.5', userAgent: 'x' })).toEqual({ confirmed: ['marketing_email'], alreadyConfirmed: [], notPending: [] });
+    expect(await ctx.privacy.confirmMarketing(token, { ip: null, userAgent: null })).toEqual({ confirmed: [], alreadyConfirmed: ['marketing_email'], notPending: [] });
+    expect(ctx.h.store.state.consents.at(-1)).toMatchObject({ purpose: 'marketing_email', granted: true, method: 'email_link', source: 'double_opt_in' });
+    expect(await ctx.h.uow.run((r) => ctx.privacy.unsubscribeUrlIfGranted(r, 'ana.quispe@example.com'))).toContain('/es/privacidad/baja?token=');
+    // Vencido a los 7 días.
+    ctx.h.clock.advanceMinutes(8 * 24 * 60);
+    await expect(ctx.privacy.previewConfirmation(token)).rejects.toMatchObject({ code: 'invalid-confirmation-link' });
   });
 
   it('recordatorios de saldo 7 y 2 días antes: una sola vez cada uno y nada si ya pagó', async () => {
@@ -200,6 +224,8 @@ describe('Relay del outbox -> correo', () => {
   it('baja de marketing por enlace firmado: revoca, es idempotente y rechaza enlaces alterados', async () => {
     const ctx = setup();
     await paidDepositBooking(ctx);
+    // Primero el titular confirma el doble opt-in.
+    await ctx.privacy.confirmMarketing(ctx.privacy.buildConfirmationUrl('ana.quispe@example.com', ['marketing_email']).split('token=')[1]!.replace(/%2E/g, '.'), { ip: null, userAgent: null });
     const token = ctx.privacy.buildUnsubscribeToken('ANA.QUISPE@example.com');
     expect(await ctx.privacy.previewUnsubscribe(token)).toEqual({
       purposes: [
@@ -214,5 +240,26 @@ describe('Relay del outbox -> correo', () => {
     await expect(ctx.privacy.unsubscribe(`${token.slice(0, -3)}abc`, undefined, { ip: null, userAgent: null })).rejects.toMatchObject({ code: 'invalid-unsubscribe-link' });
     // Sin consentimiento vigente, los correos ya no llevan enlace de baja.
     expect(await ctx.h.uow.run((r) => ctx.privacy.unsubscribeUrlIfGranted(r, 'ana.quispe@example.com'))).toBeNull();
+  });
+
+  it('H-17: una hoja se vincula a la reserva solo con su token o el mismo correo; si no, queda como código declarado', async () => {
+    const ctx = setup();
+    const { booking, access } = await paidDepositBooking(ctx);
+    const submit = (key: string, extra: Record<string, unknown>, email = 'ana@example.com') =>
+      ctx.complaints.submit({ draft: { ...DRAFT, consumer: { ...DRAFT.consumer, email } }, idempotencyKey: key, ip: null, bookingCode: booking.code, ...extra });
+    const stranger = await submit('complaint-h17-001', {});
+    expect(stranger.complaint).toMatchObject({ bookingId: null, declaredBookingCode: booking.code });
+    const wrongToken = await submit('complaint-h17-002', { bookingToken: 'A'.repeat(43) });
+    expect(wrongToken.complaint.bookingId).toBeNull();
+    const withToken = await submit('complaint-h17-003', { bookingToken: access.token });
+    expect(withToken.complaint).toMatchObject({ bookingId: booking.id, declaredBookingCode: null });
+    const sameEmail = await submit('complaint-h17-004', {}, 'Ana.Quispe@Example.com');
+    expect(sameEmail.complaint).toMatchObject({ bookingId: booking.id, declaredBookingCode: null });
+    const unknown = await ctx.complaints.submit({ draft: DRAFT, idempotencyKey: 'complaint-h17-005', ip: null, bookingCode: 'PWT-2099-999999' });
+    expect(unknown.complaint).toMatchObject({ bookingId: null, declaredBookingCode: 'PWT-2099-999999' });
+    // H-19: PII de la hoja cifrada con AAD (v2) y legible por su titular.
+    expect(stranger.complaint.consumer.docEnc[0]).toBe(0x02);
+    const view = await ctx.complaints.getByCode({ code: stranger.complaint.code, token: stranger.accessToken });
+    expect(view.consumerDocNumber).toBe('45678912');
   });
 });

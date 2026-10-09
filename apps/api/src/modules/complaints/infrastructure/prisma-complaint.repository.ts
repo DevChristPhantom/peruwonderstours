@@ -22,6 +22,7 @@ function mapComplaint(row: ComplaintRow): ComplaintSnapshot {
     status: row.status,
     channel: row.channel,
     bookingId: row.bookingId,
+    declaredBookingCode: row.declaredBookingCode,
     provider: {
       legalName: row.providerLegalName,
       ruc: row.providerRuc,
@@ -86,6 +87,7 @@ export class PrismaComplaintRepository implements ComplaintRepository {
         status: c.status,
         channel: c.channel,
         bookingId: c.bookingId,
+        declaredBookingCode: c.declaredBookingCode ?? null,
         providerLegalName: c.provider.legalName,
         providerRuc: c.provider.ruc,
         establishmentAddress: c.provider.establishmentAddress,

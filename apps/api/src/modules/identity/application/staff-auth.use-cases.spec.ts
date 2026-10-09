@@ -281,3 +281,99 @@ describe('StaffAuthUseCases: sesiones y refresh rotativo', () => {
     await expectCode(ctx.auth.verifyMfa({ mfaToken: login.mfaToken, code: recoveryCodes[1]! }, META), 'invalid-mfa-code');
   });
 });
+
+describe('Endurecimiento de auth (H-03, H-12, H-13, H-14)', () => {
+  const at = (ip: string) => ({ ...META, ip });
+
+  it('H-13: un correo inexistente se bloquea igual que uno real (sin enumeración)', async () => {
+    const ctx = setup();
+    await enrolledUser(ctx);
+    for (let i = 0; i < 5; i += 1) {
+      await expectCode(ctx.auth.login({ email: 'nadie@pwt.pe', password: 'mala-clave-0000' }, META), 'invalid-credentials');
+      await expectCode(ctx.auth.login({ email: 'ana@pwt.pe', password: 'mala-clave-0000' }, META), 'invalid-credentials');
+    }
+    const ghost = await expectCode(ctx.auth.login({ email: 'nadie@pwt.pe', password: PASSWORD }, META), 'account-locked');
+    const real = await expectCode(ctx.auth.login({ email: 'ana@pwt.pe', password: PASSWORD }, META), 'account-locked');
+    expect(ghost.message).toBe(real.message);
+    expect(ghost.details).toEqual(real.details);
+  });
+
+  it('H-13: el bloqueo por cuenta+IP no deja fuera al titular desde otra IP; el de cuenta tiene tope de 15 min', async () => {
+    const ctx = setup();
+    await enrolledUser(ctx);
+    for (let i = 0; i < 5; i += 1) await expectCode(ctx.auth.login({ email: 'ana@pwt.pe', password: 'mala-clave-0000' }, at('203.0.113.66')), 'invalid-credentials');
+    await expectCode(ctx.auth.login({ email: 'ana@pwt.pe', password: PASSWORD }, at('203.0.113.66')), 'account-locked');
+    expect((await ctx.auth.login({ email: 'ana@pwt.pe', password: PASSWORD }, at('198.51.100.7'))).status).toBe('mfa_required');
+    // Fuerza bruta distribuida: 20 fallos desde IP distintas bloquean la cuenta, con tope.
+    for (let i = 0; i < 20; i += 1) await ctx.auth.login({ email: 'ana@pwt.pe', password: 'mala-clave-0000' }, at(`192.0.2.${i + 1}`)).catch(() => undefined);
+    const locked = await expectCode(ctx.auth.login({ email: 'ana@pwt.pe', password: PASSWORD }, at('198.51.100.7')), 'account-locked');
+    expect(Number(locked.details['retryAfterSeconds'])).toBeLessThanOrEqual(900);
+    ctx.clock.advanceMinutes(16);
+    expect((await ctx.auth.login({ email: 'ana@pwt.pe', password: PASSWORD }, at('198.51.100.7'))).status).toBe('mfa_required');
+  });
+
+  it('H-03: el contador de fallos se incrementa sin leer-modificar-escribir', async () => {
+    const ctx = setup();
+    const { user } = await enrolledUser(ctx);
+    await Promise.all(Array.from({ length: 4 }, () => ctx.auth.login({ email: 'ana@pwt.pe', password: 'mala-clave-0000' }, META).catch(() => undefined)));
+    expect(ctx.store.state.users.get(user.id)?.failedLoginCount).toBe(4);
+  });
+
+  it('H-12: regenerar códigos respeta el bloqueo y, al bloquearse, cierra la sesión', async () => {
+    const ctx = setup();
+    const { session } = await enrolledUser(ctx);
+    const actor = await ctx.auth.authenticate(session.accessToken);
+    for (let i = 0; i < 4; i += 1) await expectCode(ctx.auth.regenerateRecoveryCodes(actor, '000000', META), 'invalid-mfa-code');
+    await expectCode(ctx.auth.regenerateRecoveryCodes(actor, '000000', META), 'invalid-mfa-code');
+    await expectCode(ctx.auth.regenerateRecoveryCodes(actor, '000000', META), 'account-locked');
+    await expectCode(ctx.auth.authenticate(session.accessToken), 'session-revoked');
+  });
+
+  it('H-12: cambiar la contraseña respeta el bloqueo', async () => {
+    const ctx = setup();
+    const { session } = await enrolledUser(ctx);
+    const actor = await ctx.auth.authenticate(session.accessToken);
+    for (let i = 0; i < 5; i += 1) await expectCode(ctx.auth.changePassword(actor, { currentPassword: 'equivocada-123456', newPassword: 'Nueva-Clave#Segura-2027' }, META), 'invalid-credentials');
+    await expectCode(ctx.auth.changePassword(actor, { currentPassword: PASSWORD, newPassword: 'Nueva-Clave#Segura-2027' }, META), 'account-locked');
+  });
+
+  it('H-14: con contraseña temporal el login exige cambiarla antes de MFA y de emitir sesión', async () => {
+    const ctx = setup();
+    const { temporaryPassword, user } = await ctx.users.create({ email: 'nuevo@pwt.pe', fullName: 'Nuevo Usuario', role: 'agent' }, null, META);
+    expect(user).toMatchObject({ email: 'nuevo@pwt.pe' });
+    const first = await ctx.auth.login({ email: 'nuevo@pwt.pe', password: temporaryPassword! }, META);
+    expect(first.status).toBe('password_change_required');
+    if (first.status !== 'password_change_required') return;
+    expect(first).not.toHaveProperty('accessToken');
+    await expectCode(ctx.auth.completeInitialPasswordChange({ passwordChangeToken: first.passwordChangeToken, newPassword: temporaryPassword! }, META), 'password-unchanged');
+    await expectCode(ctx.auth.completeInitialPasswordChange({ passwordChangeToken: first.passwordChangeToken, newPassword: 'corta' }, META), 'weak-password');
+    const next = await ctx.auth.completeInitialPasswordChange({ passwordChangeToken: first.passwordChangeToken, newPassword: 'Lago-Titicaca#Uros-88' }, META);
+    expect(next.status).toBe('mfa_enrollment_required');
+    // El desafío se usa una sola vez.
+    await expectCode(ctx.auth.completeInitialPasswordChange({ passwordChangeToken: first.passwordChangeToken, newPassword: 'Otra-Clave#Segura-99' }, META), 'invalid-mfa-token');
+    expect((await ctx.auth.login({ email: 'nuevo@pwt.pe', password: 'Lago-Titicaca#Uros-88' }, META)).status).toBe('mfa_enrollment_required');
+  });
+
+  it('H-14: el reinicio de contraseña por un admin vuelve a exigir el cambio', async () => {
+    const ctx = setup();
+    const admin = await enrolledUser(ctx, 'admin@pwt.pe', 'admin');
+    const op = await enrolledUser(ctx, 'op@pwt.pe', 'operator');
+    const actor = await ctx.auth.authenticate(admin.session.accessToken);
+    const { temporaryPassword } = await ctx.users.resetPassword(actor, op.user.id, META);
+    expect((await ctx.auth.login({ email: 'op@pwt.pe', password: temporaryPassword }, META)).status).toBe('password_change_required');
+  });
+
+  it('H-19: el secreto TOTP se cifra con AAD ligado al usuario', async () => {
+    const ctx = setup();
+    const a = await enrolledUser(ctx, 'a@pwt.pe');
+    const b = await enrolledUser(ctx, 'b@pwt.pe');
+    const ua = ctx.store.state.users.get(a.user.id)!;
+    const ub = ctx.store.state.users.get(b.user.id)!;
+    expect(ua.mfaSecretEnc![0]).toBe(0x02);
+    // Copiar el secreto cifrado de A a B no sirve: el descifrado falla por el AAD.
+    ub.mfaSecretEnc = ua.mfaSecretEnc;
+    const login = await ctx.auth.login({ email: 'b@pwt.pe', password: PASSWORD }, META);
+    if (login.status !== 'mfa_required') throw new Error('mfa');
+    await expect(ctx.auth.verifyMfa({ mfaToken: login.mfaToken, code: await codeAt(a.secret, ctx.clock, 60) }, META)).rejects.toThrow();
+  });
+});

@@ -1,9 +1,10 @@
+import { createHash } from 'node:crypto';
 import { auditIp, type RequestMeta } from '../../../shared/application/audit.js';
 import { ConcurrencyError, ConflictError, ForbiddenError, NotFoundError } from '../../../shared/domain/domain-error.js';
 import type { Clock, IdGenerator } from '../../../shared/domain/ports.js';
 import type { StaffRole } from '../domain/permissions.js';
 import { assertPasswordPolicy, generatePassword, normalizeStaffEmail, type AccountStatus, type StaffUser } from '../domain/staff-user.js';
-import type { IdentityRepositories, IdentityStore, PasswordHasher } from './ports.js';
+import type { IdentityRepositories, IdentityStore, PasswordHasher, StaffUserFields } from './ports.js';
 import { toProfile, type StaffActor, type StaffProfile } from './staff-auth.use-cases.js';
 
 export interface StaffUserSummary extends StaffProfile {
@@ -56,7 +57,7 @@ export class StaffUsersUseCases {
    * También la usa `pnpm admin:create` (actor null = CLI).
    */
   async create(
-    input: { email: string; fullName: string; role: StaffRole; password?: string },
+    input: { email: string; fullName: string; role: StaffRole; password?: string; mustChangePassword?: boolean },
     actor: StaffActor | null,
     meta: RequestMeta,
   ): Promise<{ user: StaffUserSummary; temporaryPassword: string | null }> {
@@ -82,6 +83,8 @@ export class StaffUsersUseCases {
         lockedUntil: null,
         lastFailedLoginAt: null,
         passwordChangedAt: now,
+        // H-14: una contraseña generada (alta desde el backoffice) es temporal: se cambia al ingresar.
+        mustChangePassword: input.password === undefined || input.mustChangePassword === true,
         lastLoginAt: null,
         version: 0,
         createdAt: now,
@@ -124,11 +127,15 @@ export class StaffUsersUseCases {
         const admins = (await r.users.list()).filter((u) => !u.deletedAt && u.role === 'admin' && u.status === 'active');
         if (admins.length <= 1) throw new ConflictError('last-admin', 'Debe quedar al menos un administrador activo.');
       }
-      if (input.role) user.role = input.role;
-      if (input.status) user.status = input.status;
-      if (input.fullName) user.fullName = input.fullName.trim().replace(/\s+/g, ' ');
-      user.version += 1;
-      await r.users.update(user);
+      const fields: StaffUserFields = {};
+      if (input.role) fields.role = input.role;
+      if (input.status) fields.status = input.status;
+      if (input.fullName) fields.fullName = input.fullName.trim().replace(/\s+/g, ' ');
+      // H-04: solo las columnas que cambian y con la versión leída (sin pisar fallos/secretos concurrentes).
+      if (!(await r.users.updateFields(user.id, fields, { expectedVersion: input.version, bumpVersion: true }))) {
+        throw new ConcurrencyError('El usuario fue modificado por otra operación. Recarga e intenta de nuevo.');
+      }
+      Object.assign(user, fields, { version: user.version + 1 });
       if (input.status && input.status !== 'active') await r.sessions.revokeAllForUser(user.id, 'user_disabled', now);
       await r.audit.record({
         actorType: 'user', actorId: actor.userId, entityType: 'users', entityId: user.id, action: 'STAFF_USER_UPDATED',
@@ -142,25 +149,24 @@ export class StaffUsersUseCases {
   /** Reinicia el segundo factor: el usuario debe volver a enrolarlo; se cierran sus sesiones. */
   resetMfa(actor: StaffActor, id: string, meta: RequestMeta): Promise<StaffUserSummary> {
     return this.mutate(actor, id, meta, 'STAFF_MFA_RESET', async (r, user, now) => {
-      user.mfaSecretEnc = null;
-      user.mfaEnabledAt = null;
-      user.mfaLastTimeStep = null;
       await r.recoveryCodes.replaceAll(user.id, [], now);
       await r.sessions.revokeAllForUser(user.id, 'mfa_reset', now);
+      return { mfaSecretEnc: null, mfaEnabledAt: null, mfaLastTimeStep: null };
     });
   }
 
   unlock(actor: StaffActor, id: string, meta: RequestMeta): Promise<StaffUserSummary> {
-    return this.mutate(actor, id, meta, 'STAFF_USER_UNLOCKED', (_r, user) => {
-      user.failedLoginCount = 0;
-      user.lockedUntil = null;
-      return Promise.resolve();
+    return this.mutate(actor, id, meta, 'STAFF_USER_UNLOCKED', async (r, user) => {
+      // H-03/H-13: borra los contadores del limitador de la cuenta (todas las IP).
+      await r.throttle.resetAccount(createHash('sha256').update(`acct:${user.email}`).digest('hex'));
+      return { failedLoginCount: 0, lockedUntil: null };
     });
   }
 
   revokeSessions(actor: StaffActor, id: string, meta: RequestMeta): Promise<StaffUserSummary> {
     return this.mutate(actor, id, meta, 'STAFF_SESSIONS_REVOKED', async (r, user, now) => {
       await r.sessions.revokeAllForUser(user.id, 'admin', now);
+      return {};
     });
   }
 
@@ -169,9 +175,9 @@ export class StaffUsersUseCases {
     const password = generatePassword();
     const hash = await this.hasher.hash(password);
     const user = await this.mutate(actor, id, meta, 'STAFF_PASSWORD_RESET', async (r, u, now) => {
-      u.passwordHash = hash;
-      u.passwordChangedAt = now;
       await r.sessions.revokeAllForUser(u.id, 'password_changed', now);
+      // H-14: la contraseña temporal debe cambiarse en el próximo ingreso.
+      return { passwordHash: hash, passwordChangedAt: now, mustChangePassword: true };
     });
     return { user, temporaryPassword: password };
   }
@@ -181,14 +187,16 @@ export class StaffUsersUseCases {
     id: string,
     meta: RequestMeta,
     action: string,
-    change: (r: IdentityRepositories, user: StaffUser, now: Date) => Promise<void>,
+    change: (r: IdentityRepositories, user: StaffUser, now: Date) => Promise<StaffUserFields>,
   ): Promise<StaffUserSummary> {
     const now = this.clock.now();
     return this.store.run(async (r) => {
       const user = await this.load(r, id);
-      await change(r, user, now);
-      user.version += 1;
-      await r.users.update(user);
+      const fields = await change(r, user, now);
+      if (!(await r.users.updateFields(user.id, fields, { expectedVersion: user.version, bumpVersion: true }))) {
+        throw new ConcurrencyError('El usuario fue modificado por otra operación. Recarga e intenta de nuevo.');
+      }
+      Object.assign(user, fields, { version: user.version + 1 });
       await r.audit.record({
         actorType: 'user', actorId: actor.userId, entityType: 'users', entityId: user.id, action,
         ip: auditIp(meta.ip), requestId: meta.requestId, occurredAt: now,

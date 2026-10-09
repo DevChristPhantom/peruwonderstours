@@ -1,8 +1,9 @@
 import type { PiiCipher } from '../../../shared/application/pii-cipher.js';
 import type { TransactionalRepositories } from '../../../shared/application/unit-of-work.js';
 import type { ClaimedOutboxEvent } from '../../../shared/domain/outbox.js';
-import { COMPLAINT_LEGAL_NOTICES, formatSheetNumber, type ComplaintSnapshot } from '../../complaints/domain/complaint.js';
+import { complaintAad, COMPLAINT_LEGAL_NOTICES, formatSheetNumber, type ComplaintSnapshot } from '../../complaints/domain/complaint.js';
 import { MAIL_EVENTS } from '../domain/mail-events.js';
+import { MARKETING_PURPOSES, type MarketingPurpose } from '../../privacy/domain/consent.js';
 import {
   balanceReminderEmail,
   bookingCancelledEmail,
@@ -11,6 +12,7 @@ import {
   complaintResponseEmail,
   complaintSettlementOfferEmail,
   complaintSheetDocument,
+  marketingConfirmationEmail,
   paymentReceivedEmail,
   type BookingMailData,
   type BrandInfo,
@@ -42,6 +44,8 @@ export interface ComposerContext {
   cipher: PiiCipher;
   /** URL de baja de marketing si el titular tiene `marketing_email` otorgado; null si no. */
   unsubscribeUrl(repos: TransactionalRepositories, email: string): Promise<string | null>;
+  /** Enlace firmado del doble opt-in (H-05). */
+  marketingConfirmationUrl(email: string, purposes: MarketingPurpose[]): string;
 }
 
 /**
@@ -66,9 +70,31 @@ export class MailComposer {
       case MAIL_EVENTS.bookingBalanceReminder:
       case MAIL_EVENTS.bookingCancelled:
         return this.booking(repos, event);
+      case MAIL_EVENTS.privacyMarketingConfirmation:
+        return this.marketingConfirmation(repos, event);
       default:
         return { kind: 'skip', reason: `sin plantilla para ${event.eventType}` };
     }
+  }
+
+  private async marketingConfirmation(repos: TransactionalRepositories, event: ClaimedOutboxEvent): Promise<ComposeResult> {
+    const customer = await repos.customers.findById(str(event.payload['customerId'], event.aggregateId));
+    if (!customer) return { kind: 'skip', reason: 'cliente inexistente' };
+    const raw = Array.isArray(event.payload['purposes']) ? (event.payload['purposes'] as unknown[]) : [];
+    const purposes = raw.filter((p): p is MarketingPurpose => (MARKETING_PURPOSES as readonly unknown[]).includes(p));
+    if (purposes.length === 0) return { kind: 'skip', reason: 'sin finalidades' };
+    return {
+      kind: 'send',
+      plan: {
+        emails: [
+          {
+            template: 'marketing-confirmation',
+            to: [customer.email],
+            ...marketingConfirmationEmail({ firstName: customer.firstName, purposes, confirmUrl: this.ctx.marketingConfirmationUrl(customer.email, purposes) }, this.ctx.brand),
+          },
+        ],
+      },
+    };
   }
 
   // ---------------------------------------------------------------------------
@@ -180,13 +206,13 @@ export class MailComposer {
       consumer: {
         fullName: c.consumer.fullName,
         docType: c.consumer.docType,
-        docNumber: cipher.decrypt(c.consumer.docEnc),
+        docNumber: cipher.decrypt(c.consumer.docEnc, complaintAad(c.id, 'consumer_doc_enc')),
         address: c.consumer.address,
-        phone: c.consumer.phoneEnc ? cipher.decrypt(c.consumer.phoneEnc) : null,
+        phone: c.consumer.phoneEnc ? cipher.decrypt(c.consumer.phoneEnc, complaintAad(c.id, 'consumer_phone_enc')) : null,
         email: c.consumer.email,
         isMinor: c.consumer.isMinor,
       },
-      guardian: c.guardian ? { fullName: c.guardian.fullName, address: c.guardian.address, phone: cipher.decrypt(c.guardian.phoneEnc), email: c.guardian.email } : null,
+      guardian: c.guardian ? { fullName: c.guardian.fullName, address: c.guardian.address, phone: cipher.decrypt(c.guardian.phoneEnc, complaintAad(c.id, 'guardian_phone_enc')), email: c.guardian.email } : null,
       good: { type: c.good.type, description: c.good.description, claimedAmount: c.good.claimedAmount !== null && c.good.currency ? { amount: c.good.claimedAmount, currency: c.good.currency } : null },
       declaredType: c.declaredType,
       type: c.type,

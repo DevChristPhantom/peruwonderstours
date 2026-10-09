@@ -256,6 +256,22 @@ export class EnvironmentVariables {
   @Min(60)
   LOGIN_LOCK_MAX_SECONDS = 3600;
 
+  /**
+   * H-13: límite de la CUENTA desde cualquier IP (frena la fuerza bruta distribuida). Tope corto
+   * (15 min) para que un atacante no deje fuera a un admin por horas; el bloqueo largo es por cuenta+IP.
+   */
+  @Type(() => Number)
+  @IsInt()
+  @Min(5)
+  @Max(1000)
+  LOGIN_ACCOUNT_LOCK_THRESHOLD = 20;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(60)
+  @Max(3600)
+  LOGIN_ACCOUNT_LOCK_MAX_SECONDS = 900;
+
   @IsString()
   @Length(1, 60)
   MFA_ISSUER = 'Peru Wonders Tours';
@@ -364,6 +380,8 @@ export class EnvironmentVariables {
 /** `validate` de ConfigModule: convierte tipos, aplica defaults y falla con todos los errores. */
 export function validateEnvironment(config: Record<string, unknown>): EnvironmentVariables {
   const env = plainToInstance(EnvironmentVariables, config, { enableImplicitConversion: true, exposeDefaultValues: true });
+  // H-11: en producción Swagger queda apagado salvo que se pida explícitamente (y eso se rechaza abajo).
+  if (env.NODE_ENV === 'production' && (config['SWAGGER_ENABLED'] === undefined || config['SWAGGER_ENABLED'] === '')) env.SWAGGER_ENABLED = false;
   const errors = validateSync(env, { skipMissingProperties: false, whitelist: false });
   const messages = errors.flatMap((e) => Object.values(e.constraints ?? {}).map((m) => `${e.property}: ${m}`));
   if (env.NODE_ENV === 'production') {
@@ -376,6 +394,7 @@ export function validateEnvironment(config: Record<string, unknown>): Environmen
       if (/POR CONFIRMAR/i.test(env[key])) messages.push(`${key} no puede quedar "POR CONFIRMAR" en producción.`);
     }
     if (!env.JWT_ACCESS_SECRET) messages.push('JWT_ACCESS_SECRET es obligatoria en producción.');
+    if (env.SWAGGER_ENABLED) messages.push('SWAGGER_ENABLED debe ser false en producción (no publicar el mapa de la API).');
     if (!env.MARKETING_LINK_SECRET) messages.push('MARKETING_LINK_SECRET es obligatoria en producción.');
     if (env.MAIL_TRANSPORT === 'file' || env.MAIL_TRANSPORT === 'memory') messages.push('MAIL_TRANSPORT debe ser "smtp" (o "disabled") en producción.');
     if (!env.PUBLIC_WEB_BASE_URL.startsWith('https://')) messages.push('PUBLIC_WEB_BASE_URL debe usar https en producción.');

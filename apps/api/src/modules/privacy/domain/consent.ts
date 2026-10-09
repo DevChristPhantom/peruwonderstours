@@ -90,19 +90,23 @@ export interface UnsubscribeClaims {
 
 const TOKEN_VERSION = 1;
 
-/** `base64url(json).base64url(hmac-sha256)`; sin vencimiento (la baja debe funcionar siempre). */
-export function signUnsubscribeToken(claims: UnsubscribeClaims, secret: string): string {
+/** Uso del enlace firmado: la firma se calcula con este prefijo, así un enlace no sirve para el otro. */
+export type MarketingLinkUse = 'unsubscribe' | 'confirm';
+
+/** Vigencia del enlace de confirmación del doble opt-in (la baja no vence). */
+export const CONFIRMATION_LINK_TTL_SECONDS = 7 * 24 * 3600;
+
+function signLink(use: MarketingLinkUse, claims: UnsubscribeClaims, secret: string): string {
   const body = Buffer.from(JSON.stringify({ v: TOKEN_VERSION, s: claims.subjectHash, p: claims.purposes, iat: claims.issuedAt })).toString('base64url');
-  const sig = createHmac('sha256', secret).update(`unsubscribe.${body}`).digest('base64url');
+  const sig = createHmac('sha256', secret).update(`${use}.${body}`).digest('base64url');
   return `${body}.${sig}`;
 }
 
-/** Devuelve null si la firma o el contenido no son válidos (comparación en tiempo constante). */
-export function verifyUnsubscribeToken(token: string, secret: string): UnsubscribeClaims | null {
+function verifyLink(use: MarketingLinkUse, token: string, secret: string): UnsubscribeClaims | null {
   if (typeof token !== 'string' || token.length > 1024) return null;
   const [body, sig, extra] = token.split('.');
   if (!body || !sig || extra !== undefined) return null;
-  const expected = createHmac('sha256', secret).update(`unsubscribe.${body}`).digest();
+  const expected = createHmac('sha256', secret).update(`${use}.${body}`).digest();
   let given: Buffer;
   try {
     given = Buffer.from(sig, 'base64url');
@@ -119,4 +123,27 @@ export function verifyUnsubscribeToken(token: string, secret: string): Unsubscri
   } catch {
     return null;
   }
+}
+
+/** `base64url(json).base64url(hmac-sha256)`; sin vencimiento (la baja debe funcionar siempre). */
+export function signUnsubscribeToken(claims: UnsubscribeClaims, secret: string): string {
+  return signLink('unsubscribe', claims, secret);
+}
+
+/** Devuelve null si la firma o el contenido no son válidos (comparación en tiempo constante). */
+export function verifyUnsubscribeToken(token: string, secret: string): UnsubscribeClaims | null {
+  return verifyLink('unsubscribe', token, secret);
+}
+
+/** Enlace del doble opt-in (H-05): confirma que el titular del correo pidió recibir marketing. */
+export function signConfirmationToken(claims: UnsubscribeClaims, secret: string): string {
+  return signLink('confirm', claims, secret);
+}
+
+/** null si la firma no es válida o el enlace venció (7 días). */
+export function verifyConfirmationToken(token: string, secret: string, nowSeconds: number): UnsubscribeClaims | null {
+  const claims = verifyLink('confirm', token, secret);
+  if (!claims) return null;
+  if (nowSeconds - claims.issuedAt > CONFIRMATION_LINK_TTL_SECONDS || claims.issuedAt > nowSeconds + 300) return null;
+  return claims;
 }

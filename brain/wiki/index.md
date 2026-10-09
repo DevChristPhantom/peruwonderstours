@@ -21,6 +21,7 @@ This catalog is updated by completed knowledge operations.
 - [[concepts/backlog-mvp]] — épicas E0–E10, historias MoSCoW con Gherkin y 28 preguntas abiertas.
 - [[negocio/reglas-reserva-y-pago]] — reglas publicadas (50 %, saldo 7 días, 3,5 % tarjeta, cancelación 20 días hábiles) y propuestas.
 - [[concepts/modelo-de-datos]] — esquema PostgreSQL/Prisma del MVP, ERD, máquina de estados reserva/pago, Postgres local sin admin.
+- [[concepts/revision-seguridad-sprint2]] — revisión AppSec (ASVS L2, Ley 29733) de auth staff, backoffice, pagos, reclamos, privacidad y BFF: 2 altas, 8 medias, checklist de producción.
 - [[concepts/benchmark-ota-2026]] — benchmark GYG/Viator/Klook/Civitatis/Airbnb/Booking/Despegar/Expedia/Tiqets/Headout/Inca Rail/PeruRail; 30 funcionalidades evaluadas, olas A/B/C con HU-B y Gherkin, lo que no se recomienda.
 
 ## Normativa

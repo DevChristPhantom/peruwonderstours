@@ -251,6 +251,28 @@ export function bookingCancelledEmail(d: BookingMailData & { refundDue: MoneyVie
 }
 
 // =============================================================================
+// Protección de datos: doble opt-in de marketing (H-05)
+// =============================================================================
+const PURPOSE_LABEL: Record<string, string> = { marketing_email: 'ofertas y novedades por correo electrónico', marketing_whatsapp: 'ofertas y novedades por WhatsApp/SMS' };
+
+export function marketingConfirmationEmail(d: { firstName: string; purposes: string[]; confirmUrl: string }, brand: BrandInfo): RenderedEmail {
+  const title = 'Confirma tu suscripción';
+  const list = d.purposes.map((p) => PURPOSE_LABEL[p] ?? p);
+  const intro = `Hola ${d.firstName}, al reservar se pidió que este correo reciba ${list.join(' y ')} de Peru Wonders Tours.`;
+  const how = 'Solo te escribiremos con ofertas si confirmas con el botón. Si no fuiste tú, ignora este mensaje: no recibirás publicidad. El enlace vence en 7 días.';
+  const html = layout({
+    title,
+    preheader: intro,
+    brand,
+    bodyHtml: `<p>${escapeHtml(intro)}</p><p>${escapeHtml(how)}</p>
+<p><a href="${escapeHtml(d.confirmUrl)}" style="display:inline-block;background:#7a2e1d;color:#fff;padding:10px 18px;border-radius:6px;text-decoration:none">Sí, quiero recibir ofertas</a></p>
+<p style="font-size:13px;color:#5f6b76">Puedes darte de baja cuando quieras desde cualquier correo comercial (Ley 29733).</p>`,
+  });
+  const text = [title, '', intro, how, '', `Confirmar: ${d.confirmUrl}`, '', textFooter(brand)].join('\n');
+  return { subject: 'Confirma tu suscripción a ofertas de Peru Wonders Tours', html, text };
+}
+
+// =============================================================================
 // Libro de Reclamaciones
 // =============================================================================
 export interface ComplaintMailData {

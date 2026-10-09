@@ -34,7 +34,10 @@ export class BookingLifecycle {
    * Si la retención venció, cancela la reserva y libera cupos. Devuelve true si expiró.
    * (HU-4.3: "Tu reserva temporal expiró", se liberan los cupos.)
    */
-  async expireIfNeeded(repos: TransactionalRepositories, booking: Booking, now: Date): Promise<boolean> {
+  async expireIfNeeded(repos: TransactionalRepositories, candidate: Booking, now: Date): Promise<boolean> {
+    if (!candidate.isHoldExpired(now)) return false;
+    // Se relee bajo bloqueo: un pago pudo confirmarse mientras tanto (H-01).
+    const booking = (await repos.bookings.findByIdForUpdate(candidate.id)) ?? candidate;
     if (!booking.isHoldExpired(now)) return false;
     await this.releaseHolds(repos, booking, 'expired', now);
     booking.cancel('hold_expired', now, 'system');
@@ -43,8 +46,12 @@ export class BookingLifecycle {
   }
 
   /**
-   * Aplica un cobro exitoso. Si la reserva ya estaba cancelada (webhook tardío), lo registra
-   * como pago tardío para reembolsarlo; nunca reactiva la reserva sin cupo garantizado.
+   * Aplica un cobro exitoso con la reserva BLOQUEADA (FOR UPDATE, H-01). Resultados:
+   *  - `applied`: suma al pagado y avanza el estado.
+   *  - `late_payment`: la reserva ya estaba cancelada; se suma al pagado para reembolsarlo.
+   *  - `excess`: la reserva ya no admite el cobro (pagada, sobrepago, completada...); NO se toca la
+   *    reserva y el llamador debe reembolsarlo automáticamente (nunca queda un pago colgado).
+   * Con `onExcess: 'throw'` (pagos manuales del staff) se lanza el error de dominio en vez de `excess`.
    */
   async applySucceededPayment(
     repos: TransactionalRepositories,
@@ -53,13 +60,20 @@ export class BookingLifecycle {
     now: Date,
     actorType: ActorType,
     paymentId?: string,
-  ): Promise<{ booking: Booking; outcome: 'applied' | 'late_payment' }> {
-    const booking = await repos.bookings.findById(bookingId);
+    options: { onExcess?: 'refund' | 'throw' } = {},
+  ): Promise<{ booking: Booking; outcome: 'applied' | 'late_payment' | 'excess' }> {
+    const booking = await repos.bookings.findByIdForUpdate(bookingId);
     if (!booking) throw new BookingNotFoundError(bookingId);
     if (booking.status === 'cancelled') {
+      if (booking.paid.add(amount).greaterThan(booking.total)) return { booking, outcome: 'excess' };
       booking.registerLatePayment(amount, now);
       await repos.bookings.save(booking);
       return { booking, outcome: 'late_payment' };
+    }
+    if (!booking.canAcceptPayment(amount)) {
+      // registerPayment lanza el error de dominio preciso (sobrepago, adelanto insuficiente, estado).
+      if (options.onExcess === 'throw') booking.registerPayment(amount, now, actorType);
+      return { booking, outcome: 'excess' };
     }
     const wasHolding = booking.status === 'held';
     const firstPayment = booking.paid.amount === 0n;

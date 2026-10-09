@@ -63,6 +63,58 @@
         ]
       }
     },
+    "/api/v1/auth/staff/password/initial": {
+      "post": {
+        "operationId": "StaffAuthController_initialPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitialPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "weak-password, password-unchanged",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "invalid-mfa-token (desafío vencido o ya usado)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "H-14: cambio obligatorio de la contraseña temporal en el primer ingreso. Devuelve el paso siguiente (mfa_required o mfa_enrollment_required).",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
     "/api/v1/auth/staff/mfa/verify": {
       "post": {
         "operationId": "StaffAuthController_verifyMfa",
@@ -1023,6 +1075,71 @@
           }
         },
         "summary": "Revoca el consentimiento de marketing (correo y/o WhatsApp) con el enlace firmado. Idempotente.",
+        "tags": [
+          "privacy"
+        ]
+      }
+    },
+    "/api/v1/privacy/marketing-confirmation": {
+      "get": {
+        "operationId": "PrivacyController_previewConfirmation",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "description": "Token firmado del enlace de baja.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "invalid-confirmation-link (firma inválida o vencido: 7 días)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Doble opt-in (H-05): estado de las finalidades del enlace de confirmación.",
+        "tags": [
+          "privacy"
+        ]
+      },
+      "post": {
+        "operationId": "PrivacyController_confirm",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnsubscribeQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`{ data: { confirmed: [...], alreadyConfirmed: [...], notPending: [...] } }`"
+          },
+          "401": {
+            "description": "invalid-confirmation-link",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Doble opt-in (H-05): el titular confirma el marketing pedido en el checkout. Idempotente.",
         "tags": [
           "privacy"
         ]
@@ -2120,6 +2237,43 @@
         ]
       }
     },
+    "/api/v1/admin/payments/reconcile": {
+      "post": {
+        "operationId": "PaymentsController_reconcile",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: payments:refund)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "H-01: concilia ya los intentos de cobro no terminales de más de 30 min (aplica, reembolsa o expira a las 24 h).",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
     "/api/v1/payments/webhooks/{provider}": {
       "post": {
         "operationId": "PaymentsController_webhook",
@@ -2166,6 +2320,15 @@
       "post": {
         "operationId": "ComplaintsController_submit",
         "parameters": [
+          {
+            "name": "X-Booking-Token",
+            "in": "header",
+            "description": "H-17: acredita el vínculo con `bookingCode` (si no, se vincula solo si el correo coincide con el de la reserva).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "Idempotency-Key",
             "in": "header",
@@ -3942,15 +4105,6 @@
               "example": "PWT-2026-0000",
               "type": "string"
             }
-          },
-          {
-            "name": "email",
-            "required": false,
-            "in": "query",
-            "description": "Correo exacto del cliente.",
-            "schema": {
-              "type": "string"
-            }
           }
         ],
         "responses": {
@@ -3981,6 +4135,53 @@
           }
         ],
         "summary": "Listado con filtros: estado, fecha de viaje (primer servicio), prefijo de código y correo exacto.",
+        "tags": [
+          "admin: reservas"
+        ]
+      }
+    },
+    "/api/v1/admin/bookings/search": {
+      "post": {
+        "operationId": "BookingsAdminController_search",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingSearchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: bookings:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "H-15: búsqueda con datos personales (correo) en el cuerpo, no en la URL. Mismos filtros que GET + `email`.",
         "tags": [
           "admin: reservas"
         ]
@@ -4027,7 +4228,7 @@
             "bearer": []
           }
         ],
-        "summary": "Detalle: ítems, viajeros, pagos, historial, aceptaciones legales, correos enviados y cotización de cancelación.",
+        "summary": "Detalle: ítems, viajeros, pagos, historial, aceptaciones legales, correos enviados y cotización de cancelación. La consulta queda auditada (BOOKING_PII_VIEWED).",
         "tags": [
           "admin: reservas"
         ]
@@ -5275,19 +5476,20 @@
         ]
       }
     },
-    "/api/v1/admin/privacy/consents": {
-      "get": {
+    "/api/v1/admin/privacy/consents/search": {
+      "post": {
         "operationId": "PrivacyAdminController_consents",
-        "parameters": [
-          {
-            "name": "email",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "string"
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentHistoryQueryDto"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "401": {
             "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
@@ -5315,7 +5517,7 @@
             "bearer": []
           }
         ],
-        "summary": "Historial de consentimientos y aceptaciones de un titular (por correo; consulta auditada).",
+        "summary": "Historial de consentimientos y aceptaciones de un titular. H-15: el correo va en el cuerpo (consulta auditada).",
         "tags": [
           "admin: protección de datos"
         ]
@@ -5483,8 +5685,13 @@
             "type": "string",
             "enum": [
               "mfa_required",
-              "mfa_enrollment_required"
+              "mfa_enrollment_required",
+              "password_change_required"
             ]
+          },
+          "passwordChangeToken": {
+            "type": "string",
+            "description": "Si status = password_change_required (H-14): enviar a POST /auth/staff/password/initial."
           },
           "mfaToken": {
             "type": "string",
@@ -5571,6 +5778,25 @@
           "title",
           "status",
           "code"
+        ]
+      },
+      "InitialPasswordDto": {
+        "type": "object",
+        "properties": {
+          "passwordChangeToken": {
+            "type": "string",
+            "description": "`passwordChangeToken` devuelto por POST /auth/staff/login (5 min)."
+          },
+          "newPassword": {
+            "type": "string",
+            "format": "password",
+            "minLength": 12,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "passwordChangeToken",
+          "newPassword"
         ]
       },
       "MfaVerifyDto": {
@@ -5887,6 +6113,18 @@
         },
         "required": [
           "version"
+        ]
+      },
+      "UnsubscribeQueryDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Token firmado del enlace de baja."
+          }
+        },
+        "required": [
+          "token"
         ]
       },
       "UnsubscribeDto": {
@@ -7915,6 +8153,53 @@
           "version"
         ]
       },
+      "BookingSearchDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "default": 1,
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "default": 20,
+            "minimum": 1,
+            "maximum": 100
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "held",
+              "confirmed",
+              "partially_paid",
+              "paid",
+              "cancelled",
+              "refunded",
+              "completed"
+            ]
+          },
+          "travelDateFrom": {
+            "type": "string",
+            "example": "2026-11-01",
+            "description": "Primer día de servicio desde."
+          },
+          "travelDateTo": {
+            "type": "string",
+            "example": "2026-11-30"
+          },
+          "code": {
+            "type": "string",
+            "example": "PWT-2026-0000",
+            "description": "Prefijo del código."
+          },
+          "email": {
+            "type": "string",
+            "description": "Correo exacto del cliente."
+          }
+        }
+      },
       "CancelBookingDto": {
         "type": "object",
         "properties": {
@@ -8247,6 +8532,17 @@
           "version",
           "status",
           "responseText"
+        ]
+      },
+      "ConsentHistoryQueryDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email"
         ]
       }
     }

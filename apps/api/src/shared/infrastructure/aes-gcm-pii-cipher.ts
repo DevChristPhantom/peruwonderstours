@@ -2,6 +2,8 @@ import { createCipheriv, createDecipheriv, createHmac, hkdfSync, randomBytes } f
 import type { PiiCipher } from '../application/pii-cipher.js';
 
 const VERSION = 0x01;
+/** v2: con AAD (contexto tabla:columna:id). */
+const VERSION_AAD = 0x02;
 const IV_BYTES = 12;
 const TAG_BYTES = 16;
 
@@ -25,19 +27,23 @@ export class AesGcmPiiCipher implements PiiCipher {
     return new AesGcmPiiCipher(Buffer.from(value, 'base64'));
   }
 
-  encrypt(plaintext: string): Uint8Array {
+  encrypt(plaintext: string, aad?: string): Uint8Array {
     const iv = randomBytes(IV_BYTES);
     const cipher = createCipheriv('aes-256-gcm', this.encKey, iv);
+    if (aad !== undefined) cipher.setAAD(Buffer.from(aad, 'utf8'));
     const body = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()]);
-    return Buffer.concat([Buffer.from([VERSION]), iv, cipher.getAuthTag(), body]);
+    return Buffer.concat([Buffer.from([aad !== undefined ? VERSION_AAD : VERSION]), iv, cipher.getAuthTag(), body]);
   }
 
-  decrypt(ciphertext: Uint8Array): string {
+  decrypt(ciphertext: Uint8Array, aad?: string): string {
     const data = Buffer.from(ciphertext);
-    if (data.length < 1 + IV_BYTES + TAG_BYTES || data[0] !== VERSION) throw new Error('Dato cifrado con formato o versión desconocida.');
+    const version = data[0];
+    if (data.length < 1 + IV_BYTES + TAG_BYTES || (version !== VERSION && version !== VERSION_AAD)) throw new Error('Dato cifrado con formato o versión desconocida.');
     const iv = data.subarray(1, 1 + IV_BYTES);
     const tag = data.subarray(1 + IV_BYTES, 1 + IV_BYTES + TAG_BYTES);
     const decipher = createDecipheriv('aes-256-gcm', this.encKey, iv);
+    // v1 (anterior, sin AAD) se sigue leyendo; v2 exige el mismo contexto con el que se cifró.
+    if (version === VERSION_AAD) decipher.setAAD(Buffer.from(aad ?? '', 'utf8'));
     decipher.setAuthTag(tag);
     return Buffer.concat([decipher.update(data.subarray(1 + IV_BYTES + TAG_BYTES)), decipher.final()]).toString('utf8');
   }
