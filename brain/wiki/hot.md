@@ -65,6 +65,18 @@ tags:
   reserva PWT-2026-000001 (50 % + saldo, stock 2/12). Precios DEMO en `pwt_dev`
   (`db:seed -- --remove-demo-pricing` para quitarlos).
   Arrancar API: `pnpm --filter @pwt/api dev:prisma` (3001); web: `next dev` (3000).
+- 2026-10-09 FIN DE SPRINT 2 (develop 4cb5122): panel `apps/admin` (3002) con login+MFA,
+  tablero, reservas, reclamos, tours, precios, salidas, ARCO, usuarios; auth de staff; correo
+  transaccional (.eml en `apps/api/.mail-outbox/`); consents v2 y doble opt-in; Ola A en la web
+  (favoritos, Mi viaje, comparador, búsqueda por frase, WhatsApp, voucher offline con QR);
+  endurecimiento H-01..H-19 ([[concepts/revision-seguridad-sprint2]]); fix zona horaria (sesión
+  Prisma en UTC). 263 tests API verdes. Decisión: [[decisions/ADR-0003-pagos-manuales-sin-doble-control]].
+  OJO: datos de pwt_dev escritos antes del fix tienen timestamps +5 h (solo dev).
+  Usuarios de prueba en pwt_dev: qa-admin@peruwonders.test, qa-agent-panel@peruwonders.test
+  (deshabilitar antes de cualquier demo pública).
+- Pendientes: Redis (H-08), CSP 'unsafe-inline' en catálogo SSG (aceptado), PDF de constancia,
+  subida de imágenes a S3/R2, pantalla de auditoría, "pagos manuales de hoy" en tablero,
+  Ola A bloqueada por datos del cliente (A1, A3, A6, A7), pasarela real, QA E2E Playwright.
 - Pedido al cliente: `docs/cliente/solicitud-de-informacion.md` (22 puntos).
 - Siguiente (Sprint 2): auth + backoffice (tours, precios, reservas, responder reclamos),
   correo transaccional (constancias, vouchers), consents v2, pasarela real, QA/E2E Playwright,
