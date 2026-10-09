@@ -65,15 +65,21 @@ function problemCode(problem: ProblemDetails): string {
 }
 
 /**
- * IP del visitante para el rate limit de la API (10/min en POST de reservas, pagos y reclamos).
- * Sin esto todos los usuarios compartirían el límite de la IP del servidor de Next.
- * Se toma el primer valor de `X-Forwarded-For` / `X-Real-IP` que fija el proxy de entrada:
- * en producción ese proxy DEBE sobrescribir (no anexar) la cabecera para que no sea falsificable.
+ * IP del visitante para el rate limit de la API (H-07). NUNCA el primer valor de `X-Forwarded-For`
+ * (lo controla el cliente): con `TRUSTED_PROXY_HOPS = N` se toma la entrada N-ésima desde la derecha,
+ * la que escribió nuestro proxy de entrada. Con 0 (por defecto) no se reenvía nada y la API ve la IP
+ * del servidor de Next. El proxy de entrada debe sobrescribir o anexar la cabecera con la IP del socket.
  */
 async function visitorIp(): Promise<string | undefined> {
+  const hops = env.TRUSTED_PROXY_HOPS;
+  if (hops === 0) return undefined;
   try {
     const h = await headers();
-    const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip")?.trim();
+    const chain = (h.get("x-forwarded-for") ?? "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const ip = chain.length >= hops ? chain[chain.length - hops] : undefined;
     return ip && /^[0-9a-fA-F:.]{3,45}$/.test(ip) ? ip : undefined;
   } catch {
     return undefined; // fuera de una petición (build/ISR): no aplica

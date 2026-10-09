@@ -18,12 +18,14 @@ import {
 } from '@nestjs/swagger';
 import { IsIn, IsObject, IsOptional, IsUrl, MaxLength } from 'class-validator';
 import type { Response } from 'express';
-import { DomainError } from '../../../shared/domain/domain-error.js';
+import { APP_SETTINGS, type AppSettings } from '../../../config/app-settings.js';
+import { DomainError, ValidationError } from '../../../shared/domain/domain-error.js';
 import { money, MoneyDto } from '../../../shared/interface/common.dto.js';
 import { BookingToken, IdempotencyKey, RawBody } from '../../../shared/interface/http-params.js';
 import { ProblemDetailsDto } from '../../../shared/interface/problem-details.dto.js';
 import { StrictThrottle } from '../../../shared/interface/throttling.js';
 import { PaymentUseCases } from '../application/payment.use-cases.js';
+import { StaffAuth } from '../../identity/interface/staff-auth.guard.js';
 import { PAYMENT_STATUSES, type Payment, type PaymentMethod } from '../domain/payment.js';
 import type { WebhookHeaders } from '../domain/payment-gateway.js';
 
@@ -126,7 +128,25 @@ const BOOKING_CODE_PARAM = { name: 'code', example: 'PWT-2026-000123' };
 @ApiTags('payments')
 @Controller()
 export class PaymentsController {
-  constructor(@Inject(PaymentUseCases) private readonly payments: PaymentUseCases) {}
+  constructor(
+    @Inject(PaymentUseCases) private readonly payments: PaymentUseCases,
+    @Inject(APP_SETTINGS) private readonly settings: AppSettings,
+  ) {}
+
+  /** H-16: la pasarela solo puede volver al sitio propio (evita redirecciones abiertas). */
+  private assertReturnUrl(returnUrl: string | undefined): void {
+    if (returnUrl === undefined) return;
+    const allowed = new URL(this.settings.mail.publicWebBaseUrl).origin;
+    let origin = '';
+    try {
+      origin = new URL(returnUrl).origin;
+    } catch {
+      origin = '';
+    }
+    if (origin !== allowed) {
+      throw new ValidationError('invalid-return-url', `returnUrl debe estar bajo ${allowed}.`, { errors: [{ field: 'returnUrl', messages: ['Fuera del sitio permitido.'] }] });
+    }
+  }
 
   @Post('bookings/:code/payments')
   @StrictThrottle()
@@ -148,6 +168,7 @@ export class PaymentsController {
     @Body() body: CreatePaymentDto,
     @Res({ passthrough: true }) res: Response,
   ) {
+    this.assertReturnUrl(body.returnUrl);
     const result = await this.payments.createPayment({ booking: { code, token }, idempotencyKey, method: body.method ?? null, returnUrl: body.returnUrl });
     if (result.replayed) res.status(200).setHeader('Idempotent-Replayed', 'true');
     res.setHeader('Cache-Control', 'no-store');
@@ -200,6 +221,15 @@ export class PaymentsController {
     @Body() body: ConfirmPaymentDto,
   ) {
     return { data: presentPayment(await this.payments.confirmPayment({ code, token }, paymentId, toStringRecord(body.confirmation))) };
+  }
+
+  @Post('admin/payments/reconcile')
+  @HttpCode(200)
+  @StaffAuth('payments:refund')
+  @ApiOperation({ summary: 'H-01: concilia ya los intentos de cobro no terminales de más de 30 min (aplica, reembolsa o expira a las 24 h).' })
+  async reconcile() {
+    const now = Date.now();
+    return { data: await this.payments.reconcileStalePayments({ staleBefore: new Date(now - 30 * 60_000), expireBefore: new Date(now - 24 * 3600_000) }) };
   }
 
   @Post('payments/webhooks/:provider')

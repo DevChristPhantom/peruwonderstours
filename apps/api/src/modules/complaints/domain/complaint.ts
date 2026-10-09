@@ -25,6 +25,11 @@ export const COMPLAINT_LEGAL_NOTICES = [
   'El proveedor debe dar respuesta al reclamo o queja en un plazo no mayor a quince (15) días hábiles, el cual es improrrogable.',
 ] as const;
 
+/** H-19: contexto autenticado (AAD) de los campos cifrados de una hoja. */
+export function complaintAad(id: string, column: 'consumer_doc_enc' | 'consumer_phone_enc' | 'guardian_phone_enc'): string {
+  return `complaints:${column}:${id}`;
+}
+
 export function formatComplaintCode(year: number, sequence: number): string {
   return `LR-${year}-${String(sequence).padStart(6, '0')}`;
 }
@@ -126,6 +131,8 @@ export interface ComplaintSnapshot {
   status: ComplaintStatus;
   channel: ComplaintChannel;
   bookingId: string | null;
+  /** H-17: código de reserva declarado por el consumidor y no verificado (no vincula bookingId). */
+  declaredBookingCode?: string | null;
   provider: ProviderSnapshot;
   consumer: {
     fullName: string;
@@ -151,4 +158,13 @@ export interface ComplaintSnapshot {
   submittedAt: Date;
   ip: string | null;
   accessTokenHash: string | null;
+  /** Libro de respaldo (art. 4-A): n.º de hoja física y fecha de transcripción. */
+  backupSheetNumber?: string | null;
+  transcribedAt?: Date | null;
+  acknowledgmentSentAt?: Date | null;
+  acknowledgmentDeliveryRef?: string | null;
+  responseDeliveryRef?: string | null;
+  respondedAt?: Date | null;
+  settlementOfferText?: string | null;
+  settlementExpiresAt?: Date | null;
 }

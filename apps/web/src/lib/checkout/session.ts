@@ -14,6 +14,11 @@ import { isProduction } from "@/lib/env";
 
 const CHECKOUT_PATH = "/es/checkout";
 const BOOKING_PATH = "/es/reserva";
+/**
+ * La cookie del token de la reserva vive en `/es` (H-17): la leen la página de la reserva y el Libro de
+ * Reclamaciones (para vincular el reclamo de forma verificada). Sigue siendo httpOnly + SameSite.
+ */
+const BOOKING_TOKEN_PATH = "/es";
 
 const base = { httpOnly: true, sameSite: "lax" as const, secure: isProduction };
 
@@ -95,7 +100,7 @@ export function newIdempotencyKey(): string {
 
 export async function writeBookingToken(code: string, token: string): Promise<void> {
   if (!BOOKING_CODE_RE.test(code)) return;
-  (await cookies()).set(bookingCookie(code), token, { ...base, path: BOOKING_PATH, maxAge: 30 * 24 * 3600 });
+  (await cookies()).set(bookingCookie(code), token, { ...base, path: BOOKING_TOKEN_PATH, maxAge: 30 * 24 * 3600 });
 }
 
 export async function readBookingToken(code: string): Promise<string | null> {

@@ -8,7 +8,8 @@ import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 
 import type { SearchOption } from "@/lib/catalog/types";
 import { describeTravelers, type Travelers } from "@/lib/cart/types";
-import { addDays } from "@/lib/format";
+import { addDays, todayInLima } from "@/lib/format";
+import { applyPhraseToParams, parsePhrase } from "@/lib/search/phrase";
 import { useLimaToday } from "@/hooks/useClientOnly";
 import { buttonClass } from "@/components/ui/button-styles";
 import { Counter } from "@/components/ui/Counter";
@@ -74,7 +75,16 @@ export function SearchBar({ options }: { options: SearchOption[] }) {
     }
     if (selected?.kind === "destination") params.set("destino", selected.value);
     else if (selected?.kind === "category") params.set("categoria", selected.value);
-    else if (query.trim()) params.set("q", query.trim());
+    else if (query.trim()) {
+      // HU-B.A9: "titicaca julio 4 personas" → destino, mes y viajeros (chips editables en /es/tours).
+      const parsed = parsePhrase(query, todayInLima());
+      if (!parsed.understood) params.set("q", query.trim());
+      else {
+        // La fecha exacta elegida manda sobre el mes de la frase.
+        router.push(`/es/tours?${applyPhraseToParams(date ? { ...parsed, month: null } : parsed, params)}`);
+        return;
+      }
+    }
     router.push(`/es/tours?${params}`);
   };
 
@@ -94,7 +104,7 @@ export function SearchBar({ options }: { options: SearchOption[] }) {
             selected={selected}
             onSelect={setSelected}
             label="¿A dónde vas?"
-            placeholder="Puno, Machu Picchu, Colca…"
+            placeholder="Ej.: titicaca julio 4 personas"
             inputClassName={inputCls}
           />
         </div>

@@ -47,3 +47,20 @@ export function complaintResponseDue(
   const dueAt = new Date(startOfDayInLima(addDays(dueDate, 1)).getTime() - 1);
   return { dueDate, dueAt };
 }
+
+/** Días hábiles estrictamente entre `from` y `to` (ninguno de los dos cuenta). 0 si `to <= from`. */
+export function countBusinessDaysBetween(from: CalendarDate, to: CalendarDate, holidays: ReadonlySet<CalendarDate>): number {
+  let count = 0;
+  let current = addDays(from, 1);
+  while (current < to) {
+    if (isBusinessDay(current, holidays)) count += 1;
+    current = addDays(current, 1);
+  }
+  return count;
+}
+
+/** Fin del día (23:59:59.999 Lima) del N-ésimo día hábil posterior a `instant`. */
+export function endOfBusinessDayAfter(instant: Date, days: number, holidays: ReadonlySet<CalendarDate>): Date {
+  const date = addBusinessDays(toLimaCalendarDate(instant), days, holidays);
+  return new Date(startOfDayInLima(addDays(date, 1)).getTime() - 1);
+}

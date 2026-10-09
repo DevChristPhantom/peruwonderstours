@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Trash2 } from "lucide-react";
+import { CalendarRange, MessageCircle, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useId, useMemo, useRef, useState } from "react";
@@ -8,8 +8,11 @@ import { useId, useMemo, useRef, useState } from "react";
 import { describeTravelers, travelerCount, type CartLine, type Travelers } from "@/lib/cart/types";
 import { computePaymentPlan } from "@/lib/checkout/payment-plan";
 import { addDays, formatDate, formatMoney, todayInLima } from "@/lib/format";
+import { cartHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
 import { useCartHydrated, useCartStore } from "@/stores/cart-store";
+import { useTripGate } from "@/stores/trip-store";
 import { useUiStore } from "@/stores/ui-store";
+import { TripConflictAlert } from "@/components/trip/TripConflictAlert";
 import { buttonClass } from "@/components/ui/button-styles";
 import { Counter } from "@/components/ui/Counter";
 import { formatTotals, lineTotalLabel } from "./cart-helpers";
@@ -152,6 +155,9 @@ export function CartView() {
   const listRef = useRef<HTMLUListElement>(null);
   // El carrito solo se pinta tras hidratar (cliente), así que la fecha de Lima es la del visitante.
   const plan = useMemo(() => computePaymentPlan(lines, "deposit", todayInLima()), [lines]);
+  // HU-B.A5: con tours superpuestos no se continúa sin cambiar uno o confirmar.
+  const { pending: pendingConflicts } = useTripGate(lines);
+  const blocked = pendingConflicts.length > 0;
 
   const onRemove = (line: CartLine) => {
     const removed = removeLine(line.id);
@@ -239,21 +245,48 @@ export function CartView() {
 
       <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_400px]">
         <div>
+          <TripConflictAlert lines={lines} editHref={null} className="mb-6" />
           <ul ref={listRef} className="divide-y divide-border border-y border-border" aria-label="Tours en tu carrito">
             {lines.map((line) => (
               <CartItem key={line.id} line={line} onRemove={onRemove} />
             ))}
           </ul>
-          <Link href="/es/tours" className="pwt-link mt-6 inline-flex min-h-11 items-center">
-            Seguir explorando
-          </Link>
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2">
+            <Link href="/es/mi-viaje" className={buttonClass("outline", "md")}>
+              <CalendarRange aria-hidden size={18} strokeWidth={1.5} />
+              Ver mi viaje día a día
+            </Link>
+            <Link href="/es/tours" className="pwt-link inline-flex min-h-11 items-center">
+              Seguir explorando
+            </Link>
+            <a
+              href={whatsappHref(cartHelpMessage(lines.map((l) => ({ title: l.title, date: l.date, travelers: l.travelers })), { step: "carrito" }))}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pwt-link inline-flex min-h-11 items-center gap-2"
+            >
+              <MessageCircle aria-hidden size={18} strokeWidth={1.5} />
+              Ayuda por WhatsApp
+            </a>
+          </div>
         </div>
 
         <div className="lg:sticky lg:top-24 lg:self-start">
           <OrderSummary lines={lines} plan={plan}>
-            <Link href="/es/checkout" className={buttonClass("primary", "lg", "mt-5 w-full")}>
-              Continuar con la reserva
-            </Link>
+            {blocked ? (
+              <>
+                <button type="button" className={buttonClass("primary", "lg", "mt-5 w-full")} disabled aria-describedby="cart-blocked-help">
+                  Continuar con la reserva
+                </button>
+                <p id="cart-blocked-help" className="mt-2 text-sm text-danger">
+                  Hay tours que se superponen: cambia una fecha o confirma que es correcto.
+                </p>
+              </>
+            ) : (
+              <Link href="/es/checkout" className={buttonClass("primary", "lg", "mt-5 w-full")}>
+                Continuar con la reserva
+              </Link>
+            )}
             <p className="mt-3 text-sm text-foreground-muted">Puedes pagar el 50 % o el total en el siguiente paso.</p>
             <p className="mt-2 text-sm text-foreground-muted">Pago seguro · Comprobante electrónico SUNAT · Libro de Reclamaciones</p>
           </OrderSummary>
@@ -267,9 +300,15 @@ export function CartView() {
             <p className="text-foreground-muted">{payToday ? "Hoy pagas desde" : "Total"}</p>
             <p className="tabular font-semibold">{payToday ?? formatTotals(plan.totals, "totalCents")}</p>
           </div>
-          <Link href="/es/checkout" className={buttonClass("primary", "lg")} aria-label="Continuar con la reserva">
-            Continuar
-          </Link>
+          {blocked ? (
+            <a href="#trip-conflict-title" className={buttonClass("outline", "lg")}>
+              Revisar fechas
+            </a>
+          ) : (
+            <Link href="/es/checkout" className={buttonClass("primary", "lg")} aria-label="Continuar con la reserva">
+              Continuar
+            </Link>
+          )}
         </div>
       </div>
     </div>

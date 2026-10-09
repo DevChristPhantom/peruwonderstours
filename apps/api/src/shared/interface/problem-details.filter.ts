@@ -14,6 +14,8 @@ const STATUS_BY_KIND: Record<DomainErrorKind, number> = {
   precondition_required: HttpStatus.PRECONDITION_REQUIRED,
   unprocessable: HttpStatus.UNPROCESSABLE_ENTITY,
   unavailable: HttpStatus.SERVICE_UNAVAILABLE,
+  forbidden: HttpStatus.FORBIDDEN,
+  rate_limited: HttpStatus.TOO_MANY_REQUESTS,
 };
 
 const TITLES: Record<number, string> = {
@@ -58,6 +60,9 @@ export class ProblemDetailsFilter implements ExceptionFilter {
       this.logger.error(`${request.method} ${request.originalUrl} -> ${problem.status} [${traceId}]`, exception instanceof Error ? exception.stack : String(exception));
     }
     if (response.headersSent) return;
+    const retryAfter = exception instanceof DomainError ? exception.details['retryAfterSeconds'] : undefined;
+    if (typeof retryAfter === 'number' && retryAfter > 0) response.setHeader('Retry-After', String(Math.ceil(retryAfter)));
+    if (problem.status === 401 && /\/api\/v1\/(admin|auth)\//.test(request.originalUrl ?? '')) response.setHeader('WWW-Authenticate', 'Bearer');
     response.status(problem.status).type(PROBLEM_CONTENT_TYPE).send(JSON.stringify(toJsonSafe(problem)));
   }
 

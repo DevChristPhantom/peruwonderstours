@@ -29,6 +29,8 @@ describe('API v1 en modo seed (e2e)', () => {
       WEB_ORIGIN: 'http://localhost:3000',
       THROTTLE_STRICT_LIMIT: String(STRICT_LIMIT),
       BODY_LIMIT_KB: '16',
+      OUTBOX_RELAY_ENABLED: 'false',
+      MAIL_TRANSPORT: 'memory',
     });
     // Import diferido: ConfigModule.forRoot lee el entorno al importar el módulo.
     const { AppModule } = await import('../src/app.module.js');
@@ -226,7 +228,7 @@ describe('API v1 en modo seed (e2e)', () => {
     const providerPaymentId = pay.body.data.nextAction.url.split('/').pop();
     const gatewayState = await http.post(`/api/v1/bookings/${booking.code}/payments/${payment.id}/confirm`).set('X-Booking-Token', bookingToken).send({ confirmation: { simulate: 'succeed' } }).expect(200);
     expect(gatewayState.body.data.status).toBe('succeeded');
-    const body = JSON.stringify({ id: `evt_${randomUUID()}`, type: 'payment.succeeded', data: { providerPaymentId, status: 'succeeded' } });
+    const body = JSON.stringify({ id: `evt_${randomUUID()}`, type: 'payment.succeeded', data: { providerPaymentId, status: 'succeeded', amount: payment.amount.amount, currency: payment.amount.currency } });
     const w1 = await http.post('/api/v1/payments/webhooks/sandbox').set(signed(body)).send(body).expect(200);
     const w2 = await http.post('/api/v1/payments/webhooks/sandbox').set(signed(body)).send(body).expect(200);
     expect(w1.body.status).toBe('processed');

@@ -139,6 +139,21 @@ export class Payment {
     return this.props.idempotencyKey;
   }
 
+  get createdAt(): Date {
+    return this.props.createdAt;
+  }
+
+  /**
+   * Cobro excedente (H-01): llegó cuando la reserva ya no lo admitía y se reembolsa. Un adelanto o
+   * pago total pasa a `balance` para no chocar con el UNIQUE "un adelanto/pago total exitoso por reserva".
+   */
+  reclassifyAsAdditional(now: Date): void {
+    if (this.props.kind === 'deposit' || this.props.kind === 'full') {
+      this.props.kind = 'balance';
+      this.props.updatedAt = now;
+    }
+  }
+
   attachProviderPayment(providerPaymentId: string, now: Date): void {
     if (this.props.providerPaymentId && this.props.providerPaymentId !== providerPaymentId) {
       throw new BusinessRuleError('provider-payment-mismatch', 'El pago ya está asociado a otra operación del proveedor.');

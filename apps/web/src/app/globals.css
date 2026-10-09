@@ -209,6 +209,23 @@
   animation: pwt-pulse var(--pwt-duration-base) var(--pwt-ease-out);
 }
 
+/* Listas que se pintan en el cliente (Mi viaje, favoritos, comparador): stagger de 60 ms por
+   elemento con --i (máx. 6 escalonados, MASTER §6.2). Solo opacidad y transform. */
+.pwt-stagger-in {
+  animation: pwt-rise var(--pwt-duration-morph) var(--pwt-ease-out) both;
+  animation-delay: calc(min(var(--i, 0), 6) * 60ms);
+}
+
+/* Corazón de favoritos: pop corto al guardar (transform). */
+@keyframes pwt-heart-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.22); }
+  100% { transform: scale(1); }
+}
+.pwt-heart-pop {
+  animation: pwt-heart-pop var(--pwt-duration-moderate) var(--pwt-ease-out);
+}
+
 /* Drawer del carrito y visor: entrada desde abajo (móvil) o la derecha (≥ 768). */
 @keyframes pwt-in-y { from { transform: translateY(100%); } }
 @keyframes pwt-in-x { from { transform: translateX(100%); } }

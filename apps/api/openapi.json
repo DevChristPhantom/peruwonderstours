@@ -1,6 +1,1150 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/api/v1/auth/staff/login": {
+      "post": {
+        "operationId": "StaffAuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffLoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "invalid-credentials (genérico: no revela si el correo existe)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "account-disabled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "account-locked (Retry-After) o límite por IP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Paso 1: correo + contraseña. Devuelve un desafío de MFA (verificar o enrolar). Nunca devuelve tokens de sesión.",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
+    "/api/v1/auth/staff/password/initial": {
+      "post": {
+        "operationId": "StaffAuthController_initialPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitialPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "weak-password, password-unchanged",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "invalid-mfa-token (desafío vencido o ya usado)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "H-14: cambio obligatorio de la contraseña temporal en el primer ingreso. Devuelve el paso siguiente (mfa_required o mfa_enrollment_required).",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
+    "/api/v1/auth/staff/mfa/verify": {
+      "post": {
+        "operationId": "StaffAuthController_verifyMfa",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MfaVerifyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionTokensResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "invalid-mfa-token, invalid-mfa-code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "account-locked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Paso 2: código TOTP (o de recuperación). Crea la sesión: access + refresh.",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
+    "/api/v1/auth/staff/mfa/enrollment": {
+      "post": {
+        "operationId": "StaffAuthController_startEnrollment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnrollmentStartDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MfaEnrollmentResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "invalid-mfa-token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "mfa-already-enrolled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Enrolamiento obligatorio (1/2): genera el secreto TOTP y la URI otpauth:// para el QR.",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
+    "/api/v1/auth/staff/mfa/enrollment/confirm": {
+      "post": {
+        "operationId": "StaffAuthController_confirmEnrollment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnrollmentConfirmDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionTokensResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "invalid-mfa-token, invalid-mfa-code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "mfa-already-enrolled, mfa-enrollment-not-started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Enrolamiento (2/2): confirma con un código TOTP. Devuelve la sesión y los códigos de recuperación (una sola vez).",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
+    "/api/v1/auth/staff/refresh": {
+      "post": {
+        "operationId": "StaffAuthController_refresh",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SessionTokensResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "invalid-refresh-token, refresh-token-expired, refresh-token-reused",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Rota el refresh token (uso único). Reusar un refresh ya rotado revoca TODA la sesión (refresh-token-reused). El BFF debe serializar los refresh de una misma sesión.",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
+    "/api/v1/auth/staff/logout": {
+      "post": {
+        "operationId": "StaffAuthController_logout",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cierra la sesión actual (revoca su familia de refresh tokens).",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
+    "/api/v1/auth/staff/logout-all": {
+      "post": {
+        "operationId": "StaffAuthController_logoutAll",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cierra TODAS las sesiones del usuario (incluida la actual).",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
+    "/api/v1/auth/staff/me": {
+      "get": {
+        "operationId": "StaffAuthController_me",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Perfil, rol y permisos efectivos (para armar el menú del backoffice).",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
+    "/api/v1/auth/staff/sessions": {
+      "get": {
+        "operationId": "StaffAuthController_sessions",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Sesiones activas del usuario.",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
+    "/api/v1/auth/staff/sessions/{sessionId}": {
+      "delete": {
+        "operationId": "StaffAuthController_revokeSession",
+        "parameters": [
+          {
+            "name": "sessionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cierra una sesión propia (404 si no existe o es de otro usuario).",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
+    "/api/v1/auth/staff/mfa/recovery-codes": {
+      "post": {
+        "operationId": "StaffAuthController_regenerateRecoveryCodes",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TotpCodeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Regenera los códigos de recuperación (exige un TOTP vigente). Los anteriores dejan de servir.",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
+    "/api/v1/auth/staff/password": {
+      "post": {
+        "operationId": "StaffAuthController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "weak-password, password-unchanged",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cambia la contraseña (cierra las demás sesiones del usuario).",
+        "tags": [
+          "auth (staff)"
+        ]
+      }
+    },
+    "/api/v1/admin/users": {
+      "get": {
+        "operationId": "StaffUsersController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: users:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Lista de usuarios del staff.",
+        "tags": [
+          "admin: usuarios del staff"
+        ]
+      },
+      "post": {
+        "operationId": "StaffUsersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStaffUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: users:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "staff-email-taken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crea un usuario con contraseña temporal (se devuelve UNA vez en `temporaryPassword`). Debe enrolar MFA al ingresar.",
+        "tags": [
+          "admin: usuarios del staff"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{id}": {
+      "get": {
+        "operationId": "StaffUsersController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: users:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: usuarios del staff"
+        ]
+      },
+      "patch": {
+        "operationId": "StaffUsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStaffUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: users:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "concurrency-conflict, last-admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cambia rol, estado o nombre (bloqueo optimista con `version`). No permite quitar el último admin ni modificar el propio acceso.",
+        "tags": [
+          "admin: usuarios del staff"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{id}/reset-mfa": {
+      "post": {
+        "operationId": "StaffUsersController_resetMfa",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: users:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reinicia el segundo factor (re-enrolamiento obligatorio) y cierra sus sesiones.",
+        "tags": [
+          "admin: usuarios del staff"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{id}/unlock": {
+      "post": {
+        "operationId": "StaffUsersController_unlock",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: users:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: usuarios del staff"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{id}/revoke-sessions": {
+      "post": {
+        "operationId": "StaffUsersController_revokeSessions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: users:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: usuarios del staff"
+        ]
+      }
+    },
+    "/api/v1/admin/users/{id}/reset-password": {
+      "post": {
+        "operationId": "StaffUsersController_resetPassword",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: users:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Genera una contraseña temporal (se devuelve UNA vez) y cierra sus sesiones.",
+        "tags": [
+          "admin: usuarios del staff"
+        ]
+      }
+    },
+    "/api/v1/privacy/unsubscribe": {
+      "get": {
+        "operationId": "PrivacyController_preview",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "description": "Token firmado del enlace de baja.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "invalid-unsubscribe-link",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Estado de las finalidades de marketing del enlace de baja (para mostrar la página de confirmación).",
+        "tags": [
+          "privacy"
+        ]
+      },
+      "post": {
+        "operationId": "PrivacyController_unsubscribe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnsubscribeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`{ data: { revoked: [...], alreadyRevoked: [...] } }`"
+          },
+          "401": {
+            "description": "invalid-unsubscribe-link",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Revoca el consentimiento de marketing (correo y/o WhatsApp) con el enlace firmado. Idempotente.",
+        "tags": [
+          "privacy"
+        ]
+      }
+    },
+    "/api/v1/privacy/marketing-confirmation": {
+      "get": {
+        "operationId": "PrivacyController_previewConfirmation",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "query",
+            "description": "Token firmado del enlace de baja.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "invalid-confirmation-link (firma inválida o vencido: 7 días)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Doble opt-in (H-05): estado de las finalidades del enlace de confirmación.",
+        "tags": [
+          "privacy"
+        ]
+      },
+      "post": {
+        "operationId": "PrivacyController_confirm",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnsubscribeQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`{ data: { confirmed: [...], alreadyConfirmed: [...], notPending: [...] } }`"
+          },
+          "401": {
+            "description": "invalid-confirmation-link",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Doble opt-in (H-05): el titular confirma el marketing pedido en el checkout. Idempotente.",
+        "tags": [
+          "privacy"
+        ]
+      }
+    },
     "/api/v1/health": {
       "get": {
         "operationId": "HealthController_live",
@@ -1093,6 +2237,43 @@
         ]
       }
     },
+    "/api/v1/admin/payments/reconcile": {
+      "post": {
+        "operationId": "PaymentsController_reconcile",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: payments:refund)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "H-01: concilia ya los intentos de cobro no terminales de más de 30 min (aplica, reembolsa o expira a las 24 h).",
+        "tags": [
+          "payments"
+        ]
+      }
+    },
     "/api/v1/payments/webhooks/{provider}": {
       "post": {
         "operationId": "PaymentsController_webhook",
@@ -1139,6 +2320,15 @@
       "post": {
         "operationId": "ComplaintsController_submit",
         "parameters": [
+          {
+            "name": "X-Booking-Token",
+            "in": "header",
+            "description": "H-17: acredita el vínculo con `bookingCode` (si no, se vincula solo si el correo coincide con el de la reserva).",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "Idempotency-Key",
             "in": "header",
@@ -1287,6 +2477,3164 @@
           "complaints"
         ]
       }
+    },
+    "/api/v1/admin/dashboard": {
+      "get": {
+        "operationId": "DashboardController_get",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: dashboard:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "KPIs: ventas del día/mes, reservas por estado, saldos por vencer (7 días), reclamos por vencer, ocupación de salidas próximas (14 días).",
+        "tags": [
+          "admin: tablero"
+        ]
+      }
+    },
+    "/api/v1/admin/tours": {
+      "get": {
+        "operationId": "ToursAdminController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "archived"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Busca en código, slug y título.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: tours:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: tours"
+        ]
+      },
+      "post": {
+        "operationId": "ToursAdminController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTourDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: tours:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "tour-code-taken, tour-slug-taken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crea un tour en borrador.",
+        "tags": [
+          "admin: tours"
+        ]
+      }
+    },
+    "/api/v1/admin/tours/{id}": {
+      "get": {
+        "operationId": "ToursAdminController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: tours:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Detalle editable (traducciones, medios, destinos, `version`, checklist de publicación).",
+        "tags": [
+          "admin: tours"
+        ]
+      },
+      "patch": {
+        "operationId": "ToursAdminController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTourDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: tours:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "tour-version-conflict (\"Este tour fue modificado por <usuario>\"), tour-code-taken, tour-slug-taken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Edita campos del tour (bloqueo optimista: `version`).",
+        "tags": [
+          "admin: tours"
+        ]
+      }
+    },
+    "/api/v1/admin/tours/{id}/publish": {
+      "post": {
+        "operationId": "ToursAdminController_publish",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: tours:publish)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "tour-not-publishable (con `errors` por campo)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Publica (exige traducción es con título, resumen e itinerario, y portada).",
+        "tags": [
+          "admin: tours"
+        ]
+      }
+    },
+    "/api/v1/admin/tours/{id}/unpublish": {
+      "post": {
+        "operationId": "ToursAdminController_unpublish",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: tours:publish)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: tours"
+        ]
+      }
+    },
+    "/api/v1/admin/tours/{id}/archive": {
+      "post": {
+        "operationId": "ToursAdminController_archive",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: tours:publish)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Borrado lógico (archiva). Rechaza si hay reservas activas con viaje futuro.",
+        "tags": [
+          "admin: tours"
+        ]
+      }
+    },
+    "/api/v1/admin/tours/{id}/translations/{locale}": {
+      "put": {
+        "operationId": "ToursAdminController_upsertTranslation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "es",
+                "en"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TranslationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: tours:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crea o reemplaza una traducción. Cambiar el slug de un tour publicado crea un 301 automático.",
+        "tags": [
+          "admin: tours"
+        ]
+      },
+      "delete": {
+        "operationId": "ToursAdminController_deleteTranslation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "en"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: tours:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: tours"
+        ]
+      }
+    },
+    "/api/v1/admin/tours/{id}/media": {
+      "post": {
+        "operationId": "ToursAdminController_addMedia",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: tours:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Agrega un medio por URL/clave de almacenamiento (`isCover` reemplaza la portada).",
+        "tags": [
+          "admin: tours"
+        ]
+      }
+    },
+    "/api/v1/admin/tours/{id}/media/{mediaId}": {
+      "patch": {
+        "operationId": "ToursAdminController_updateMedia",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mediaId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMediaDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: tours:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: tours"
+        ]
+      },
+      "delete": {
+        "operationId": "ToursAdminController_deleteMedia",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mediaId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: tours:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: tours"
+        ]
+      }
+    },
+    "/api/v1/admin/seasons": {
+      "get": {
+        "operationId": "PricingAdminController_listSeasons",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: pricing:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: temporadas y tarifas"
+        ]
+      },
+      "post": {
+        "operationId": "PricingAdminController_createSeason",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SeasonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: pricing:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "season-code-taken",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: temporadas y tarifas"
+        ]
+      }
+    },
+    "/api/v1/admin/seasons/{id}": {
+      "patch": {
+        "operationId": "PricingAdminController_updateSeason",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSeasonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: pricing:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: temporadas y tarifas"
+        ]
+      },
+      "delete": {
+        "operationId": "PricingAdminController_deleteSeason",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: pricing:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "season-in-use",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: temporadas y tarifas"
+        ]
+      }
+    },
+    "/api/v1/admin/tours/{tourId}/rates": {
+      "get": {
+        "operationId": "PricingAdminController_listRates",
+        "parameters": [
+          {
+            "name": "tourId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includeInactive",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: pricing:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: temporadas y tarifas"
+        ]
+      },
+      "post": {
+        "operationId": "PricingAdminController_createRate",
+        "parameters": [
+          {
+            "name": "tourId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: pricing:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "rate-overlap (indica la tarifa en conflicto), exclusion-violation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crea una tarifa por persona. Rechaza solapes de vigencia/grupo con otra tarifa activa de la misma combinación.",
+        "tags": [
+          "admin: temporadas y tarifas"
+        ]
+      }
+    },
+    "/api/v1/admin/rates/{id}": {
+      "patch": {
+        "operationId": "PricingAdminController_updateRate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: pricing:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "rate-overlap, concurrency-conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: temporadas y tarifas"
+        ]
+      },
+      "delete": {
+        "operationId": "PricingAdminController_deleteRate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: pricing:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: temporadas y tarifas"
+        ]
+      }
+    },
+    "/api/v1/admin/tours/{tourId}/departures": {
+      "get": {
+        "operationId": "DeparturesAdminController_list",
+        "parameters": [
+          {
+            "name": "tourId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "2026-11-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "2026-12-31",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: departures:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: salidas y cupos"
+        ]
+      }
+    },
+    "/api/v1/admin/tours/{tourId}/departures/bulk": {
+      "post": {
+        "operationId": "DeparturesAdminController_bulk",
+        "parameters": [
+          {
+            "name": "tourId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkDeparturesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: departures:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Genera salidas por rango de fechas (máx. 366 días) y días de semana. Omite las existentes (idempotente).",
+        "tags": [
+          "admin: salidas y cupos"
+        ]
+      }
+    },
+    "/api/v1/admin/departures/{id}": {
+      "patch": {
+        "operationId": "DeparturesAdminController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDepartureDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: departures:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "concurrency-conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "capacity-below-sold (\"Hay N cupos vendidos\")",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Edita capacidad o cierre de ventas (bloqueo optimista con `version`).",
+        "tags": [
+          "admin: salidas y cupos"
+        ]
+      },
+      "delete": {
+        "operationId": "DeparturesAdminController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: departures:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Elimina una salida sin ventas ni referencias (si no, ciérrala).",
+        "tags": [
+          "admin: salidas y cupos"
+        ]
+      }
+    },
+    "/api/v1/admin/departures/{id}/close-sales": {
+      "post": {
+        "operationId": "DeparturesAdminController_close",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: departures:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: salidas y cupos"
+        ]
+      }
+    },
+    "/api/v1/admin/departures/{id}/reopen-sales": {
+      "post": {
+        "operationId": "DeparturesAdminController_reopen",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: departures:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: salidas y cupos"
+        ]
+      }
+    },
+    "/api/v1/admin/bookings": {
+      "get": {
+        "operationId": "BookingsAdminController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "held",
+                "confirmed",
+                "partially_paid",
+                "paid",
+                "cancelled",
+                "refunded",
+                "completed"
+              ]
+            }
+          },
+          {
+            "name": "travelDateFrom",
+            "required": false,
+            "in": "query",
+            "description": "Primer día de servicio desde.",
+            "schema": {
+              "example": "2026-11-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "travelDateTo",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "2026-11-30",
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "required": false,
+            "in": "query",
+            "description": "Prefijo del código.",
+            "schema": {
+              "example": "PWT-2026-0000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: bookings:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Listado con filtros: estado, fecha de viaje (primer servicio), prefijo de código y correo exacto.",
+        "tags": [
+          "admin: reservas"
+        ]
+      }
+    },
+    "/api/v1/admin/bookings/search": {
+      "post": {
+        "operationId": "BookingsAdminController_search",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingSearchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: bookings:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "H-15: búsqueda con datos personales (correo) en el cuerpo, no en la URL. Mismos filtros que GET + `email`.",
+        "tags": [
+          "admin: reservas"
+        ]
+      }
+    },
+    "/api/v1/admin/bookings/{code}": {
+      "get": {
+        "operationId": "BookingsAdminController_detail",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": "PWT-2026-000123",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: bookings:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Detalle: ítems, viajeros, pagos, historial, aceptaciones legales, correos enviados y cotización de cancelación. La consulta queda auditada (BOOKING_PII_VIEWED).",
+        "tags": [
+          "admin: reservas"
+        ]
+      }
+    },
+    "/api/v1/admin/bookings/{code}/cancellation-quote": {
+      "get": {
+        "operationId": "BookingsAdminController_quote",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: bookings:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reembolso según la política configurable (CANCELLATION_REFUND_TIERS).",
+        "tags": [
+          "admin: reservas"
+        ]
+      }
+    },
+    "/api/v1/admin/bookings/{code}/cancel": {
+      "post": {
+        "operationId": "BookingsAdminController_cancel",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelBookingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: bookings:cancel)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "booking-not-cancellable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cancela, libera cupos, fija el reembolso adeudado (política u override con motivo) y envía el correo de cancelación.",
+        "tags": [
+          "admin: reservas"
+        ]
+      }
+    },
+    "/api/v1/admin/bookings/{code}/payments": {
+      "post": {
+        "operationId": "BookingsAdminController_recordPayment",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualPaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: payments:record)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "payment-reference-taken, booking-not-payable, hold-expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "overpayment, insufficient-deposit, idempotency-key-reused",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registra un pago manual (efectivo/transferencia) con referencia. Idempotente.",
+        "tags": [
+          "admin: reservas"
+        ]
+      }
+    },
+    "/api/v1/admin/bookings/{code}/refunds": {
+      "post": {
+        "operationId": "BookingsAdminController_recordRefund",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualRefundDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: payments:refund)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "refund-exceeds-paid, refund-exceeds-payment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registra un reembolso manual contra un pago (no supera lo pagado neto).",
+        "tags": [
+          "admin: reservas"
+        ]
+      }
+    },
+    "/api/v1/admin/bookings/{code}/resend-voucher": {
+      "post": {
+        "operationId": "BookingsAdminController_resendVoucher",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: bookings:resend-voucher)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Encola el reenvío del voucher por correo.",
+        "tags": [
+          "admin: reservas"
+        ]
+      }
+    },
+    "/api/v1/admin/complaints": {
+      "get": {
+        "operationId": "ComplaintsAdminController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "received",
+                "in_review",
+                "answered",
+                "closed",
+                "settled"
+              ]
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "reclamo",
+                "queja"
+              ]
+            }
+          },
+          {
+            "name": "trafficLight",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "green",
+                "yellow",
+                "red",
+                "overdue",
+                "suspended",
+                "done"
+              ]
+            }
+          },
+          {
+            "name": "channel",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "web",
+                "backup_book",
+                "office_assisted"
+              ]
+            }
+          },
+          {
+            "name": "code",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "LR-2026-",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: complaints:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Bandeja ordenada por vencimiento con semáforo (verde < 10, amarillo 10-12, rojo 13-15 días hábiles, vencido, suspendido por solución directa).",
+        "tags": [
+          "admin: libro de reclamaciones"
+        ]
+      }
+    },
+    "/api/v1/admin/complaints/transcriptions": {
+      "post": {
+        "operationId": "ComplaintsAdminController_transcribe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TranscriptionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: complaints:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "backup-sheet-already-transcribed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Transcribe una hoja del libro de respaldo físico (art. 4-A). Alerta si pasó más de 1 día calendario.",
+        "tags": [
+          "admin: libro de reclamaciones"
+        ]
+      }
+    },
+    "/api/v1/admin/complaints/{id}": {
+      "get": {
+        "operationId": "ComplaintsAdminController_detail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: complaints:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Hoja completa con datos personales descifrados (la consulta queda en audit_log).",
+        "tags": [
+          "admin: libro de reclamaciones"
+        ]
+      }
+    },
+    "/api/v1/admin/complaints/{id}/in-review": {
+      "post": {
+        "operationId": "ComplaintsAdminController_inReview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: complaints:respond)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: libro de reclamaciones"
+        ]
+      }
+    },
+    "/api/v1/admin/complaints/{id}/respond": {
+      "post": {
+        "operationId": "ComplaintsAdminController_respond",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RespondComplaintDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: complaints:respond)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "complaint-already-closed, complaint-settled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Responde. Correo: se envía y `responseSentAt` se fija al entregarse. Carta: exige letterSentAt + letterDeliveryRef.",
+        "tags": [
+          "admin: libro de reclamaciones"
+        ]
+      }
+    },
+    "/api/v1/admin/complaints/{id}/reclassify": {
+      "post": {
+        "operationId": "ComplaintsAdminController_reclassify",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReclassifyComplaintDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: complaints:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Reclasifica queja <-> reclamo (conserva el tipo declarado; el plazo no cambia).",
+        "tags": [
+          "admin: libro de reclamaciones"
+        ]
+      }
+    },
+    "/api/v1/admin/complaints/{id}/settlement-offer": {
+      "post": {
+        "operationId": "ComplaintsAdminController_offer",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettlementOfferDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: complaints:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Solución directa (art. 6-A): envía la oferta; suspende el plazo hasta 5 días hábiles.",
+        "tags": [
+          "admin: libro de reclamaciones"
+        ]
+      }
+    },
+    "/api/v1/admin/complaints/{id}/settlement-acceptance": {
+      "post": {
+        "operationId": "ComplaintsAdminController_accept",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettlementAcceptanceDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: complaints:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "settlement-not-offered, settlement-already-resolved, settlement-expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registra la aceptación expresa del consumidor (estado settled).",
+        "tags": [
+          "admin: libro de reclamaciones"
+        ]
+      }
+    },
+    "/api/v1/admin/complaints/{id}/settlement-rejection": {
+      "post": {
+        "operationId": "ComplaintsAdminController_reject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettlementRejectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: complaints:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Rechazo o silencio: el plazo se reanuda (vencimiento corrido por la suspensión, máx. 5 días hábiles).",
+        "tags": [
+          "admin: libro de reclamaciones"
+        ]
+      }
+    },
+    "/api/v1/admin/privacy/requests": {
+      "get": {
+        "operationId": "PrivacyAdminController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "received",
+                "in_progress",
+                "answered",
+                "rejected",
+                "withdrawn"
+              ]
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "information",
+                "access",
+                "portability",
+                "rectification",
+                "cancellation",
+                "opposition",
+                "revoke_consent"
+              ]
+            }
+          },
+          {
+            "name": "overdue",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: privacy:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: protección de datos"
+        ]
+      },
+      "post": {
+        "operationId": "PrivacyAdminController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDsrDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: privacy:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Registra una solicitud ARCO recibida (vencimiento en días hábiles según el tipo).",
+        "tags": [
+          "admin: protección de datos"
+        ]
+      }
+    },
+    "/api/v1/admin/privacy/requests/{id}": {
+      "get": {
+        "operationId": "PrivacyAdminController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: privacy:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: protección de datos"
+        ]
+      }
+    },
+    "/api/v1/admin/privacy/requests/{id}/status": {
+      "post": {
+        "operationId": "PrivacyAdminController_status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DsrStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: privacy:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: protección de datos"
+        ]
+      }
+    },
+    "/api/v1/admin/privacy/requests/{id}/extend": {
+      "post": {
+        "operationId": "PrivacyAdminController_extend",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DsrExtendDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: privacy:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Ampliación única por igual plazo (no aplica a información ni revocación).",
+        "tags": [
+          "admin: protección de datos"
+        ]
+      }
+    },
+    "/api/v1/admin/privacy/requests/{id}/respond": {
+      "post": {
+        "operationId": "PrivacyAdminController_respond",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DsrRespondDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: privacy:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: protección de datos"
+        ]
+      }
+    },
+    "/api/v1/admin/privacy/consents/search": {
+      "post": {
+        "operationId": "PrivacyAdminController_consents",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentHistoryQueryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: privacy:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Historial de consentimientos y aceptaciones de un titular. H-15: el correo va en el cuerpo (consulta auditada).",
+        "tags": [
+          "admin: protección de datos"
+        ]
+      }
+    },
+    "/api/v1/admin/audit": {
+      "get": {
+        "operationId": "AuditAdminController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "entityType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "entityId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "actorId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "from",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: audit:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: auditoría"
+        ]
+      }
     }
   },
   "info": {
@@ -1302,7 +5650,506 @@
     }
   ],
   "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "Access token del staff (POST /auth/staff/mfa/verify)."
+      }
+    },
     "schemas": {
+      "StaffLoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "operaciones@peruwonderstours.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "format": "password"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "LoginResponseDataDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "mfa_required",
+              "mfa_enrollment_required",
+              "password_change_required"
+            ]
+          },
+          "passwordChangeToken": {
+            "type": "string",
+            "description": "Si status = password_change_required (H-14): enviar a POST /auth/staff/password/initial."
+          },
+          "mfaToken": {
+            "type": "string",
+            "description": "Si status = mfa_required: enviar a POST /auth/staff/mfa/verify."
+          },
+          "enrollmentToken": {
+            "type": "string",
+            "description": "Si status = mfa_enrollment_required: enviar a /auth/staff/mfa/enrollment/*."
+          },
+          "expiresAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "status",
+          "expiresAt"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/LoginResponseDataDto"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "ProblemDetailsDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "https://peruwonderstours.com/problems/booking-not-found"
+          },
+          "title": {
+            "type": "string",
+            "example": "No encontrado"
+          },
+          "status": {
+            "type": "integer",
+            "example": 404
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "example": "booking-not-found",
+            "description": "Código estable (kebab-case) para lógica del cliente."
+          },
+          "traceId": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string"
+                },
+                "messages": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code"
+        ]
+      },
+      "InitialPasswordDto": {
+        "type": "object",
+        "properties": {
+          "passwordChangeToken": {
+            "type": "string",
+            "description": "`passwordChangeToken` devuelto por POST /auth/staff/login (5 min)."
+          },
+          "newPassword": {
+            "type": "string",
+            "format": "password",
+            "minLength": 12,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "passwordChangeToken",
+          "newPassword"
+        ]
+      },
+      "MfaVerifyDto": {
+        "type": "object",
+        "properties": {
+          "mfaToken": {
+            "type": "string",
+            "description": "`mfaToken` devuelto por POST /auth/staff/login (5 min)."
+          },
+          "code": {
+            "type": "string",
+            "example": "123456",
+            "description": "Código TOTP de 6 dígitos o código de recuperación `XXXXX-XXXXX`."
+          }
+        },
+        "required": [
+          "mfaToken",
+          "code"
+        ]
+      },
+      "StaffProfileDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "operator",
+              "agent"
+            ]
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "dashboard:read",
+                "tours:read",
+                "tours:write",
+                "tours:publish",
+                "pricing:read",
+                "pricing:write",
+                "departures:read",
+                "departures:write",
+                "bookings:read",
+                "bookings:cancel",
+                "bookings:resend-voucher",
+                "payments:record",
+                "payments:refund",
+                "complaints:read",
+                "complaints:respond",
+                "complaints:manage",
+                "privacy:read",
+                "privacy:manage",
+                "users:manage",
+                "audit:read"
+              ]
+            }
+          },
+          "mfaEnabled": {
+            "type": "boolean"
+          },
+          "lastLoginAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "fullName",
+          "role",
+          "permissions",
+          "mfaEnabled",
+          "lastLoginAt"
+        ]
+      },
+      "SessionTokensDataDto": {
+        "type": "object",
+        "properties": {
+          "tokenType": {
+            "type": "string",
+            "example": "Bearer"
+          },
+          "accessToken": {
+            "type": "string",
+            "description": "JWT de acceso (10-15 min). Cabecera Authorization: Bearer <token>."
+          },
+          "accessTokenExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token opaco. Guardarlo SOLO en el servidor del BFF (cookie httpOnly cifrada)."
+          },
+          "refreshTokenExpiresAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sessionId": {
+            "type": "string",
+            "description": "Id de la sesión (familia de refresh tokens)."
+          },
+          "user": {
+            "$ref": "#/components/schemas/StaffProfileDto"
+          },
+          "recoveryCodes": {
+            "description": "Solo al confirmar el enrolamiento: códigos de recuperación (se muestran UNA vez).",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recoveryCodesRemaining": {
+            "type": "number",
+            "description": "Solo en mfa/verify: códigos de recuperación sin usar."
+          }
+        },
+        "required": [
+          "tokenType",
+          "accessToken",
+          "accessTokenExpiresAt",
+          "refreshToken",
+          "refreshTokenExpiresAt",
+          "sessionId",
+          "user"
+        ]
+      },
+      "SessionTokensResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/SessionTokensDataDto"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "EnrollmentStartDto": {
+        "type": "object",
+        "properties": {
+          "enrollmentToken": {
+            "type": "string",
+            "description": "`enrollmentToken` devuelto por POST /auth/staff/login (5 min)."
+          }
+        },
+        "required": [
+          "enrollmentToken"
+        ]
+      },
+      "MfaEnrollmentDataDto": {
+        "type": "object",
+        "properties": {
+          "otpauthUri": {
+            "type": "string",
+            "example": "otpauth://totp/Peru%20Wonders%20Tours:ana%40example.com?secret=...&issuer=...",
+            "description": "Renderizar como QR en el BFF."
+          },
+          "secret": {
+            "type": "string",
+            "description": "Secreto base32 para ingreso manual. No almacenar ni registrar."
+          },
+          "issuer": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "otpauthUri",
+          "secret",
+          "issuer",
+          "label"
+        ]
+      },
+      "MfaEnrollmentResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/MfaEnrollmentDataDto"
+          }
+        },
+        "required": [
+          "data"
+        ]
+      },
+      "EnrollmentConfirmDto": {
+        "type": "object",
+        "properties": {
+          "enrollmentToken": {
+            "type": "string",
+            "description": "`enrollmentToken` devuelto por POST /auth/staff/login (5 min)."
+          },
+          "code": {
+            "type": "string",
+            "example": "123456"
+          }
+        },
+        "required": [
+          "enrollmentToken",
+          "code"
+        ]
+      },
+      "RefreshDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token opaco (43 caracteres base64url). Se rota en cada uso."
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "TotpCodeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "123456"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "currentPassword": {
+            "type": "string",
+            "format": "password"
+          },
+          "newPassword": {
+            "type": "string",
+            "format": "password",
+            "minLength": 12,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "currentPassword",
+          "newPassword"
+        ]
+      },
+      "CreateStaffUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "operator",
+              "agent"
+            ]
+          }
+        },
+        "required": [
+          "email",
+          "fullName",
+          "role"
+        ]
+      },
+      "UpdateStaffUserDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "description": "Versión leída (bloqueo optimista)."
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "operator",
+              "agent"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "suspended",
+              "disabled"
+            ]
+          },
+          "fullName": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "UnsubscribeQueryDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Token firmado del enlace de baja."
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "UnsubscribeDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Token firmado del enlace de baja."
+          },
+          "purposes": {
+            "type": "array",
+            "description": "Por defecto, todas las finalidades del enlace.",
+            "items": {
+              "type": "string",
+              "enum": [
+                "marketing_email",
+                "marketing_whatsapp"
+              ]
+            }
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
       "Object": {
         "type": "object",
         "properties": {}
@@ -1447,6 +6294,16 @@
           "acceptPrivacyPolicy": {
             "type": "boolean",
             "description": "Aceptación de la política de privacidad, Ley 29733 (obligatoria)."
+          },
+          "marketingEmailOptIn": {
+            "type": "boolean",
+            "default": false,
+            "description": "Consentimiento OPCIONAL de ofertas por correo (desmarcado por defecto)."
+          },
+          "marketingWhatsappOptIn": {
+            "type": "boolean",
+            "default": false,
+            "description": "Consentimiento OPCIONAL de ofertas por WhatsApp/SMS (desmarcado por defecto)."
           },
           "customerNotes": {
             "type": "string",
@@ -1757,64 +6614,6 @@
         },
         "required": [
           "data"
-        ]
-      },
-      "ProblemDetailsDto": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "https://peruwonderstours.com/problems/booking-not-found"
-          },
-          "title": {
-            "type": "string",
-            "example": "No encontrado"
-          },
-          "status": {
-            "type": "integer",
-            "example": 404
-          },
-          "detail": {
-            "type": "string"
-          },
-          "instance": {
-            "type": "string"
-          },
-          "code": {
-            "type": "string",
-            "example": "booking-not-found",
-            "description": "Código estable (kebab-case) para lógica del cliente."
-          },
-          "traceId": {
-            "type": "string"
-          },
-          "errors": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "field": {
-                  "type": "string"
-                },
-                "messages": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          },
-          "details": {
-            "type": "object",
-            "additionalProperties": true
-          }
-        },
-        "required": [
-          "type",
-          "title",
-          "status",
-          "code"
         ]
       },
       "BookingDto": {
@@ -2678,6 +7477,1072 @@
         },
         "required": [
           "data"
+        ]
+      },
+      "CreateTourDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "tour",
+              "package",
+              "transfer"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "example": "CUS-MAPI-01"
+          },
+          "slug": {
+            "type": "string",
+            "example": "machu-picchu-full-day",
+            "description": "Slug canónico (es)."
+          },
+          "categoryId": {
+            "type": "object",
+            "nullable": true,
+            "format": "uuid"
+          },
+          "durationDays": {
+            "type": "object",
+            "nullable": true
+          },
+          "durationNights": {
+            "type": "object",
+            "nullable": true
+          },
+          "durationHours": {
+            "type": "object",
+            "nullable": true,
+            "example": 4.5
+          },
+          "minPax": {
+            "type": "number",
+            "minimum": 1
+          },
+          "maxPax": {
+            "type": "object",
+            "nullable": true
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "moderate",
+              "challenging",
+              "extreme"
+            ],
+            "nullable": true
+          },
+          "languages": {
+            "example": [
+              "es",
+              "en"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bookingCutoffHours": {
+            "type": "number"
+          },
+          "depositPercentOverride": {
+            "type": "object",
+            "nullable": true,
+            "minimum": 1,
+            "maximum": 100
+          },
+          "requiresTravelerDocument": {
+            "type": "boolean"
+          },
+          "usesInventory": {
+            "type": "boolean"
+          },
+          "isFeatured": {
+            "type": "boolean"
+          },
+          "cancellationPolicyCode": {
+            "type": "object",
+            "nullable": true
+          },
+          "destinationIds": {
+            "description": "Reemplaza los destinos.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "primaryDestinationId": {
+            "type": "object",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateTourDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "tour",
+              "package",
+              "transfer"
+            ]
+          },
+          "code": {
+            "type": "string",
+            "example": "CUS-MAPI-01"
+          },
+          "slug": {
+            "type": "string",
+            "example": "machu-picchu-full-day",
+            "description": "Slug canónico (es)."
+          },
+          "categoryId": {
+            "type": "object",
+            "nullable": true,
+            "format": "uuid"
+          },
+          "durationDays": {
+            "type": "object",
+            "nullable": true
+          },
+          "durationNights": {
+            "type": "object",
+            "nullable": true
+          },
+          "durationHours": {
+            "type": "object",
+            "nullable": true,
+            "example": 4.5
+          },
+          "minPax": {
+            "type": "number",
+            "minimum": 1
+          },
+          "maxPax": {
+            "type": "object",
+            "nullable": true
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": [
+              "easy",
+              "moderate",
+              "challenging",
+              "extreme"
+            ],
+            "nullable": true
+          },
+          "languages": {
+            "example": [
+              "es",
+              "en"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "bookingCutoffHours": {
+            "type": "number"
+          },
+          "depositPercentOverride": {
+            "type": "object",
+            "nullable": true,
+            "minimum": 1,
+            "maximum": 100
+          },
+          "requiresTravelerDocument": {
+            "type": "boolean"
+          },
+          "usesInventory": {
+            "type": "boolean"
+          },
+          "isFeatured": {
+            "type": "boolean"
+          },
+          "cancellationPolicyCode": {
+            "type": "object",
+            "nullable": true
+          },
+          "destinationIds": {
+            "description": "Reemplaza los destinos.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "primaryDestinationId": {
+            "type": "object",
+            "format": "uuid",
+            "nullable": true
+          },
+          "version": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "VersionDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "description": "Versión leída del recurso (bloqueo optimista)."
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "ItineraryDayDto": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "number"
+          },
+          "title": {
+            "type": "object",
+            "nullable": true
+          },
+          "description": {
+            "type": "string"
+          },
+          "meals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "overnight": {
+            "type": "object",
+            "nullable": true
+          }
+        },
+        "required": [
+          "day",
+          "description"
+        ]
+      },
+      "FaqDto": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "question",
+          "answer"
+        ]
+      },
+      "TranslationDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "description": {
+            "type": "object",
+            "nullable": true
+          },
+          "itinerary": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItineraryDayDto"
+            }
+          },
+          "includes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notIncluded": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recommendations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "faqs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FaqDto"
+            }
+          },
+          "importantNotes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "policies": {
+            "type": "object",
+            "nullable": true
+          },
+          "meetingPoint": {
+            "type": "object",
+            "nullable": true
+          },
+          "seoTitle": {
+            "type": "object",
+            "nullable": true
+          },
+          "seoDescription": {
+            "type": "object",
+            "nullable": true
+          }
+        },
+        "required": [
+          "version",
+          "slug",
+          "title",
+          "summary"
+        ]
+      },
+      "MediaDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number"
+          },
+          "storageKey": {
+            "type": "string",
+            "description": "URL absoluta del CDN o clave del almacenamiento (la subida de archivos está pendiente)."
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "image",
+              "video"
+            ]
+          },
+          "altEs": {
+            "type": "object",
+            "nullable": true
+          },
+          "altEn": {
+            "type": "object",
+            "nullable": true
+          },
+          "width": {
+            "type": "object",
+            "nullable": true
+          },
+          "height": {
+            "type": "object",
+            "nullable": true
+          },
+          "isCover": {
+            "type": "boolean"
+          },
+          "sortOrder": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "version",
+          "storageKey"
+        ]
+      },
+      "UpdateMediaDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number"
+          },
+          "storageKey": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "image",
+              "video"
+            ]
+          },
+          "altEs": {
+            "type": "object",
+            "nullable": true
+          },
+          "altEn": {
+            "type": "object",
+            "nullable": true
+          },
+          "width": {
+            "type": "object",
+            "nullable": true
+          },
+          "height": {
+            "type": "object",
+            "nullable": true
+          },
+          "isCover": {
+            "type": "boolean"
+          },
+          "sortOrder": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "SeasonDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "ALTA-2027"
+          },
+          "name": {
+            "type": "string",
+            "example": "Temporada alta 2027"
+          },
+          "startDate": {
+            "type": "string",
+            "example": "2027-05-01"
+          },
+          "endDate": {
+            "type": "string",
+            "example": "2027-09-30"
+          },
+          "priority": {
+            "type": "number",
+            "description": "Mayor prioridad gana si se solapan."
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "startDate",
+          "endDate"
+        ]
+      },
+      "UpdateSeasonDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "startDate": {
+            "type": "string"
+          },
+          "endDate": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "RateDto": {
+        "type": "object",
+        "properties": {
+          "seasonId": {
+            "type": "object",
+            "format": "uuid",
+            "nullable": true
+          },
+          "paxType": {
+            "type": "string",
+            "enum": [
+              "adult",
+              "child",
+              "student",
+              "senior"
+            ]
+          },
+          "residency": {
+            "type": "string",
+            "enum": [
+              "national",
+              "foreign"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "PEN",
+              "USD"
+            ]
+          },
+          "amount": {
+            "type": "number",
+            "description": "Precio por persona en céntimos (entero).",
+            "example": 45000
+          },
+          "validFrom": {
+            "type": "string",
+            "example": "2027-01-01"
+          },
+          "validTo": {
+            "type": "string",
+            "example": "2027-12-31"
+          },
+          "minGroupSize": {
+            "type": "number",
+            "default": 1
+          },
+          "maxGroupSize": {
+            "type": "object",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "paxType",
+          "residency",
+          "currency",
+          "amount",
+          "validFrom",
+          "validTo"
+        ]
+      },
+      "UpdateRateDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number"
+          },
+          "seasonId": {
+            "type": "object",
+            "format": "uuid",
+            "nullable": true
+          },
+          "paxType": {
+            "type": "string",
+            "enum": [
+              "adult",
+              "child",
+              "student",
+              "senior"
+            ]
+          },
+          "residency": {
+            "type": "string",
+            "enum": [
+              "national",
+              "foreign"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "PEN",
+              "USD"
+            ]
+          },
+          "amount": {
+            "type": "number"
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string"
+          },
+          "minGroupSize": {
+            "type": "number"
+          },
+          "maxGroupSize": {
+            "type": "object",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "BulkDeparturesDto": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "example": "2026-11-01"
+          },
+          "to": {
+            "type": "string",
+            "example": "2027-03-31"
+          },
+          "weekdays": {
+            "example": [
+              1,
+              3,
+              5
+            ],
+            "description": "ISO: 1 = lunes ... 7 = domingo.",
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          },
+          "startTime": {
+            "type": "string",
+            "example": "05:30",
+            "description": "Hora local de Lima (HH:MM); 00:00 = sin hora fija."
+          },
+          "capacity": {
+            "type": "number",
+            "example": 16
+          }
+        },
+        "required": [
+          "from",
+          "to",
+          "weekdays",
+          "capacity"
+        ]
+      },
+      "UpdateDepartureDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number"
+          },
+          "capacity": {
+            "type": "number",
+            "description": "No puede ser menor que vendidos + retenidos."
+          },
+          "isClosed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "BookingSearchDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "default": 1,
+            "minimum": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "default": 20,
+            "minimum": 1,
+            "maximum": 100
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "held",
+              "confirmed",
+              "partially_paid",
+              "paid",
+              "cancelled",
+              "refunded",
+              "completed"
+            ]
+          },
+          "travelDateFrom": {
+            "type": "string",
+            "example": "2026-11-01",
+            "description": "Primer día de servicio desde."
+          },
+          "travelDateTo": {
+            "type": "string",
+            "example": "2026-11-30"
+          },
+          "code": {
+            "type": "string",
+            "example": "PWT-2026-0000",
+            "description": "Prefijo del código."
+          },
+          "email": {
+            "type": "string",
+            "description": "Correo exacto del cliente."
+          }
+        }
+      },
+      "CancelBookingDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "example": "Solicitud del cliente por correo del 2026-10-08"
+          },
+          "refundAmountOverride": {
+            "type": "number",
+            "description": "Reembolso distinto al de la política (céntimos). Requiere overrideReason."
+          },
+          "overrideReason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "ManualPaymentDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "description": "Céntimos en la moneda de la reserva.",
+            "example": 45000
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "cash",
+              "bank_transfer"
+            ]
+          },
+          "reference": {
+            "type": "string",
+            "description": "N.º de operación bancaria o de recibo (único por método).",
+            "example": "OP-0012345"
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Cuándo se recibió (por defecto ahora)."
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "method",
+          "reference"
+        ]
+      },
+      "ManualRefundDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "example": 22500
+          },
+          "method": {
+            "type": "string",
+            "enum": [
+              "cash",
+              "bank_transfer"
+            ]
+          },
+          "reference": {
+            "type": "string"
+          },
+          "parentPaymentId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Pago original (por defecto, el último exitoso)."
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "method",
+          "reference"
+        ]
+      },
+      "TranscriptionDto": {
+        "type": "object",
+        "properties": {
+          "backupSheetNumber": {
+            "type": "string",
+            "example": "000123",
+            "description": "N.º de la hoja del libro de respaldo físico."
+          },
+          "submittedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Fecha y hora en que el consumidor llenó la hoja física."
+          },
+          "consumer": {
+            "$ref": "#/components/schemas/ComplaintConsumerDto"
+          },
+          "guardian": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ComplaintGuardianDto"
+              }
+            ]
+          },
+          "good": {
+            "$ref": "#/components/schemas/ComplaintGoodDto"
+          },
+          "declaredType": {
+            "type": "string",
+            "enum": [
+              "reclamo",
+              "queja"
+            ],
+            "nullable": true
+          },
+          "detail": {
+            "type": "string"
+          },
+          "consumerRequest": {
+            "type": "string"
+          },
+          "responseChannel": {
+            "type": "string",
+            "enum": [
+              "email",
+              "letter"
+            ]
+          },
+          "bookingCode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "backupSheetNumber",
+          "submittedAt",
+          "consumer",
+          "good",
+          "detail",
+          "consumerRequest",
+          "responseChannel"
+        ]
+      },
+      "RespondComplaintDto": {
+        "type": "object",
+        "properties": {
+          "responseText": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 10000
+          },
+          "letterSentAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Solo canal carta: fecha de envío."
+          },
+          "letterDeliveryRef": {
+            "type": "string",
+            "description": "Solo canal carta: n.º de cargo/guía."
+          }
+        },
+        "required": [
+          "responseText"
+        ]
+      },
+      "ReclassifyComplaintDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "reclamo",
+              "queja"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "example": "El detalle se refiere al servicio contratado (art. 6)."
+          }
+        },
+        "required": [
+          "type",
+          "reason"
+        ]
+      },
+      "SettlementOfferDto": {
+        "type": "object",
+        "properties": {
+          "offerText": {
+            "type": "string",
+            "description": "Propuesta de solución (se envía por correo con la frase de aceptación)."
+          }
+        },
+        "required": [
+          "offerText"
+        ]
+      },
+      "SettlementAcceptanceDto": {
+        "type": "object",
+        "properties": {
+          "evidence": {
+            "type": "string",
+            "description": "Evidencia (p. ej. correo del consumidor con \"ACUERDO ACEPTADO PARA SOLUCIONAR EL RECLAMO\")."
+          },
+          "acceptedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "evidence"
+        ]
+      },
+      "SettlementRejectionDto": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateDsrDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "information",
+              "access",
+              "portability",
+              "rectification",
+              "cancellation",
+              "opposition",
+              "revoke_consent"
+            ]
+          },
+          "subjectName": {
+            "type": "string"
+          },
+          "subjectEmail": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string",
+            "enum": [
+              "email",
+              "web",
+              "office",
+              "phone",
+              "letter"
+            ]
+          },
+          "detail": {
+            "type": "string"
+          },
+          "receivedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "type",
+          "subjectName",
+          "subjectEmail",
+          "channel",
+          "detail"
+        ]
+      },
+      "DsrStatusDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "description": "Versión leída del recurso (bloqueo optimista)."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "in_progress",
+              "withdrawn"
+            ]
+          }
+        },
+        "required": [
+          "version",
+          "status"
+        ]
+      },
+      "DsrExtendDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "description": "Versión leída del recurso (bloqueo optimista)."
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "reason"
+        ]
+      },
+      "DsrRespondDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "description": "Versión leída del recurso (bloqueo optimista)."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "answered",
+              "rejected"
+            ]
+          },
+          "responseText": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "status",
+          "responseText"
+        ]
+      },
+      "ConsentHistoryQueryDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email"
         ]
       }
     }

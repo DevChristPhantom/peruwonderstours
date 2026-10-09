@@ -1,6 +1,7 @@
 import type { Prisma } from '../../../generated/prisma/client.js';
 import type { PrismaTx } from '../../../persistence/prisma/prisma-client.js';
 import { calendarDateFromUtcDate, calendarDateToUtcDate } from '../../../shared/domain/calendar-date.js';
+import { ConcurrencyError } from '../../../shared/domain/domain-error.js';
 import { assertCurrencyCode } from '../../../shared/domain/money.js';
 import { Booking } from '../domain/booking.js';
 import { formatBookingCode, type BookingCodeGenerator, type BookingRepository } from '../domain/booking.repository.js';
@@ -38,6 +39,8 @@ function mapBooking(row: BookingRow): Booking {
     confirmedAt: row.confirmedAt,
     cancelledAt: row.cancelledAt,
     cancellationReason: row.cancellationReason,
+    refundDueAmount: row.refundDueAmount,
+    version: row.version,
     completedAt: row.completedAt,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
@@ -73,6 +76,12 @@ export class PrismaBookingRepository implements BookingRepository {
     return row ? mapBooking(row) : null;
   }
 
+  async findByIdForUpdate(id: string): Promise<Booking | null> {
+    const locked = await this.db.$queryRaw<Array<{ id: string }>>`SELECT id FROM bookings WHERE id = ${id}::uuid AND deleted_at IS NULL FOR UPDATE`;
+    if (locked.length === 0) return null;
+    return this.findById(id);
+  }
+
   async findByCartId(cartId: string): Promise<Booking | null> {
     const row = await this.db.booking.findUnique({ where: { cartId }, include: BOOKING_INCLUDE });
     return row ? mapBooking(row) : null;
@@ -86,9 +95,12 @@ export class PrismaBookingRepository implements BookingRepository {
   async save(booking: Booking): Promise<void> {
     const s = booking.toSnapshot();
     const lastChange = s.statusHistory.at(-1);
-    // Contexto para el trigger de historial/auditoría (SET LOCAL equivalente).
-    await this.db.$queryRaw`SELECT set_config('app.actor_type', ${lastChange?.actorType ?? 'system'}, true),
-                                     set_config('app.status_reason', ${lastChange?.reason ?? ''}, true)`;
+    // Contexto para el trigger de historial/auditoría (SET LOCAL equivalente). Sin cambio de
+    // estado en esta sesión se conserva el actor fijado por la transacción (p. ej. el staff).
+    if (lastChange) {
+      await this.db.$queryRaw`SELECT set_config('app.actor_type', ${lastChange.actorType}, true),
+                                     set_config('app.status_reason', ${lastChange.reason ?? ''}, true)`;
+    }
     const mutable = {
       status: s.status,
       paidAmount: s.paidAmount,
@@ -97,12 +109,18 @@ export class PrismaBookingRepository implements BookingRepository {
       confirmedAt: s.confirmedAt,
       cancelledAt: s.cancelledAt,
       cancellationReason: s.cancellationReason,
+      refundDueAmount: s.refundDueAmount ?? null,
       completedAt: s.completedAt,
       accessTokenHash: s.accessTokenHash,
     };
     const exists = await this.db.booking.findUnique({ where: { id: s.id }, select: { id: true } });
     if (exists) {
-      await this.db.booking.update({ where: { id: s.id }, data: mutable });
+      const expected = s.version ?? 0;
+      const updated = await this.db.booking.updateMany({ where: { id: s.id, version: expected }, data: { ...mutable, version: expected + 1 } });
+      if (updated.count === 0) {
+        throw new ConcurrencyError('La reserva fue modificada por otra operación al mismo tiempo. Intenta de nuevo.');
+      }
+      booking.markPersisted(expected + 1);
       for (const item of s.items) {
         await this.db.bookingItem.update({ where: { id: item.id }, data: { status: item.status } });
       }
@@ -157,6 +175,16 @@ export class PrismaBookingRepository implements BookingRepository {
         },
       },
     });
+  }
+
+  async findBalanceDueBetween(from: Date, to: Date, limit: number): Promise<Booking[]> {
+    const rows = await this.db.booking.findMany({
+      where: { status: 'partially_paid', deletedAt: null, balanceDueAt: { gte: from, lte: to } },
+      include: BOOKING_INCLUDE,
+      take: limit,
+      orderBy: { balanceDueAt: 'asc' },
+    });
+    return rows.map(mapBooking);
   }
 
   async findWithExpiredHold(now: Date, limit: number): Promise<Booking[]> {

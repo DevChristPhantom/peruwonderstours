@@ -10,7 +10,9 @@ export type DomainErrorKind =
   | 'unprocessable'
   | 'unauthorized'
   | 'precondition_required'
-  | 'unavailable';
+  | 'unavailable'
+  | 'forbidden'
+  | 'rate_limited';
 
 /**
  * Error de negocio con código estable (kebab-case, inglés) y mensaje para el usuario
@@ -56,5 +58,33 @@ export class BusinessRuleError extends DomainError {
 export class ConcurrencyError extends DomainError {
   constructor(message = 'El recurso fue modificado por otra operación. Intenta de nuevo.') {
     super('concurrency-conflict', message, 'conflict');
+  }
+}
+
+/** Autenticado pero sin permiso para la acción (403). */
+export class ForbiddenError extends DomainError {
+  constructor(code: string, message: string, details: Record<string, unknown> = {}) {
+    super(code, message, 'forbidden', details);
+  }
+}
+
+/** Sin credenciales válidas (401). */
+export class UnauthorizedError extends DomainError {
+  constructor(code: string, message: string, details: Record<string, unknown> = {}) {
+    super(code, message, 'unauthorized', details);
+  }
+}
+
+/** Demasiados intentos (429). `details.retryAfterSeconds` se publica en la cabecera Retry-After. */
+export class RateLimitedError extends DomainError {
+  constructor(code: string, message: string, retryAfterSeconds: number) {
+    super(code, message, 'rate_limited', { retryAfterSeconds });
+  }
+}
+
+/** Funcionalidad que requiere un recurso no disponible en este modo (503). */
+export class ServiceUnavailableError extends DomainError {
+  constructor(code: string, message: string) {
+    super(code, message, 'unavailable');
   }
 }

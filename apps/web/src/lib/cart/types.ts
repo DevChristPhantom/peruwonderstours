@@ -24,6 +24,13 @@ export interface CartLine {
   unitPricing: TourPricing | null;
   paymentPolicy: PaymentPolicy;
   addedAt: string;
+  /**
+   * Datos para "Mi viaje" (HU-B.A5). Opcionales: los ítems guardados antes de este cambio no los
+   * tienen y se deducen de `durationLabel` (ver `lib/trip/itinerary.ts`).
+   */
+  durationDays?: number | null;
+  destinationSlugs?: string[];
+  difficulty?: string | null;
 }
 
 export type CartLineInput = Omit<CartLine, "id" | "addedAt">;

@@ -1,7 +1,8 @@
-import { Global, Inject, Injectable, Module, type OnApplicationShutdown } from '@nestjs/common';
+import { Global, Inject, Injectable, Logger, Module, type OnApplicationShutdown } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_SETTINGS, settingsFromConfigService, type AppSettings } from '../config/app-settings.js';
-import { CATALOG_REPOSITORY, CLOCK, ID_GENERATOR, PERSISTENCE_BACKEND, UNIT_OF_WORK } from '../shared/application/tokens.js';
+import { CATALOG_REPOSITORY, CLOCK, ID_GENERATOR, PERSISTENCE_BACKEND, PII_CIPHER, UNIT_OF_WORK } from '../shared/application/tokens.js';
+import { AesGcmPiiCipher, DEVELOPMENT_PII_KEY_BASE64 } from '../shared/infrastructure/aes-gcm-pii-cipher.js';
 import type { Clock } from '../shared/domain/ports.js';
 import { SystemClock, UuidV7Generator } from '../shared/infrastructure/system.js';
 import { createPersistenceBackend, type PersistenceBackend } from './persistence-backend.js';
@@ -28,8 +29,16 @@ class PersistenceLifecycle implements OnApplicationShutdown {
     },
     { provide: UNIT_OF_WORK, inject: [PERSISTENCE_BACKEND], useFactory: (b: PersistenceBackend) => b.unitOfWork },
     { provide: CATALOG_REPOSITORY, inject: [PERSISTENCE_BACKEND], useFactory: (b: PersistenceBackend) => b.catalog },
+    {
+      provide: PII_CIPHER,
+      inject: [APP_SETTINGS],
+      useFactory: (settings: AppSettings) => {
+        if (!settings.piiEncryptionKey) new Logger('Persistence').warn('PII_ENCRYPTION_KEY no definida: se usa la clave de DESARROLLO (prohibida en producción).');
+        return AesGcmPiiCipher.fromBase64(settings.piiEncryptionKey ?? DEVELOPMENT_PII_KEY_BASE64);
+      },
+    },
     PersistenceLifecycle,
   ],
-  exports: [APP_SETTINGS, CLOCK, ID_GENERATOR, PERSISTENCE_BACKEND, UNIT_OF_WORK, CATALOG_REPOSITORY],
+  exports: [APP_SETTINGS, CLOCK, ID_GENERATOR, PERSISTENCE_BACKEND, UNIT_OF_WORK, CATALOG_REPOSITORY, PII_CIPHER],
 })
 export class PersistenceModule {}

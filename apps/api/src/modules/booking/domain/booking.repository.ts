@@ -2,12 +2,22 @@ import type { Booking } from './booking.js';
 
 export interface BookingRepository {
   findById(id: string): Promise<Booking | null>;
+  /**
+   * Igual que findById pero bloquea la fila hasta el fin de la transacción (SELECT ... FOR UPDATE):
+   * se usa en todo cambio de estado o de montos (pagos, webhooks, expiración, cancelación).
+   */
+  findByIdForUpdate(id: string): Promise<Booking | null>;
   findByCartId(cartId: string): Promise<Booking | null>;
   findByCode(code: string): Promise<Booking | null>;
-  /** Inserta o actualiza (incluye ítems y líneas en la inserción). */
+  /**
+   * Inserta o actualiza (incluye ítems y líneas en la inserción). La actualización es condicional
+   * a la versión leída: si otra transacción guardó antes, lanza ConcurrencyError (sin lost update).
+   */
   save(booking: Booking): Promise<void>;
   /** Reservas `held` con retención vencida (job de expiración). */
   findWithExpiredHold(now: Date, limit: number): Promise<Booking[]>;
+  /** Reservas `partially_paid` cuyo saldo vence en [from, to] (recordatorios). */
+  findBalanceDueBetween(from: Date, to: Date, limit: number): Promise<Booking[]>;
 }
 
 /** Correlativo sin huecos PWT-AAAA-NNNNNN (en PostgreSQL: next_document_number('booking', año)). */

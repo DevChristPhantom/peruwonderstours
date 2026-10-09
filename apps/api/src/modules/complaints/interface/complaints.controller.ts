@@ -16,7 +16,7 @@ import {
 import type { Request, Response } from 'express';
 import { Money } from '../../../shared/domain/money.js';
 import { money } from '../../../shared/interface/common.dto.js';
-import { ComplaintToken, IdempotencyKey } from '../../../shared/interface/http-params.js';
+import { BookingToken, ComplaintToken, IdempotencyKey } from '../../../shared/interface/http-params.js';
 import { ProblemDetailsDto } from '../../../shared/interface/problem-details.dto.js';
 import { StrictThrottle } from '../../../shared/interface/throttling.js';
 import { ComplaintUseCases, type ComplaintView } from '../application/complaint.use-cases.js';
@@ -68,6 +68,7 @@ export class ComplaintsController {
     summary: 'Registrar una hoja del Libro de Reclamaciones (sin cuenta). Devuelve la constancia con fecha/hora, número y vencimiento.',
   })
   @ApiHeader({ name: 'Idempotency-Key', required: true, description: 'Una sola hoja ante doble envío (8-100: letras, números, . _ : -).' })
+  @ApiHeader({ name: 'X-Booking-Token', required: false, description: 'H-17: acredita el vínculo con `bookingCode` (si no, se vincula solo si el correo coincide con el de la reserva).' })
   @ApiCreatedResponse({ type: ComplaintReceiptResponseDto, description: 'Mismo cuerpo + misma clave => 200, misma hoja, token NUEVO.' })
   @ApiOkResponse({ type: ComplaintReceiptResponseDto, description: 'Replay idempotente (Idempotent-Replayed: true).' })
   @ApiBadRequestResponse({ type: ProblemDetailsDto, description: 'validation-failed (con `errors` por campo), idempotency-key-required' })
@@ -77,6 +78,7 @@ export class ComplaintsController {
   async submit(
     @Body() body: SubmitComplaintDto,
     @IdempotencyKey() idempotencyKey: string | undefined,
+    @BookingToken() bookingToken: string | undefined,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
@@ -84,6 +86,7 @@ export class ComplaintsController {
       idempotencyKey,
       ip: req.ip ?? null,
       bookingCode: body.bookingCode ?? null,
+      bookingToken: bookingToken ?? null,
       draft: {
         consumer: {
           fullName: body.consumer.fullName,

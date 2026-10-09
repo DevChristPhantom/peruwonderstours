@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { AlertTriangle, CreditCard, Landmark, Loader2, Lock, RefreshCw, Smartphone } from "lucide-react";
+import { AlertTriangle, CreditCard, Landmark, Loader2, Lock, MessageCircle, RefreshCw, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState, type Ref } from "react";
 import { useForm, useWatch } from "react-hook-form";
@@ -15,6 +15,7 @@ import { lineTotalCents, type PaymentOption } from "@/lib/checkout/payment-plan"
 import { paymentStepSchema, type ContactValues, type PaymentStepValues, type TravelersValues } from "@/lib/checkout/schemas";
 import { formatDate, formatInstantDate, formatMoney } from "@/lib/format";
 import type { PaymentMethod, PaymentRequest, PaymentWidgetHandle } from "@/lib/payments/types";
+import { cartHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
 import { useUiStore } from "@/stores/ui-store";
 import { buttonClass } from "@/components/ui/button-styles";
 import { HoldTimer } from "./HoldTimer";
@@ -228,6 +229,14 @@ export function PaymentStep({
   }
 
   const money = (cents: number) => formatMoney(cents, quote.currency);
+  // HU-B.A10: contexto del pedido (tours, fechas, código de reserva si ya existe). Sin datos personales.
+  const helpHref = (bookingCode: string | null) =>
+    whatsappHref(
+      cartHelpMessage(
+        lines.map((l) => ({ title: l.title, date: l.date, travelers: l.travelers })),
+        { step: "pago", bookingCode },
+      ),
+    );
   // Comisión por tarjeta: solo si está configurada, visible ANTES de pagar y sumada al total
   // (Código del Consumidor art. 7). Requiere que la API la cobre antes de activarla (ver reporte).
   const cardFee = cardFeePercent && method === "card" && plan ? Math.round((plan.payNowCents * cardFeePercent) / 100) : 0;
@@ -249,6 +258,15 @@ export function PaymentStep({
           title="No pudimos completar el pago:"
           errors={[{ path: apiError.field ?? "submit", message: apiError.message }]}
         >
+          <a
+            href={helpHref(apiError.bookingCode ?? quote.booking?.code ?? null)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex min-h-11 items-center gap-2 text-sm underline underline-offset-2"
+          >
+            <MessageCircle aria-hidden size={18} strokeWidth={1.5} />
+            Ayuda por WhatsApp
+          </a>
           {apiError.bookingCode ? (
             <p className="mt-3 text-sm">
               Tu reserva <span className="font-mono">{apiError.bookingCode}</span> sigue guardada mientras dure el tiempo de pago.{" "}
@@ -526,6 +544,17 @@ export function PaymentStep({
       <p className="mt-3 flex items-center justify-center gap-2 text-sm text-foreground-muted">
         <Lock aria-hidden size={16} strokeWidth={1.5} />
         Pago seguro · Recibirás tu comprobante electrónico por correo
+      </p>
+      <p className="mt-2 text-center">
+        <a
+          href={helpHref(quote.booking?.code ?? null)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="pwt-link inline-flex min-h-11 items-center gap-2 text-sm"
+        >
+          <MessageCircle aria-hidden size={18} strokeWidth={1.5} />
+          ¿Problemas para pagar? Ayuda por WhatsApp
+        </a>
       </p>
     </form>
   );

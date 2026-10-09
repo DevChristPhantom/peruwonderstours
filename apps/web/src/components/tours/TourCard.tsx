@@ -4,16 +4,25 @@ import Link from "next/link";
 
 import type { TourSummary } from "@/lib/catalog/types";
 import { formatDuration } from "@/lib/catalog/rules";
+import { CompareToggle } from "@/components/compare/CompareToggle";
+import { FavoriteButton } from "@/components/wishlist/FavoriteButton";
 import { PriceTag } from "./PriceTag";
 
 interface TourCardProps {
   tour: TourSummary;
   headingLevel?: "h2" | "h3";
   sizes?: string;
+  /** Oculta "Comparar" (p. ej. en el propio comparador). */
+  showCompare?: boolean;
 }
 
 /** Tarjeta de producto (MASTER §7). Toda la tarjeta es clicable vía ::after del enlace del título. */
-export function TourCard({ tour, headingLevel = "h3", sizes = "(min-width: 1024px) 400px, (min-width: 768px) 50vw, 100vw" }: TourCardProps) {
+export function TourCard({
+  tour,
+  headingLevel = "h3",
+  sizes = "(min-width: 1024px) 400px, (min-width: 768px) 50vw, 100vw",
+  showCompare = true,
+}: TourCardProps) {
   const Heading = headingLevel;
   const places = tour.destinationNames.length ? tour.destinationNames.join(", ") : "Varios destinos";
   return (
@@ -33,6 +42,10 @@ export function TourCard({ tour, headingLevel = "h3", sizes = "(min-width: 1024p
             Paquete · {tour.durationLabel}
           </span>
         ) : null}
+        {/* z-[2]: por encima del ::after del enlace que cubre la tarjeta. */}
+        <div className="absolute top-3 right-3 z-[2]">
+          <FavoriteButton slug={tour.slug} title={tour.shortTitle} destinationSlugs={tour.destinationSlugs} />
+        </div>
       </div>
       <div className="flex flex-1 flex-col gap-3 p-5">
         <Heading className="text-h4 font-medium text-foreground">
@@ -55,8 +68,9 @@ export function TourCard({ tour, headingLevel = "h3", sizes = "(min-width: 1024p
           </li>
         </ul>
         <p className="line-clamp-2 text-sm text-foreground-muted">{tour.excerpt}</p>
-        <div className="mt-auto border-t border-border pt-3">
+        <div className="mt-auto flex items-end justify-between gap-3 border-t border-border pt-3">
           <PriceTag pricing={tour.pricing} policy={tour.paymentPolicy} />
+          {showCompare ? <CompareToggle slug={tour.slug} title={tour.shortTitle} className="shrink-0" /> : null}
         </div>
       </div>
     </article>

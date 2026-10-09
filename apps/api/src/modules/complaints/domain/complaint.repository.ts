@@ -7,6 +7,10 @@ export interface ComplaintRepository {
   findById(id: string): Promise<ComplaintSnapshot | null>;
   /** Reemplaza el token de consulta (replay idempotente). */
   updateAccessTokenHash(id: string, accessTokenHash: string): Promise<void>;
+  /** Constancia entregada al transporte de correo (art. 4-B): fecha/hora y referencia. */
+  markAcknowledgmentSent(id: string, sentAt: Date, deliveryRef: string): Promise<void>;
+  /** Respuesta comunicada al consumidor (fecha del Anexo I) y referencia de entrega. */
+  markResponseSent(id: string, sentAt: Date, deliveryRef: string): Promise<void>;
 }
 
 /** Correlativo anual sin huecos (PostgreSQL: next_document_number('complaint', año)). */

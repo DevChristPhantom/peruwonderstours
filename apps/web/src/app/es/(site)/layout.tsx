@@ -1,3 +1,4 @@
+import { CompareTray } from "@/components/compare/CompareTray";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { getNavMedia } from "@/lib/catalog";
@@ -14,6 +15,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/es">) {
         {children}
       </main>
       <SiteFooter />
+      <CompareTray />
     </>
   );
 }

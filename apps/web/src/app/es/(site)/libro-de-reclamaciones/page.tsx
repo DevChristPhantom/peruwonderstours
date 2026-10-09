@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { ComplaintForm } from "@/components/complaints/ComplaintForm";
@@ -15,7 +16,9 @@ export const metadata: Metadata = pageMetadata({
  * Libro de Reclamaciones virtual (HU-8.1): público, sin registro ni pagos previos, con la hoja en el
  * orden del Anexo I y constancia imprimible. Se envía por Server Action a `POST /api/v1/complaints`.
  */
-export default function ComplaintsBookPage() {
+export default async function ComplaintsBookPage() {
+  // Render dinámico: la CSP con nonce (H-02) exige HTML generado por petición.
+  await connection();
   return (
     <div className="pwt-container-narrow pt-8 pb-20">
       <div className="print:hidden">

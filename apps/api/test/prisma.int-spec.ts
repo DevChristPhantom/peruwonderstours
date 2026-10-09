@@ -336,6 +336,11 @@ describeDb('Repositorios Prisma contra PostgreSQL (transacción revertida)', () 
       const second = await applyDemoPricing(tx, { now, departureDays: 3, capacity: 12 });
       expect(second).toMatchObject({ season: 'updated', rates: { created: 0, updated: first.tours * 16 }, departures: { created: 0 } });
 
+      // pwt_dev puede tener uso previo de salidas DEMO (pruebas manuales con la API de desarrollo):
+      // se mide la línea base para que la prueba no dependa de esos datos.
+      const baselineError = await deleteDemoPricing(tx).catch((e: unknown) => e);
+      const baseline = baselineError instanceof DemoPricingInUseError ? baselineError.usage : {};
+
       // Un carrito con una salida DEMO: aborta sin borrar nada.
       const demoTour = await tx.tour.findFirstOrThrow({ where: { rates: { some: { seasonId: season.id } } }, orderBy: { slug: 'asc' } });
       await tx.tour.update({ where: { id: demoTour.id }, data: { status: 'published', publishedAt: now } });
@@ -351,12 +356,18 @@ describeDb('Repositorios Prisma contra PostgreSQL (transacción revertida)', () 
       expect(added.item.departureId).toBe(demoDepartureId(demoTour.slug, travelDate));
       const usage = await deleteDemoPricing(tx).catch((e: unknown) => e);
       expect(usage).toBeInstanceOf(DemoPricingInUseError);
-      expect((usage as DemoPricingInUseError).usage).toMatchObject({ cartItems: 1 });
+      expect((usage as DemoPricingInUseError).usage).toMatchObject({ cartItems: (baseline['cartItems'] ?? 0) + 1 });
       expect(await tx.rate.count({ where: { seasonId: season.id } })).toBe(first.tours * 16);
 
       // Sin uso: borra solo lo DEMO (la tarifa y salida reales siguen).
       await tx.cartItemLine.deleteMany({ where: { cartItem: { cartId: cart.details.cart.id } } });
       await tx.cartItem.deleteMany({ where: { cartId: cart.details.cart.id } });
+      if (Object.keys(baseline).length > 0) {
+        // Con uso previo en pwt_dev sigue abortando por ese uso y no borra nada.
+        const still = await deleteDemoPricing(tx).catch((e: unknown) => e);
+        expect((still as DemoPricingInUseError).usage).toEqual(baseline);
+        return;
+      }
       const removed = await deleteDemoPricing(tx);
       expect(removed).toMatchObject({ rates: first.tours * 16, season: 1 });
       expect(removed.departures).toBeGreaterThanOrEqual(first.tours * 3);

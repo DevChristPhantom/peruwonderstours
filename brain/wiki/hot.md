@@ -25,6 +25,7 @@ tags:
 
 ## Recent Changes
 
+- 2026-10-08: benchmark OTA 2026 en [[concepts/benchmark-ota-2026]] (Ola A: 10 HU-B sin terceros; búsqueda web incompleta por límite de sesión, celdas `?` pendientes).
 - 2026-10-07: contenido público extraído a `data/seed/` (41 tours, 0 con precio; ver `_extraction-report.md`).
   Backlog en [[concepts/backlog-mvp]]; reglas de pago en [[negocio/reglas-reserva-y-pago]].
 

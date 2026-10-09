@@ -13,6 +13,7 @@ import {
   normalizePhone,
   type ComplaintReceipt,
 } from "@/lib/complaints/schema";
+import { readBookingToken } from "@/lib/checkout/session";
 import { isProduction } from "@/lib/env";
 import { SITE } from "@/lib/site";
 
@@ -95,7 +96,8 @@ export async function submitComplaintAction(raw: unknown): Promise<ComplaintActi
   store.set(ATTEMPT_COOKIE, `${fp}.${key}`, { ...cookieOptions, maxAge: 60 * 60 });
 
   try {
-    const created = await submitComplaint(body, key);
+    const bookingToken = body.bookingCode ? await readBookingToken(body.bookingCode.trim().toUpperCase()) : null;
+    const created = await submitComplaint(body, key, bookingToken);
     store.set(ATTEMPT_COOKIE, "", { ...cookieOptions, maxAge: 0 });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { emailConfirm, conformityAccepted, ...values } = v;

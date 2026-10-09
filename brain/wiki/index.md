@@ -3,7 +3,7 @@ type: meta
 title: Wiki Index
 status: evergreen
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-08
 tags:
   - meta
   - index
@@ -17,10 +17,13 @@ This catalog is updated by completed knowledge operations.
 
 - [[decisions/ADR-0001-stack-tecnologico]] — stack y metodología propuestos.
 - [[decisions/ADR-0002-sistema-de-diseno]] — paleta peruana, tipografía, movimiento, logo.
+- [[decisions/ADR-0003-pagos-manuales-sin-doble-control]] — pagos manuales al instante, control posterior.
 - [[concepts/alcance-cliente-v1]] — 5 requisitos del cliente (adelanto 50 %, carrito, pagos).
 - [[concepts/backlog-mvp]] — épicas E0–E10, historias MoSCoW con Gherkin y 28 preguntas abiertas.
 - [[negocio/reglas-reserva-y-pago]] — reglas publicadas (50 %, saldo 7 días, 3,5 % tarjeta, cancelación 20 días hábiles) y propuestas.
 - [[concepts/modelo-de-datos]] — esquema PostgreSQL/Prisma del MVP, ERD, máquina de estados reserva/pago, Postgres local sin admin.
+- [[concepts/revision-seguridad-sprint2]] — revisión AppSec (ASVS L2, Ley 29733) de auth staff, backoffice, pagos, reclamos, privacidad y BFF: 2 altas, 8 medias, checklist de producción.
+- [[concepts/benchmark-ota-2026]] — benchmark GYG/Viator/Klook/Civitatis/Airbnb/Booking/Despegar/Expedia/Tiqets/Headout/Inca Rail/PeruRail; 30 funcionalidades evaluadas, olas A/B/C con HU-B y Gherkin, lo que no se recomienda.
 
 ## Normativa
 

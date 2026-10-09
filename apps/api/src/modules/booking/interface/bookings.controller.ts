@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Param, Post, Req, Res } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -31,7 +31,8 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
+import { requestMeta } from '../../../shared/interface/request-meta.js';
 import { money } from '../../../shared/interface/common.dto.js';
 import { BookingToken, CartToken, IdempotencyKey } from '../../../shared/interface/http-params.js';
 import { ProblemDetailsDto } from '../../../shared/interface/problem-details.dto.js';
@@ -89,6 +90,16 @@ export class CheckoutDto {
   @IsBoolean()
   @Equals(true, { message: 'Debes aceptar la política de privacidad.' })
   acceptPrivacyPolicy: boolean;
+
+  @ApiPropertyOptional({ default: false, description: 'Consentimiento OPCIONAL de ofertas por correo (desmarcado por defecto).' })
+  @IsOptional()
+  @IsBoolean()
+  marketingEmailOptIn?: boolean;
+
+  @ApiPropertyOptional({ default: false, description: 'Consentimiento OPCIONAL de ofertas por WhatsApp/SMS (desmarcado por defecto).' })
+  @IsOptional()
+  @IsBoolean()
+  marketingWhatsappOptIn?: boolean;
 
   @ApiPropertyOptional({ maxLength: 2000 })
   @IsOptional()
@@ -185,6 +196,7 @@ export class BookingsController {
     @Body() body: CheckoutDto,
     @IdempotencyKey() idempotencyKey: string | undefined,
     @CartToken() cartToken: string | undefined,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.bookings.checkout({
@@ -195,6 +207,9 @@ export class BookingsController {
       customer: body.customer,
       acceptTerms: body.acceptTerms,
       acceptPrivacyPolicy: body.acceptPrivacyPolicy,
+      marketingEmailOptIn: body.marketingEmailOptIn ?? false,
+      marketingWhatsappOptIn: body.marketingWhatsappOptIn ?? false,
+      meta: requestMeta(req),
       customerNotes: body.customerNotes ?? null,
       expectedTotalAmount: body.expectedTotalAmount !== undefined ? BigInt(body.expectedTotalAmount) : undefined,
     });

@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { Check, ShoppingBag } from "lucide-react";
+import { Check, Heart, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,6 +20,7 @@ import type { NavMedia } from "@/lib/catalog/types";
 import { whatsappHref } from "@/lib/site";
 import { useCartCount, useCartHydrated } from "@/stores/cart-store";
 import { useUiStore } from "@/stores/ui-store";
+import { useFavoritesCount } from "@/stores/wishlist-store";
 
 import s from "./SiteHeader.module.css";
 
@@ -517,6 +518,8 @@ export function SiteHeader({ media }: { media: NavMedia }) {
             ) : null}
           </div>
 
+          <FavoritesLink />
+
           <CartButton />
 
           <ReserveCta />
@@ -596,7 +599,23 @@ export function SiteHeader({ media }: { media: NavMedia }) {
   );
 }
 
-/* ---------- Carrito y CTA ---------- */
+/* ---------- Favoritos, carrito y CTA ---------- */
+
+/** Favoritos (HU-B.A4): contador visible que sube al guardar. */
+function FavoritesLink() {
+  const count = useFavoritesCount();
+  const label = count === 0 ? "Favoritos, ninguno guardado" : `Favoritos, ${count} ${count === 1 ? "tour" : "tours"}`;
+  return (
+    <Link href="/es/favoritos" className={s.iconButton} aria-label={label}>
+      <Heart aria-hidden size={20} strokeWidth={1.5} />
+      {count > 0 ? (
+        <span className={s.badge} aria-hidden="true">
+          {count}
+        </span>
+      ) : null}
+    </Link>
+  );
+}
 
 function CartButton() {
   const count = useCartCount();

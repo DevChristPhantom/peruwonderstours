@@ -4,9 +4,13 @@ import { ConcurrencyError, ConflictError, DomainError } from '../../shared/domai
 
 export type PrismaTx = Prisma.TransactionClient;
 
-/** Cliente Prisma 7 con driver adapter `pg` (requerido por el generador `prisma-client`). */
+/**
+ * Cliente Prisma 7 con driver adapter `pg` (requerido por el generador `prisma-client`).
+ * La sesión se fija en UTC: el adapter envía los `Date` sin zona horaria, y con un servidor
+ * en otra zona (p. ej. America/Lima) los `timestamptz` quedaban corridos 5 h.
+ */
 export function createPrismaClient(connectionString: string): PrismaClient {
-  return new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
+  return new PrismaClient({ adapter: new PrismaPg({ connectionString, options: '-c TimeZone=UTC' }) });
 }
 
 /**
@@ -24,6 +28,11 @@ export function mapPrismaError(error: unknown): unknown {
     if (error.code === 'P2034') return new ConcurrencyError();
   }
   const message = error instanceof Error ? error.message : '';
+  if (/exclusion constraint|exclusion_violation|23P01/i.test(message)) {
+    return new ConflictError('exclusion-violation', 'La operación se superpone con otro registro vigente (restricción de exclusión).', {
+      constraint: /rates_no_overlap_ex/.test(message) ? 'rates_no_overlap_ex' : null,
+    });
+  }
   if (/check_violation|violates check constraint|Transición de reserva no permitida/i.test(message)) {
     return new ConflictError('constraint-violation', 'La operación viola una regla de integridad de la base de datos.');
   }

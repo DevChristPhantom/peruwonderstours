@@ -11,6 +11,7 @@ import { businessDaysLookahead, COMPLAINT_RESPONSE_BUSINESS_DAYS, complaintRespo
 import {
   assertComplaintRules,
   COMPLAINT_CODE_PATTERN,
+  complaintAad,
   formatComplaintCode,
   normalizeDocNumber,
   type ComplaintDraft,
@@ -29,8 +30,13 @@ export interface ComplaintSettings {
 
 export interface SubmitComplaintInput {
   draft: ComplaintDraft;
-  /** Código de reserva opcional (PWT-AAAA-NNNNNN): si existe se vincula; nunca es obligatorio. */
+  /**
+   * Código de reserva opcional (PWT-AAAA-NNNNNN); nunca es obligatorio. H-17: solo se VINCULA si el
+   * consumidor lo acredita (token de acceso de la reserva o mismo correo); si no, queda como texto.
+   */
   bookingCode?: string | null;
+  /** X-Booking-Token de la reserva (opcional) para acreditar el vínculo. */
+  bookingToken?: string | null;
   idempotencyKey: string | undefined;
   ip: string | null;
 }
@@ -106,12 +112,13 @@ export class ComplaintUseCases {
       const sequence = await repos.complaintSequence.next(year);
       const holidays = await repos.holidays.holidaysBetween(today, addDays(today, businessDaysLookahead(COMPLAINT_RESPONSE_BUSINESS_DAYS)));
       const { dueAt } = complaintResponseDue(now, holidays);
-      const booking = bookingCode && BOOKING_CODE_PATTERN.test(bookingCode) ? await repos.bookings.findByCode(bookingCode) : null;
+      const link = await resolveBookingLink(repos, bookingCode, draft.consumer.email, input.bookingToken ?? null);
       const access = generateAccessToken();
       const docNumber = normalizeDocNumber(draft.consumer.docNumber);
+      const id = this.ids.next();
 
       const complaint: ComplaintSnapshot = {
-        id: this.ids.next(),
+        id,
         year,
         sequence,
         code: formatComplaintCode(year, sequence),
@@ -119,23 +126,24 @@ export class ComplaintUseCases {
         declaredType: draft.declaredType,
         status: 'received',
         channel: 'web',
-        bookingId: booking?.id ?? null,
+        bookingId: link.bookingId,
+        declaredBookingCode: link.declaredBookingCode,
         provider: { ...this.settings.provider },
         consumer: {
           fullName: draft.consumer.fullName,
           docType: draft.consumer.docType,
-          docEnc: this.cipher.encrypt(docNumber),
+          docEnc: this.cipher.encrypt(docNumber, complaintAad(id, 'consumer_doc_enc')),
           docHash: this.cipher.hash(`${draft.consumer.docType}:${docNumber}`),
           address: draft.consumer.address,
           email: draft.consumer.email,
-          phoneEnc: this.cipher.encrypt(draft.consumer.phone),
+          phoneEnc: this.cipher.encrypt(draft.consumer.phone, complaintAad(id, 'consumer_phone_enc')),
           isMinor: draft.consumer.isMinor,
         },
         guardian: draft.guardian
           ? {
               fullName: draft.guardian.fullName,
               address: draft.guardian.address,
-              phoneEnc: this.cipher.encrypt(draft.guardian.phone),
+              phoneEnc: this.cipher.encrypt(draft.guardian.phone, complaintAad(id, 'guardian_phone_enc')),
               email: draft.guardian.email,
             }
           : null,
@@ -189,9 +197,9 @@ export class ComplaintUseCases {
       if (!complaint || !matches) throw new ComplaintNotFoundError();
       return {
         complaint,
-        consumerDocNumber: this.cipher.decrypt(complaint.consumer.docEnc),
-        consumerPhone: complaint.consumer.phoneEnc ? this.cipher.decrypt(complaint.consumer.phoneEnc) : null,
-        guardianPhone: complaint.guardian ? this.cipher.decrypt(complaint.guardian.phoneEnc) : null,
+        consumerDocNumber: this.cipher.decrypt(complaint.consumer.docEnc, complaintAad(complaint.id, 'consumer_doc_enc')),
+        consumerPhone: complaint.consumer.phoneEnc ? this.cipher.decrypt(complaint.consumer.phoneEnc, complaintAad(complaint.id, 'consumer_phone_enc')) : null,
+        guardianPhone: complaint.guardian ? this.cipher.decrypt(complaint.guardian.phoneEnc, complaintAad(complaint.id, 'guardian_phone_enc')) : null,
       };
     });
   }
@@ -206,12 +214,32 @@ export class ComplaintUseCases {
   }
 }
 
+/**
+ * H-17: vínculo hoja <-> reserva solo si el consumidor lo acredita (token de la reserva o el mismo
+ * correo del comprador). Si no, el código queda como texto declarado (sin vincular).
+ */
+export async function resolveBookingLink(
+  repos: TransactionalRepositories,
+  bookingCode: string | null,
+  consumerEmail: string,
+  bookingToken: string | null,
+): Promise<{ bookingId: string | null; declaredBookingCode: string | null }> {
+  if (!bookingCode) return { bookingId: null, declaredBookingCode: null };
+  const declared = bookingCode.slice(0, 20);
+  const booking = BOOKING_CODE_PATTERN.test(bookingCode) ? await repos.bookings.findByCode(bookingCode) : null;
+  if (!booking) return { bookingId: null, declaredBookingCode: declared };
+  const byToken = isWellFormedAccessToken(bookingToken) && accessTokenMatches(bookingToken, booking.accessTokenHash);
+  const customer = byToken ? null : await repos.customers.findById(booking.toSnapshot().customerId);
+  const byEmail = customer !== null && customer.email === consumerEmail.trim().toLowerCase();
+  return byToken || byEmail ? { bookingId: booking.id, declaredBookingCode: null } : { bookingId: null, declaredBookingCode: declared };
+}
+
 function clean(value: string): string {
   return value.trim().replace(/\s+/g, ' ');
 }
 
 /** Normaliza espacios y correos (minúsculas) antes de validar y de calcular la huella. */
-function normalizeDraft(draft: ComplaintDraft): ComplaintDraft {
+export function normalizeDraft(draft: ComplaintDraft): ComplaintDraft {
   return {
     ...draft,
     consumer: {
