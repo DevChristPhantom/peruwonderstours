@@ -79,7 +79,12 @@ export default async function BookingPage({ params }: PageProps<"/es/reserva/[co
 
   return (
     // data-pwt-voucher: marcador que el service worker exige para guardar la página de ESTE código.
-    <div className="pwt-container py-12" data-pwt-voucher={booking.code}>
+    // data-pwt-voucher-last-day: último día de servicio; la copia offline caduca 7 días después (H-18).
+    <div
+      className="pwt-container py-12"
+      data-pwt-voucher={booking.code}
+      data-pwt-voucher-last-day={booking.lastServiceDate ?? booking.items.map((i) => i.travelDate).sort().at(-1) ?? undefined}
+    >
       {PAYMENTS_MODE === "sandbox" ? (
         <p className="mx-auto mb-8 max-w-[720px] rounded-md border border-dashed border-warning bg-warning-soft px-4 py-2 text-center text-sm text-warning">
           Sandbox: los pagos de esta reserva son simulados; no se cobró dinero real.

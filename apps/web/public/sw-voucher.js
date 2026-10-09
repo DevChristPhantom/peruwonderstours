@@ -10,12 +10,45 @@
  *   (token borrado, vencido o que no coincide), la copia se elimina y no se vuelve a servir.
  * - Nunca se guardan POST (Server Actions de pago), respuestas RSC ni otras rutas con datos.
  * - Los estáticos de /_next/static son públicos e inmutables (nombre con hash).
+ * - Caducidad (H-18): la copia se descarta a los 30 días de guardada o 7 días después del último día
+ *   de servicio (`data-pwt-voucher-last-day`), lo que ocurra primero. Se revisa al servir, al activar
+ *   el SW y al consultar el estado.
  */
 const PAGES = "pwt-voucher-pages-v1";
 const ASSETS = "pwt-voucher-assets-v1";
 const KNOWN = [PAGES, ASSETS];
 const VOUCHER_RE = /^\/es\/reserva\/([A-Z0-9][A-Z0-9-]{3,39})\/?$/;
 const MAX_ASSETS = 120;
+const MAX_AGE_MS = 30 * 24 * 3600 * 1000;
+const AFTER_TRIP_MS = 7 * 24 * 3600 * 1000;
+
+/** Instante (ms) en que vence una copia: 30 días desde que se guardó o fin del viaje + 7 días. */
+function expiryFor(savedAtMs, lastDay) {
+  let expiry = savedAtMs + MAX_AGE_MS;
+  if (lastDay && /^\d{4}-\d{2}-\d{2}$/.test(lastDay)) {
+    // Fin del último día de servicio en Lima (UTC-5) + 7 días.
+    const tripEnd = Date.parse(`${lastDay}T23:59:59-05:00`) + AFTER_TRIP_MS;
+    if (Number.isFinite(tripEnd)) expiry = Math.min(expiry, tripEnd);
+  }
+  return expiry;
+}
+
+function isExpired(response) {
+  const expires = Number(response.headers.get("x-pwt-expires-at"));
+  return !Number.isFinite(expires) || expires <= Date.now();
+}
+
+/** Borra las copias vencidas (o sin fecha de caducidad, de versiones anteriores del SW). */
+async function purgeExpired() {
+  const cache = await caches.open(PAGES);
+  const keys = await cache.keys();
+  await Promise.all(
+    keys.map(async (key) => {
+      const res = await cache.match(key);
+      if (!res || isExpired(res)) await cache.delete(key);
+    }),
+  );
+}
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -26,6 +59,7 @@ self.addEventListener("activate", (event) => {
     (async () => {
       const names = await caches.keys();
       await Promise.all(names.filter((n) => n.startsWith("pwt-voucher-") && !KNOWN.includes(n)).map((n) => caches.delete(n)));
+      await purgeExpired();
       await self.clients.claim();
     })(),
   );
@@ -58,11 +92,22 @@ async function storeVoucher(url, response) {
   if (!type.includes("text/html")) return false;
   const html = await response.text();
   if (!html.includes(`data-pwt-voucher="${code}"`)) return false;
+  const lastDay = /data-pwt-voucher-last-day="(\d{4}-\d{2}-\d{2})"/.exec(html)?.[1] ?? null;
+  const now = Date.now();
+  const expiresAt = expiryFor(now, lastDay);
+  if (expiresAt <= now) {
+    await cache.delete(pageKey(url));
+    return false;
+  }
   await cache.put(
     pageKey(url),
     new Response(html, {
       status: 200,
-      headers: { "content-type": "text/html; charset=utf-8", "x-pwt-saved-at": new Date().toISOString() },
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "x-pwt-saved-at": new Date(now).toISOString(),
+        "x-pwt-expires-at": String(expiresAt),
+      },
     }),
   );
   return true;
@@ -88,7 +133,8 @@ async function handleVoucherNavigation(event) {
     return response;
   } catch {
     const cached = await caches.match(pageKey(url), { cacheName: PAGES });
-    if (cached) return cached;
+    if (cached && !isExpired(cached)) return cached;
+    if (cached) await (await caches.open(PAGES)).delete(pageKey(url));
     return new Response(OFFLINE_HTML, { status: 503, headers: { "content-type": "text/html; charset=utf-8" } });
   }
 }
@@ -159,6 +205,7 @@ self.addEventListener("message", (event) => {
   if (data.type === "status-voucher" && typeof data.path === "string") {
     event.waitUntil(
       (async () => {
+        await purgeExpired();
         const url = new URL(data.path, self.location.origin);
         const cached = await caches.match(pageKey(url), { cacheName: PAGES });
         reply({ saved: !!cached, savedAt: cached ? cached.headers.get("x-pwt-saved-at") : null });

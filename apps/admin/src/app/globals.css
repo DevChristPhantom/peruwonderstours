@@ -1,0 +1,64 @@
+@import "tailwindcss";
+@import "@pwt/ui/tokens.css";
+@import "@pwt/ui/theme.css";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *, .dark, .dark *));
+
+/* next/font genera familias con hash: se enlazan a los tokens del sistema. */
+:root {
+  --pwt-font-sans: var(--font-geist), "Geist", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --pwt-font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--pwt-background);
+    color: var(--pwt-foreground);
+    font-family: var(--pwt-font-sans);
+    font-size: var(--pwt-text-sm);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* Inputs a 16 px: evita el zoom de iOS y mantiene legibilidad. */
+  input, select, textarea, button { font: inherit; }
+  input, select, textarea { font-size: 1rem; }
+  :focus-visible { outline: 2px solid var(--pwt-ring); outline-offset: 2px; }
+  a { color: var(--pwt-link); }
+  table { border-collapse: collapse; }
+  [hidden] { display: none !important; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+  }
+}
+
+@layer components {
+  .skip-link {
+    position: absolute; left: 8px; top: -60px; z-index: var(--pwt-z-toast);
+    background: var(--pwt-primary); color: var(--pwt-on-primary); padding: 10px 14px; border-radius: var(--pwt-radius-sm);
+  }
+  .skip-link:focus { top: 8px; }
+
+  .field-input {
+    min-height: 44px; width: 100%; padding: 8px 12px; border-radius: var(--pwt-radius-sm);
+    border: 1px solid var(--pwt-border-strong); background: var(--pwt-surface); color: var(--pwt-foreground);
+  }
+  .field-input:focus-visible { border-color: var(--pwt-primary); outline: 2px solid var(--pwt-ring); outline-offset: 1px; }
+  .field-input[aria-invalid="true"] { border-color: var(--pwt-danger); }
+  .field-input:disabled { opacity: .6; cursor: not-allowed; }
+  textarea.field-input { min-height: 96px; resize: vertical; }
+
+  .data-table { width: 100%; font-size: var(--pwt-text-sm); }
+  .data-table th {
+    text-align: left; font-weight: 600; font-size: var(--pwt-text-xs); color: var(--pwt-foreground-muted);
+    text-transform: uppercase; letter-spacing: .04em; padding: 8px 10px; border-bottom: 1px solid var(--pwt-border-strong);
+    white-space: nowrap; background: var(--pwt-surface-muted);
+  }
+  .data-table td { padding: 8px 10px; border-bottom: 1px solid var(--pwt-border); vertical-align: top; }
+  .data-table tbody tr:hover { background: var(--pwt-surface-muted); }
+  .data-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  meter.occupancy { width: 100%; height: 10px; }
+}

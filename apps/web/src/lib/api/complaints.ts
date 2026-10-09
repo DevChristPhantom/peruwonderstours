@@ -49,10 +49,14 @@ interface RawCreated {
   provider?: { legalName?: string; ruc?: string; establishmentAddress?: string; establishmentCode?: string };
 }
 
-export async function submitComplaint(body: ComplaintDraftBody, idempotencyKey: string): Promise<ComplaintCreated> {
+/**
+ * `bookingToken` (H-17, opcional): token de la reserva del propio visitante (cookie httpOnly). Con él la
+ * API vincula el reclamo a la reserva de forma verificada; sin él, el código queda como "declarado".
+ */
+export async function submitComplaint(body: ComplaintDraftBody, idempotencyKey: string, bookingToken?: string | null): Promise<ComplaintCreated> {
   const res = await apiRequest<{ data: RawCreated & { complaint?: RawCreated } }>("/complaints", {
     method: "POST",
-    headers: { "idempotency-key": idempotencyKey },
+    headers: { "idempotency-key": idempotencyKey, "x-booking-token": bookingToken ?? undefined },
     body,
   });
   const raw: RawCreated = res!.body.data.complaint ?? res!.body.data;

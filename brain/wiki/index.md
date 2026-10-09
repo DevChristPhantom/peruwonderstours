@@ -17,6 +17,7 @@ This catalog is updated by completed knowledge operations.
 
 - [[decisions/ADR-0001-stack-tecnologico]] — stack y metodología propuestos.
 - [[decisions/ADR-0002-sistema-de-diseno]] — paleta peruana, tipografía, movimiento, logo.
+- [[decisions/ADR-0003-pagos-manuales-sin-doble-control]] — pagos manuales al instante, control posterior.
 - [[concepts/alcance-cliente-v1]] — 5 requisitos del cliente (adelanto 50 %, carrito, pagos).
 - [[concepts/backlog-mvp]] — épicas E0–E10, historias MoSCoW con Gherkin y 28 preguntas abiertas.
 - [[negocio/reglas-reserva-y-pago]] — reglas publicadas (50 %, saldo 7 días, 3,5 % tarjeta, cancelación 20 días hábiles) y propuestas.

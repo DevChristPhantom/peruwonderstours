@@ -4,9 +4,13 @@ import { ConcurrencyError, ConflictError, DomainError } from '../../shared/domai
 
 export type PrismaTx = Prisma.TransactionClient;
 
-/** Cliente Prisma 7 con driver adapter `pg` (requerido por el generador `prisma-client`). */
+/**
+ * Cliente Prisma 7 con driver adapter `pg` (requerido por el generador `prisma-client`).
+ * La sesión se fija en UTC: el adapter envía los `Date` sin zona horaria, y con un servidor
+ * en otra zona (p. ej. America/Lima) los `timestamptz` quedaban corridos 5 h.
+ */
 export function createPrismaClient(connectionString: string): PrismaClient {
-  return new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
+  return new PrismaClient({ adapter: new PrismaPg({ connectionString, options: '-c TimeZone=UTC' }) });
 }
 
 /**
