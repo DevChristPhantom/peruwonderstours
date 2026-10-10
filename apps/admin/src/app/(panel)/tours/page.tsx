@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { TranslationStatusBadge } from "@/components/content/TranslationStatus";
 import { Badge } from "@/components/ui/Badge";
 import { ErrorPanel } from "@/components/ui/ErrorPanel";
 import { EmptyState, PageHeader, TableWrap } from "@/components/ui/Layout";
@@ -15,6 +16,12 @@ import { TOUR_STATUS, TOUR_TYPE, label } from "@/lib/labels";
 export const metadata: Metadata = { title: "Tours" };
 
 const one = (v: string | string[] | undefined) => (typeof v === "string" ? v : undefined);
+
+/** `undefined` = sin traducción al inglés; `null` = revisada por el equipo. */
+function enStatus(t: TourListItem): string | null | undefined {
+  const en = t.translations?.find((x) => x.locale === "en");
+  return en ? en.translationStatus : undefined;
+}
 
 export default async function ToursPage({ searchParams }: PageProps<"/tours">) {
   const session = await requireSession();
@@ -72,6 +79,7 @@ export default async function ToursPage({ searchParams }: PageProps<"/tours">) {
                   <th scope="col">Código</th>
                   <th scope="col">Tipo</th>
                   <th scope="col">Estado</th>
+                  <th scope="col">Inglés</th>
                   <th scope="col">Actualizado</th>
                   <th scope="col">
                     <span className="sr-only">Accesos</span>
@@ -92,6 +100,11 @@ export default async function ToursPage({ searchParams }: PageProps<"/tours">) {
                     <td>{label(TOUR_TYPE, t.type)}</td>
                     <td>
                       <Badge tone={TOUR_STATUS[t.status]?.tone ?? "neutral"}>{TOUR_STATUS[t.status]?.label ?? t.status}</Badge>
+                    </td>
+                    <td>
+                      <Link href={`/tours/${t.id}?idioma=en#traduccion`} className="no-underline">
+                        <TranslationStatusBadge status={enStatus(t)} />
+                      </Link>
                     </td>
                     <td className="text-xs whitespace-nowrap">{formatDateTime(t.updatedAt)}</td>
                     <td className="text-xs whitespace-nowrap">

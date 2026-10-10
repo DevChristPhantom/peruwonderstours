@@ -11,11 +11,18 @@ import { ROLE_LABELS, type Permission } from "@/lib/auth/permissions";
 const NAV: (NavItem & { perm?: Permission })[] = [
   { key: "tablero", href: "/", label: "Tablero", perm: "dashboard:read" },
   { key: "reservas", href: "/reservas", label: "Reservas", perm: "bookings:read" },
+  { key: "pagos-manuales", href: "/pagos-manuales", label: "Pagos manuales", perm: "dashboard:read" },
   { key: "reclamos", href: "/reclamos", label: "Libro de Reclamaciones", perm: "complaints:read" },
+  { key: "contacto", href: "/contacto", label: "Mensajes de contacto", perm: "contact:read" },
   { key: "tours", href: "/tours", label: "Tours", perm: "tours:read" },
   { key: "precios", href: "/precios", label: "Precios", perm: "pricing:read" },
   { key: "salidas", href: "/salidas", label: "Salidas y cupos", perm: "departures:read" },
+  { key: "destinos", href: "/destinos", label: "Destinos", perm: "content:read" },
+  { key: "categorias", href: "/categorias", label: "Categorías", perm: "content:read" },
+  { key: "blog", href: "/blog", label: "Blog", perm: "content:read" },
+  { key: "testimonios", href: "/testimonios", label: "Testimonios", perm: "content:read" },
   { key: "privacidad", href: "/privacidad", label: "Protección de datos", perm: "privacy:read" },
+  { key: "auditoria", href: "/auditoria", label: "Auditoría", perm: "audit:read" },
   { key: "usuarios", href: "/usuarios", label: "Usuarios", perm: "users:manage" },
   { key: "cuenta", href: "/cuenta", label: "Mi cuenta" },
 ];

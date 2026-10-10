@@ -81,5 +81,19 @@ tags:
 - Siguiente (Sprint 2): auth + backoffice (tours, precios, reservas, responder reclamos),
   correo transaccional (constancias, vouchers), consents v2, pasarela real, QA/E2E Playwright,
   revisión de seguridad.
+- 2026-10-09 SPRINT 3 (rama `feature/sprint-3-funcional`, en curso):
+  - API cerrada (commit d120d27): enlaces mágicos de un solo uso (reserva, reclamo, cliente `/me`),
+    i18n con fallback es + 301 entre slugs, blog/testimonios/contacto/site-content, CRUD admin
+    de contenidos, subida de medios, anulación de pagos manuales, errores en inglés
+    (`not-found`, `too-many-requests`). 219 unit + 32 e2e + 43 integración. Decisión:
+    [[decisions/ADR-0004-enlaces-de-acceso-por-correo]].
+  - Datos: traducciones `data/seed/en/` (41 tours, `machine_reviewed_pending_client`),
+    contenido legado completo + 4 testimonios + manifiesto de 404 imágenes + sellos con URL
+    oficial (`data/seed/trust-badges.json`; logos apagados hasta que el cliente pruebe).
+    358 imágenes importadas a `apps/api/uploads/legacy` (gitignored); 21 fallaron (15 de
+    turinet.turismoads.com sin DNS, 6 dan 404).
+  - Web (`[locale]` con next-intl) y admin (pantallas nuevas) en curso.
+  - Gotcha: `next typegen`/build necesitan `SWC_NATIVE_BINDING_CACHE` fuera de `AppData\Local\swc`.
+  - Preguntas al cliente ampliadas a 45 (secciones 7–8).
 - Detalle a revisar: `balanceDueAt` = 00:00 Lima del día −7 → la web dice "vence el 13 nov"
   pero en rigor vence al inicio del 13; aclarar regla con el cliente.

@@ -1,0 +1,125 @@
+import { ArrowDown, ArrowUp } from "lucide-react";
+import Link from "next/link";
+
+import { TranslationStatusBadge } from "@/components/content/TranslationStatus";
+import { ActionForm, SubmitButton } from "@/components/forms/ActionForm";
+import { Alert } from "@/components/ui/Alert";
+import { Badge } from "@/components/ui/Badge";
+import { ErrorPanel } from "@/components/ui/ErrorPanel";
+import { EmptyState, PageHeader, TableWrap } from "@/components/ui/Layout";
+import { buttonClass } from "@/components/ui/styles";
+import { reorderTaxonomyAction } from "@/lib/actions/taxonomy";
+import { apiData } from "@/lib/api/client";
+import type { TaxonomyItem, TaxonomyKind } from "@/lib/api/content-types";
+import { can, load, requireSession } from "@/lib/auth/guard";
+import { DESTINATION_STATUS, moveItem, toSortOrders } from "@/lib/content";
+import { formatDateTime } from "@/lib/format";
+import { TAXONOMY } from "@/lib/taxonomy";
+
+/** Listado de destinos o categorías, en el orden en que se muestran en el sitio. */
+export async function TaxonomyListPage({ kind, deleted }: { kind: TaxonomyKind; deleted?: boolean }) {
+  const session = await requireSession();
+  const cfg = TAXONOMY[kind];
+  const canWrite = can(session, "content:write");
+  const result = await load(() => apiData<TaxonomyItem[]>(cfg.apiPath));
+  const items = result.ok ? result.data : [];
+  const ids = items.map((i) => i.id);
+  const parentName = (id: string | null) => {
+    const p = id ? items.find((i) => i.id === id) : undefined;
+    return p ? (p.translations.find((t) => t.locale === "es")?.name ?? p.slug) : null;
+  };
+
+  return (
+    <>
+      <PageHeader
+        title={cfg.plural}
+        description="El orden de esta lista es el orden en el sitio. Usa las flechas para mover."
+        actions={
+          canWrite ? (
+            <Link href={`${cfg.route}/nuevo`} className={buttonClass("primary")}>
+              {cfg.newLabel}
+            </Link>
+          ) : null
+        }
+      />
+      {deleted ? (
+        <div className="mb-3">
+          <Alert tone="success" role="status">
+            Eliminado correctamente.
+          </Alert>
+        </div>
+      ) : null}
+
+      {!result.ok ? (
+        <ErrorPanel error={result.error} />
+      ) : items.length === 0 ? (
+        <EmptyState>Aún no hay {cfg.plural.toLowerCase()}.</EmptyState>
+      ) : (
+        <TableWrap label={`Lista de ${cfg.plural.toLowerCase()}`}>
+          <table className="data-table">
+            <thead>
+              <tr>
+                {canWrite ? <th scope="col">Orden</th> : null}
+                <th scope="col">Nombre</th>
+                <th scope="col">Slug</th>
+                {kind === "destination" ? <th scope="col">Estado</th> : null}
+                <th scope="col" className="num">
+                  Tours
+                </th>
+                <th scope="col">Inglés</th>
+                <th scope="col">Editado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, i) => {
+                const es = item.translations.find((t) => t.locale === "es");
+                const en = item.translations.find((t) => t.locale === "en");
+                const status = DESTINATION_STATUS[item.status] ?? { label: item.status, tone: "neutral" as const };
+                const name = es?.name ?? item.slug;
+                return (
+                  <tr key={item.id}>
+                    {canWrite ? (
+                      <td>
+                        <div className="flex gap-1">
+                          <ActionForm action={reorderTaxonomyAction.bind(null, kind, toSortOrders(moveItem(ids, i, -1)))} showSuccess={false}>
+                            <SubmitButton variant="ghost" size="sm" disabled={i === 0} pendingLabel="…">
+                              <ArrowUp aria-hidden size={16} />
+                              <span className="sr-only">Subir {name}</span>
+                            </SubmitButton>
+                          </ActionForm>
+                          <ActionForm action={reorderTaxonomyAction.bind(null, kind, toSortOrders(moveItem(ids, i, 1)))} showSuccess={false}>
+                            <SubmitButton variant="ghost" size="sm" disabled={i === items.length - 1} pendingLabel="…">
+                              <ArrowDown aria-hidden size={16} />
+                              <span className="sr-only">Bajar {name}</span>
+                            </SubmitButton>
+                          </ActionForm>
+                        </div>
+                      </td>
+                    ) : null}
+                    <td>
+                      <Link href={`${cfg.route}/${item.id}`} className="font-medium">
+                        {name}
+                      </Link>
+                      {parentName(item.parentId) ? <span className="block text-xs text-foreground-muted">en {parentName(item.parentId)}</span> : null}
+                    </td>
+                    <td className="font-mono text-xs">{item.slug}</td>
+                    {kind === "destination" ? (
+                      <td>
+                        <Badge tone={status.tone}>{status.label}</Badge>
+                      </td>
+                    ) : null}
+                    <td className="num">{item.tourCount}</td>
+                    <td>
+                      <TranslationStatusBadge status={en ? en.translationStatus : undefined} />
+                    </td>
+                    <td className="whitespace-nowrap">{formatDateTime(item.updatedAt)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </TableWrap>
+      )}
+    </>
+  );
+}

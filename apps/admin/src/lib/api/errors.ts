@@ -96,7 +96,27 @@ const FIELD_LABELS: Record<string, string> = {
   newPassword: "Contraseña nueva",
   password: "Contraseña",
   currentPassword: "Contraseña actual",
+  "translations.es.body": "Cuerpo (es)",
+  body: "Texto",
+  excerpt: "Extracto",
+  description: "Descripción",
+  tags: "Etiquetas",
+  coverStorageKey: "Imagen de portada",
+  sortOrder: "Orden",
+  parentId: "Destino padre",
+  translationStatus: "Estado de la traducción",
+  authorName: "Autor",
+  authorCountry: "País",
+  rating: "Calificación",
+  internalNote: "Nota interna",
+  status: "Estado",
+  file: "Archivo",
 };
+
+/** 409 por bloqueo optimista (`tour-version-conflict`, `blog-post-version-conflict`, `destination-version-conflict`…). */
+export function isVersionConflict(code: string): boolean {
+  return code === "concurrency-conflict" || code.endsWith("-version-conflict");
+}
 
 export function fieldLabel(field: string): string {
   return FIELD_LABELS[field] ?? field;
@@ -132,6 +152,12 @@ export function toUserError(p: ProblemLike): UserError {
   }
   if (p.code === "tour-version-conflict" || p.code === "concurrency-conflict") {
     return { ...base, message: p.detail ?? "Otro usuario modificó este registro. Recarga para ver los cambios antes de guardar." };
+  }
+  if (isVersionConflict(p.code)) {
+    return { ...base, message: "Alguien más editó esto mientras lo tenías abierto. Recarga la página para ver la versión vigente antes de guardar." };
+  }
+  if (p.code === "blog-post-not-publishable") {
+    return { ...base, message: "El artículo aún no cumple los requisitos para publicarse:", items: (p.errors ?? []).map((e) => `${fieldLabel(e.field)}: ${e.messages.join(" ")}`), fields: undefined };
   }
   if (p.code === "rate-overlap") {
     const other = typeof p.details?.conflictingRate === "string" ? p.details.conflictingRate : null;

@@ -47,6 +47,8 @@ type Query = Record<string, string | number | boolean | undefined | null>;
 export interface ApiOptions {
   method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
   body?: unknown;
+  /** Cuerpo multipart (subida de medios); excluyente con `body`. */
+  form?: FormData;
   query?: Query;
   idempotencyKey?: string;
   /** false = endpoint público (login, MFA): no exige sesión. */
@@ -75,7 +77,8 @@ async function send(path: string, options: ApiOptions, accessToken: string | nul
     return await fetch(buildUrl(path, options.query), {
       method: options.method ?? "GET",
       headers,
-      body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+      // Con FormData, fetch arma el `content-type` multipart con su boundary.
+      body: options.form ?? (options.body !== undefined ? JSON.stringify(options.body) : undefined),
       cache: "no-store",
       signal: AbortSignal.timeout(env().ADMIN_API_TIMEOUT_MS),
     });

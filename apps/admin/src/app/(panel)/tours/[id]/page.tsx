@@ -4,7 +4,11 @@ import { notFound } from "next/navigation";
 
 import { ActionForm, SubmitButton } from "@/components/forms/ActionForm";
 import { Field } from "@/components/forms/Field";
+import { TranslationStatusBadge } from "@/components/content/TranslationStatus";
+import { ImageUploader } from "@/components/media/ImageUploader";
 import { TourFieldsForm } from "@/components/tours/TourFieldsForm";
+import { TabLinks } from "@/components/ui/TabLinks";
+import { mediaUrl } from "@/lib/media";
 import { TranslationEditor } from "@/components/tours/TranslationEditor";
 import { Alert } from "@/components/ui/Alert";
 import { Badge } from "@/components/ui/Badge";
@@ -17,13 +21,14 @@ import { can, load, requireSession } from "@/lib/auth/guard";
 import { formatDateTime } from "@/lib/format";
 import { TOUR_STATUS, TOUR_TYPE, label } from "@/lib/labels";
 
-import { addMediaAction, deleteMediaAction, publishTourAction, setCoverAction } from "../actions";
+import { addMediaAction, deleteMediaAction, deleteTranslationAction, publishTourAction, setCoverAction } from "../actions";
 
 export const metadata: Metadata = { title: "Editar tour" };
 
-export default async function TourDetailPage({ params }: PageProps<"/tours/[id]">) {
+export default async function TourDetailPage({ params, searchParams }: PageProps<"/tours/[id]">) {
   const session = await requireSession();
-  const { id } = await params;
+  const [{ id }, sp] = await Promise.all([params, searchParams]);
+  const lang = sp.idioma === "en" ? "en" : "es";
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const result = await load(() => apiData<TourDetail>(`/admin/tours/${id}`));
   if (!result.ok) {
@@ -36,6 +41,7 @@ export default async function TourDetailPage({ params }: PageProps<"/tours/[id]"
   }
   const t = result.data;
   const es = t.translations.find((x) => x.locale === "es");
+  const en = t.translations.find((x) => x.locale === "en");
   const canWrite = can(session, "tours:write") && t.status !== "archived";
   const canPublish = can(session, "tours:publish") && t.status !== "archived";
   const status = TOUR_STATUS[t.status] ?? { label: t.status, tone: "neutral" as const };
@@ -92,24 +98,60 @@ export default async function TourDetailPage({ params }: PageProps<"/tours/[id]"
       ) : null}
 
       <div className="space-y-4">
-        <Section title="Traducción en español" id="traduccion" description="Idioma canónico: obligatorio para publicar.">
-          <TranslationEditor tourId={t.id} version={t.version} translation={es} fallbackSlug={t.slug} readOnly={!canWrite} />
+        <Section
+          title={lang === "en" ? "Traducción al inglés" : "Traducción en español"}
+          id="traduccion"
+          description={lang === "en" ? "Opcional: sin ella el sitio en inglés muestra el español." : "Idioma canónico: obligatorio para publicar."}
+        >
+          <TabLinks
+            label="Idioma de la traducción"
+            active={lang}
+            tabs={[
+              { key: "es", href: `/tours/${t.id}#traduccion`, label: "Español" },
+              {
+                key: "en",
+                href: `/tours/${t.id}?idioma=en#traduccion`,
+                label: (
+                  <>
+                    Inglés <TranslationStatusBadge status={en ? (en.translationStatus ?? null) : undefined} />
+                  </>
+                ),
+              },
+            ]}
+          />
+          {lang === "en" && !en ? <p className="mb-3 text-sm text-foreground-muted">Aún no hay versión en inglés. Completa el formulario para crearla.</p> : null}
+          <TranslationEditor
+            key={lang}
+            tourId={t.id}
+            version={t.version}
+            locale={lang}
+            translation={lang === "en" ? en : es}
+            fallbackSlug={lang === "en" ? (es?.slug ?? t.slug) : t.slug}
+            readOnly={!canWrite}
+          />
+          {lang === "en" && en && canWrite ? (
+            <ActionForm action={deleteTranslationAction.bind(null, t.id, t.version)} confirm="¿Eliminar la traducción al inglés? El sitio en inglés mostrará el español." className="mt-4 border-t border-border pt-4">
+              <SubmitButton variant="danger" size="sm" pendingLabel="Eliminando…">
+                Eliminar traducción al inglés
+              </SubmitButton>
+            </ActionForm>
+          ) : null}
         </Section>
 
         <Section title="Datos generales" id="datos">
           <TourFieldsForm tour={t} readOnly={!canWrite} />
         </Section>
 
-        <Section title="Imágenes" id="imagenes" description="Por URL del CDN mientras no esté la subida de archivos. Publicar exige una portada.">
+        <Section title="Imágenes" id="imagenes" description="Sube la imagen (JPEG, PNG, WebP o AVIF, máx. 8 MB) o pega una URL https. Publicar exige una portada.">
           {t.media.length === 0 ? (
             <EmptyState>Sin imágenes.</EmptyState>
           ) : (
             <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {t.media.map((m) => (
                 <li key={m.id} className="space-y-2 rounded-sm border border-border p-2">
-                  {/^https:\/\//.test(m.storageKey) ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- miniatura de un CDN externo variable; no se optimiza.
-                    <img src={m.storageKey} alt={m.altEs ?? ""} width={320} height={200} loading="lazy" className="aspect-video w-full rounded-xs bg-surface-muted object-cover" />
+                  {mediaUrl(m.storageKey) ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- miniatura de un medio propio o CDN externo variable; no se optimiza.
+                    <img src={mediaUrl(m.storageKey) ?? ""} alt={m.altEs ?? ""} width={320} height={200} loading="lazy" className="aspect-video w-full rounded-xs bg-surface-muted object-cover" />
                   ) : (
                     <p className="aspect-video break-all text-xs text-foreground-muted">{m.storageKey}</p>
                   )}
@@ -135,7 +177,19 @@ export default async function TourDetailPage({ params }: PageProps<"/tours/[id]"
               ))}
             </ul>
           )}
-          {canWrite ? (
+          {canWrite && can(session, "media:upload") ? (
+            // `key`: tras agregar, el formulario se vuelve a montar vacío (incluido el selector de imagen).
+            <ActionForm key={t.media.length} action={addMediaAction.bind(null, t.id, t.version)} className="mt-4 grid items-end gap-3 md:grid-cols-[2fr_1fr_auto_auto]">
+              <ImageUploader name="storageKey" folder="tours" label="Nueva imagen" />
+              <Field label="Texto alternativo (es)" name="altEs">
+                <input className="field-input" maxLength={250} />
+              </Field>
+              <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm">
+                <input type="checkbox" name="isCover" className="size-5" /> Portada
+              </label>
+              <SubmitButton variant="outline">Agregar imagen</SubmitButton>
+            </ActionForm>
+          ) : canWrite ? (
             <ActionForm action={addMediaAction.bind(null, t.id, t.version)} resetOnSuccess className="mt-4 grid items-end gap-3 md:grid-cols-[2fr_1fr_auto_auto]">
               <Field label="URL de la imagen (https)" name="storageKey" required>
                 <input type="url" className="field-input" maxLength={2000} />

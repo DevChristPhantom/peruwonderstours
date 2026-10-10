@@ -58,6 +58,11 @@ export const translationSchema = z
     meetingPoint: optText(2000),
     seoTitle: optText(70),
     seoDescription: optText(170),
+    /** Metadato del panel: vacío = revisada por el equipo (`null` en la API). */
+    translationStatus: z
+      .enum(["", "machine_reviewed_pending_client", "client_approved", "staff_written"])
+      .default("")
+      .transform((s) => (s ? s : null)),
   })
   .transform((v) => ({
     ...v,

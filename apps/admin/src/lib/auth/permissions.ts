@@ -23,6 +23,14 @@ export const PERMISSIONS = [
   "privacy:manage",
   "users:manage",
   "audit:read",
+  // Sprint 3: contenido, bandeja de contacto, medios y anulación de pagos (solo admin, ADR-0003).
+  "content:read",
+  "content:write",
+  "content:publish",
+  "contact:read",
+  "contact:manage",
+  "media:upload",
+  "payments:void",
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 

@@ -4,28 +4,58 @@ import clsx from "clsx";
 import {
   BookOpenCheck,
   CalendarDays,
+  FolderTree,
   Gauge,
+  Inbox,
   Map,
+  MapPin,
+  MessageSquareQuote,
+  Newspaper,
   ReceiptText,
+  ScrollText,
   ShieldCheck,
   Tags,
   UserCog,
   Users,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export type NavKey = "tablero" | "reservas" | "tours" | "precios" | "salidas" | "reclamos" | "privacidad" | "usuarios" | "cuenta";
+export type NavKey =
+  | "tablero"
+  | "reservas"
+  | "pagos-manuales"
+  | "tours"
+  | "precios"
+  | "salidas"
+  | "destinos"
+  | "categorias"
+  | "blog"
+  | "testimonios"
+  | "contacto"
+  | "reclamos"
+  | "privacidad"
+  | "auditoria"
+  | "usuarios"
+  | "cuenta";
 
 const ICONS: Record<NavKey, LucideIcon> = {
   tablero: Gauge,
   reservas: ReceiptText,
+  "pagos-manuales": Wallet,
   tours: Map,
   precios: Tags,
   salidas: CalendarDays,
+  destinos: MapPin,
+  categorias: FolderTree,
+  blog: Newspaper,
+  testimonios: MessageSquareQuote,
+  contacto: Inbox,
   reclamos: BookOpenCheck,
   privacidad: ShieldCheck,
+  auditoria: ScrollText,
   usuarios: Users,
   cuenta: UserCog,
 };

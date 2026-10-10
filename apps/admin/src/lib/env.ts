@@ -35,6 +35,11 @@ const schema = z.object({
     ),
   ADMIN_API_TIMEOUT_MS: z.coerce.number().int().min(500).max(60_000).default(10_000),
   TRUSTED_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
+  /** Base pública de los medios (igual que en la API). Por defecto: origen de API_BASE_URL + `/media`. */
+  MEDIA_PUBLIC_BASE_URL: z
+    .url({ protocol: /^https?$/, error: "MEDIA_PUBLIC_BASE_URL debe ser una URL http(s)." })
+    .optional()
+    .transform((value) => value?.replace(/\/+$/, "")),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 

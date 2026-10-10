@@ -8,11 +8,8 @@ import { useFormStatus } from "react-dom";
 
 import { Alert } from "@/components/ui/Alert";
 import { buttonClass, type ButtonSize, type ButtonVariant } from "@/components/ui/styles";
-import { fieldLabel, type UserError } from "@/lib/api/errors";
+import { fieldLabel, isVersionConflict, type UserError } from "@/lib/api/errors";
 import type { ActionResult } from "@/lib/auth/guard";
-
-/** 409 por bloqueo optimista: hay que recargar para ver la versión vigente. */
-const CONFLICT_CODES = new Set(["tour-version-conflict", "concurrency-conflict"]);
 
 /* ------------------------------------------------------------------ Errores por campo */
 
@@ -40,7 +37,8 @@ export function ErrorSummary({ error, focus = true }: { error: UserError; focus?
   return (
     <div ref={ref} tabIndex={-1} className="outline-none focus-visible:outline-2">
       <Alert tone={error.status === 403 ? "warning" : "danger"} role="alert" title={error.message} items={[...(error.items ?? []), ...fieldItems]} />
-      {CONFLICT_CODES.has(error.code) ? (
+      {/* 409 por bloqueo optimista: hay que recargar para ver la versión vigente. */}
+      {isVersionConflict(error.code) ? (
         <button type="button" className={buttonClass("outline", "sm", "mt-2")} onClick={() => window.location.reload()}>
           Recargar datos (se pierden los cambios no guardados)
         </button>

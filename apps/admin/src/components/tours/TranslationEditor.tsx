@@ -30,22 +30,38 @@ function toForm(t: TourTranslation | undefined, fallbackSlug: string): Translati
     meetingPoint: t?.meetingPoint ?? "",
     seoTitle: t?.seoTitle ?? "",
     seoDescription: t?.seoDescription ?? "",
+    translationStatus: t?.translationStatus ?? "",
   };
 }
 
 /**
- * Traducción canónica en español con editor de itinerario por días (agregar, reordenar, quitar).
+ * Traducción (es canónica, en opcional) con editor de itinerario por días (agregar, reordenar, quitar).
  * Guarda con la `version` del tour: si otro usuario guardó antes, la API responde 409 y se pide recargar.
  */
-export function TranslationEditor({ tourId, version, translation, fallbackSlug, readOnly }: { tourId: string; version: number; translation?: TourTranslation; fallbackSlug: string; readOnly: boolean }) {
-  const { register, control, handleSubmit, setError, formState, getValues } = useForm<TranslationFormInput, unknown, z.output<typeof translationSchema>>({
+export function TranslationEditor({
+  tourId,
+  version,
+  locale = "es",
+  translation,
+  fallbackSlug,
+  readOnly,
+}: {
+  tourId: string;
+  version: number;
+  locale?: "es" | "en";
+  translation?: TourTranslation;
+  fallbackSlug: string;
+  readOnly: boolean;
+}) {
+  const { register, control, handleSubmit, setError, setValue, formState, getValues } = useForm<TranslationFormInput, unknown, z.output<typeof translationSchema>>({
     resolver: zodResolver(translationSchema),
     defaultValues: toForm(translation, fallbackSlug),
   });
   const days = useFieldArray({ control, name: "itinerary" });
   const faqs = useFieldArray({ control, name: "faqs" });
-  const { submit, pending, error, success } = useActionSubmit((v: TranslationFormInput) => saveTranslationAction(tourId, version, v), { setError });
+  const { submit, pending, error, success } = useActionSubmit((v: TranslationFormInput) => saveTranslationAction(tourId, version, locale, v), { setError });
   const e = formState.errors;
+  const pendingReview = translation?.translationStatus === "machine_reviewed_pending_client";
 
   return (
     <form noValidate className="space-y-4" onSubmit={handleSubmit(() => submit(getValues()))}>
@@ -139,6 +155,14 @@ export function TranslationEditor({ tourId, version, translation, fallbackSlug, 
           <Field label="Descripción SEO" name="seoDescription" hint="Máx. 170." error={e.seoDescription?.message}>
             <input className="field-input" maxLength={170} {...register("seoDescription")} />
           </Field>
+          <Field label="Estado de la traducción" name="translationStatus" hint="Solo se ve en el panel." error={e.translationStatus?.message}>
+            <select className="field-input" {...register("translationStatus")}>
+              <option value="">Revisada por el equipo</option>
+              <option value="machine_reviewed_pending_client">Traducción automática pendiente de revisión</option>
+              <option value="client_approved">Revisada y aprobada</option>
+              <option value="staff_written">Redactada por el equipo</option>
+            </select>
+          </Field>
         </div>
 
         <fieldset className="rounded-sm border border-border p-3">
@@ -164,9 +188,22 @@ export function TranslationEditor({ tourId, version, translation, fallbackSlug, 
         </fieldset>
       </fieldset>
       {!readOnly ? (
-        <button type="submit" disabled={pending} aria-busy={pending || undefined} className={buttonClass("secondary")}>
-          {pending ? "Guardando…" : "Guardar traducción"}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button type="submit" disabled={pending} aria-busy={pending || undefined} className={buttonClass("secondary")}>
+            {pending ? "Guardando…" : "Guardar traducción"}
+          </button>
+          {pendingReview ? (
+            <button
+              type="submit"
+              disabled={pending}
+              className={buttonClass("outline")}
+              onClick={() => setValue("translationStatus", "client_approved")}
+              title="Guarda el texto tal como está y lo marca como revisado"
+            >
+              Guardar y marcar como revisada
+            </button>
+          ) : null}
+        </div>
       ) : null}
     </form>
   );

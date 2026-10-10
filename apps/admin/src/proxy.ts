@@ -26,7 +26,17 @@ import { securityHeaders } from "@/lib/security-headers";
 
 const PUBLIC_PATHS = [/^\/login(\/|$)/, /^\/auth\//];
 
+/** Origen de los medios subidos (en desarrollo es http://localhost:3001, que `https:` no cubre). */
+function mediaOrigin(): string {
+  try {
+    return new URL(process.env.MEDIA_PUBLIC_BASE_URL || process.env.API_BASE_URL || "http://localhost:3001").origin;
+  } catch {
+    return "";
+  }
+}
+
 function buildCsp(nonce: string, dev: boolean): string {
+  const media = mediaOrigin();
   return [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${dev ? " 'unsafe-eval'" : ""}`,
@@ -34,8 +44,8 @@ function buildCsp(nonce: string, dev: boolean): string {
     dev ? "style-src 'self' 'unsafe-inline'" : `style-src 'self' 'nonce-${nonce}'`,
     // Sin atributos style en producción (el panel no los usa; `<meter>` en lugar de barras con width).
     ...(dev ? [] : ["style-src-attr 'none'"]),
-    // Portadas de tours: URLs absolutas del CDN (solo https).
-    "img-src 'self' data: blob: https:",
+    // Portadas de tours: URLs absolutas del CDN (solo https) + origen de los medios subidos.
+    `img-src 'self' data: blob: https:${media && !media.startsWith("https:") ? ` ${media}` : ""}`,
     "font-src 'self'",
     `connect-src 'self'${dev ? " ws: wss:" : ""}`,
     "object-src 'none'",

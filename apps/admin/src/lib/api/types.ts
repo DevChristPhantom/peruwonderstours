@@ -216,6 +216,7 @@ export interface TourListItem {
   publishedAt: string | null;
   version: number;
   updatedAt: string;
+  translations?: { locale: "es" | "en"; translationStatus: TranslationStatus | null }[];
 }
 
 export interface ItineraryDay {
@@ -242,8 +243,12 @@ export interface TourTranslation {
   meetingPoint: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
+  /** Metadato del panel (no se publica): null = revisada por el equipo. */
+  translationStatus?: TranslationStatus | null;
   updatedAt: string;
 }
+
+export type TranslationStatus = "machine_reviewed_pending_client" | "client_approved" | "staff_written";
 
 export interface TourMedia {
   id: string;
