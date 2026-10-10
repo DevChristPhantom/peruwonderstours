@@ -12,6 +12,16 @@ import { DeparturesAdminService } from './application/departures-admin.service.j
 import { PricingAdminService } from './application/pricing-admin.service.js';
 import { PrivacyAdminService } from './application/privacy-admin.service.js';
 import { ToursAdminService } from './application/tours-admin.service.js';
+import { ContentAdminService } from './application/content-admin.service.js';
+import { PaymentsAdminService } from './application/payments-admin.service.js';
+import {
+  BlogAdminController,
+  CategoriesAdminController,
+  ContactAdminController,
+  DestinationsAdminController,
+  PaymentsAdminController,
+  TestimonialsAdminController,
+} from './interface/content-admin.controllers.js';
 import { AdminDatabase } from './infrastructure/admin-database.js';
 import {
   AuditAdminController,
@@ -38,6 +48,12 @@ import {
     ComplaintsAdminController,
     PrivacyAdminController,
     AuditAdminController,
+    BlogAdminController,
+    TestimonialsAdminController,
+    ContactAdminController,
+    DestinationsAdminController,
+    CategoriesAdminController,
+    PaymentsAdminController,
   ],
   providers: [
     { provide: AdminDatabase, inject: [PERSISTENCE_BACKEND, CLOCK], useFactory: (b: PersistenceBackend, clock: Clock) => new AdminDatabase(b.prisma, clock) },
@@ -60,6 +76,12 @@ import {
       useFactory: (db: AdminDatabase, ids: IdGenerator, cipher: PiiCipher) => new PrivacyAdminService(db, ids, cipher),
     },
     { provide: DashboardService, inject: [AdminDatabase, APP_SETTINGS], useFactory: (db: AdminDatabase, s: AppSettings) => new DashboardService(db, s.outbox.maxAttempts) },
+    {
+      provide: ContentAdminService,
+      inject: [AdminDatabase, ID_GENERATOR, PII_CIPHER],
+      useFactory: (db: AdminDatabase, ids: IdGenerator, cipher: PiiCipher) => new ContentAdminService(db, ids, cipher),
+    },
+    { provide: PaymentsAdminService, inject: [AdminDatabase, ID_GENERATOR], useFactory: (db: AdminDatabase, ids: IdGenerator) => new PaymentsAdminService(db, ids) },
     { provide: AuditQueryService, inject: [AdminDatabase], useFactory: (db: AdminDatabase) => new AuditQueryService(db) },
   ],
 })

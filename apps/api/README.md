@@ -26,6 +26,7 @@ pnpm build && pnpm start:prod # PORT por defecto 3001
 | `pnpm test` | Unitarios de dominio y casos de uso (repos en memoria) |
 | `pnpm test:e2e` | API completa en modo seed (supertest) |
 | `pnpm test:integration` | PostgreSQL real (se omite sin `DATABASE_URL`): `*.int-spec.ts` en transacción revertida sobre `pwt_dev` y `*.db-e2e-spec.ts` (API HTTP completa en modo prisma) sobre `pwt_test`, que se **recrea y migra** en cada corrida |
+| `pnpm media:import-legacy` | Importa las imágenes del sitio viejo (ver Sprint 3, Medios) |
 | `pnpm admin:create -- --email a@b.pe --name "Nombre" [--generate]` | Crea el primer admin (contraseña por stdin o generada e impresa una sola vez; nunca a archivo). MFA se enrola al primer ingreso |
 | `pnpm dev:prisma` | API con `DATA_SOURCE=prisma` en el puerto 3001 (`nest start --watch`; lee `DATABASE_URL` de `.env`) |
 | `pnpm openapi:export` | Compila y escribe `openapi.json` (contrato para generar tipos en el front) |
@@ -118,3 +119,94 @@ Outbox -> relay en proceso (`OUTBOX_RELAY_INTERVAL_MS`): reclamo con lease y `FO
 - H-19: AES-256-GCM con AAD `tabla:columna:id` (formato v2; v1 se sigue leyendo) en hojas de reclamación y secretos TOTP; permisos del guard con `getAllAndMerge`.
 - H-08 (no hecho, sin Redis en este entorno): el rate limiting por IP sigue en memoria del proceso; con más de una réplica hay que usar `ThrottlerStorageRedisService` y exigir `REDIS_URL` en producción. El limitador de login ya es compartido (PostgreSQL).
 - H-09 (sin cambios, decisión de negocio): el rol `agent` sigue registrando pagos manuales.
+
+## Sprint 3 funcional (`brain/wiki/concepts/auditoria-funcional-sprint3.md`, parte backend)
+
+Migraciones: `20261009000400_sprint3_funcional`, `20261009000500_testimonials_origin`,
+`20261009000600_testimonials_legacy_approval` (generadas con `prisma migrate diff`, drift conocido quitado).
+
+### Contrato nuevo: acceso sin contraseña (F0/F0b, F6, F7)
+
+Tokens opacos de 256 bits (base64url, 43 car.) en `access_tokens` (solo SHA-256). Los enlaces son de
+**un solo uso**; el canje emite una sesión. El token del enlace solo viaja en la URL del correo; el
+`accessToken`/`sessionToken` resultante **nunca** va en una URL (el BFF lo guarda en cookie httpOnly).
+
+| Endpoint | Cuerpo | Respuesta |
+|---|---|---|
+| `POST /bookings/access-link` | `{code, email, locale?}` | **202 siempre** `{data:{status:"accepted",message}}`. Si coinciden: correo con `${PUBLIC_WEB_BASE_URL}/{locale}/reserva/acceso?token=` (30 min). |
+| `POST /bookings/access-link/exchange` | `{token}` | 200 `{data:{code, accessToken, expiresAt, locale}}` (`X-Booking-Token` nuevo, 30 días; el original sigue vigente). Reuso/vencido: **410 `access-link-expired`**; inexistente: 404 `access-link-not-found`; formato: 400 `invalid-access-link`. |
+| `POST /complaints/access-link` / `.../exchange` | igual | Enlace a `/{locale}/libro-de-reclamaciones/consulta?token=`; el canje da `{code, accessToken}` para `X-Complaint-Token`. |
+| `POST /customers/login-link` | `{email, locale?}` | 202 siempre; enlace a `/{locale}/cuenta/acceso?token=` si el correo tiene reservas. |
+| `POST /customers/login-link/exchange` | `{token}` | `{data:{sessionToken, expiresAt, customer}}` (sesión opaca 30 días, revocable). |
+| `GET /me`, `GET /me/bookings` | cabecera `X-Customer-Token` | Perfil / reservas (misma vista que `GET /bookings/:code`). 401 `customer-session-required`. |
+| `POST /me/bookings/:code/access` | — | `{code, accessToken}` para abrir la página de la reserva propia. |
+| `POST /me/logout` | `{all?}` | 204; revoca la sesión (o todas). |
+
+Throttling: además del global y el estricto, `THROTTLE_LINK_LIMIT`/`THROTTLE_LINK_TTL_SECONDS` por IP
+en los formularios que envían correo, y `ACCESS_LINKS_PER_HOUR` por reserva/hoja/cliente.
+Correos: voucher, confirmación, pago recibido y recordatorio de saldo llevan un **enlace mágico generado al
+enviar** (`EMAIL_LINK_TTL_HOURS`, 72 h por defecto), nunca `/es/reserva/CODE`; la constancia del Libro
+de Reclamaciones enlaza a la página de consulta con su enlace. Plantillas **es/en** según `bookings.locale`
+(el checkout acepta `locale` opcional; por defecto el del carrito).
+
+### i18n del catálogo (I3/I6) — regla única
+
+`locale=es|en` en tours, destinos, categorías y blog. Sin traducción `en` se sirve `es` y cada recurso
+indica `{locale, fallback}` (`locale` = idioma servido); los listados traen `meta.locale` (pedido).
+`GET /tours?locale=en` nunca da 0. Slugs por idioma: `GET /tours/:slug`, `/destinations/:slug`,
+`/categories/:slug`, `/blog/:slug` aceptan el slug de cualquier idioma y responden **301** (cabecera
+`Location` + `{data:{redirect:{slug, locale}}}`) si el slug no es el del idioma pedido. Cada recurso trae
+`alternateLocales` para hreflang. `translationStatus` es metadato del panel: no se publica.
+
+### Contenido público
+
+- `GET /blog?locale&page&pageSize&tag`, `GET /blog/:slug?locale`.
+- `GET /testimonials?locale&tourSlug&featured&allLocales&page` (aprobados; los heredados traen `source`/`sourceUrl`).
+- `POST /testimonials` `{authorName, authorCountry?, rating, body, tourSlug?, travelDate?, locale, publishConsent:true, consentPrivacyNotice:true}` → 202 `pending`. Sin URLs ni HTML (400).
+- `POST /contact` `{name, email, phone?, subject, message, tourSlug?, locale?, consentPrivacyNotice:true}` → 201; aviso a `AGENCY_INBOX_EMAIL` (Reply-To del cliente) + acuse al cliente. Teléfono cifrado.
+- `GET /site-content?locale` — Quiénes somos, FAQ generales, redes, teléfonos y horario de `data/seed/site-content.json` (lista blanca: sin correos del equipo ni datos de empresa; solo `es`, `fallback`).
+- `GET /destinations/:slug`, `GET /categories/:slug` (nuevos) y `coverImage`, `canonicalSlug` en los listados.
+- `GET /tours/:slug/departures?from&to&currency` — por fecha: `available`, `isClosed`, `bookable` (cupo + cierre de venta), `priceFrom` (adulto, moneda pedida); ventana máx. **180 días** (por defecto hoy..+180).
+
+### Backoffice nuevo (`/api/v1/admin/*`, permisos nuevos en `permissions.ts`)
+
+| Recurso | Endpoints | Permisos |
+|---|---|---|
+| Blog | `GET/POST /blog-posts`, `GET/PATCH /blog-posts/:id`, `PUT/DELETE /blog-posts/:id/translations/:locale`, `POST /blog-posts/:id/{publish,unpublish,archive}` | `content:read/write/publish` |
+| Testimonios | `GET /testimonials?status`, `POST /testimonials/:id/{approve,reject,feature}`, `PATCH /testimonials/:id` | `content:*` |
+| Contacto | `GET /contact-messages?status` (+`meta.counts`), `GET /contact-messages/:id` (auditado), `POST /contact-messages/:id/status` `{status,internalNote?}` | `contact:read/manage` |
+| Destinos / categorías | `GET/POST /destinations`, `GET/PATCH/DELETE /destinations/:id`, `PUT/DELETE /destinations/:id/translations/:locale`, `POST /destinations/reorder`; idéntico en `/categories` | `content:*` |
+| Medios | `POST /media?folder=tours|destinations|categories|blog` multipart `file` → `{storageKey, url, contentType, size, width, height, sha256, created}` | `media:upload` |
+| Pagos manuales | `GET /manual-payments?date=YYYY-MM-DD` (por usuario: recibidos, reembolsados, anulados) | `dashboard:read` |
+| Anulación | `POST /bookings/:code/payments/:id/void` `{reason}` → contra-asiento (`kind refund`, `isReversal`), retrocede estado | `payments:void` (**solo admin**) |
+
+`GET /admin/tours` y `/admin/tours/:id` exponen `translations[].translationStatus` (completitud por idioma);
+`PUT /admin/tours/:id/translations/:locale` acepta `translationStatus`. Escrituras con `version`
+(bloqueo optimista; 409 `*-version-conflict`) y acción semántica en `audit_log`.
+
+### Medios
+
+Puerto `MediaStorage` (adaptador `local`: `MEDIA_LOCAL_DIR`, por defecto `apps/api/uploads/`, gitignored;
+S3/R2 pendiente con la misma interfaz). Servido en `/media/<clave>` con `Cache-Control: immutable` (claves
+direccionadas por contenido). Tipos por magic bytes: JPEG, PNG, WebP, AVIF; máx. `MEDIA_MAX_UPLOAD_MB`.
+`pnpm media:import-legacy [-- --dry-run] [--limit N] [--no-repoint]`: importa `data/seed/media-manifest.json`
+(solo `LEGACY_MEDIA_HOSTS`, sin sellos ni el póster ESNNA ajeno, 2 descargas en paralelo, idempotente con
+`uploads/legacy-import.json`) y re-apunta `tour_media`, portadas de blog/destinos/categorías e imágenes del
+cuerpo del blog, con el alt es/en del manifiesto. Reporte en `uploads/legacy-import-report.json`.
+Pendiente: variantes AVIF/WebP (no hay librería de imágenes instalada).
+
+### Seed
+
+`pnpm build && pnpm db:seed` carga además, si existen: `data/seed/en/{tours,destinations,categories,blog-posts}.json`
+(emparejados por `originalUrl` o posición; slug `en` propio; `translationStatus` guardado y solo visible en el
+panel; se actualizan mientras sigan en `machine_reviewed_pending_client`) y `data/seed/testimonials.json`
+(aprobados, `origin=legacy_site`, `source`). Idempotente.
+
+### Cambios que afectan a `apps/web` / `apps/admin`
+
+- **I10**: los códigos genéricos ahora son ingleses: `not-found`, `too-many-requests` (antes
+  `no-encontrado`, `demasiadas-solicitudes`), `bad-request`, `unauthorized`, `forbidden`, `conflict`,
+  `gone`, `unsupported-media-type`, `payload-too-large`, `internal-error`.
+- `GET /tours/:slug?locale=en` ya no da 404 por falta de traducción (fallback) y puede responder **301**.
+- `GET /tours/:slug/departures`: ventana máxima 180 días (antes 366) y campos nuevos.
+- Cabecera nueva permitida en CORS: `X-Customer-Token`.

@@ -43,7 +43,7 @@ export function curateSiteContent(raw: unknown, locale: ContentLocale): PublicSi
           history: noEmail(strings(about['history'])),
           teamIntro: noEmail(strings(team['intro'])),
           office: { heading: str(office['heading']), paragraphs: noEmail(strings(office['paragraphs'])) },
-          images: strings(about['images']).filter((u) => /^https:\/\//.test(u)),
+          images: strings(about['images']).filter((u) => u.startsWith('https://')),
         }
       : null,
     faqs: (Array.isArray(faqs['items']) ? faqs['items'] : [])
@@ -53,7 +53,7 @@ export function curateSiteContent(raw: unknown, locale: ContentLocale): PublicSi
       const o = obj(l);
       const url = str(o['urlEncoded']) ?? str(o['url']);
       const network = str(o['network']);
-      return url && network && /^https:\/\//.test(url) ? [{ network, url: url.replace(/ /g, '%20') }] : [];
+      return url && network && url.startsWith('https://') ? [{ network, url: url.replace(/ /g, '%20') }] : [];
     }),
     contact: {
       phones: (Array.isArray(contact['phones']) ? contact['phones'] : []).flatMap((p) => {
@@ -67,12 +67,14 @@ export function curateSiteContent(raw: unknown, locale: ContentLocale): PublicSi
 }
 
 export class SiteContentService {
-  private raw: unknown | undefined;
+  private raw: unknown;
+  private loaded = false;
 
   constructor(private readonly seedDir: string) {}
 
   async get(locale: ContentLocale): Promise<PublicSiteContent | null> {
-    if (this.raw === undefined) {
+    if (!this.loaded) {
+      this.loaded = true;
       try {
         this.raw = JSON.parse(await readFile(join(resolve(this.seedDir), 'site-content.json'), 'utf8')) as unknown;
       } catch {

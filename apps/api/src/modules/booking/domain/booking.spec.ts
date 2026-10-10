@@ -149,3 +149,27 @@ describe('Agregado Booking', () => {
     expect(restored.paid.amount).toBe(10_001n);
   });
 });
+
+describe('Anulación de pago manual (Sprint 3, solo admin)', () => {
+  it('resta del pagado y retrocede paid -> partially_paid -> confirmed sin tocar reembolsos', () => {
+    const b = newBooking('deposit', 10_000n);
+    b.placeHold(new Date(NOW.getTime() + 60_000), NOW);
+    b.registerPayment(b.deposit, NOW, 'user');
+    b.registerPayment(b.outstanding, NOW, 'user');
+    expect(b.status).toBe('paid');
+    const balance = Money.of(10_000n - b.deposit.amount, 'USD');
+    expect(b.voidPayment(balance, NOW)).toMatchObject({ from: 'paid', to: 'partially_paid' });
+    expect(b.voidPayment(b.deposit, NOW)).toMatchObject({ from: 'partially_paid', to: 'confirmed' });
+    expect(b.paid.amount).toBe(0n);
+    expect(b.refunded.amount).toBe(0n);
+    expect(() => b.voidPayment(Money.of(1n, 'USD'), NOW)).toThrow(/supera/);
+  });
+
+  it('no anula en reservas canceladas ni por encima de lo reembolsado', () => {
+    const b = newBooking('full', 5_000n);
+    b.placeHold(new Date(NOW.getTime() + 60_000), NOW);
+    b.registerPayment(b.total, NOW, 'user');
+    b.registerRefund(Money.of(4_000n, 'USD'), NOW, 'x');
+    expect(() => b.voidPayment(Money.of(2_000n, 'USD'), NOW)).toThrow(/reembolsos/);
+  });
+});

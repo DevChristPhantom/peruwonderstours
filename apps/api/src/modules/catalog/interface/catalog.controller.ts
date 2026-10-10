@@ -135,7 +135,7 @@ export class CatalogController {
     });
     return {
       data: result.items.map((l) => presentCard(l, query.locale, this.urls)),
-      meta: { ...pageMeta(result.page, result.pageSize, result.total), locale: query.locale },
+      meta: Object.assign(pageMeta(result.page, result.pageSize, result.total), { locale: query.locale }),
     };
   }
 

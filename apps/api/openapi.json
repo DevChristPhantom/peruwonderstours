@@ -1401,11 +1401,14 @@
           }
         ],
         "responses": {
+          "301": {
+            "description": "`{ data: { redirect: { slug, locale } } }` + Location."
+          },
           "404": {
-            "description": "problem+json `tour-not-found` (también si no hay traducción en el idioma pedido)."
+            "description": "problem+json `tour-not-found`."
           }
         },
-        "summary": "Ficha del tour por slug (canónico o del idioma).",
+        "summary": "Ficha del tour por slug de cualquier idioma. Sin traducción en el idioma pedido se sirve `es` con `fallback: true`. Si el slug pertenece a otro idioma y existe la traducción pedida: 301 (Location) al slug correcto.",
         "tags": [
           "catalog"
         ]
@@ -1421,6 +1424,20 @@
             "in": "path",
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "currency",
+            "required": false,
+            "in": "query",
+            "description": "Moneda del precio desde por fecha.",
+            "schema": {
+              "default": "PEN",
+              "type": "string",
+              "enum": [
+                "PEN",
+                "USD"
+              ]
             }
           },
           {
@@ -1448,7 +1465,7 @@
             "description": ""
           }
         },
-        "summary": "Calendario de salidas con cupo disponible.",
+        "summary": "Calendario de la ficha: salidas con `available`, `isClosed`, `bookable` y `priceFrom` (adulto, moneda pedida) POR FECHA. Ventana máxima 180 días (por defecto desde hoy).",
         "tags": [
           "catalog"
         ]
@@ -1483,6 +1500,46 @@
         ]
       }
     },
+    "/api/v1/destinations/{slug}": {
+      "get": {
+        "operationId": "CatalogController_getDestination",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "es",
+              "type": "string",
+              "enum": [
+                "es",
+                "en"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "301": {
+            "description": "`{ data: { redirect: { slug, locale } } }` + Location."
+          },
+          "404": {
+            "description": "destination-not-found"
+          }
+        },
+        "summary": "Destino publicado por slug (de cualquier idioma; 301 al slug del idioma pedido). Fallback `es` como en tours.",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
     "/api/v1/categories": {
       "get": {
         "operationId": "CatalogController_listCategories",
@@ -1507,6 +1564,46 @@
           }
         },
         "summary": "Categorías con cantidad de tours publicados.",
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/v1/categories/{slug}": {
+      "get": {
+        "operationId": "CatalogController_getCategory",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "es",
+              "type": "string",
+              "enum": [
+                "es",
+                "en"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "301": {
+            "description": "`{ data: { redirect: { slug, locale } } }` + Location."
+          },
+          "404": {
+            "description": "category-not-found"
+          }
+        },
+        "summary": "Categoría por slug (de cualquier idioma; 301 al slug del idioma pedido).",
         "tags": [
           "catalog"
         ]
@@ -5635,6 +5732,2633 @@
           "admin: auditoría"
         ]
       }
+    },
+    "/api/v1/admin/blog-posts": {
+      "get": {
+        "operationId": "BlogAdminController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "published",
+                "archived"
+              ]
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: blog"
+        ]
+      },
+      "post": {
+        "operationId": "BlogAdminController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBlogPostDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Crea un artículo en borrador con su traducción `es`.",
+        "tags": [
+          "admin: blog"
+        ]
+      }
+    },
+    "/api/v1/admin/blog-posts/{id}": {
+      "get": {
+        "operationId": "BlogAdminController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: blog"
+        ]
+      },
+      "patch": {
+        "operationId": "BlogAdminController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBlogPostDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: blog"
+        ]
+      }
+    },
+    "/api/v1/admin/blog-posts/{id}/translations/{locale}": {
+      "put": {
+        "operationId": "BlogAdminController_upsertTranslation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "es",
+                "en"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionedBlogTranslationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: blog"
+        ]
+      },
+      "delete": {
+        "operationId": "BlogAdminController_deleteTranslation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "en"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: blog"
+        ]
+      }
+    },
+    "/api/v1/admin/blog-posts/{id}/publish": {
+      "post": {
+        "operationId": "BlogAdminController_publish",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublishBlogPostDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:publish)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: blog"
+        ]
+      }
+    },
+    "/api/v1/admin/blog-posts/{id}/unpublish": {
+      "post": {
+        "operationId": "BlogAdminController_unpublish",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:publish)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: blog"
+        ]
+      }
+    },
+    "/api/v1/admin/blog-posts/{id}/archive": {
+      "post": {
+        "operationId": "BlogAdminController_archive",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:publish)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: blog"
+        ]
+      }
+    },
+    "/api/v1/admin/testimonials": {
+      "get": {
+        "operationId": "TestimonialsAdminController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "approved",
+                "rejected"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: testimonios"
+        ]
+      }
+    },
+    "/api/v1/admin/testimonials/{id}/approve": {
+      "post": {
+        "operationId": "TestimonialsAdminController_approve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModerationNoteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:publish)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: testimonios"
+        ]
+      }
+    },
+    "/api/v1/admin/testimonials/{id}/reject": {
+      "post": {
+        "operationId": "TestimonialsAdminController_reject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectTestimonialDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:publish)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: testimonios"
+        ]
+      }
+    },
+    "/api/v1/admin/testimonials/{id}": {
+      "patch": {
+        "operationId": "TestimonialsAdminController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestimonialDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: testimonios"
+        ]
+      }
+    },
+    "/api/v1/admin/testimonials/{id}/feature": {
+      "post": {
+        "operationId": "TestimonialsAdminController_feature",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeatureDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:publish)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "`featured: true|false` (solo aprobados).",
+        "tags": [
+          "admin: testimonios"
+        ]
+      }
+    },
+    "/api/v1/admin/contact-messages": {
+      "get": {
+        "operationId": "ContactAdminController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maximum": 100,
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "new",
+                "answered",
+                "archived"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: contact:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: contacto"
+        ]
+      }
+    },
+    "/api/v1/admin/contact-messages/{id}": {
+      "get": {
+        "operationId": "ContactAdminController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: contact:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Detalle con teléfono descifrado (lectura auditada).",
+        "tags": [
+          "admin: contacto"
+        ]
+      }
+    },
+    "/api/v1/admin/contact-messages/{id}/status": {
+      "post": {
+        "operationId": "ContactAdminController_status",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContactStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: contact:manage)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "new -> answered | archived; answered -> archived; archived -> new.",
+        "tags": [
+          "admin: contacto"
+        ]
+      }
+    },
+    "/api/v1/admin/destinations": {
+      "get": {
+        "operationId": "TaxonomyAdminController_list",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: destinos"
+        ]
+      },
+      "post": {
+        "operationId": "TaxonomyAdminController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaxonomyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: destinos"
+        ]
+      }
+    },
+    "/api/v1/admin/destinations/{id}": {
+      "get": {
+        "operationId": "TaxonomyAdminController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: destinos"
+        ]
+      },
+      "patch": {
+        "operationId": "TaxonomyAdminController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTaxonomyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: destinos"
+        ]
+      },
+      "delete": {
+        "operationId": "TaxonomyAdminController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:publish)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: destinos"
+        ]
+      }
+    },
+    "/api/v1/admin/destinations/reorder": {
+      "post": {
+        "operationId": "TaxonomyAdminController_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: destinos"
+        ]
+      }
+    },
+    "/api/v1/admin/destinations/{id}/translations/{locale}": {
+      "put": {
+        "operationId": "TaxonomyAdminController_upsertTranslation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "es",
+                "en"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionedTaxonomyTranslationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: destinos"
+        ]
+      },
+      "delete": {
+        "operationId": "TaxonomyAdminController_deleteTranslation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: destinos"
+        ]
+      }
+    },
+    "/api/v1/admin/categories": {
+      "get": {
+        "operationId": "TaxonomyAdminController_list",
+        "parameters": [],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: categorías"
+        ]
+      },
+      "post": {
+        "operationId": "TaxonomyAdminController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaxonomyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: categorías"
+        ]
+      }
+    },
+    "/api/v1/admin/categories/{id}": {
+      "get": {
+        "operationId": "TaxonomyAdminController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: categorías"
+        ]
+      },
+      "patch": {
+        "operationId": "TaxonomyAdminController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTaxonomyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: categorías"
+        ]
+      },
+      "delete": {
+        "operationId": "TaxonomyAdminController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:publish)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: categorías"
+        ]
+      }
+    },
+    "/api/v1/admin/categories/reorder": {
+      "post": {
+        "operationId": "TaxonomyAdminController_reorder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: categorías"
+        ]
+      }
+    },
+    "/api/v1/admin/categories/{id}/translations/{locale}": {
+      "put": {
+        "operationId": "TaxonomyAdminController_upsertTranslation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "enum": [
+                "es",
+                "en"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionedTaxonomyTranslationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: categorías"
+        ]
+      },
+      "delete": {
+        "operationId": "TaxonomyAdminController_deleteTranslation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VersionBodyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: content:write)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "admin: categorías"
+        ]
+      }
+    },
+    "/api/v1/admin/manual-payments": {
+      "get": {
+        "operationId": "PaymentsAdminController_manualPayments",
+        "parameters": [
+          {
+            "name": "date",
+            "required": false,
+            "in": "query",
+            "description": "Día de Lima (YYYY-MM-DD); por defecto hoy.",
+            "schema": {
+              "example": "2026-10-09",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: dashboard:read)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Pagos manuales del día (Lima) por usuario: recibidos, reembolsados y anulados (contra-asientos).",
+        "tags": [
+          "admin: pagos"
+        ]
+      }
+    },
+    "/api/v1/admin/bookings/{code}/payments/{paymentId}/void": {
+      "post": {
+        "operationId": "PaymentsAdminController_void",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "paymentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VoidPaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: payments:void)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "SOLO admin: anula un pago manual con contra-asiento auditado (resta del pagado y retrocede el estado si corresponde).",
+        "tags": [
+          "admin: pagos"
+        ]
+      }
+    },
+    "/api/v1/bookings/access-link": {
+      "post": {
+        "operationId": "BookingAccessLinkController_request",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingAccessLinkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "`{ data: { status: \"accepted\", message } }` (igual exista o no la reserva)."
+          },
+          "429": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Recuperar mi reserva: si código y correo coinciden, envía un enlace de un solo uso (30 min) a `/{locale}/reserva/acceso?token=`. Responde SIEMPRE 202 genérico.",
+        "tags": [
+          "bookings"
+        ]
+      }
+    },
+    "/api/v1/bookings/access-link/exchange": {
+      "post": {
+        "operationId": "BookingAccessLinkController_exchange",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExchangeTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "`{ data: { code, accessToken, expiresAt, locale } }`"
+          },
+          "404": {
+            "description": "access-link-not-found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "access-link-expired (ya usado, vencido o revocado)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Canjea el enlace (una sola vez) por un `accessToken` nuevo de la reserva (cabecera X-Booking-Token, 30 días).",
+        "tags": [
+          "bookings"
+        ]
+      }
+    },
+    "/api/v1/complaints/access-link": {
+      "post": {
+        "operationId": "ComplaintAccessLinkController_request",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ComplaintAccessLinkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Respuesta genérica."
+          }
+        },
+        "summary": "Consulta de reclamo: si código y correo coinciden, envía un enlace de un solo uso a `/{locale}/libro-de-reclamaciones/consulta?token=`. Siempre 202.",
+        "tags": [
+          "complaints"
+        ]
+      }
+    },
+    "/api/v1/complaints/access-link/exchange": {
+      "post": {
+        "operationId": "ComplaintAccessLinkController_exchange",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExchangeTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "404": {
+            "description": "access-link-not-found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "access-link-expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Canjea el enlace por un `accessToken` de la hoja (cabecera X-Complaint-Token en GET /complaints/:code).",
+        "tags": [
+          "complaints"
+        ]
+      }
+    },
+    "/api/v1/customers/login-link": {
+      "post": {
+        "operationId": "CustomerLoginLinkController_request",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerLoginLinkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": ""
+          }
+        },
+        "summary": "\"Mis reservas\": envía un enlace de un solo uso a `/{locale}/cuenta/acceso?token=` si el correo tiene reservas. Siempre 202.",
+        "tags": [
+          "customers"
+        ]
+      }
+    },
+    "/api/v1/customers/login-link/exchange": {
+      "post": {
+        "operationId": "CustomerLoginLinkController_exchange",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExchangeTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "410": {
+            "description": "access-link-expired",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Canjea el enlace por un token de sesión de cliente (opaco, 30 días, revocable). Enviarlo en `X-Customer-Token`.",
+        "tags": [
+          "customers"
+        ]
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "operationId": "MeController_me",
+        "parameters": [
+          {
+            "name": "X-Customer-Token",
+            "in": "header",
+            "description": "Token de sesión de POST /customers/login-link/exchange.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "customer-session-required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Perfil del cliente de la sesión.",
+        "tags": [
+          "customers"
+        ]
+      }
+    },
+    "/api/v1/me/bookings": {
+      "get": {
+        "operationId": "MeController_bookings",
+        "parameters": [
+          {
+            "name": "X-Customer-Token",
+            "in": "header",
+            "description": "Token de sesión de POST /customers/login-link/exchange.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          },
+          "401": {
+            "description": "customer-session-required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Mis reservas (más recientes primero; sin datos personales de terceros).",
+        "tags": [
+          "customers"
+        ]
+      }
+    },
+    "/api/v1/me/bookings/{code}/access": {
+      "post": {
+        "operationId": "MeController_bookingAccess",
+        "parameters": [
+          {
+            "name": "X-Customer-Token",
+            "in": "header",
+            "description": "Token de sesión de POST /customers/login-link/exchange.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "401": {
+            "description": "customer-session-required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "booking-not-found (no existe o no es del cliente)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Token de acceso (X-Booking-Token) a una reserva propia, para abrir la página de la reserva o pagar el saldo.",
+        "tags": [
+          "customers"
+        ]
+      }
+    },
+    "/api/v1/me/logout": {
+      "post": {
+        "operationId": "MeController_logout",
+        "parameters": [
+          {
+            "name": "X-Customer-Token",
+            "in": "header",
+            "description": "Token de sesión de POST /customers/login-link/exchange.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "customer-session-required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Revoca la sesión actual (`all: true` revoca todas). Idempotente.",
+        "tags": [
+          "customers"
+        ]
+      }
+    },
+    "/api/v1/admin/media": {
+      "post": {
+        "operationId": "MediaAdminController_upload",
+        "parameters": [
+          {
+            "name": "folder",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "tours",
+                "destinations",
+                "categories",
+                "blog",
+                "uploads"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "401": {
+            "description": "access-token-required, invalid-access-token, access-token-expired, session-revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "insufficient-permissions (requiere: media:upload)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Sube una imagen (campo multipart `file`). Se valida el tipo REAL por magic bytes (JPEG, PNG, WebP, AVIF) y el tamaño (MEDIA_MAX_UPLOAD_MB). Devuelve `storageKey` (direccionada por contenido: subir dos veces la misma imagen no duplica) para usarla en POST /admin/tours/:id/media, portadas de destinos/categorías o del blog.",
+        "tags": [
+          "admin: medios"
+        ]
+      }
+    },
+    "/api/v1/blog": {
+      "get": {
+        "operationId": "ContentController_listPosts",
+        "parameters": [
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "es",
+              "type": "string",
+              "enum": [
+                "es",
+                "en"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maximum": 50,
+              "default": 12,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "tag",
+            "required": false,
+            "in": "query",
+            "description": "Filtra por etiqueta (minúsculas).",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Blog publicado (más reciente primero). Sin traducción `en`, se sirve `es` con `fallback: true`.",
+        "tags": [
+          "content"
+        ]
+      }
+    },
+    "/api/v1/blog/{slug}": {
+      "get": {
+        "operationId": "ContentController_getPost",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "es",
+              "type": "string",
+              "enum": [
+                "es",
+                "en"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "301": {
+            "description": "`{ data: { redirect: { slug, locale } } }` + Location."
+          },
+          "404": {
+            "description": "blog-post-not-found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Artículo por slug de cualquier idioma; 301 al slug del idioma pedido.",
+        "tags": [
+          "content"
+        ]
+      }
+    },
+    "/api/v1/testimonials": {
+      "get": {
+        "operationId": "ContentController_listTestimonials",
+        "parameters": [
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "es",
+              "type": "string",
+              "enum": [
+                "es",
+                "en"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "maximum": 50,
+              "default": 12,
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Object"
+                }
+              ]
+            }
+          },
+          {
+            "name": "tourSlug",
+            "required": false,
+            "in": "query",
+            "description": "Solo testimonios de este tour.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "featured",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "allLocales",
+            "required": false,
+            "in": "query",
+            "description": "true = todos los idiomas (por defecto solo el pedido).",
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Testimonios aprobados (con consentimiento o heredados del sitio viejo), destacados primero.",
+        "tags": [
+          "content"
+        ]
+      },
+      "post": {
+        "operationId": "ContentController_submitTestimonial",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitTestimonialDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "`{ data: { id, status: \"pending\" } }`"
+          }
+        },
+        "summary": "Deja un testimonio: queda PENDIENTE de moderación. Exige consentimiento de publicación y aviso de privacidad; sin URLs ni HTML.",
+        "tags": [
+          "content"
+        ]
+      }
+    },
+    "/api/v1/contact": {
+      "post": {
+        "operationId": "ContentController_contact",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContactDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "`{ data: { id, status: \"received\" } }`"
+          }
+        },
+        "summary": "Formulario de contacto: guarda el mensaje, avisa a la agencia (AGENCY_INBOX_EMAIL) y envía acuse al cliente.",
+        "tags": [
+          "content"
+        ]
+      }
+    },
+    "/api/v1/site-content": {
+      "get": {
+        "operationId": "ContentController_siteContent",
+        "parameters": [
+          {
+            "name": "locale",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "es",
+              "type": "string",
+              "enum": [
+                "es",
+                "en"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "site-content-not-found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetailsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Contenido institucional heredado (Quiénes somos, FAQ generales, redes, teléfonos y horario). Solo `es` por ahora (`fallback`).",
+        "tags": [
+          "content"
+        ]
+      }
     }
   },
   "info": {
@@ -5861,7 +8585,14 @@
                 "privacy:read",
                 "privacy:manage",
                 "users:manage",
-                "audit:read"
+                "audit:read",
+                "content:read",
+                "content:write",
+                "content:publish",
+                "contact:read",
+                "contact:manage",
+                "media:upload",
+                "payments:void"
               ]
             }
           },
@@ -6308,6 +9039,14 @@
           "customerNotes": {
             "type": "string",
             "maxLength": 2000
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ],
+            "description": "Idioma de la reserva y de sus correos (por defecto el del carrito)."
           },
           "expectedTotalAmount": {
             "type": "number",
@@ -7817,6 +10556,16 @@
           "seoDescription": {
             "type": "object",
             "nullable": true
+          },
+          "translationStatus": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "machine_reviewed_pending_client",
+              "client_approved",
+              "staff_written"
+            ],
+            "description": "Por defecto null (revisada por el staff)."
           }
         },
         "required": [
@@ -8543,6 +11292,628 @@
         },
         "required": [
           "email"
+        ]
+      },
+      "BlogTranslationDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "excerpt": {
+            "type": "object",
+            "nullable": true
+          },
+          "body": {
+            "type": "string",
+            "description": "Markdown/HTML del editor (el front lo sanea al renderizar)."
+          },
+          "seoTitle": {
+            "type": "object",
+            "nullable": true
+          },
+          "seoDescription": {
+            "type": "object",
+            "nullable": true
+          },
+          "translationStatus": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "machine_reviewed_pending_client",
+              "client_approved",
+              "staff_written"
+            ]
+          }
+        },
+        "required": [
+          "slug",
+          "title",
+          "body"
+        ]
+      },
+      "CreateBlogPostDto": {
+        "type": "object",
+        "properties": {
+          "coverStorageKey": {
+            "type": "object",
+            "nullable": true,
+            "description": "storageKey de POST /admin/media o URL absoluta."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "translation": {
+            "description": "Traducción canónica `es`.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BlogTranslationDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "translation"
+        ]
+      },
+      "UpdateBlogPostDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "description": "Versión leída (bloqueo optimista)."
+          },
+          "coverStorageKey": {
+            "type": "object",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "VersionedBlogTranslationDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "excerpt": {
+            "type": "object",
+            "nullable": true
+          },
+          "body": {
+            "type": "string",
+            "description": "Markdown/HTML del editor (el front lo sanea al renderizar)."
+          },
+          "seoTitle": {
+            "type": "object",
+            "nullable": true
+          },
+          "seoDescription": {
+            "type": "object",
+            "nullable": true
+          },
+          "translationStatus": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "machine_reviewed_pending_client",
+              "client_approved",
+              "staff_written"
+            ]
+          },
+          "version": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "slug",
+          "title",
+          "body",
+          "version"
+        ]
+      },
+      "VersionBodyDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "description": "Versión leída (bloqueo optimista)."
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "PublishBlogPostDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "description": "Versión leída (bloqueo optimista)."
+          },
+          "publishedAt": {
+            "type": "string",
+            "description": "Fecha de publicación (ISO 8601 UTC); por defecto ahora o la original."
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "ModerationNoteDto": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        }
+      },
+      "RejectTestimonialDto": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "note"
+        ]
+      },
+      "UpdateTestimonialDto": {
+        "type": "object",
+        "properties": {
+          "authorName": {
+            "type": "string"
+          },
+          "authorCountry": {
+            "type": "object",
+            "nullable": true
+          },
+          "body": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ]
+          }
+        }
+      },
+      "FeatureDto": {
+        "type": "object",
+        "properties": {
+          "featured": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "featured"
+        ]
+      },
+      "ContactStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "answered",
+              "archived"
+            ]
+          },
+          "internalNote": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "TaxonomyTranslationDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "object",
+            "nullable": true
+          },
+          "slug": {
+            "type": "object",
+            "nullable": true,
+            "description": "Slug propio del idioma (solo `en`; null = el canónico)."
+          },
+          "seoTitle": {
+            "type": "object",
+            "nullable": true,
+            "description": "Solo destinos."
+          },
+          "seoDescription": {
+            "type": "object",
+            "nullable": true,
+            "description": "Solo destinos."
+          },
+          "translationStatus": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "machine_reviewed_pending_client",
+              "client_approved",
+              "staff_written"
+            ]
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "CreateTaxonomyDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "description": "Slug canónico (es)."
+          },
+          "sortOrder": {
+            "type": "number"
+          },
+          "coverStorageKey": {
+            "type": "object",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published"
+            ],
+            "description": "Solo destinos."
+          },
+          "parentId": {
+            "type": "object",
+            "nullable": true,
+            "format": "uuid",
+            "description": "Solo destinos."
+          },
+          "translation": {
+            "$ref": "#/components/schemas/TaxonomyTranslationDto"
+          }
+        },
+        "required": [
+          "slug",
+          "translation"
+        ]
+      },
+      "ReorderItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sortOrder": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "sortOrder"
+        ]
+      },
+      "ReorderDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReorderItemDto"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "UpdateTaxonomyDto": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "description": "Versión leída (bloqueo optimista)."
+          },
+          "slug": {
+            "type": "string"
+          },
+          "sortOrder": {
+            "type": "number"
+          },
+          "coverStorageKey": {
+            "type": "object",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "published"
+            ]
+          },
+          "parentId": {
+            "type": "object",
+            "nullable": true,
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "version"
+        ]
+      },
+      "VersionedTaxonomyTranslationDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "object",
+            "nullable": true
+          },
+          "slug": {
+            "type": "object",
+            "nullable": true,
+            "description": "Slug propio del idioma (solo `en`; null = el canónico)."
+          },
+          "seoTitle": {
+            "type": "object",
+            "nullable": true,
+            "description": "Solo destinos."
+          },
+          "seoDescription": {
+            "type": "object",
+            "nullable": true,
+            "description": "Solo destinos."
+          },
+          "translationStatus": {
+            "type": "string",
+            "nullable": true,
+            "enum": [
+              "machine_reviewed_pending_client",
+              "client_approved",
+              "staff_written"
+            ]
+          },
+          "version": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ]
+      },
+      "VoidPaymentDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Motivo de la anulación (queda en el pago, no en audit_log).",
+            "minLength": 5,
+            "maxLength": 500
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      },
+      "BookingAccessLinkDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "PWT-2026-000123"
+          },
+          "email": {
+            "type": "string",
+            "example": "viajero@example.com"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ],
+            "description": "Idioma del correo y de la página de destino (por defecto el de la reserva)."
+          }
+        },
+        "required": [
+          "code",
+          "email"
+        ]
+      },
+      "ExchangeTokenDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Token del enlace (`?token=` de la URL del correo)."
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "ComplaintAccessLinkDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "LR-2026-000045"
+          },
+          "email": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "email"
+        ]
+      },
+      "CustomerLoginLinkDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ]
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "LogoutDto": {
+        "type": "object",
+        "properties": {
+          "all": {
+            "type": "boolean",
+            "default": false,
+            "description": "Cerrar todas las sesiones del cliente."
+          }
+        }
+      },
+      "SubmitTestimonialDto": {
+        "type": "object",
+        "properties": {
+          "authorName": {
+            "type": "string",
+            "example": "Ana Q."
+          },
+          "authorCountry": {
+            "type": "string",
+            "example": "PE",
+            "description": "ISO 3166-1 alfa-2"
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "body": {
+            "type": "string",
+            "description": "Texto plano: sin enlaces ni HTML (20-3000)."
+          },
+          "tourSlug": {
+            "type": "string"
+          },
+          "travelDate": {
+            "type": "string",
+            "example": "2026-05-01"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ],
+            "default": "es"
+          },
+          "publishConsent": {
+            "type": "boolean",
+            "description": "Autoriza publicar el testimonio con su nombre (obligatorio)."
+          },
+          "consentPrivacyNotice": {
+            "type": "boolean",
+            "description": "Leyó el aviso de privacidad (Ley 29733, obligatorio)."
+          }
+        },
+        "required": [
+          "authorName",
+          "rating",
+          "body",
+          "publishConsent",
+          "consentPrivacyNotice"
+        ]
+      },
+      "ContactDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+51987654321"
+          },
+          "subject": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string",
+            "description": "10-5000 caracteres."
+          },
+          "tourSlug": {
+            "type": "string"
+          },
+          "locale": {
+            "type": "string",
+            "enum": [
+              "es",
+              "en"
+            ],
+            "default": "es"
+          },
+          "consentPrivacyNotice": {
+            "type": "boolean",
+            "description": "Leyó el aviso de privacidad (obligatorio)."
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "subject",
+          "message",
+          "consentPrivacyNotice"
         ]
       }
     }

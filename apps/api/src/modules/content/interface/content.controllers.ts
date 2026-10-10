@@ -212,7 +212,7 @@ export class ContentController {
   @ApiOperation({ summary: 'Blog publicado (más reciente primero). Sin traducción `en`, se sirve `es` con `fallback: true`.' })
   async listPosts(@Query() q: BlogListQueryDto) {
     const r = await this.content.listPosts({ locale: q.locale, page: q.page, pageSize: q.pageSize, tag: q.tag?.toLowerCase() });
-    return { data: r.items.map((p) => presentPost(p, this.urls, false)), meta: { ...pageMeta(q.page, q.pageSize, r.total), locale: q.locale } };
+    return { data: r.items.map((p) => presentPost(p, this.urls, false)), meta: Object.assign(pageMeta(q.page, q.pageSize, r.total), { locale: q.locale }) };
   }
 
   @Get('blog/:slug')
@@ -232,7 +232,7 @@ export class ContentController {
   @ApiOperation({ summary: 'Testimonios aprobados (con consentimiento o heredados del sitio viejo), destacados primero.' })
   async listTestimonials(@Query() q: TestimonialListQueryDto) {
     const r = await this.content.listTestimonials({ locale: q.allLocales ? undefined : q.locale, tourSlug: q.tourSlug, featured: q.featured, page: q.page, pageSize: q.pageSize });
-    return { data: r.items.map(presentTestimonial), meta: { ...pageMeta(q.page, q.pageSize, r.total), locale: q.locale } };
+    return { data: r.items.map(presentTestimonial), meta: Object.assign(pageMeta(q.page, q.pageSize, r.total), { locale: q.locale }) };
   }
 
   @Post('testimonials')

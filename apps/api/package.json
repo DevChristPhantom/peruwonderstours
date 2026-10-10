@@ -28,7 +28,8 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate deploy",
     "openapi:export": "nest build && node dist/openapi/export-openapi.js openapi.json",
-    "admin:create": "tsx src/cli/admin-create.ts"
+    "admin:create": "tsx src/cli/admin-create.ts",
+    "media:import-legacy": "tsx src/cli/media-import-legacy.ts"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",

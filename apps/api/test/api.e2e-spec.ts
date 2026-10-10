@@ -118,7 +118,7 @@ describe('API v1 en modo seed (e2e)', () => {
     expect(c.body.data).toHaveLength(5);
   });
 
-  it('ficha por slug con FAQ e itinerario; 404 problem+json si no existe o no hay traducción', async () => {
+  it('ficha por slug con FAQ e itinerario; 404 problem+json si no existe; fallback es o 301 al slug en', async () => {
     const list = await http.get('/api/v1/tours?pageSize=1').expect(200);
     const slug = list.body.data[0].slug;
     const detail = await http.get(`/api/v1/tours/${slug}`).expect(200);
@@ -129,7 +129,17 @@ describe('API v1 en modo seed (e2e)', () => {
     const missing = await http.get('/api/v1/tours/no-existe').expect(404);
     expect(missing.headers['content-type']).toContain('application/problem+json');
     expect(missing.body).toMatchObject({ status: 404, code: 'tour-not-found', type: 'https://peruwonderstours.com/problems/tour-not-found', instance: '/api/v1/tours/no-existe' });
-    await http.get(`/api/v1/tours/${slug}?locale=en`).expect(404);
+    // I6: sin traducción en el idioma pedido se sirve es con fallback; con traducción en, 301 al slug en.
+    const en = await http.get(`/api/v1/tours/${slug}?locale=en`);
+    if (en.status === 301) {
+      expect(en.headers['location']).toMatch(/^\/api\/v1\/tours\/[a-z0-9-]+\?locale=en/);
+      const enSlug = en.body.data.redirect.slug as string;
+      const enDetail = await http.get(`/api/v1/tours/${enSlug}?locale=en`).expect(200);
+      expect(enDetail.body.data).toMatchObject({ slug: enSlug, locale: 'en', fallback: false });
+    } else {
+      expect(en.status).toBe(200);
+      expect(en.body.data).toMatchObject({ locale: 'es', fallback: true });
+    }
   });
 
   it('validación global: 400 con lista de campos y forbidNonWhitelisted', async () => {

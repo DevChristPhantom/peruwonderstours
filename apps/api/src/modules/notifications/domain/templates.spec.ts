@@ -1,6 +1,12 @@
 import { COMPLAINT_LEGAL_NOTICES } from '../../complaints/domain/complaint.js';
 import { signUnsubscribeToken, verifyUnsubscribeToken } from '../../privacy/domain/consent.js';
 import {
+  balanceReminderEmail,
+  bookingAccessLinkEmail,
+  bookingVoucherEmail,
+  contactAgencyEmail,
+  customerLoginLinkEmail,
+  paymentReceivedEmail,
   bookingCancelledEmail,
   complaintResponseEmail,
   complaintSettlementOfferEmail,
@@ -92,5 +98,43 @@ describe('Token de baja de marketing', () => {
     expect(verifyUnsubscribeToken('x'.repeat(2000), secret)).toBeNull();
     const noPurposes = signUnsubscribeToken({ ...claims, purposes: [] }, secret);
     expect(verifyUnsubscribeToken(noPurposes, secret)).toBeNull();
+  });
+});
+
+describe('Plantillas en inglés y enlaces mágicos (Sprint 3)', () => {
+  const data = {
+    code: 'PWT-2026-000009',
+    customerName: 'Sam',
+    status: 'partially_paid',
+    paymentOption: 'deposit' as const,
+    items: [{ title: 'Sacred Valley', travelDate: '2026-11-10', paxCount: 2, subtotal: { amount: 20_000n, currency: 'USD' as const } }],
+    total: { amount: 20_000n, currency: 'USD' as const },
+    paid: { amount: 10_000n, currency: 'USD' as const },
+    balance: { amount: 10_000n, currency: 'USD' as const },
+    balanceDueAt: new Date('2026-11-03T05:00:00Z'),
+    manageUrl: 'https://pwt.test/en/reserva/acceso?token=abc',
+    linkTtlHours: 72,
+    locale: 'en' as const,
+  };
+
+  it('voucher, recordatorio y pago recibido en inglés con el enlace de un solo uso', () => {
+    const voucher = bookingVoucherEmail(data, BRAND, 'confirmation');
+    expect(voucher.subject).toBe('Booking confirmed PWT-2026-000009 · Peru Wonders Tours');
+    expect(voucher.html).toContain('<html lang="en">');
+    expect(voucher.text).toContain('View my booking: https://pwt.test/en/reserva/acceso?token=abc');
+    expect(voucher.text).toContain('Tuesday, November 10, 2026');
+    expect(voucher.html).toContain('single-use link valid for 72 hours');
+    expect(balanceReminderEmail(data, BRAND, 2).text).toContain('Less than 2 days left!');
+    expect(paymentReceivedEmail({ ...data, payment: { amount: 10_000n, currency: 'USD' } }, BRAND).subject).toBe('Payment received · booking PWT-2026-000009');
+    expect(bookingVoucherEmail({ ...data, locale: 'es' }, BRAND, 'voucher').subject).toBe('Voucher de tu reserva PWT-2026-000009');
+  });
+
+  it('enlace de acceso, login de cliente y contacto', () => {
+    const access = bookingAccessLinkEmail({ code: data.code, customerName: 'Sam', linkUrl: 'https://pwt.test/en/reserva/acceso?token=t', ttlMinutes: 30, locale: 'en' }, BRAND);
+    expect(access.text).toContain('expires in 30 minutes');
+    expect(customerLoginLinkEmail({ firstName: 'Ana', linkUrl: 'https://x/es/cuenta/acceso?token=t', ttlMinutes: 30, locale: 'es' }, BRAND).text).toContain('vence en 30 minutos');
+    const agency = contactAgencyEmail({ id: 'm1', name: '<Leo>', email: 'leo@x.com', phone: null, subject: 'Hola', message: 'Linea 1\nLinea 2', tourSlug: null, locale: 'en', receivedAt: new Date('2026-10-09T15:00:00Z') }, BRAND);
+    expect(agency.html).toContain('&lt;Leo&gt;');
+    expect(agency.html).toContain('Linea 1<br>Linea 2');
   });
 });

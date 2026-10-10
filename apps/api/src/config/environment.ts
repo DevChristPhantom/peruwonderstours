@@ -423,7 +423,7 @@ export class EnvironmentVariables {
   // --- Medios (subida de imágenes) ---
   /** local = disco (desarrollo, MEDIA_LOCAL_DIR servido en /media/*). S3/R2: adaptador pendiente. */
   @IsIn(['local'])
-  MEDIA_STORAGE: 'local' = 'local';
+  MEDIA_STORAGE = 'local' as const;
 
   @IsString()
   MEDIA_LOCAL_DIR = 'uploads';
@@ -440,7 +440,7 @@ export class EnvironmentVariables {
 
   /** Hosts del sitio viejo cuyas imágenes importa `pnpm media:import-legacy` (coma). */
   @IsString()
-  LEGACY_MEDIA_HOSTS = 'www.andeanperutours.com,andeanperutours.com';
+  LEGACY_MEDIA_HOSTS = 'www.andeanperutours.com,andeanperutours.com,turinet.turismoads.com';
 
   // --- Política de cancelación (SUPUESTO pendiente del cliente, RN-04/05) ---
   /**
