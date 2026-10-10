@@ -48,6 +48,13 @@ function legalDocumentsEnv(): Record<string, string> {
   };
 }
 
+/**
+ * Origen de la API (fotos re-alojadas que sirve en `/media/...`; el catálogo ya apunta a ellas).
+ * Se deriva de `API_BASE_URL` (misma variable que usa `src/lib/env.ts`; por defecto la API local).
+ */
+const apiOrigin = new URL(process.env.API_BASE_URL || "http://localhost:3001/api/v1");
+const apiIsLocal = ["localhost", "127.0.0.1", "[::1]"].includes(apiOrigin.hostname);
+
 const nextConfig: NextConfig = {
   transpilePackages: ["@pwt/ui"],
   // Monorepo pnpm: la raíz incluye data/seed y packages/ui.
@@ -59,7 +66,15 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     // TEMPORAL (HU-0.3): fotos del cliente servidas desde su sitio actual hasta re-alojarlas.
+    // Solo en desarrollo con la API local: Next bloquea por defecto optimizar imágenes de IPs locales.
+    dangerouslyAllowLocalIP: apiIsLocal && process.env.NODE_ENV !== "production",
     remotePatterns: [
+      {
+        protocol: apiOrigin.protocol === "https:" ? "https" : "http",
+        hostname: apiOrigin.hostname,
+        ...(apiOrigin.port ? { port: apiOrigin.port } : {}),
+        pathname: "/media/**",
+      },
       {
         protocol: "https",
         hostname: "www.andeanperutours.com",

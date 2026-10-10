@@ -1,0 +1,5 @@
+{
+  "title": "Tour types",
+  "description": "Day tours, packages, Machu Picchu tours, Altiplano routes and more: pick the kind of trip you're looking for.",
+  "count": "{count, plural, =0 {Coming soon} one {# tour} other {# tours}}"
+}

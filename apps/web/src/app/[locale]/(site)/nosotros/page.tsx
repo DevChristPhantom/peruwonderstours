@@ -1,27 +1,33 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { PendingContentPage } from "@/components/layout/PendingContentPage";
-import { pageMetadata } from "@/lib/seo/metadata";
+import { localePath } from "@/i18n/paths";
+import type { Locale } from "@/i18n/routing";
+import { alternatesFor, pageMetadata } from "@/lib/seo/metadata";
 import { SITE } from "@/lib/site";
 
-export const metadata: Metadata = pageMetadata({
-  title: "Nosotros",
-  description: `${SITE.name}: agencia de viajes con oficina en Puno.`,
-  path: "/es/nosotros",
-});
+export async function generateMetadata({ params }: PageProps<"/[locale]/nosotros">): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  const t = await getTranslations({ locale, namespace: "about" });
+  return pageMetadata({ locale, title: t("title"), description: t("description", { name: SITE.name }), paths: alternatesFor("/nosotros") });
+}
 
-export default function AboutPage() {
+export default async function AboutPage({ params }: PageProps<"/[locale]/nosotros">) {
+  const locale = (await params).locale as Locale;
+  setRequestLocale(locale);
+  const [t, tc] = await Promise.all([getTranslations("about"), getTranslations("common")]);
   return (
     <PendingContentPage
-      title="Nosotros"
-      path="/es/nosotros"
-      notice="Contenido en preparación: la historia, el equipo y los datos de registro de la agencia se publicarán cuando el cliente los confirme."
+      title={t("title")}
+      crumbs={[
+        { name: tc("home"), path: localePath(locale, "/") },
+        { name: t("title"), path: localePath(locale, "/nosotros") },
+      ]}
+      notice={t("notice")}
     >
       {/* TODO(contenido): migrar y reescribir "quienes-somos" con la marca nueva. */}
-      <p>
-        {SITE.name} organiza tours y paquetes por el sur del Perú desde su oficina en Puno: lago Titicaca, Cusco y Machu
-        Picchu, Arequipa y el Colca.
-      </p>
+      <p>{t("body", { name: SITE.name })}</p>
     </PendingContentPage>
   );
 }

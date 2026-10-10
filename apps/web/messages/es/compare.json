@@ -1,0 +1,19 @@
+{
+  "toggle": "Comparar",
+  "toggleLabel": "Comparar {title}",
+  "addedAnnounce": "{title} agregado al comparador ({count} de {max}).",
+  "addedToast": "{count, plural, one {# tour en el comparador} other {# tours en el comparador}} (máximo {max}).",
+  "removedAnnounce": "{title} quitado del comparador.",
+  "full": "Puedes comparar hasta {max} tours a la vez.",
+  "fullAnnounce": "No se agregó {title}: el comparador ya tiene {max} tours.",
+  "compareNow": "Comparar ahora",
+  "trayLabel": "Comparador de tours",
+  "trayTitle": "Comparar tours ({count} de {max})",
+  "removeLabel": "Quitar {title} del comparador",
+  "clear": "Vaciar",
+  "clearedAnnounce": "Comparador vacío.",
+  "compareCount": "Comparar {count}",
+  "chooseTwo": "Elige al menos 2 tours para comparar.",
+  "remove": "Quitar",
+  "removeFromTable": "Quitar {title} de la comparación"
+}

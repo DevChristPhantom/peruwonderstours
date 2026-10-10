@@ -1,0 +1,16 @@
+{
+  "legend": "Viajeros",
+  "adults": "Adultos",
+  "adultsHint": "Desde 12 años",
+  "adultUnit": "adulto",
+  "children": "Niños",
+  "childrenHint": "De 3 a 11 años",
+  "childUnit": "niño",
+  "infants": "Bebés",
+  "infantsHint": "Menores de 3 años",
+  "infantsFreeHint": "Menores de 3 años · sin costo",
+  "infantUnit": "bebé",
+  "add": "Agregar un {unit}",
+  "remove": "Quitar un {unit}",
+  "value": "{label}: {value}"
+}

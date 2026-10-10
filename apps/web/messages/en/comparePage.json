@@ -1,0 +1,25 @@
+{
+  "title": "Compare tours",
+  "description": "Compare up to 3 tours side by side: duration, destinations, difficulty, what's included and starting price.",
+  "missing": "{count, plural, one {One tour in this comparison is no longer available.} other {# tours in this comparison are no longer available.}}",
+  "emptyTitle": "Pick 2 or 3 tours to compare",
+  "emptyText": "Tap “Compare” on the cards of the tours you like.",
+  "viewTours": "See tours",
+  "addAnother": "Add at least one more tour to compare.",
+  "tableLabel": "Comparison table, scroll horizontally to see all tours",
+  "caption": "Comparison of {titles}",
+  "actions": "Actions",
+  "seeDates": "See dates",
+  "more": "and {count} more",
+  "pending": "To be confirmed",
+  "footnote": "Altitude, effort level, cancellation policy and departures will be added to the comparison once they are published for each tour.",
+  "rows": {
+    "price": "Starting price",
+    "duration": "Duration",
+    "destinations": "Destinations",
+    "difficulty": "Difficulty",
+    "minPax": "Minimum travelers",
+    "includes": "Included",
+    "notIncludes": "Not included"
+  }
+}

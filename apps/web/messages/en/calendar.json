@@ -1,0 +1,25 @@
+{
+  "prevMonth": "Previous month",
+  "nextMonth": "Next month",
+  "loading": "Loading departures…",
+  "error": "We couldn't load departures. Try again or message us on WhatsApp.",
+  "legend": "Calendar legend",
+  "seats": "{count, plural, one {# seat left} other {# seats left}}",
+  "notEnough": "not enough for {count, plural, one {# traveler} other {# travelers}}",
+  "from": "from {price}",
+  "selected": "selected",
+  "noMark": "No mark: no scheduled departure",
+  "state": {
+    "available": "Available",
+    "few": "Last seats",
+    "soldOut": "Sold out",
+    "closed": "Closed",
+    "none": "No departure",
+    "past": "Past date"
+  },
+  "chosen": "Selected date: {date}",
+  "chosenSeats": "{count, plural, one {# seat left} other {# seats left}}",
+  "startTime": "starts at {time}",
+  "fallbackError": "We couldn't load the departure calendar. Pick a date and we'll confirm it with you.",
+  "fallbackNoCalendar": "This tour runs on request: pick your date and we'll confirm availability."
+}

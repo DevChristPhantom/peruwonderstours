@@ -1,0 +1,19 @@
+{
+  "toggle": "Compare",
+  "toggleLabel": "Compare {title}",
+  "addedAnnounce": "{title} added to comparison ({count} of {max}).",
+  "addedToast": "{count, plural, one {# tour in comparison} other {# tours in comparison}} (up to {max}).",
+  "removedAnnounce": "{title} removed from comparison.",
+  "full": "You can compare up to {max} tours at a time.",
+  "fullAnnounce": "{title} was not added: the comparison already has {max} tours.",
+  "compareNow": "Compare now",
+  "trayLabel": "Tour comparison",
+  "trayTitle": "Compare tours ({count} of {max})",
+  "removeLabel": "Remove {title} from comparison",
+  "clear": "Clear",
+  "clearedAnnounce": "Comparison cleared.",
+  "compareCount": "Compare {count}",
+  "chooseTwo": "Pick at least 2 tours to compare.",
+  "remove": "Remove",
+  "removeFromTable": "Remove {title} from the comparison"
+}

@@ -1,0 +1,14 @@
+{
+  "title": "Travel blog",
+  "description": "Guides and tips for traveling in Peru: Machu Picchu, Cusco, Lake Titicaca, trains, tickets and useful facts.",
+  "empty": "New travel guides are coming soon.",
+  "readMore": "Read article",
+  "readMoreLabel": "Read article: {title}",
+  "publishedOn": "Published on {date}",
+  "backToBlog": "Back to the blog",
+  "related": "Tours for this trip",
+  "cta": "Want help planning your trip?",
+  "ctaText": "Message us on WhatsApp and we'll build the right itinerary with you.",
+  "ctaButton": "Plan on WhatsApp",
+  "ctaMessage": "Hi, I read your blog and I'd like to plan a trip to Peru."
+}

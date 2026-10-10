@@ -1,0 +1,24 @@
+{
+  "mainNav": "Navegación principal",
+  "mobileNav": "Menú del sitio",
+  "panels": {
+    "descubre": "Descubre",
+    "viajes": "Viajes",
+    "destinos": "Destinos"
+  },
+  "about": "Nosotros",
+  "contact": "Contáctenos",
+  "myBookings": "Mis reservas",
+  "book": "Reservar",
+  "openMenu": "Abrir menú",
+  "closeMenu": "Cerrar menú",
+  "language": "Idioma",
+  "languageButton": "Idioma: {language}. Cambiar idioma",
+  "languageName": {
+    "es": "Español",
+    "en": "English"
+  },
+  "favoritesLabel": "{count, plural, =0 {Favoritos} one {Favoritos, # tour guardado} other {Favoritos, # tours guardados}}",
+  "cartLabel": "{count, plural, =0 {Carrito vacío} one {Carrito, # tour} other {Carrito, # tours}}",
+  "whatsappMessage": "Hola, quiero información sobre sus tours en Perú."
+}

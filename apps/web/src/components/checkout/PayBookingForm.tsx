@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
-import { payBookingAction } from "@/app/es/(site)/reserva/[codigo]/actions";
+import { payBookingAction } from "@/app/[locale]/(site)/reserva/[codigo]/actions";
 import type { Currency } from "@/lib/catalog/types";
 import { formatMoney } from "@/lib/format";
 import { PAYMENT_METHOD_LABEL, type PaymentMethod, type PaymentWidgetHandle } from "@/lib/payments/types";

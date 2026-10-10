@@ -1,0 +1,28 @@
+{
+  "media": {
+    "heroAlt": "View of Lake Titicaca in Puno",
+    "heroAltFallback": "Uros floating islands on Lake Titicaca",
+    "discover": {
+      "titicaca": {
+        "title": "Lake Titicaca",
+        "description": "Uros, Taquile and Amantaní on the world's highest navigable lake."
+      },
+      "machuPicchu": {
+        "title": "Machu Picchu",
+        "description": "The Inca citadel, as a day trip or as part of a Cusco circuit."
+      },
+      "colca": {
+        "title": "Colca Canyon",
+        "description": "Condors, traditional villages and trekking from Arequipa."
+      },
+      "paracas": {
+        "title": "Paracas & Ica",
+        "description": "Ballestas Islands, the Paracas reserve and the Huacachina oasis."
+      }
+    },
+    "journeys": {
+      "group": "Group tours",
+      "private": "Private tours"
+    }
+  }
+}

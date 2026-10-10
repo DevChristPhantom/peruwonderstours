@@ -7,9 +7,11 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type Ref } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
-import { placeBookingAction, prepareCheckoutAction } from "@/app/es/(checkout)/checkout/actions";
+import { placeBookingAction, prepareCheckoutAction } from "@/app/[locale]/(checkout)/checkout/actions";
 import type { UserError } from "@/lib/api/problems";
-import { describeTravelers, type CartLine } from "@/lib/cart/types";
+import { useTravelersText } from "@/hooks/useTravelersText";
+import { useWhatsappTools } from "@/hooks/useWhatsappTools";
+import type { CartLine } from "@/lib/cart/types";
 import type { ActionResult, CheckoutQuote, PlaceResult, PlanView } from "@/lib/checkout/api-checkout";
 import { lineTotalCents, type PaymentOption } from "@/lib/checkout/payment-plan";
 import { paymentStepSchema, type ContactValues, type PaymentStepValues, type TravelersValues } from "@/lib/checkout/schemas";
@@ -66,6 +68,8 @@ export function PaymentStep({
   cardFeePercent: number | null;
 }) {
   const announce = useUiStore((s) => s.announce);
+  const travelersText = useTravelersText();
+  const wa = useWhatsappTools();
   const widgetRef = useRef<PaymentWidgetHandle>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
   const apiErrorRef = useRef<HTMLDivElement>(null);
@@ -233,6 +237,7 @@ export function PaymentStep({
   const helpHref = (bookingCode: string | null) =>
     whatsappHref(
       cartHelpMessage(
+        wa,
         lines.map((l) => ({ title: l.title, date: l.date, travelers: l.travelers })),
         { step: "pago", bookingCode },
       ),
@@ -378,7 +383,7 @@ export function PaymentStep({
                 <li key={l.lineId} className="flex justify-between gap-4">
                   <span className="text-foreground-muted">
                     {l.title} · {formatDate(l.date)}
-                    {local ? ` · ${describeTravelers(local.travelers)}` : ""}
+                    {local ? ` · ${travelersText(local.travelers)}` : ""}
                   </span>
                   <span className="tabular">{money(l.subtotalCents)}</span>
                 </li>

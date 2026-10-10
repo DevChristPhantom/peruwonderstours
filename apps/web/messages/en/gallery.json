@@ -1,0 +1,9 @@
+{
+  "enlarge": "Enlarge photo {n} of {total}",
+  "counter": "{n} / {total}",
+  "previous": "Previous photo",
+  "next": "Next photo",
+  "viewAll": "See all {total} photos",
+  "dialog": "Photo gallery: {title}",
+  "close": "Close gallery"
+}

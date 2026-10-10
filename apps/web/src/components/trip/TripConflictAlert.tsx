@@ -38,7 +38,7 @@ export function TripConflictAlert({ lines, editHref = "/es/carrito", className }
         {pending.map((conflict) => (
           <li key={conflict.signature}>
             {conflict.items.map((it) => `${it.line.title} (${formatDate(it.start)}${it.days > 1 ? `, ${it.days} días` : ""})`).join(" y ")}
-            {conflict.dates.length ? ` coinciden el ${conflict.dates.map(formatDate).join(", ")}.` : "."}
+            {conflict.dates.length ? ` coinciden el ${conflict.dates.map((d) => formatDate(d)).join(", ")}.` : "."}
           </li>
         ))}
       </ul>

@@ -1,0 +1,16 @@
+{
+  "legend": "Travelers",
+  "adults": "Adults",
+  "adultsHint": "Age 12 and over",
+  "adultUnit": "adult",
+  "children": "Children",
+  "childrenHint": "Ages 3 to 11",
+  "childUnit": "child",
+  "infants": "Infants",
+  "infantsHint": "Under 3",
+  "infantsFreeHint": "Under 3 · free",
+  "infantUnit": "infant",
+  "add": "Add one {unit}",
+  "remove": "Remove one {unit}",
+  "value": "{label}: {value}"
+}

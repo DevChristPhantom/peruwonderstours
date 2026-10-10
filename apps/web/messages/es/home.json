@@ -1,0 +1,61 @@
+{
+  "metaTitle": "Tours en Puno, Lago Titicaca, Cusco y Machu Picchu",
+  "hero": {
+    "title": "Viaja por el Perú con quienes lo conocen",
+    "lead": "Tours al Lago Titicaca, Machu Picchu, el Colca y la costa sur con guías locales, salidas confirmadas y reserva con adelanto.",
+    "imageAlt": "Islas flotantes de los Uros en el Lago Titicaca, Puno",
+    "scroll": "Desliza para descubrir"
+  },
+  "featured": {
+    "title": "Tours destacados",
+    "viewAll": "Ver los {count} tours",
+    "tabsLabel": "Filtrar tours destacados",
+    "oneDayLink": "Ver tours de un día",
+    "groups": {
+      "all": "Todos",
+      "altiplano": "Altiplano y Titicaca",
+      "machuPicchu": "Machu Picchu",
+      "multi": "Multidestino"
+    },
+    "emptyFeatured": "Pronto publicaremos nuestros tours destacados.",
+    "emptyGroup": "Aún no hay tours en este grupo."
+  },
+  "destinations": {
+    "title": "Destinos",
+    "viewAll": "Ver todos los destinos",
+    "railLabel": "Destinos del Perú",
+    "previous": "Destinos anteriores",
+    "next": "Más destinos",
+    "tourCount": "{count, plural, =0 {Próximamente} one {# tour} other {# tours}}"
+  },
+  "whyUs": {
+    "title": "¿Por qué viajar con nosotros?",
+    "toursPublished": "Tours publicados",
+    "destinations": "Destinos",
+    "reasons": {
+      "office": {
+        "title": "Oficina en Puno",
+        "text": "Somos operadores locales: te atendemos antes, durante y después del viaje."
+      },
+      "guides": {
+        "title": "Guías locales",
+        "text": "Guías que viven en cada destino y comparten su historia y cultura."
+      },
+      "deposit": {
+        "title": "Reserva con adelanto",
+        "text": "Asegura tu cupo con un adelanto y paga el saldo antes de la salida."
+      },
+      "whatsapp": {
+        "title": "Atención por WhatsApp",
+        "text": "Resolvemos tus dudas al instante, en español o en inglés."
+      }
+    }
+  },
+  "finalCta": {
+    "title": "¿Listo para tu próximo viaje?",
+    "text": "Cuéntanos qué quieres conocer y armamos contigo el itinerario ideal.",
+    "whatsapp": "Planear por WhatsApp",
+    "whatsappMessage": "Hola {name}, quiero planear un viaje por el Perú.",
+    "packages": "Ver paquetes"
+  }
+}

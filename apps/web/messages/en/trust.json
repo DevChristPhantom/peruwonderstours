@@ -1,0 +1,14 @@
+{
+  "label": "Trust and official links",
+  "badges": "Seals and registrations",
+  "officialLinks": "Official links",
+  "externalHint": "(opens in a new tab)",
+  "links": {
+    "machu-picchu-tickets": "Official Machu Picchu tickets",
+    "mincetur-directory": "Verify agencies in the MINCETUR directory",
+    "peru-travel": "Peru.travel",
+    "iperu": "iPerú: tourist assistance",
+    "sernanp-visit": "Protected natural areas (SERNANP)",
+    "esnna-info": "Child protection in tourism (ESNNA)"
+  }
+}

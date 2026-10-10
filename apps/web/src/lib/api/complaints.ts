@@ -87,3 +87,37 @@ export async function submitComplaint(body: ComplaintDraftBody, idempotencyKey: 
       : null,
   };
 }
+
+/** Resumen de una hoja para la página de consulta (sin documento ni teléfono del consumidor). */
+export interface ComplaintStatusView {
+  code: string;
+  sheetNumber: string | null;
+  status: string;
+  submittedAt: string;
+  responseDueAt: string;
+  type: "reclamo" | "queja" | string;
+  detail: string;
+  consumerRequest: string;
+  answer: { text: string; sentAt: string } | null;
+}
+
+/** `GET /complaints/:code` con `X-Complaint-Token`; `null` si no existe o el token no corresponde. */
+export async function getComplaintStatus(code: string, token: string): Promise<ComplaintStatusView | null> {
+  const res = await apiRequest<{ data: Partial<ComplaintStatusView> & { code: string; declaredType?: string } }>(
+    `/complaints/${encodeURIComponent(code)}`,
+    { headers: { "x-complaint-token": token }, nullOn404: true },
+  );
+  if (!res) return null;
+  const d = res.body.data;
+  return {
+    code: d.code,
+    sheetNumber: d.sheetNumber ?? null,
+    status: d.status ?? "received",
+    submittedAt: d.submittedAt ?? "",
+    responseDueAt: d.responseDueAt ?? "",
+    type: d.type ?? d.declaredType ?? "reclamo",
+    detail: d.detail ?? "",
+    consumerRequest: d.consumerRequest ?? "",
+    answer: d.answer ?? null,
+  };
+}

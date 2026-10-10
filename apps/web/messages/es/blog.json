@@ -1,0 +1,14 @@
+{
+  "title": "Blog de viajes",
+  "description": "Guías y consejos para viajar por el Perú: Machu Picchu, Cusco, el Lago Titicaca, trenes, boletos y datos útiles.",
+  "empty": "Pronto publicaremos nuevas guías de viaje.",
+  "readMore": "Leer artículo",
+  "readMoreLabel": "Leer artículo: {title}",
+  "publishedOn": "Publicado el {date}",
+  "backToBlog": "Volver al blog",
+  "related": "Tours para este viaje",
+  "cta": "¿Te ayudamos a planear tu viaje?",
+  "ctaText": "Escríbenos por WhatsApp y armamos contigo el itinerario ideal.",
+  "ctaButton": "Planear por WhatsApp",
+  "ctaMessage": "Hola, leí su blog y quiero planear un viaje por el Perú."
+}

@@ -1,28 +1,32 @@
 import { Clock, MapPin, MessageCircle, Users } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { PayBookingForm } from "@/components/checkout/PayBookingForm";
 import { buttonClass } from "@/components/ui/button-styles";
 import { QrCode } from "@/components/voucher/QrCode";
 import { VoucherCalendarButton } from "@/components/voucher/VoucherCalendarButton";
 import { VoucherOffline, type VoucherSnapshot } from "@/components/voucher/VoucherOffline";
+import { Link } from "@/i18n/navigation";
+import { bookingPath } from "@/i18n/paths";
+import type { Locale } from "@/i18n/routing";
 import { getBookingByCode, type Booking, type BookingStatus } from "@/lib/api/bookings";
 import { BOOKING_CODE_RE, readBookingToken } from "@/lib/checkout/session";
-import { formatDate, formatDateTime, formatInstantDate, formatMoney } from "@/lib/format";
+import { formatDate, formatDateTime, formatFor, formatInstantDate, formatMoney } from "@/lib/format";
 import { PAYMENTS_MODE } from "@/lib/payments/types";
 import { SITE } from "@/lib/site";
 import { bookingHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
 
-export async function generateMetadata({ params }: PageProps<"/es/reserva/[codigo]">): Promise<Metadata> {
-  const { codigo } = await params;
+export async function generateMetadata({ params }: PageProps<"/[locale]/reserva/[codigo]">): Promise<Metadata> {
+  const { codigo, locale: rawLocale } = await params;
+  const locale = rawLocale as Locale;
   const code = decodeURIComponent(codigo).toUpperCase();
   return {
     title: "Tu reserva",
     robots: { index: false, follow: false },
     // HU-B.A2: voucher instalable; el manifest solo contiene el código (sin datos personales).
-    ...(BOOKING_CODE_RE.test(code) ? { manifest: `/es/reserva/${code}/manifest.webmanifest` } : {}),
+    ...(BOOKING_CODE_RE.test(code) ? { manifest: `${bookingPath(locale, code)}/manifest.webmanifest` } : {}),
   };
 }
 
@@ -50,8 +54,10 @@ function headline(b: Booking): string {
   return "Estado de tu reserva";
 }
 
-export default async function BookingPage({ params }: PageProps<"/es/reserva/[codigo]">) {
-  const { codigo } = await params;
+export default async function BookingPage({ params }: PageProps<"/[locale]/reserva/[codigo]">) {
+  const { codigo, locale: rawLocale } = await params;
+  const locale = rawLocale as Locale;
+  setRequestLocale(locale);
   const code = decodeURIComponent(codigo).toUpperCase();
   const token = await readBookingToken(code);
   // Sin token o token que no coincide → 404 genérico (no revela si el código existe).
@@ -70,7 +76,9 @@ export default async function BookingPage({ params }: PageProps<"/es/reserva/[co
     status: status.label,
     items: booking.items.map((i) => ({ id: i.id, title: i.tourTitle, date: i.travelDate, pax: i.paxCount })),
   };
+  const [waT, waUnits] = await Promise.all([getTranslations("whatsapp"), getTranslations("units")]);
   const helpMessage = bookingHelpMessage(
+    { t: waT, units: waUnits, format: formatFor(locale) },
     booking.code,
     booking.items.map((i) => ({ title: i.tourTitle, date: i.travelDate })),
   );
@@ -254,12 +262,12 @@ export default async function BookingPage({ params }: PageProps<"/es/reserva/[co
               Escríbenos por WhatsApp {SITE.whatsapp.display}
             </a>
             <p>
-              <Link href="/es/libro-de-reclamaciones" className="pwt-link inline-flex min-h-11 items-center">
+              <Link href="/libro-de-reclamaciones" className="pwt-link inline-flex min-h-11 items-center">
                 Libro de Reclamaciones
               </Link>
             </p>
           </section>
-          <Link href="/es/tours" className={buttonClass("secondary", "lg", "w-full")}>
+          <Link href="/tours" className={buttonClass("secondary", "lg", "w-full")}>
             Seguir explorando tours
           </Link>
         </aside>

@@ -1,0 +1,14 @@
+{
+  "label": "Confianza y enlaces oficiales",
+  "badges": "Sellos y registros",
+  "officialLinks": "Enlaces oficiales",
+  "externalHint": "(se abre en otra pestaña)",
+  "links": {
+    "machu-picchu-tickets": "Boletos oficiales a Machu Picchu",
+    "mincetur-directory": "Verifica agencias en el directorio del MINCETUR",
+    "peru-travel": "Peru.travel",
+    "iperu": "iPerú: asistencia al turista",
+    "sernanp-visit": "Áreas naturales protegidas (SERNANP)",
+    "esnna-info": "Prevención de la ESNNA en turismo"
+  }
+}

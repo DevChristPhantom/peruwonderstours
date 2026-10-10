@@ -1,31 +1,45 @@
 import type { MetadataRoute } from "next";
 
+import { routing } from "@/i18n/routing";
 import { getAllTours, getCategories, getDestinations } from "@/lib/catalog";
+import type { LocalePaths } from "@/lib/catalog/types";
+import { alternatesFor, hreflang } from "@/lib/seo/metadata";
 import { absoluteUrl } from "@/lib/site";
 
 export const revalidate = 3600;
 
-/** Sitemap propio (HU-0.4). Solo es-PE por ahora; `en` se agrega con E10. */
+type Frequency = "daily" | "weekly" | "monthly";
+
+/**
+ * Sitemap propio (HU-0.4 / I3): una entrada por idioma y página, cada una con su hreflang recíproco
+ * (`es-PE`, `en`, `x-default`). Los slugs traducidos salen del catálogo (`alternates`).
+ */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [tours, destinations, categories] = await Promise.all([getAllTours(), getDestinations(), getCategories()]);
-  const entry = (path: string, priority: number, changeFrequency: "daily" | "weekly" | "monthly" = "weekly") => ({
-    url: absoluteUrl(path),
-    changeFrequency,
-    priority,
-    alternates: { languages: { "es-PE": absoluteUrl(path) } },
-  });
+  // El catálogo en español trae `alternates` con la URL de ambos idiomas.
+  const [tours, destinations, categories] = await Promise.all([getAllTours("es"), getDestinations("es"), getCategories("es")]);
+
+  const entries = (paths: LocalePaths, priority: number, changeFrequency: Frequency = "weekly"): MetadataRoute.Sitemap => {
+    const languages = Object.fromEntries(Object.entries(hreflang(paths)).map(([lang, path]) => [lang, absoluteUrl(path)]));
+    return routing.locales.map((locale) => ({
+      url: absoluteUrl(paths[locale]),
+      changeFrequency,
+      priority,
+      alternates: { languages },
+    }));
+  };
+
   return [
-    entry("/es", 1, "daily"),
-    entry("/es/tours", 0.9, "daily"),
-    entry("/es/destinos", 0.8),
-    ...destinations.map((d) => entry(d.path, 0.8)),
-    ...categories.map((c) => entry(c.path, 0.7)),
-    ...tours.map((t) => entry(t.path, 0.8)),
-    entry("/es/nosotros", 0.4, "monthly"),
-    entry("/es/politicas/condiciones-de-pago", 0.3, "monthly"),
-    entry("/es/politicas/proteccion-de-datos-personales", 0.3, "monthly"),
-    entry("/es/politicas/terminos-y-condiciones", 0.3, "monthly"),
-    entry("/es/politicas/cookies", 0.3, "monthly"),
-    entry("/es/libro-de-reclamaciones", 0.3, "monthly"),
+    ...entries(alternatesFor("/"), 1, "daily"),
+    ...entries(alternatesFor("/tours"), 0.9, "daily"),
+    ...entries(alternatesFor("/destinos"), 0.8),
+    ...destinations.flatMap((d) => entries(d.alternates, 0.8)),
+    ...categories.flatMap((c) => entries(c.alternates, 0.7)),
+    ...tours.flatMap((t) => entries(t.alternates, 0.8)),
+    ...entries(alternatesFor("/nosotros"), 0.4, "monthly"),
+    ...entries(alternatesFor("/politicas/condiciones-de-pago"), 0.3, "monthly"),
+    ...entries(alternatesFor("/politicas/proteccion-de-datos-personales"), 0.3, "monthly"),
+    ...entries(alternatesFor("/politicas/terminos-y-condiciones"), 0.3, "monthly"),
+    ...entries(alternatesFor("/politicas/cookies"), 0.3, "monthly"),
+    ...entries(alternatesFor("/libro-de-reclamaciones"), 0.3, "monthly"),
   ];
 }

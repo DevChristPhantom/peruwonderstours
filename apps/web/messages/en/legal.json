@@ -1,0 +1,24 @@
+{
+  "draftLabel": "Draft notice",
+  "draft": "DRAFT: this document is under legal review and may change before final publication.",
+  "draftWithVersion": "DRAFT (version {version}): this document is under legal review and may change before final publication.",
+  "spanishOnly": "This document is only available in Spanish.",
+  "pages": {
+    "terms": {
+      "title": "Terms and conditions",
+      "description": "Terms of use of this website and of booking tours and packages with Peru Wonders Tours."
+    },
+    "privacy": {
+      "title": "Personal data protection",
+      "description": "How we process your personal data under Peruvian Law No. 29733 and how to exercise your rights."
+    },
+    "payments": {
+      "title": "Payment conditions",
+      "description": "Deposits, balances, payment methods, changes, cancellations and refunds for your bookings."
+    },
+    "cookies": {
+      "title": "Cookie policy",
+      "description": "Which cookies this website uses, what they are for and how you can manage them."
+    }
+  }
+}

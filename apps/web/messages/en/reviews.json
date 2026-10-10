@@ -1,0 +1,29 @@
+{
+  "title": "Traveler reviews",
+  "description": "Reviews from travelers who explored Peru with us, including reviews published on TripAdvisor.",
+  "empty": "No reviews have been published yet.",
+  "leaveCta": "Leave a review",
+  "leave": {
+    "title": "Leave a review",
+    "description": "Tell us how your trip with us went. We publish reviews after checking them.",
+    "intro": "Your review helps other travelers. We check every review before publishing it and only show your name and country, never your email.",
+    "name": "Display name",
+    "country": "Country (optional)",
+    "email": "Email (not published)",
+    "rating": "Rating",
+    "ratingOption": "{count, plural, one {# star} other {# stars}}",
+    "body": "Your review",
+    "travelDate": "Travel date (optional)",
+    "publishConsent": "I authorize publishing my review with my name and country on this website.",
+    "privacy": "I agree to the processing of my data as described in the <link>Personal data protection policy</link>.",
+    "submit": "Send review",
+    "sending": "Sending…",
+    "success": "Thank you for your review! We'll publish it after checking it.",
+    "invalid": "Please check the highlighted fields.",
+    "busy": "You've made several attempts in a row. Wait a minute and try again.",
+    "unavailable": "We couldn't send your review right now. Try again in a few minutes.",
+    "required": "This field is required.",
+    "invalidEmail": "Enter a valid email.",
+    "consentRequired": "We need both authorizations to publish your review."
+  }
+}

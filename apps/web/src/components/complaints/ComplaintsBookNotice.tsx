@@ -11,7 +11,7 @@ import { SITE } from "@/lib/site";
 export async function ComplaintsBookNotice() {
   const t = await getTranslations("complaints.notice");
   return (
-    <aside aria-label={t("label")} className="pwt-container mt-8">
+    <aside aria-label={t("label")} className="pwt-container">
       <Link
         href="/libro-de-reclamaciones"
         className="flex min-h-11 items-center gap-3 rounded-md border border-border-strong bg-surface px-4 py-3 text-sm hover:bg-surface-muted"

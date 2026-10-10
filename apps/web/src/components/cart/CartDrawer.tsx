@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 
-import { describeTravelers } from "@/lib/cart/types";
+import { useTravelersText } from "@/hooks/useTravelersText";
 import { computePaymentPlan } from "@/lib/checkout/payment-plan";
 import { formatDate, todayInLima } from "@/lib/format";
 import { useCartStore } from "@/stores/cart-store";
@@ -18,6 +18,7 @@ import { formatTotals, lineTotalLabel } from "./cart-helpers";
  * Drawer derecho 420 px en desktop; hoja inferior al 90 % en móvil.
  */
 export default function CartDrawer() {
+  const travelersText = useTravelersText();
   const open = useUiStore((s) => s.cartDrawerOpen);
   const close = useUiStore((s) => s.closeCartDrawer);
   const lines = useCartStore((s) => s.lines);
@@ -95,7 +96,7 @@ export default function CartDrawer() {
                   <div className="min-w-0 flex-1">
                     <p className="line-clamp-2 font-medium">{line.title}</p>
                     <p className="text-sm text-foreground-muted">
-                      {formatDate(line.date)} · {describeTravelers(line.travelers)}
+                      {formatDate(line.date)} · {travelersText(line.travelers)}
                     </p>
                   </div>
                   <p className="tabular shrink-0 text-sm font-medium">{lineTotalLabel(line)}</p>

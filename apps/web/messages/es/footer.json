@@ -1,0 +1,57 @@
+{
+  "title": "Pie de página",
+  "tagline": "Agencia de viajes con oficina en Puno. Tours por el Lago Titicaca, Cusco, Machu Picchu, Arequipa y la costa sur del Perú.",
+  "short": {
+    "terms": "Términos",
+    "payments": "Pagos",
+    "privacy": "Privacidad"
+  },
+  "complaintsBook": "Libro de Reclamaciones",
+  "complaintsBookHint": "Registra tu reclamo o queja en línea",
+  "legal": {
+    "businessName": "Razón social",
+    "ruc": "RUC",
+    "mincetur": "Registro MINCETUR",
+    "office": "Oficina",
+    "email": "Correo"
+  },
+  "columns": {
+    "tours": "Tours",
+    "company": "Empresa",
+    "help": "Ayuda",
+    "legal": "Legal"
+  },
+  "destinations": {
+    "puno": "Puno y Lago Titicaca",
+    "cusco": "Cusco y Machu Picchu",
+    "arequipa": "Arequipa y Colca",
+    "ica": "Ica y Paracas",
+    "lima": "Lima"
+  },
+  "links": {
+    "allTours": "Todos los tours",
+    "tourTypes": "Tipos de tours",
+    "about": "Nosotros",
+    "blog": "Blog de viajes",
+    "reviews": "Testimonios",
+    "contact": "Contáctenos",
+    "myBooking": "Acceder a mi reserva",
+    "complaintStatus": "Consultar mi reclamo",
+    "favorites": "Mis favoritos",
+    "terms": "Términos y condiciones",
+    "payments": "Condiciones de pago",
+    "privacy": "Protección de datos personales",
+    "cookies": "Política de cookies"
+  },
+  "hours": "Lunes a sábado, 09:00 a 19:00 (hora de Perú)",
+  "whatsapp": "WhatsApp {number}",
+  "follow": "Síguenos",
+  "social": {
+    "facebook": "{name} en Facebook",
+    "tripadvisor": "{name} en TripAdvisor"
+  },
+  "payments": "Medios de pago",
+  "paymentsText": "Tarjetas Visa y Mastercard, y transferencia bancaria.",
+  "esnna": "{name} rechaza la explotación sexual de niñas, niños y adolescentes. Si conoces algún caso, denúncialo a la Línea 100.",
+  "copyright": "© {year} {name}. Todos los derechos reservados."
+}

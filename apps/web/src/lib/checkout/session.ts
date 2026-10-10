@@ -12,13 +12,15 @@ import { isProduction } from "@/lib/env";
  * Las cookies solo se escriben desde Server Actions.
  */
 
-const CHECKOUT_PATH = "/es/checkout";
-const BOOKING_PATH = "/es/reserva";
 /**
- * La cookie del token de la reserva vive en `/es` (H-17): la leen la página de la reserva y el Libro de
- * Reclamaciones (para vincular el reclamo de forma verificada). Sigue siendo httpOnly + SameSite.
+ * Rutas de las cookies. Con i18n (E10) cada página existe en dos URLs (`/es/checkout` y `/en/checkout`,
+ * `/es/reserva/X` y `/en/booking/X`) y el visitante puede cambiar de idioma a mitad del flujo, así que
+ * las cookies viven en `/`. Siguen siendo httpOnly + SameSite=Lax (el navegador no puede leerlas).
+ * La del token de la reserva (H-17) la leen la página de la reserva y el Libro de Reclamaciones.
  */
-const BOOKING_TOKEN_PATH = "/es";
+const CHECKOUT_PATH = "/";
+const BOOKING_PATH = "/";
+const BOOKING_TOKEN_PATH = "/";
 
 const base = { httpOnly: true, sameSite: "lax" as const, secure: isProduction };
 
@@ -121,4 +123,22 @@ export async function readOrCreatePayKey(code: string): Promise<string> {
 
 export async function clearPayKey(code: string): Promise<void> {
   (await cookies()).set(payKeyCookie(code), "", { ...base, path: BOOKING_PATH, maxAge: 0 });
+}
+
+/* ---------- Token de consulta de una Hoja de Reclamación ---------- */
+
+/** Código de hoja del Libro de Reclamaciones (LR-2026-000123). */
+export const COMPLAINT_CODE_RE = /^LR-\d{4}-\d{4,8}$/;
+const complaintCookie = (code: string) => `pwt_lr_${code}`;
+
+/** Guarda el token de consulta (canje del enlace del correo) en una cookie httpOnly de 30 días. */
+export async function writeComplaintToken(code: string, token: string): Promise<void> {
+  if (!COMPLAINT_CODE_RE.test(code)) return;
+  (await cookies()).set(complaintCookie(code), token, { ...base, path: "/", maxAge: 30 * 24 * 3600 });
+}
+
+export async function readComplaintToken(code: string): Promise<string | null> {
+  if (!COMPLAINT_CODE_RE.test(code)) return null;
+  const value = (await cookies()).get(complaintCookie(code))?.value;
+  return value && value.length >= 8 && value.length <= 500 ? value : null;
 }

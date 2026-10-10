@@ -3,7 +3,8 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 
-import { describeTravelers, type CartLine } from "@/lib/cart/types";
+import { useTravelersText } from "@/hooks/useTravelersText";
+import type { CartLine } from "@/lib/cart/types";
 import type { PaymentPlan } from "@/lib/checkout/payment-plan";
 import { formatDate } from "@/lib/format";
 import { formatTotals, lineTotalLabel, POR_COTIZAR } from "./cart-helpers";
@@ -18,6 +19,7 @@ interface OrderSummaryProps {
 
 /** Resumen del pedido (carrito y checkout): el total es el mismo en ambos. */
 export function OrderSummary({ lines, plan, title = "Resumen", showThumbnails = false, children }: OrderSummaryProps) {
+  const travelersText = useTravelersText();
   const earliestDue = plan.lines
     .map((l) => l.balanceDueDate)
     .filter((d): d is string => !!d)
@@ -40,7 +42,7 @@ export function OrderSummary({ lines, plan, title = "Resumen", showThumbnails = 
             <div className="min-w-0 flex-1">
               <p className="line-clamp-2 font-medium text-foreground">{line.title}</p>
               <p className="text-foreground-muted">
-                {formatDate(line.date)} · {describeTravelers(line.travelers)}
+                {formatDate(line.date)} · {travelersText(line.travelers)}
               </p>
             </div>
             <span className="tabular shrink-0 font-medium">{lineTotalLabel(line)}</span>

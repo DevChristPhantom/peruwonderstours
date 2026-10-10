@@ -1,9 +1,48 @@
-import { BookOpenText } from "lucide-react";
+import { BookOpenText, Clock, CreditCard, ExternalLink, MessageCircle } from "lucide-react";
 import Image from "next/image";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import type { ComponentProps } from "react";
 
 import { Link } from "@/i18n/navigation";
 import { SITE, whatsappHref } from "@/lib/site";
+import { SOCIAL_LINKS } from "@/lib/social";
+
+import { AndesSkyline } from "./AndesSkyline";
+
+type Href = ComponentProps<typeof Link>["href"];
+type LinkKey = "allTours" | "tourTypes" | "about" | "blog" | "reviews" | "contact" | "myBooking" | "complaintStatus" | "favorites" | "terms" | "payments" | "privacy" | "cookies";
+
+/** Slug por idioma (data/seed/en/_slug-map.json) para enlazar sin el salto 308 entre idiomas. */
+const DESTINATIONS = [
+  { es: "tours-en-puno", en: "puno", key: "puno" },
+  { es: "cuzco", en: "cusco", key: "cusco" },
+  { es: "tours-en-arequipa", en: "arequipa", key: "arequipa" },
+  { es: "tours-en-ica-paracas", en: "ica-paracas", key: "ica" },
+  { es: "tours-en-lima", en: "lima", key: "lima" },
+] as const;
+
+const COMPANY: [Href, LinkKey][] = [["/nosotros", "about"], ["/blog", "blog"], ["/testimonios", "reviews"], ["/contactenos", "contact"]];
+const HELP: [Href, LinkKey][] = [["/reserva/acceso", "myBooking"], ["/libro-de-reclamaciones/consulta", "complaintStatus"], ["/favoritos", "favorites"]];
+const LEGAL: [Href, LinkKey][] = [
+  ["/politicas/terminos-y-condiciones", "terms"],
+  ["/politicas/condiciones-de-pago", "payments"],
+  ["/politicas/proteccion-de-datos-personales", "privacy"],
+  ["/politicas/cookies", "cookies"],
+];
+
+const linkClass = "inline-flex min-h-11 items-center hover:text-white md:min-h-9";
+const headingClass = "mb-3 text-xs font-medium tracking-[0.08em] text-hero-muted uppercase";
+
+function Column({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
+  return (
+    <nav aria-labelledby={id}>
+      <h3 id={id} className={headingClass}>
+        {title}
+      </h3>
+      <ul className="space-y-1 text-sm">{children}</ul>
+    </nav>
+  );
+}
 
 function LegalItem({ label, value, pending }: { label: string; value: string | null; pending: string }) {
   return (
@@ -14,10 +53,14 @@ function LegalItem({ label, value, pending }: { label: string; value: string | n
   );
 }
 
-/** Footer legal (home.md §11). Datos no confirmados se muestran como "por confirmar"; no se inventan. */
+/**
+ * Pie del sitio (home.md §11) con la paleta del logo (titicaca/terracota vía variables CSS).
+ * - Columnas: tours, empresa, ayuda y legal. El Libro de Reclamaciones siempre visible (Ley 32495).
+ * - Redes: solo Facebook y TripAdvisor (lib/social.ts, URL codificada). Medios de pago en texto neutro.
+ * - Datos legales no confirmados → "por confirmar"; nunca se publican nombres ni correos del equipo.
+ */
 export async function SiteFooter({ variant = "full" }: { variant?: "full" | "minimal" }) {
-  const t = await getTranslations("footer");
-  const tc = await getTranslations("common");
+  const [t, tc, locale] = await Promise.all([getTranslations("footer"), getTranslations("common"), getLocale()]);
   const { legal } = SITE;
   const pending = tc("pending");
   const year = new Date().getFullYear();
@@ -30,23 +73,15 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
             {legal.businessName ?? SITE.name} · RUC: {legal.ruc ?? pending}
           </p>
           <ul className="flex flex-wrap gap-x-5 gap-y-2">
+            {LEGAL.slice(0, 3).map(([href, key]) => (
+              <li key={key}>
+                <Link className="pwt-link inline-flex min-h-11 items-center" href={href}>
+                  {t(`links.${key}`)}
+                </Link>
+              </li>
+            ))}
             <li>
-              <Link className="pwt-link" href="/politicas/terminos-y-condiciones">
-                {t("short.terms")}
-              </Link>
-            </li>
-            <li>
-              <Link className="pwt-link" href="/politicas/condiciones-de-pago">
-                {t("short.payments")}
-              </Link>
-            </li>
-            <li>
-              <Link className="pwt-link" href="/politicas/proteccion-de-datos-personales">
-                {t("short.privacy")}
-              </Link>
-            </li>
-            <li>
-              <Link className="pwt-link" href="/libro-de-reclamaciones">
+              <Link className="pwt-link inline-flex min-h-11 items-center" href="/libro-de-reclamaciones">
                 {t("complaintsBook")}
               </Link>
             </li>
@@ -56,96 +91,117 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
     );
   }
 
+  const item = ([href, key]: [Href, LinkKey]) => (
+    <li key={key}>
+      <Link href={href} className={linkClass}>
+        {t(`links.${key}`)}
+      </Link>
+    </li>
+  );
+
   return (
-    <footer className="bg-hero-ink text-[color:var(--pwt-hero-soft)]" aria-labelledby="footer-title">
+    <footer aria-labelledby="footer-title" className="mt-16 text-[color:var(--pwt-hero-soft)]">
       <h2 id="footer-title" className="sr-only">
         {t("title")}
       </h2>
-      <div className="pwt-container grid gap-10 py-16 md:grid-cols-2 lg:grid-cols-4">
-        <div className="space-y-4">
-          <Link href="/" className="inline-flex min-h-11 items-center" aria-label={tc("logoHome")}>
-            <Image src="/logo.png" alt={tc("logoAlt")} width={120} height={40} className="h-10 w-auto" />
-          </Link>
-          <ul className="space-y-1.5 text-sm">
-            <LegalItem label={t("legal.businessName")} value={legal.businessName} pending={pending} />
-            <LegalItem label={t("legal.ruc")} value={legal.ruc} pending={pending} />
-            <LegalItem label={t("legal.mincetur")} value={legal.minceturRegistry} pending={pending} />
-            <LegalItem label={t("legal.office")} value={legal.address} pending={pending} />
-            <LegalItem label={t("legal.email")} value={legal.email} pending={pending} />
-            <li>
-              <span className="text-hero-muted">WhatsApp: </span>
-              <a className="underline underline-offset-2 hover:text-white" href={whatsappHref()} target="_blank" rel="noopener noreferrer">
-                {SITE.whatsapp.display}
-              </a>
-            </li>
-          </ul>
-        </div>
+      <AndesSkyline className="block h-14 w-full md:h-20" />
+      <div className="bg-[color:var(--pwt-titicaca-800)]">
+        <div className="pwt-container grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
+          <div>
+            <Link href="/" className="inline-flex min-h-11 items-center" aria-label={tc("logoHome")}>
+              <Image src="/logo.png" alt={tc("logoAlt")} width={120} height={40} className="h-10 w-auto brightness-0 invert" />
+            </Link>
+            <p className="mt-3 text-sm">{t("tagline")}</p>
+            <ul className="mt-4 space-y-1 text-sm">
+              <LegalItem label={t("legal.businessName")} value={legal.businessName} pending={pending} />
+              <LegalItem label={t("legal.ruc")} value={legal.ruc} pending={pending} />
+              <LegalItem label={t("legal.mincetur")} value={legal.minceturRegistry} pending={pending} />
+              <LegalItem label={t("legal.office")} value={legal.address} pending={pending} />
+            </ul>
+            <p className="mt-4 flex items-start gap-2 text-sm">
+              <Clock aria-hidden size={18} strokeWidth={1.5} className="mt-0.5 shrink-0" />
+              {t("hours")}
+            </p>
+            <a href={whatsappHref()} target="_blank" rel="noopener noreferrer" className={`${linkClass} gap-2 text-sm`}>
+              <MessageCircle aria-hidden size={18} strokeWidth={1.5} />
+              {t("whatsapp", { number: SITE.whatsapp.display })}
+            </a>
+          </div>
 
-        <nav aria-labelledby="footer-destinos">
-          <h3 id="footer-destinos" className="mb-3 text-xs font-medium tracking-[0.08em] text-hero-muted uppercase">
-            {tc("destinations")}
-          </h3>
-          <ul className="space-y-1 text-sm">
-            {(
-              [
-                ["tours-en-puno", "puno"],
-                ["cuzco", "cusco"],
-                ["tours-en-arequipa", "arequipa"],
-                ["tours-en-ica-paracas", "ica"],
-                ["tours-en-lima", "lima"],
-              ] as const
-            ).map(([slug, key]) => (
-              <li key={slug}>
-                <Link
-                  href={{ pathname: "/destinos/[slug]", params: { slug } }}
-                  className="inline-flex min-h-11 items-center hover:text-white md:min-h-9"
-                >
+          <Column id="footer-tours" title={t("columns.tours")}>
+            {DESTINATIONS.map(({ key, ...slugs }) => (
+              <li key={key}>
+                <Link href={{ pathname: "/destinos/[slug]", params: { slug: slugs[locale] } }} className={linkClass}>
                   {t(`destinations.${key}`)}
                 </Link>
               </li>
             ))}
-          </ul>
-        </nav>
+            {item(["/tours", "allTours"])}
+            {item(["/tipos-de-tours", "tourTypes"])}
+          </Column>
 
-        <nav aria-labelledby="footer-ayuda">
-          <h3 id="footer-ayuda" className="mb-3 text-xs font-medium tracking-[0.08em] text-hero-muted uppercase">
-            {t("help")}
-          </h3>
-          <ul className="space-y-1 text-sm">
-            {(
-              [
-                ["/tours", "allTours"],
-                ["/politicas/terminos-y-condiciones", "terms"],
-                ["/politicas/condiciones-de-pago", "payments"],
-                ["/politicas/proteccion-de-datos-personales", "privacy"],
-                ["/politicas/cookies", "cookies"],
-                ["/nosotros", "about"],
-              ] as const
-            ).map(([href, key]) => (
-              <li key={href}>
-                <Link href={href} className="inline-flex min-h-11 items-center hover:text-white md:min-h-9">
-                  {t(`links.${key}`)}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+          <Column id="footer-empresa" title={t("columns.company")}>
+            {COMPANY.map(item)}
+          </Column>
 
-        <div>
-          <h3 className="mb-3 text-xs font-medium tracking-[0.08em] text-hero-muted uppercase">{t("complaintsBook")}</h3>
-          <Link
-            href="/libro-de-reclamaciones"
-            className="inline-flex min-h-11 items-center gap-3 rounded-md border border-[color:var(--pwt-hero-line)] px-4 py-2 text-sm text-white hover:bg-hero-hover"
-          >
-            {/* PENDIENTE(cumplimiento): ícono oficial del Libro de Reclamaciones. */}
-            <BookOpenText aria-hidden size={24} strokeWidth={1.5} />
-            {t("complaintsBook")}
-          </Link>
-          <p className="mt-4 text-sm">{t("esnna", { name: SITE.name })}</p>
+          <Column id="footer-ayuda" title={t("columns.help")}>
+            {HELP.map(item)}
+            <li>
+              <Link href="/libro-de-reclamaciones" className={`${linkClass} gap-2 font-medium text-white`}>
+                <BookOpenText aria-hidden size={18} strokeWidth={1.5} />
+                {t("complaintsBook")}
+              </Link>
+            </li>
+          </Column>
+
+          <Column id="footer-legal" title={t("columns.legal")}>
+            {LEGAL.map(item)}
+          </Column>
         </div>
-      </div>
-      <div className="border-t border-[color:var(--pwt-hero-line)]">
-        <p className="pwt-container py-6 text-sm text-hero-muted">{t("copyright", { year, name: SITE.name })}</p>
+
+        <div className="pwt-container grid gap-8 border-t border-[color:var(--pwt-hero-line)] py-8 text-sm md:grid-cols-3">
+          <div>
+            <h3 className={headingClass}>{t("follow")}</h3>
+            <ul className="flex flex-wrap gap-x-5">
+              {SOCIAL_LINKS.map((s) => (
+                <li key={s.network}>
+                  <a href={s.url} target="_blank" rel="noopener noreferrer" className={`${linkClass} gap-1`}>
+                    {s.network === "facebook" ? "Facebook" : "TripAdvisor"}
+                    <ExternalLink aria-hidden size={14} strokeWidth={1.5} />
+                    <span className="sr-only">{t(`social.${s.network}`, { name: SITE.name })}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className={headingClass}>{t("payments")}</h3>
+            <p className="flex items-start gap-2">
+              <CreditCard aria-hidden size={18} strokeWidth={1.5} className="mt-0.5 shrink-0" />
+              {t("paymentsText")}
+            </p>
+          </div>
+          <div>
+            <Link
+              href="/libro-de-reclamaciones"
+              className="inline-flex min-h-11 items-center gap-3 rounded-md border-2 border-[color:var(--pwt-terracota-600)] bg-white/5 px-4 py-2 text-white hover:bg-hero-hover"
+            >
+              {/* PENDIENTE(cumplimiento): ícono oficial del Libro de Reclamaciones. */}
+              <BookOpenText aria-hidden size={24} strokeWidth={1.5} />
+              <span>
+                <span className="block font-medium">{t("complaintsBook")}</span>
+                <span className="block text-xs text-hero-muted">{t("complaintsBookHint")}</span>
+              </span>
+            </Link>
+          </div>
+        </div>
+
+        <div className="border-t border-[color:var(--pwt-hero-line)]">
+          <div className="pwt-container flex flex-col gap-2 py-6 text-sm text-hero-muted md:flex-row md:justify-between">
+            <p>{t("copyright", { year, name: SITE.name })}</p>
+            <p className="max-w-2xl">{t("esnna", { name: SITE.name })}</p>
+          </div>
+        </div>
       </div>
     </footer>
   );

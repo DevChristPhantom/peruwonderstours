@@ -15,8 +15,8 @@ export const SITE = {
     ruc: null as string | null,
     /** PENDIENTE(cliente): n.º de registro de agencia MINCETUR/GERCETUR. */
     minceturRegistry: null as string | null,
-    /** Dato público del sitio actual (brain/wiki/sources/sitio-actual-andeanperutours.md). A validar. */
-    address: "Calle N 500, Puno" as string | null,
+    /** PENDIENTE(cliente): dirección de la oficina de Puno. El sitio viejo muestra "Calle N 500", que parece un placeholder. */
+    address: null as string | null,
     /** PENDIENTE(cliente): correo del dominio nuevo (@peruwonderstours.com). */
     email: null as string | null,
   },

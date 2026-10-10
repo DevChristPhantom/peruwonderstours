@@ -5,7 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useId, useMemo, useRef, useState } from "react";
 
-import { describeTravelers, travelerCount, type CartLine, type Travelers } from "@/lib/cart/types";
+import { useTravelersText } from "@/hooks/useTravelersText";
+import { useWhatsappTools } from "@/hooks/useWhatsappTools";
+import { travelerCount, type CartLine, type Travelers } from "@/lib/cart/types";
 import { computePaymentPlan } from "@/lib/checkout/payment-plan";
 import { addDays, formatDate, formatMoney, todayInLima } from "@/lib/format";
 import { cartHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
@@ -63,6 +65,7 @@ function LineEditor({ line, onDone }: { line: CartLine; onDone: (newId: string |
 
 function CartItem({ line, onRemove }: { line: CartLine; onRemove: (line: CartLine) => void }) {
   const [editing, setEditing] = useState(false);
+  const travelersText = useTravelersText();
   const editRef = useRef<HTMLButtonElement>(null);
   const pricing = line.unitPricing;
   const fullPayment = line.paymentPolicy.depositPercent >= 100;
@@ -82,7 +85,7 @@ function CartItem({ line, onRemove }: { line: CartLine; onRemove: (line: CartLin
                 </Link>
               </h3>
               <p className="mt-1 text-sm text-foreground-muted">
-                {formatDate(line.date)} · {describeTravelers(line.travelers)}
+                {formatDate(line.date)} · {travelersText(line.travelers)}
               </p>
               {line.destinationLabel ? <p className="text-sm text-foreground-muted">{line.destinationLabel}</p> : null}
             </div>
@@ -145,6 +148,7 @@ function CartItem({ line, onRemove }: { line: CartLine; onRemove: (line: CartLin
 }
 
 export function CartView() {
+  const wa = useWhatsappTools();
   const hydrated = useCartHydrated();
   const lines = useCartStore((s) => s.lines);
   const removeLine = useCartStore((s) => s.removeLine);
@@ -260,7 +264,7 @@ export function CartView() {
               Seguir explorando
             </Link>
             <a
-              href={whatsappHref(cartHelpMessage(lines.map((l) => ({ title: l.title, date: l.date, travelers: l.travelers })), { step: "carrito" }))}
+              href={whatsappHref(cartHelpMessage(wa, lines.map((l) => ({ title: l.title, date: l.date, travelers: l.travelers })), { step: "carrito" }))}
               target="_blank"
               rel="noopener noreferrer"
               className="pwt-link inline-flex min-h-11 items-center gap-2"

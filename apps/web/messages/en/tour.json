@@ -1,0 +1,28 @@
+{
+  "minPax": "Minimum {count, plural, one {# traveler} other {# travelers}}",
+  "difficulty": "Difficulty: {value}",
+  "depositBadge": "Book with a {percent}% deposit",
+  "fullPaymentBadge": "Full payment at booking",
+  "sectionsNav": "Tour sections",
+  "sections": {
+    "summary": "Overview",
+    "itinerary": "Itinerary",
+    "includes": "What's included",
+    "beforeTravel": "Before you go",
+    "policies": "Policies",
+    "faq": "FAQ"
+  },
+  "day": "Day {day}",
+  "notIncludes": "Not included",
+  "recommendations": "Recommendations",
+  "important": "Important",
+  "altitude": {
+    "puno": "Puno sits at 3,800 m (12,500 ft): take your first hours slowly, stay hydrated and avoid heavy meals to prevent altitude sickness (soroche).",
+    "cusco": "Cusco sits at 3,400 m (11,150 ft): rest on your arrival day, stay hydrated and check with your doctor if you have a heart or respiratory condition."
+  },
+  "policiesTitle": "Booking and cancellation policies",
+  "policiesText": "See payment deadlines, changes and refunds in our <link>payment conditions</link>.",
+  "faqTitle": "Frequently asked questions",
+  "bookingAside": "Booking",
+  "related": "Related tours"
+}

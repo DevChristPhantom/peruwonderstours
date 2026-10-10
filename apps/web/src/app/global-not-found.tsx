@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { fontVariables } from "./fonts";
 import "./globals.css";
@@ -23,12 +24,12 @@ export default function GlobalNotFound() {
             We could not find this page.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <a href="/es" className="pwt-link inline-flex min-h-11 items-center">
+            <Link href="/es" className="pwt-link inline-flex min-h-11 items-center">
               Ir al inicio
-            </a>
-            <a href="/en" lang="en" className="pwt-link inline-flex min-h-11 items-center">
+            </Link>
+            <Link href="/en" lang="en" className="pwt-link inline-flex min-h-11 items-center">
               Go to the home page
-            </a>
+            </Link>
           </div>
         </main>
       </body>

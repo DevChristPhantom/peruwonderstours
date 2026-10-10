@@ -17,9 +17,9 @@ import { apiJson, apiRequest } from "./client";
  * - `POST /me/bookings/:code/access` → `{ code, accessToken }` (abrir una reserva propia).
  */
 
-/** Cabecera con la que la API recibe la sesión del cliente (BFF → API). */
-const CUSTOMER_HEADER = "authorization";
-const bearer = (token: string) => `Bearer ${token}`;
+/** Cabecera con la que la API recibe la sesión del cliente (BFF → API): `X-Customer-Token`, sin prefijo. */
+const CUSTOMER_HEADER = "x-customer-token";
+const bearer = (token: string) => token;
 
 export interface ExchangeResult {
   code: string;

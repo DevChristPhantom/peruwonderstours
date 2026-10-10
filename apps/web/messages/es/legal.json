@@ -1,0 +1,24 @@
+{
+  "draftLabel": "Aviso de borrador",
+  "draft": "BORRADOR: este documento está en revisión legal y puede cambiar antes de su publicación definitiva.",
+  "draftWithVersion": "BORRADOR (versión {version}): este documento está en revisión legal y puede cambiar antes de su publicación definitiva.",
+  "spanishOnly": "Este documento solo está disponible en español.",
+  "pages": {
+    "terms": {
+      "title": "Términos y condiciones",
+      "description": "Condiciones de uso del sitio y de contratación de tours y paquetes con Peru Wonders Tours."
+    },
+    "privacy": {
+      "title": "Protección de datos personales",
+      "description": "Cómo tratamos tus datos personales conforme a la Ley N.° 29733 y cómo ejercer tus derechos ARCO."
+    },
+    "payments": {
+      "title": "Condiciones de pago",
+      "description": "Adelantos, saldos, medios de pago, cambios, cancelaciones y reembolsos de tus reservas."
+    },
+    "cookies": {
+      "title": "Política de cookies",
+      "description": "Qué cookies usa este sitio, para qué sirven y cómo puedes gestionarlas."
+    }
+  }
+}

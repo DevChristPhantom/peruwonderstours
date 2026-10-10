@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useForm, useWatch, type Path } from "react-hook-form";
 
-import { submitComplaintAction } from "@/app/es/(site)/libro-de-reclamaciones/actions";
+import { submitComplaintAction } from "@/app/[locale]/(site)/libro-de-reclamaciones/actions";
 import {
   COMPLAINT_DEFINITIONS,
   COMPLAINT_LEGENDS,

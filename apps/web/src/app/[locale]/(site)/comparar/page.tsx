@@ -2,6 +2,7 @@ import { Check, X } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 
 import { CompareFromStore, CompareRemoveButton } from "@/components/compare/CompareControls";
@@ -10,21 +11,23 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { PriceTag } from "@/components/tours/PriceTag";
 import { buttonClass } from "@/components/ui/button-styles";
 import { FavoriteButton } from "@/components/wishlist/FavoriteButton";
+import { localePath } from "@/i18n/paths";
+import type { Locale } from "@/i18n/routing";
 import { getTour, type Tour } from "@/lib/catalog";
-import { formatDuration } from "@/lib/catalog/rules";
+import { durationText } from "@/lib/i18n/units";
+import { alternatesFor, pageMetadata } from "@/lib/seo/metadata";
 import { parseSharedSlugs } from "@/lib/wishlist/share";
 
-export const metadata: Metadata = {
-  title: "Comparar tours",
-  description: "Compara hasta 3 tours lado a lado: duración, destinos, dificultad, qué incluye y precio desde.",
-  alternates: { canonical: "/es/comparar" },
-  robots: { index: false, follow: true },
-};
+export async function generateMetadata({ params }: PageProps<"/[locale]/comparar">): Promise<Metadata> {
+  const locale = (await params).locale as Locale;
+  const t = await getTranslations({ locale, namespace: "comparePage" });
+  return pageMetadata({ locale, title: t("title"), description: t("description"), paths: alternatesFor("/comparar"), index: false });
+}
 
 /** Muestra hasta este número de ítems de "incluye"; el resto, con un enlace a la ficha. */
 const LIST_LIMIT = 8;
 
-function ItemList({ items, icon, empty }: { items: string[]; icon: "check" | "x"; empty: string }) {
+function ItemList({ items, icon, empty, more }: { items: string[]; icon: "check" | "x"; empty: string; more: (count: number) => string }) {
   if (!items.length) return <p className="text-foreground-muted">{empty}</p>;
   const shown = items.slice(0, LIST_LIMIT);
   return (
@@ -39,95 +42,100 @@ function ItemList({ items, icon, empty }: { items: string[]; icon: "check" | "x"
           <span>{item}</span>
         </li>
       ))}
-      {items.length > LIST_LIMIT ? <li className="text-foreground-muted">y {items.length - LIST_LIMIT} más</li> : null}
+      {items.length > LIST_LIMIT ? <li className="text-foreground-muted">{more(items.length - LIST_LIMIT)}</li> : null}
     </ul>
   );
 }
 
 /**
- * Comparador (HU-B.A8). La selección viaja en la URL (`?tours=a,b,c`): compartible y sin datos
- * personales. SSR para leer el catálogo actualizado (precios desde, incluye).
+ * Comparador (HU-B.A8). La selección viaja en la URL (`?tours=a,b,c`, claves de tour): compartible y
+ * sin datos personales. SSR para leer el catálogo actualizado (precios desde, incluye).
  * TODO(HU-B.A1/A3): filas de altitud, esfuerzo, cancelación y salidas cuando existan esos datos.
  */
-export default async function ComparePage({ searchParams }: PageProps<"/es/comparar">) {
-  const params = await searchParams;
-  const raw = params[COMPARE_PARAM];
+export default async function ComparePage({ params, searchParams }: PageProps<"/[locale]/comparar">) {
+  const locale = (await params).locale as Locale;
+  setRequestLocale(locale);
+  const query = await searchParams;
+  const raw = query[COMPARE_PARAM];
   const slugs = parseSharedSlugs(Array.isArray(raw) ? raw[0] : raw).slice(0, 3);
-  const found = await Promise.all(slugs.map(async (slug) => ({ slug, tour: await getTour(slug) })));
+  const [found, t, tu, tc] = await Promise.all([
+    Promise.all(slugs.map(async (slug) => ({ slug, tour: await getTour(slug, locale) }))),
+    getTranslations("comparePage"),
+    getTranslations("units"),
+    getTranslations("common"),
+  ]);
   const tours = found.filter((f): f is { slug: string; tour: Tour } => f.tour !== null);
   const missing = found.filter((f) => f.tour === null).map((f) => f.slug);
+  const pending = t("pending");
+  const more = (count: number) => t("more", { count });
+  const toursHref = localePath(locale, "/tours");
 
-  const rows: { label: string; render: (t: Tour) => ReactNode }[] = [
-    { label: "Precio desde", render: (t) => <PriceTag pricing={t.pricing} policy={t.paymentPolicy} /> },
-    { label: "Duración", render: (t) => formatDuration(t.durationDays, t.durationNights) },
-    { label: "Destinos", render: (t) => (t.destinationNames.length ? t.destinationNames.join(", ") : "Varios destinos") },
-    { label: "Dificultad", render: (t) => t.difficulty ?? "Por confirmar" },
-    { label: "Mínimo de viajeros", render: (t) => t.minPax },
-    { label: "Incluye", render: (t) => <ItemList items={t.includes} icon="check" empty="Por confirmar" /> },
-    { label: "No incluye", render: (t) => <ItemList items={t.notIncludes} icon="x" empty="Por confirmar" /> },
+  const rows: { label: string; render: (tour: Tour) => ReactNode }[] = [
+    { label: t("rows.price"), render: (tour) => <PriceTag pricing={tour.pricing} policy={tour.paymentPolicy} /> },
+    { label: t("rows.duration"), render: (tour) => durationText(tu, tour.durationDays, tour.durationNights) },
+    { label: t("rows.destinations"), render: (tour) => (tour.destinationNames.length ? tour.destinationNames.join(", ") : tc("severalDestinations")) },
+    { label: t("rows.difficulty"), render: (tour) => tour.difficulty ?? pending },
+    { label: t("rows.minPax"), render: (tour) => tour.minPax },
+    { label: t("rows.includes"), render: (tour) => <ItemList items={tour.includes} icon="check" empty={pending} more={more} /> },
+    { label: t("rows.notIncludes"), render: (tour) => <ItemList items={tour.notIncludes} icon="x" empty={pending} more={more} /> },
   ];
 
   return (
     <div className="pwt-container pt-8 pb-20">
       <Breadcrumbs
         items={[
-          { name: "Inicio", path: "/es" },
-          { name: "Tours", path: "/es/tours" },
-          { name: "Comparar", path: "/es/comparar" },
+          { name: tc("home"), path: localePath(locale, "/") },
+          { name: tc("tours"), path: toursHref },
+          { name: t("title"), path: localePath(locale, "/comparar") },
         ]}
       />
-      <h1 className="mt-4 font-display text-h1 font-medium">Comparar tours</h1>
+      <h1 className="mt-4 font-display text-h1 font-medium">{t("title")}</h1>
       <CompareFromStore hasSelection={slugs.length > 0} />
 
       {missing.length ? (
         <p className="mt-6 rounded-md bg-warning-soft p-4 text-sm text-warning" role="status">
-          {missing.length === 1 ? "Un tour de esta comparación ya no está disponible." : `${missing.length} tours de esta comparación ya no están disponibles.`}
+          {t("missing", { count: missing.length })}
         </p>
       ) : null}
 
       {tours.length === 0 ? (
         <div className="mt-8 rounded-lg border border-dashed border-border-strong p-8">
-          <h2 className="text-h3 font-medium">Elige 2 o 3 tours para comparar</h2>
-          <p className="mt-2 text-foreground-muted">Marca “Comparar” en las tarjetas de los tours que te interesen.</p>
-          <Link href="/es/tours" className={buttonClass("secondary", "lg", "mt-6")}>
-            Ver tours
+          <h2 className="text-h3 font-medium">{t("emptyTitle")}</h2>
+          <p className="mt-2 text-foreground-muted">{t("emptyText")}</p>
+          <Link href={toursHref} className={buttonClass("secondary", "lg", "mt-6")}>
+            {t("viewTours")}
           </Link>
         </div>
       ) : (
         <>
           {tours.length === 1 ? (
             <p className="mt-4 text-foreground-muted">
-              Agrega al menos otro tour para comparar.{" "}
-              <Link href="/es/tours" className="pwt-link">
-                Ver tours
+              {t("addAnother")}{" "}
+              <Link href={toursHref} className="pwt-link">
+                {t("viewTours")}
               </Link>
             </p>
           ) : null}
           {/* Región desplazable con teclado en móvil (tabIndex + etiqueta). */}
-          <div
-            className="mt-8 overflow-x-auto rounded-lg border border-border bg-surface"
-            tabIndex={0}
-            role="region"
-            aria-label="Tabla comparativa, desplázate horizontalmente para ver todos los tours"
-          >
+          <div className="mt-8 overflow-x-auto rounded-lg border border-border bg-surface" tabIndex={0} role="region" aria-label={t("tableLabel")}>
             <table className="w-full min-w-[720px] table-fixed border-collapse text-left text-sm">
-              <caption className="sr-only">Comparación de {tours.map((t) => t.tour.shortTitle).join(", ")}</caption>
+              <caption className="sr-only">{t("caption", { titles: tours.map((f) => f.tour.shortTitle).join(", ") })}</caption>
               <thead>
                 <tr>
                   <td className="w-40 border-b border-border p-4" />
                   {tours.map(({ tour }) => (
-                    <th key={tour.slug} scope="col" className="border-b border-l border-border p-4 align-top font-normal">
+                    <th key={tour.key} scope="col" className="border-b border-l border-border p-4 align-top font-normal">
                       <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md bg-surface-muted">
                         {tour.image ? <Image src={tour.image.src} alt="" fill sizes="320px" className="object-cover" /> : null}
                       </div>
-                      <p className="mt-3 text-h4 font-medium">
+                      <p lang={tour.fallback ? "es-PE" : undefined} className="mt-3 text-h4 font-medium">
                         <Link href={tour.path} className="hover:underline">
                           {tour.shortTitle}
                         </Link>
                       </p>
                       <div className="mt-3 flex flex-wrap gap-2">
-                        <FavoriteButton slug={tour.slug} title={tour.shortTitle} destinationSlugs={tour.destinationSlugs} />
-                        <CompareRemoveButton slug={tour.slug} title={tour.shortTitle} remaining={tours.map((t) => t.slug)} />
+                        <FavoriteButton slug={tour.key} title={tour.shortTitle} destinationSlugs={tour.destinationSlugs} />
+                        <CompareRemoveButton slug={tour.key} title={tour.shortTitle} remaining={tours.map((f) => f.tour.key)} />
                       </div>
                     </th>
                   ))}
@@ -140,7 +148,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/es/compa
                       {row.label}
                     </th>
                     {tours.map(({ tour }) => (
-                      <td key={tour.slug} className="border-l border-border p-4 align-top">
+                      <td key={tour.key} className="border-l border-border p-4 align-top">
                         {row.render(tour)}
                       </td>
                     ))}
@@ -148,12 +156,12 @@ export default async function ComparePage({ searchParams }: PageProps<"/es/compa
                 ))}
                 <tr>
                   <th scope="row" className="p-4 align-top font-medium">
-                    <span className="sr-only">Acciones</span>
+                    <span className="sr-only">{t("actions")}</span>
                   </th>
                   {tours.map(({ tour }) => (
-                    <td key={tour.slug} className="border-l border-border p-4">
+                    <td key={tour.key} className="border-l border-border p-4">
                       <Link href={`${tour.path}#reservar`} className={buttonClass("secondary", "md", "w-full")}>
-                        Ver fechas
+                        {t("seeDates")}
                       </Link>
                     </td>
                   ))}
@@ -161,10 +169,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/es/compa
               </tbody>
             </table>
           </div>
-          <p className="mt-4 text-sm text-foreground-muted">
-            Altitud, esfuerzo, política de cancelación y salidas se agregarán a la comparación cuando estén publicados
-            para cada tour.
-          </p>
+          <p className="mt-4 text-sm text-foreground-muted">{t("footnote")}</p>
         </>
       )}
     </div>

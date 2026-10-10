@@ -1,0 +1,29 @@
+{
+  "title": "Testimonios de viajeros",
+  "description": "Opiniones de viajeros que recorrieron el Perú con nosotros, incluidas reseñas publicadas en TripAdvisor.",
+  "empty": "Aún no hay testimonios publicados.",
+  "leaveCta": "Deja tu testimonio",
+  "leave": {
+    "title": "Deja tu testimonio",
+    "description": "Cuéntanos cómo fue tu viaje con nosotros. Publicamos los testimonios después de revisarlos.",
+    "intro": "Tu opinión ayuda a otros viajeros. Revisamos cada testimonio antes de publicarlo y solo mostramos tu nombre y país; nunca tu correo.",
+    "name": "Nombre que se mostrará",
+    "country": "País (opcional)",
+    "email": "Correo electrónico (no se publica)",
+    "rating": "Calificación",
+    "ratingOption": "{count, plural, one {# estrella} other {# estrellas}}",
+    "body": "Tu testimonio",
+    "travelDate": "Fecha del viaje (opcional)",
+    "publishConsent": "Autorizo publicar mi testimonio con mi nombre y país en este sitio.",
+    "privacy": "Acepto el tratamiento de mis datos según la <link>Política de protección de datos personales</link>.",
+    "submit": "Enviar testimonio",
+    "sending": "Enviando…",
+    "success": "¡Gracias por tu testimonio! Lo publicaremos después de revisarlo.",
+    "invalid": "Revisa los campos marcados.",
+    "busy": "Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo.",
+    "unavailable": "No pudimos enviar tu testimonio en este momento. Intenta de nuevo en unos minutos.",
+    "required": "Este campo es obligatorio.",
+    "invalidEmail": "Ingresa un correo válido.",
+    "consentRequired": "Necesitamos ambas autorizaciones para publicar tu testimonio."
+  }
+}

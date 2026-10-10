@@ -1,0 +1,730 @@
+{
+  "about": {
+    "title": "Nosotros",
+    "description": "{name}: agencia de viajes con oficina en Puno.",
+    "notice": "Contenido en preparación: la historia, el equipo y los datos de registro de la agencia se publicarán cuando el cliente los confirme.",
+    "body": "{name} organiza tours y paquetes por el sur del Perú desde su oficina en Puno: Lago Titicaca, Cusco y Machu Picchu, Arequipa y el Colca."
+  },
+  "access": {
+    "codeLabel": "Código",
+    "emailLabel": "Correo electrónico",
+    "emailHint": "El mismo correo que usaste al registrarlo.",
+    "submit": "Enviarme el enlace",
+    "sending": "Enviando…",
+    "sent": "Si los datos coinciden, en unos minutos recibirás un correo con un enlace para entrar. El enlace sirve una sola vez y vence en 30 minutos. Revisa también tu carpeta de spam.",
+    "invalid": "Revisa el código y el correo electrónico.",
+    "busy": "Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo.",
+    "unavailable": "No pudimos enviar el enlace en este momento. Intenta de nuevo en unos minutos o escríbenos por WhatsApp.",
+    "expired": "Este enlace ya se usó o venció. Pide uno nuevo abajo.",
+    "linkNotFound": "Este enlace no es válido. Pide uno nuevo abajo.",
+    "opening": "Abriendo…",
+    "privacy": "Por tu seguridad, nunca mostramos datos de una reserva o reclamo sin verificar tu correo.",
+    "booking": {
+      "title": "Acceder a mi reserva",
+      "description": "Recibe en tu correo un enlace seguro para ver tu reserva, tu voucher y pagar el saldo.",
+      "intro": "Ingresa el código de tu reserva y el correo con el que reservaste. Te enviaremos un enlace seguro para abrirla.",
+      "codePlaceholder": "PWT-2026-000123",
+      "tokenTitle": "Abre tu reserva",
+      "tokenText": "Pulsa el botón para entrar a tu reserva en este navegador. El enlace sirve una sola vez.",
+      "open": "Abrir mi reserva"
+    },
+    "complaint": {
+      "title": "Consultar mi reclamo",
+      "description": "Consulta el estado y la respuesta de tu Hoja de Reclamación con un enlace seguro enviado a tu correo.",
+      "intro": "Ingresa el código de tu Hoja de Reclamación y el correo que registraste. Te enviaremos un enlace seguro para consultarla.",
+      "codePlaceholder": "LR-2026-000123",
+      "tokenTitle": "Consulta tu Hoja de Reclamación",
+      "tokenText": "Pulsa el botón para ver tu Hoja de Reclamación en este navegador. El enlace sirve una sola vez.",
+      "open": "Ver mi reclamo",
+      "notFound": "No pudimos abrir esta hoja en este navegador. Pide un enlace nuevo con tu código y correo.",
+      "sheet": "Hoja de Reclamación {code}",
+      "sheetNumber": "N.° de hoja",
+      "status": "Estado",
+      "submittedAt": "Presentada",
+      "responseDueAt": "Respuesta a más tardar",
+      "kind": "Tipo",
+      "detail": "Detalle",
+      "request": "Pedido del consumidor",
+      "answer": "Respuesta del proveedor",
+      "answeredAt": "Respondida el {date}",
+      "noAnswer": "Aún no hay respuesta. Te responderemos por el medio que elegiste dentro del plazo legal.",
+      "types": {
+        "reclamo": "Reclamo",
+        "queja": "Queja"
+      },
+      "statuses": {
+        "received": "Recibida",
+        "in_review": "En revisión",
+        "answered": "Respondida",
+        "closed": "Cerrada",
+        "settled": "Solucionada"
+      },
+      "newRequest": "Consultar otra hoja"
+    }
+  },
+  "blog": {
+    "title": "Blog de viajes",
+    "description": "Guías y consejos para viajar por el Perú: Machu Picchu, Cusco, el Lago Titicaca, trenes, boletos y datos útiles.",
+    "empty": "Pronto publicaremos nuevas guías de viaje.",
+    "readMore": "Leer artículo",
+    "readMoreLabel": "Leer artículo: {title}",
+    "publishedOn": "Publicado el {date}",
+    "backToBlog": "Volver al blog",
+    "related": "Tours para este viaje",
+    "cta": "¿Te ayudamos a planear tu viaje?",
+    "ctaText": "Escríbenos por WhatsApp y armamos contigo el itinerario ideal.",
+    "ctaButton": "Planear por WhatsApp",
+    "ctaMessage": "Hola, leí su blog y quiero planear un viaje por el Perú."
+  },
+  "booking": {
+    "title": "Reserva este tour",
+    "fromBlock": "Desde <amount></amount> por adulto",
+    "onRequestHelp": "Cuéntanos tu fecha y cantidad de viajeros y te enviamos el precio.",
+    "chooseDate": "Fecha de salida",
+    "dateHelp": "Elige una fecha disponible en el calendario.",
+    "chooseDateError": "Elige una fecha de salida.",
+    "minDateError": "La fecha más próxima disponible es el {date}.",
+    "notEnoughSeats": "{count, plural, =0 {No quedan cupos en esa fecha.} one {Solo queda # cupo en esa fecha.} other {Solo quedan # cupos en esa fecha.}}",
+    "minPax": "Este tour sale con un mínimo de {count, plural, one {# viajero} other {# viajeros}}.",
+    "totalFor": "Total para {travelers}",
+    "fullPolicy": "Este tour se paga completo al reservar.",
+    "closeDeparture": "Las salidas con menos de {days} días de anticipación se pagan completas.",
+    "depositToday": "Hoy pagas el {percent}% (<amount></amount>).",
+    "depositTodayNoAmount": "Hoy pagas el {percent}% de adelanto.",
+    "balanceUntil": "El saldo se paga hasta el {date}.",
+    "balanceBefore": "El saldo se paga hasta {days} días antes de la salida.",
+    "inCart": "Ya está en tu carrito para el {date}",
+    "viewCart": "Ver carrito",
+    "addToCart": "Agregar al carrito",
+    "added": "Agregado",
+    "bookNow": "Reservar ahora",
+    "toastAdded": "Tour agregado a tu carrito.",
+    "toastUpdated": "Actualizamos el tour en tu carrito.",
+    "announceAdded": "{title} agregado al carrito. {count, plural, one {Tienes # tour en el carrito.} other {Tienes # tours en el carrito.}}",
+    "announceUpdated": "{title} actualizado en el carrito. {count, plural, one {Tienes # tour en el carrito.} other {Tienes # tours en el carrito.}}",
+    "trust": "Pago seguro. Tu cupo queda reservado al confirmar el pago.",
+    "questions": "¿Dudas? Escríbenos por WhatsApp",
+    "seeDates": "Ver fechas",
+    "floating": "Reservar",
+    "floatingLabel": "Reservar: elegir fecha y viajeros"
+  },
+  "calendar": {
+    "prevMonth": "Mes anterior",
+    "nextMonth": "Mes siguiente",
+    "loading": "Cargando salidas…",
+    "error": "No pudimos cargar las salidas. Intenta de nuevo o escríbenos por WhatsApp.",
+    "legend": "Leyenda del calendario",
+    "seats": "{count, plural, one {# cupo libre} other {# cupos libres}}",
+    "notEnough": "no alcanza para {count, plural, one {# viajero} other {# viajeros}}",
+    "from": "desde {price}",
+    "selected": "seleccionada",
+    "noMark": "Sin marca: sin salida programada",
+    "state": {
+      "available": "Disponible",
+      "few": "Últimos cupos",
+      "soldOut": "Agotado",
+      "closed": "Cerrado",
+      "none": "Sin salida",
+      "past": "Fecha pasada"
+    },
+    "chosen": "Fecha elegida: {date}",
+    "chosenSeats": "{count, plural, one {# cupo libre} other {# cupos libres}}",
+    "startTime": "inicio {time}",
+    "fallbackError": "No pudimos cargar el calendario de salidas. Elige una fecha y la confirmamos contigo.",
+    "fallbackNoCalendar": "Este tour sale a pedido: elige tu fecha y confirmamos la disponibilidad."
+  },
+  "collection": {
+    "destinationEyebrow": "Destino",
+    "destinationTitle": "Tours en {name}",
+    "destinationDescription": "Tours y excursiones en {name} con guías locales, salidas confirmadas y reserva con adelanto.",
+    "categoryEyebrow": "Tipo de tour",
+    "categoryDescription": "{name}: tours por el Perú con guías locales y reserva con adelanto.",
+    "available": "{count, plural, =0 {Sin tours disponibles por ahora} one {# tour disponible} other {# tours disponibles}}",
+    "filterByDuration": "Filtrar por duración y fecha",
+    "empty": "Todavía no hay tours publicados aquí."
+  },
+  "common": {
+    "home": "Inicio",
+    "tours": "Tours",
+    "destinations": "Destinos",
+    "severalDestinations": "Varios destinos",
+    "fallbackNotice": "Contenido disponible solo en español por ahora.",
+    "viewAllTours": "Ver todos los tours",
+    "breadcrumbs": "Ruta de navegación",
+    "logoAlt": "Peru Wonders Tours",
+    "logoHome": "Peru Wonders Tours, ir al inicio",
+    "pending": "Por confirmar",
+    "whatsappUs": "Escríbenos por WhatsApp",
+    "skipToContent": "Saltar al contenido principal"
+  },
+  "compare": {
+    "toggle": "Comparar",
+    "toggleLabel": "Comparar {title}",
+    "addedAnnounce": "{title} agregado al comparador ({count} de {max}).",
+    "addedToast": "{count, plural, one {# tour en el comparador} other {# tours en el comparador}} (máximo {max}).",
+    "removedAnnounce": "{title} quitado del comparador.",
+    "full": "Puedes comparar hasta {max} tours a la vez.",
+    "fullAnnounce": "No se agregó {title}: el comparador ya tiene {max} tours.",
+    "compareNow": "Comparar ahora",
+    "trayLabel": "Comparador de tours",
+    "trayTitle": "Comparar tours ({count} de {max})",
+    "removeLabel": "Quitar {title} del comparador",
+    "clear": "Vaciar",
+    "clearedAnnounce": "Comparador vacío.",
+    "compareCount": "Comparar {count}",
+    "chooseTwo": "Elige al menos 2 tours para comparar.",
+    "remove": "Quitar",
+    "removeFromTable": "Quitar {title} de la comparación"
+  },
+  "comparePage": {
+    "title": "Comparar tours",
+    "description": "Compara hasta 3 tours lado a lado: duración, destinos, dificultad, qué incluye y precio desde.",
+    "missing": "{count, plural, one {Un tour de esta comparación ya no está disponible.} other {# tours de esta comparación ya no están disponibles.}}",
+    "emptyTitle": "Elige 2 o 3 tours para comparar",
+    "emptyText": "Marca “Comparar” en las tarjetas de los tours que te interesen.",
+    "viewTours": "Ver tours",
+    "addAnother": "Agrega al menos otro tour para comparar.",
+    "tableLabel": "Tabla comparativa, desplázate horizontalmente para ver todos los tours",
+    "caption": "Comparación de {titles}",
+    "actions": "Acciones",
+    "seeDates": "Ver fechas",
+    "more": "y {count} más",
+    "pending": "Por confirmar",
+    "footnote": "Altitud, esfuerzo, política de cancelación y salidas se agregarán a la comparación cuando estén publicados para cada tour.",
+    "rows": {
+      "price": "Precio desde",
+      "duration": "Duración",
+      "destinations": "Destinos",
+      "difficulty": "Dificultad",
+      "minPax": "Mínimo de viajeros",
+      "includes": "Incluye",
+      "notIncludes": "No incluye"
+    }
+  },
+  "complaints": {
+    "notice": {
+      "label": "Libro de Reclamaciones",
+      "text": "Conforme al Código de Protección y Defensa del Consumidor, {name} cuenta con un Libro de Reclamaciones virtual a tu disposición."
+    },
+    "page": {
+      "title": "Libro de Reclamaciones",
+      "description": "Libro de Reclamaciones virtual de {name} (Ley 29571). Registra tu reclamo o queja sin crear una cuenta.",
+      "intro": "Conforme al Código de Protección y Defensa del Consumidor, {name} pone a tu disposición este Libro de Reclamaciones virtual. No necesitas una cuenta ni una reserva para usarlo. Si necesitas ayuda para llenarlo, escríbenos por WhatsApp al {whatsapp}.",
+      "spanishForm": ""
+    }
+  },
+  "contact": {
+    "title": "Contáctenos",
+    "description": "Escríbenos para cotizar tu viaje por el Perú o resolver tus dudas. Respondemos por correo o WhatsApp.",
+    "intro": "Cuéntanos qué viaje tienes en mente y te respondemos a la brevedad. Si prefieres, escríbenos por WhatsApp.",
+    "whatsapp": "WhatsApp: {number}",
+    "office": "Oficina: {address}",
+    "hours": "Atención: lunes a sábado, de 09:00 a 19:00 (hora de Perú)",
+    "formTitle": "Envíanos un mensaje",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "phone": "Teléfono (opcional)",
+    "subject": "Asunto",
+    "message": "Mensaje",
+    "messageHint": "Fechas aproximadas, número de viajeros y tours que te interesan.",
+    "privacy": "Acepto el tratamiento de mis datos para responder esta consulta, según la <link>Política de protección de datos personales</link>.",
+    "submit": "Enviar mensaje",
+    "sending": "Enviando…",
+    "success": "¡Gracias! Recibimos tu mensaje y te responderemos pronto.",
+    "invalid": "Revisa los campos marcados.",
+    "busy": "Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo.",
+    "unavailable": "No pudimos enviar tu mensaje en este momento. Intenta de nuevo o escríbenos por WhatsApp.",
+    "required": "Este campo es obligatorio.",
+    "invalidEmail": "Ingresa un correo válido.",
+    "privacyRequired": "Debes aceptar la política de datos personales para enviar el mensaje."
+  },
+  "destinationsPage": {
+    "title": "Destinos en Perú",
+    "description": "Conoce Puno y el Lago Titicaca, Cusco y Machu Picchu, Arequipa y el Colca, Ica-Paracas y Lima con tours de guías locales."
+  },
+  "explorer": {
+    "metaTitle": "Tours en Perú",
+    "metaDescription": "Busca y filtra tours en Puno, Cusco, Arequipa, Ica y Lima por destino, tipo, duración y fecha de salida.",
+    "itemListName": "Tours en Perú",
+    "title": "Tours en Perú",
+    "filtersButton": "{count, plural, =0 {Filtros} other {Filtros (#)}}",
+    "formLabel": "Filtrar tours",
+    "search": "Buscar",
+    "placeholder": "Ej.: Colca 2 días en mayo para 2 adultos",
+    "searchHelp": "Escribe lo que buscas y lo convertimos en filtros.",
+    "destination": "Destino",
+    "allDestinations": "Todos los destinos",
+    "category": "Tipo de tour",
+    "allCategories": "Todos los tipos",
+    "duration": "Duración",
+    "anyDuration": "Cualquiera",
+    "date": "Fecha de salida",
+    "month": "Mes de viaje",
+    "anyMonth": "Cualquier mes",
+    "travelersLabel": "Adultos",
+    "notSpecified": "Sin especificar",
+    "travelers": "{count, plural, one {# adulto} other {# adultos}}",
+    "children": "{count, plural, one {# niño} other {# niños}}",
+    "clear": "Limpiar filtros",
+    "results": "{count, plural, =0 {No hay tours con estos filtros} one {# tour encontrado} other {# tours encontrados}}",
+    "applied": "Filtros aplicados",
+    "removeChip": "Quitar filtro: {label}",
+    "chips": {
+      "destination": "Destino: {value}",
+      "category": "Tipo: {value}",
+      "duration": "Duración: {value}",
+      "date": "Fecha: {value}",
+      "month": "Mes: {value}",
+      "text": "Texto: {value}",
+      "travelersChildren": "{adults, plural, one {# adulto} other {# adultos}} y {children, plural, one {# niño} other {# niños}}"
+    },
+    "understood": {
+      "destination": "destino {value}",
+      "category": "tipo {value}",
+      "month": "mes de {value}",
+      "duration": "duración {value}"
+    },
+    "understoodAnnounce": "Entendimos: {list}. Filtros actualizados.",
+    "searchedDate": "Salida el {date}",
+    "searchedMonth": "Salidas en {month}",
+    "searchedNoDate": "Sin fecha elegida",
+    "availabilityLoading": "Consultando disponibilidad…",
+    "availabilityError": "No pudimos consultar la disponibilidad; la confirmamos al reservar.",
+    "availabilityNote": "La disponibilidad se confirma al elegir la fecha en cada tour.",
+    "emptyTitle": "No encontramos tours con esos filtros",
+    "emptyText": "Prueba quitando algún filtro o escríbenos por WhatsApp y te ayudamos a armar tu viaje.",
+    "suggestions": "Tours que podrían interesarte"
+  },
+  "favorites": {
+    "button": {
+      "label": "Guardar {title} en favoritos",
+      "inline": "Guardar",
+      "removeTitle": "Quitar de favoritos",
+      "saved": "Tour guardado en favoritos.",
+      "view": "Ver favoritos",
+      "noStorage": "Tu navegador no permite guardar favoritos en este dispositivo.",
+      "announceAdded": "{title} guardado en favoritos. {count, plural, one {Tienes # tour guardado.} other {Tienes # tours guardados.}}",
+      "announceRemoved": "{title} quitado de favoritos."
+    },
+    "title": "Mis favoritos",
+    "metaDescription": "Los tours que guardaste en este navegador. Compártelos con quien viaja contigo.",
+    "intro": "Guarda los tours que te interesan con el corazón y compáralos con calma.",
+    "savedCount": "{count, plural, one {# tour guardado} other {# tours guardados}} en este dispositivo.",
+    "loading": "Cargando favoritos…",
+    "noStorage": "Tu navegador no permite guardar favoritos (modo privado o almacenamiento bloqueado).",
+    "share": "Compartir lista",
+    "shareLink": "Copiar enlace de la lista",
+    "shareTitle": "Mis tours favoritos en Perú",
+    "shareText": "Mira los tours que guardé para mi viaje al Perú:",
+    "shared": "Lista compartida.",
+    "copiedAnnounce": "Enlace copiado al portapapeles.",
+    "copiedToast": "Enlace copiado. Pégalo donde quieras compartirlo.",
+    "copyFailed": "No se pudo copiar el enlace. Cópialo desde la barra de direcciones.",
+    "remove": "Quitar",
+    "removed": "{title} quitado de favoritos.",
+    "emptyTitle": "Aún no tienes favoritos",
+    "emptyText": "Toca el corazón de cualquier tour para guardarlo aquí.",
+    "viewTours": "Explorar tours",
+    "sharedTitle": "Lista de tours compartida",
+    "sharedText": "{count, plural, one {Te compartieron # tour.} other {Te compartieron # tours.}}",
+    "saveAll": "Guardar todos en mis favoritos",
+    "savedMany": "Tours guardados en tus favoritos.",
+    "announceSavedMany": "{count, plural, =0 {No había tours nuevos para guardar.} one {Se guardó # tour en favoritos.} other {Se guardaron # tours en favoritos.}}",
+    "viewMine": "Ver mis favoritos",
+    "unavailable": "No disponible",
+    "unavailableText": "Este tour ya no está publicado.",
+    "unknownTour": "Tour no disponible"
+  },
+  "filters": {
+    "duration": {
+      "1": "1 día",
+      "2-3": "2 a 3 días",
+      "4-6": "4 a 6 días",
+      "7+": "7 días o más"
+    }
+  },
+  "footer": {
+    "title": "Pie de página",
+    "tagline": "Agencia de viajes con oficina en Puno. Tours por el Lago Titicaca, Cusco, Machu Picchu, Arequipa y la costa sur del Perú.",
+    "short": {
+      "terms": "Términos",
+      "payments": "Pagos",
+      "privacy": "Privacidad"
+    },
+    "complaintsBook": "Libro de Reclamaciones",
+    "complaintsBookHint": "Registra tu reclamo o queja en línea",
+    "legal": {
+      "businessName": "Razón social",
+      "ruc": "RUC",
+      "mincetur": "Registro MINCETUR",
+      "office": "Oficina",
+      "email": "Correo"
+    },
+    "columns": {
+      "tours": "Tours",
+      "company": "Empresa",
+      "help": "Ayuda",
+      "legal": "Legal"
+    },
+    "destinations": {
+      "puno": "Puno y Lago Titicaca",
+      "cusco": "Cusco y Machu Picchu",
+      "arequipa": "Arequipa y Colca",
+      "ica": "Ica y Paracas",
+      "lima": "Lima"
+    },
+    "links": {
+      "allTours": "Todos los tours",
+      "tourTypes": "Tipos de tours",
+      "about": "Nosotros",
+      "blog": "Blog de viajes",
+      "reviews": "Testimonios",
+      "contact": "Contáctenos",
+      "myBooking": "Acceder a mi reserva",
+      "complaintStatus": "Consultar mi reclamo",
+      "favorites": "Mis favoritos",
+      "terms": "Términos y condiciones",
+      "payments": "Condiciones de pago",
+      "privacy": "Protección de datos personales",
+      "cookies": "Política de cookies"
+    },
+    "hours": "Lunes a sábado, 09:00 a 19:00 (hora de Perú)",
+    "whatsapp": "WhatsApp {number}",
+    "follow": "Síguenos",
+    "social": {
+      "facebook": "{name} en Facebook",
+      "tripadvisor": "{name} en TripAdvisor"
+    },
+    "payments": "Medios de pago",
+    "paymentsText": "Tarjetas Visa y Mastercard, y transferencia bancaria.",
+    "esnna": "{name} rechaza la explotación sexual de niñas, niños y adolescentes. Si conoces algún caso, denúncialo a la Línea 100.",
+    "copyright": "© {year} {name}. Todos los derechos reservados."
+  },
+  "gallery": {
+    "enlarge": "Ampliar foto {n} de {total}",
+    "counter": "{n} / {total}",
+    "previous": "Foto anterior",
+    "next": "Foto siguiente",
+    "viewAll": "Ver las {total} fotos",
+    "dialog": "Galería de fotos: {title}",
+    "close": "Cerrar galería"
+  },
+  "header": {
+    "mainNav": "Navegación principal",
+    "mobileNav": "Menú del sitio",
+    "panels": {
+      "descubre": "Descubre",
+      "viajes": "Viajes",
+      "destinos": "Destinos"
+    },
+    "about": "Nosotros",
+    "contact": "Contáctenos",
+    "myBookings": "Mis reservas",
+    "book": "Reservar",
+    "openMenu": "Abrir menú",
+    "closeMenu": "Cerrar menú",
+    "language": "Idioma",
+    "languageButton": "Idioma: {language}. Cambiar idioma",
+    "languageName": {
+      "es": "Español",
+      "en": "English"
+    },
+    "favoritesLabel": "{count, plural, =0 {Favoritos} one {Favoritos, # tour guardado} other {Favoritos, # tours guardados}}",
+    "cartLabel": "{count, plural, =0 {Carrito vacío} one {Carrito, # tour} other {Carrito, # tours}}",
+    "whatsappMessage": "Hola, quiero información sobre sus tours en Perú."
+  },
+  "home": {
+    "metaTitle": "Tours en Puno, Lago Titicaca, Cusco y Machu Picchu",
+    "hero": {
+      "title": "Viaja por el Perú con quienes lo conocen",
+      "lead": "Tours al Lago Titicaca, Machu Picchu, el Colca y la costa sur con guías locales, salidas confirmadas y reserva con adelanto.",
+      "imageAlt": "Islas flotantes de los Uros en el Lago Titicaca, Puno",
+      "scroll": "Desliza para descubrir"
+    },
+    "featured": {
+      "title": "Tours destacados",
+      "viewAll": "Ver los {count} tours",
+      "tabsLabel": "Filtrar tours destacados",
+      "oneDayLink": "Ver tours de un día",
+      "groups": {
+        "all": "Todos",
+        "altiplano": "Altiplano y Titicaca",
+        "machuPicchu": "Machu Picchu",
+        "multi": "Multidestino"
+      },
+      "emptyFeatured": "Pronto publicaremos nuestros tours destacados.",
+      "emptyGroup": "Aún no hay tours en este grupo."
+    },
+    "destinations": {
+      "title": "Destinos",
+      "viewAll": "Ver todos los destinos",
+      "railLabel": "Destinos del Perú",
+      "previous": "Destinos anteriores",
+      "next": "Más destinos",
+      "tourCount": "{count, plural, =0 {Próximamente} one {# tour} other {# tours}}"
+    },
+    "whyUs": {
+      "title": "¿Por qué viajar con nosotros?",
+      "toursPublished": "Tours publicados",
+      "destinations": "Destinos",
+      "reasons": {
+        "office": {
+          "title": "Oficina en Puno",
+          "text": "Somos operadores locales: te atendemos antes, durante y después del viaje."
+        },
+        "guides": {
+          "title": "Guías locales",
+          "text": "Guías que viven en cada destino y comparten su historia y cultura."
+        },
+        "deposit": {
+          "title": "Reserva con adelanto",
+          "text": "Asegura tu cupo con un adelanto y paga el saldo antes de la salida."
+        },
+        "whatsapp": {
+          "title": "Atención por WhatsApp",
+          "text": "Resolvemos tus dudas al instante, en español o en inglés."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "¿Listo para tu próximo viaje?",
+      "text": "Cuéntanos qué quieres conocer y armamos contigo el itinerario ideal.",
+      "whatsapp": "Planear por WhatsApp",
+      "whatsappMessage": "Hola {name}, quiero planear un viaje por el Perú.",
+      "packages": "Ver paquetes"
+    }
+  },
+  "language": {
+    "name": {
+      "es": "Español",
+      "en": "English"
+    }
+  },
+  "legal": {
+    "draftLabel": "Aviso de borrador",
+    "draft": "BORRADOR: este documento está en revisión legal y puede cambiar antes de su publicación definitiva.",
+    "draftWithVersion": "BORRADOR (versión {version}): este documento está en revisión legal y puede cambiar antes de su publicación definitiva.",
+    "spanishOnly": "Este documento solo está disponible en español.",
+    "pages": {
+      "terms": {
+        "title": "Términos y condiciones",
+        "description": "Condiciones de uso del sitio y de contratación de tours y paquetes con Peru Wonders Tours."
+      },
+      "privacy": {
+        "title": "Protección de datos personales",
+        "description": "Cómo tratamos tus datos personales conforme a la Ley N.° 29733 y cómo ejercer tus derechos ARCO."
+      },
+      "payments": {
+        "title": "Condiciones de pago",
+        "description": "Adelantos, saldos, medios de pago, cambios, cancelaciones y reembolsos de tus reservas."
+      },
+      "cookies": {
+        "title": "Política de cookies",
+        "description": "Qué cookies usa este sitio, para qué sirven y cómo puedes gestionarlas."
+      }
+    }
+  },
+  "nav": {
+    "media": {
+      "heroAlt": "Vista del Lago Titicaca en Puno",
+      "heroAltFallback": "Islas flotantes de los Uros en el Lago Titicaca",
+      "discover": {
+        "titicaca": {
+          "title": "Lago Titicaca",
+          "description": "Uros, Taquile y Amantaní en el lago navegable más alto del mundo."
+        },
+        "machuPicchu": {
+          "title": "Machu Picchu",
+          "description": "La ciudadela inca, en un día o como parte de un circuito por Cusco."
+        },
+        "colca": {
+          "title": "Cañón del Colca",
+          "description": "Cóndores, pueblos tradicionales y trekking desde Arequipa."
+        },
+        "paracas": {
+          "title": "Paracas e Ica",
+          "description": "Islas Ballestas, reserva de Paracas y el oasis de Huacachina."
+        }
+      },
+      "journeys": {
+        "group": "Tours en grupo",
+        "private": "Tours privados"
+      }
+    }
+  },
+  "notFound": {
+    "eyebrow": "Error 404",
+    "title": "No encontramos esta página",
+    "body": "Puede que el enlace haya cambiado o que el tour ya no esté publicado. Te ayudamos a seguir explorando.",
+    "home": "Ir al inicio",
+    "tours": "Ver tours",
+    "contact": "Escríbenos"
+  },
+  "price": {
+    "from": "Desde <amount></amount> por adulto",
+    "fromShort": "Desde <amount></amount>",
+    "onRequest": "Precio a consultar",
+    "toQuote": "A cotizar",
+    "fullPayment": "Pago total al reservar",
+    "depositAmount": "Reserva con {percent}% ({amount})",
+    "depositPercent": "Reserva con {percent}% de adelanto"
+  },
+  "reviews": {
+    "title": "Testimonios de viajeros",
+    "description": "Opiniones de viajeros que recorrieron el Perú con nosotros, incluidas reseñas publicadas en TripAdvisor.",
+    "empty": "Aún no hay testimonios publicados.",
+    "leaveCta": "Deja tu testimonio",
+    "leave": {
+      "title": "Deja tu testimonio",
+      "description": "Cuéntanos cómo fue tu viaje con nosotros. Publicamos los testimonios después de revisarlos.",
+      "intro": "Tu opinión ayuda a otros viajeros. Revisamos cada testimonio antes de publicarlo y solo mostramos tu nombre y país; nunca tu correo.",
+      "name": "Nombre que se mostrará",
+      "country": "País (opcional)",
+      "email": "Correo electrónico (no se publica)",
+      "rating": "Calificación",
+      "ratingOption": "{count, plural, one {# estrella} other {# estrellas}}",
+      "body": "Tu testimonio",
+      "travelDate": "Fecha del viaje (opcional)",
+      "publishConsent": "Autorizo publicar mi testimonio con mi nombre y país en este sitio.",
+      "privacy": "Acepto el tratamiento de mis datos según la <link>Política de protección de datos personales</link>.",
+      "submit": "Enviar testimonio",
+      "sending": "Enviando…",
+      "success": "¡Gracias por tu testimonio! Lo publicaremos después de revisarlo.",
+      "invalid": "Revisa los campos marcados.",
+      "busy": "Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo.",
+      "unavailable": "No pudimos enviar tu testimonio en este momento. Intenta de nuevo en unos minutos.",
+      "required": "Este campo es obligatorio.",
+      "invalidEmail": "Ingresa un correo válido.",
+      "consentRequired": "Necesitamos ambas autorizaciones para publicar tu testimonio."
+    }
+  },
+  "search": {
+    "hints": {
+      "destination": "Destino · {count, plural, =0 {próximamente} one {# tour} other {# tours}}",
+      "category": "Tipo de tour · {count, plural, =0 {próximamente} one {# tour} other {# tours}}",
+      "tour": "Tour · {places}",
+      "severalDestinations": "Varios destinos"
+    }
+  },
+  "searchBar": {
+    "formLabel": "Buscar tours",
+    "where": "¿A dónde?",
+    "placeholder": "Destino, tour o actividad",
+    "when": "¿Cuándo?",
+    "dateHint": "Opcional",
+    "travelers": "Viajeros",
+    "chooseTravelers": "Elegir viajeros",
+    "done": "Listo",
+    "submit": "Buscar",
+    "quickLinks": "Búsquedas populares",
+    "quick": {
+      "uros": "Uros y Taquile",
+      "machuPicchu": "Machu Picchu",
+      "colca": "Cañón del Colca",
+      "packages": "Paquetes"
+    },
+    "popular": "Destinos populares",
+    "noResults": "No encontramos resultados para “{query}”."
+  },
+  "site": {
+    "tagline": "Tours en Puno, Cusco y todo el Perú",
+    "description": "Agencia de viajes con oficina en Puno: tours al Lago Titicaca, Machu Picchu, Colca y paquetes por el Perú con guías locales, reserva con adelanto y atención por WhatsApp."
+  },
+  "testimonials": {
+    "homeTitle": "Lo que dicen nuestros viajeros",
+    "viewAll": "Ver todos los testimonios",
+    "leaveCta": "¿Viajaste con nosotros? Deja tu testimonio",
+    "rating": "Calificación: {rating} de 5",
+    "viaTripadvisor": "vía TripAdvisor"
+  },
+  "toast": {
+    "region": "Notificaciones",
+    "close": "Cerrar notificación"
+  },
+  "tour": {
+    "minPax": "Mínimo {count, plural, one {# viajero} other {# viajeros}}",
+    "difficulty": "Dificultad: {value}",
+    "depositBadge": "Reserva con {percent}% de adelanto",
+    "fullPaymentBadge": "Pago total al reservar",
+    "sectionsNav": "Secciones del tour",
+    "sections": {
+      "summary": "Resumen",
+      "itinerary": "Itinerario",
+      "includes": "Qué incluye",
+      "beforeTravel": "Antes de viajar",
+      "policies": "Políticas",
+      "faq": "Preguntas frecuentes"
+    },
+    "day": "Día {day}",
+    "notIncludes": "No incluye",
+    "recommendations": "Recomendaciones",
+    "important": "Importante",
+    "altitude": {
+      "puno": "Puno está a 3 800 m s. n. m.: toma las primeras horas con calma, hidrátate y evita comidas pesadas para prevenir el mal de altura (soroche).",
+      "cusco": "Cusco está a 3 400 m s. n. m.: descansa el día de llegada, hidrátate y consulta a tu médico si tienes alguna condición cardiaca o respiratoria."
+    },
+    "policiesTitle": "Políticas de reserva y cancelación",
+    "policiesText": "Revisa los plazos de pago, cambios y reembolsos en nuestras <link>condiciones de pago</link>.",
+    "faqTitle": "Preguntas frecuentes",
+    "bookingAside": "Reserva",
+    "related": "Tours relacionados"
+  },
+  "tourCard": {
+    "package": "Paquete · {duration}",
+    "minPax": "Mín. {count, plural, one {# viajero} other {# viajeros}}"
+  },
+  "tourTypes": {
+    "title": "Tipos de tours",
+    "description": "Full days, paquetes, tours a Machu Picchu, rutas del altiplano y más: elige el tipo de viaje que buscas.",
+    "count": "{count, plural, =0 {Próximamente} one {# tour} other {# tours}}"
+  },
+  "travelersPicker": {
+    "legend": "Viajeros",
+    "adults": "Adultos",
+    "adultsHint": "Desde 12 años",
+    "adultUnit": "adulto",
+    "children": "Niños",
+    "childrenHint": "De 3 a 11 años",
+    "childUnit": "niño",
+    "infants": "Bebés",
+    "infantsHint": "Menores de 3 años",
+    "infantsFreeHint": "Menores de 3 años · sin costo",
+    "infantUnit": "bebé",
+    "add": "Agregar un {unit}",
+    "remove": "Quitar un {unit}",
+    "value": "{label}: {value}"
+  },
+  "trust": {
+    "label": "Confianza y enlaces oficiales",
+    "badges": "Sellos y registros",
+    "officialLinks": "Enlaces oficiales",
+    "externalHint": "(se abre en otra pestaña)",
+    "links": {
+      "machu-picchu-tickets": "Boletos oficiales a Machu Picchu",
+      "mincetur-directory": "Verifica agencias en el directorio del MINCETUR",
+      "peru-travel": "Peru.travel",
+      "iperu": "iPerú: asistencia al turista",
+      "sernanp-visit": "Áreas naturales protegidas (SERNANP)",
+      "esnna-info": "Prevención de la ESNNA en turismo"
+    }
+  },
+  "units": {
+    "adults": "{count, plural, one {# adulto} other {# adultos}}",
+    "children": "{count, plural, one {# niño} other {# niños}}",
+    "infants": "{count, plural, one {# bebé} other {# bebés}}",
+    "travelers": "{count, plural, one {# viajero} other {# viajeros}}",
+    "noTravelers": "Sin viajeros",
+    "duration": "{days} días / {nights, plural, one {# noche} other {# noches}}",
+    "durationOneDay": "1 día",
+    "durationUnknown": "Duración por confirmar"
+  },
+  "whatsapp": {
+    "tourHelp": "Hola, tengo una consulta sobre este tour: {tour}",
+    "cartHelp": "Hola, necesito ayuda con mi carrito:",
+    "cartHelpStep": "Hola, necesito ayuda con mi reserva (paso: {step}):",
+    "bookingHelp": "Hola, necesito ayuda con mi reserva {code}:",
+    "bookingHelpStep": "Hola, necesito ayuda con mi reserva {code} (paso: {step}):",
+    "bookingQuestion": "Hola, tengo una consulta sobre mi reserva {code}.",
+    "more": "{count, plural, one {y # tour más} other {y # tours más}}"
+  }
+}

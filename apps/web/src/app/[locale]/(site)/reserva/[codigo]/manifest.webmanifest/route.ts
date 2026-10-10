@@ -1,5 +1,7 @@
 import { colors } from "@pwt/ui/tokens";
 
+import { bookingPath } from "@/i18n/paths";
+import { INTL_LOCALE, isLocale } from "@/i18n/routing";
 import { BOOKING_CODE_RE } from "@/lib/checkout/session";
 import { SITE } from "@/lib/site";
 
@@ -8,20 +10,24 @@ import { SITE } from "@/lib/site";
  * ESE voucher (start_url), incluso sin conexión (lo sirve el service worker). Solo contiene el código,
  * que el viajero ya tiene; nunca datos personales. No lee cookies.
  */
-export async function GET(_req: Request, ctx: RouteContext<"/es/reserva/[codigo]/manifest.webmanifest">) {
-  const { codigo } = await ctx.params;
+export async function GET(_req: Request, ctx: RouteContext<"/[locale]/reserva/[codigo]/manifest.webmanifest">) {
+  const { locale: rawLocale, codigo } = await ctx.params;
+  if (!isLocale(rawLocale)) return new Response("Not found", { status: 404 });
+  const locale = rawLocale;
   const code = decodeURIComponent(codigo).toUpperCase();
   if (!BOOKING_CODE_RE.test(code)) return new Response("Not found", { status: 404 });
-  const path = `/es/reserva/${code}`;
+  // `/es/reserva/CODIGO` o `/en/booking/CODIGO`; el ámbito es la carpeta de reservas del idioma.
+  const path = bookingPath(locale, code);
+  const scope = path.slice(0, path.lastIndexOf("/") + 1);
   const manifest = {
     id: path,
     name: `Voucher ${code} · ${SITE.name}`,
-    short_name: "Mi voucher",
-    description: "Tu voucher de Peru Wonders Tours, disponible sin conexión.",
-    lang: "es-PE",
+    short_name: locale === "es" ? "Mi voucher" : "My voucher",
+    description: locale === "es" ? `Tu voucher de ${SITE.name}, disponible sin conexión.` : `Your ${SITE.name} voucher, available offline.`,
+    lang: INTL_LOCALE[locale],
     dir: "ltr",
     start_url: path,
-    scope: "/es/reserva/",
+    scope,
     display: "standalone",
     orientation: "portrait",
     background_color: colors.light.background,

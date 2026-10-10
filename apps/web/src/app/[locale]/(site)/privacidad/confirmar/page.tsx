@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { connection } from "next/server";
 
+import { Link } from "@/i18n/navigation";
 import { ApiError, apiJson } from "@/lib/api/client";
 
 import { ConfirmForm } from "./ConfirmForm";
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 type Preview = { purposes: { purpose: string; granted: boolean; pending: boolean }[] };
 
 /** Doble opt-in de marketing (H-05): `/es/privacidad/confirmar?token=` (enlace firmado, 7 días). */
-export default async function ConfirmMarketingPage({ searchParams }: PageProps<"/es/privacidad/confirmar">) {
+export default async function ConfirmMarketingPage({ searchParams }: PageProps<"/[locale]/privacidad/confirmar">) {
   await connection();
   const raw = (await searchParams).token;
   const token = typeof raw === "string" && raw.length >= 20 && raw.length <= 1024 ? raw : null;
@@ -53,7 +53,7 @@ export default async function ConfirmMarketingPage({ searchParams }: PageProps<"
         )}
       </div>
       <p className="mt-8 text-sm text-foreground-muted">
-        Más información en nuestra <Link href="/es/politicas/proteccion-de-datos-personales">Política de protección de datos personales</Link>.
+        Más información en nuestra <Link href="/politicas/proteccion-de-datos-personales">Política de protección de datos personales</Link>.
       </p>
     </div>
   );

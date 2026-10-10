@@ -1,0 +1,57 @@
+{
+  "codeLabel": "Código",
+  "emailLabel": "Correo electrónico",
+  "emailHint": "El mismo correo que usaste al registrarlo.",
+  "submit": "Enviarme el enlace",
+  "sending": "Enviando…",
+  "sent": "Si los datos coinciden, en unos minutos recibirás un correo con un enlace para entrar. El enlace sirve una sola vez y vence en 30 minutos. Revisa también tu carpeta de spam.",
+  "invalid": "Revisa el código y el correo electrónico.",
+  "busy": "Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo.",
+  "unavailable": "No pudimos enviar el enlace en este momento. Intenta de nuevo en unos minutos o escríbenos por WhatsApp.",
+  "expired": "Este enlace ya se usó o venció. Pide uno nuevo abajo.",
+  "linkNotFound": "Este enlace no es válido. Pide uno nuevo abajo.",
+  "opening": "Abriendo…",
+  "privacy": "Por tu seguridad, nunca mostramos datos de una reserva o reclamo sin verificar tu correo.",
+  "booking": {
+    "title": "Acceder a mi reserva",
+    "description": "Recibe en tu correo un enlace seguro para ver tu reserva, tu voucher y pagar el saldo.",
+    "intro": "Ingresa el código de tu reserva y el correo con el que reservaste. Te enviaremos un enlace seguro para abrirla.",
+    "codePlaceholder": "PWT-2026-000123",
+    "tokenTitle": "Abre tu reserva",
+    "tokenText": "Pulsa el botón para entrar a tu reserva en este navegador. El enlace sirve una sola vez.",
+    "open": "Abrir mi reserva"
+  },
+  "complaint": {
+    "title": "Consultar mi reclamo",
+    "description": "Consulta el estado y la respuesta de tu Hoja de Reclamación con un enlace seguro enviado a tu correo.",
+    "intro": "Ingresa el código de tu Hoja de Reclamación y el correo que registraste. Te enviaremos un enlace seguro para consultarla.",
+    "codePlaceholder": "LR-2026-000123",
+    "tokenTitle": "Consulta tu Hoja de Reclamación",
+    "tokenText": "Pulsa el botón para ver tu Hoja de Reclamación en este navegador. El enlace sirve una sola vez.",
+    "open": "Ver mi reclamo",
+    "notFound": "No pudimos abrir esta hoja en este navegador. Pide un enlace nuevo con tu código y correo.",
+    "sheet": "Hoja de Reclamación {code}",
+    "sheetNumber": "N.° de hoja",
+    "status": "Estado",
+    "submittedAt": "Presentada",
+    "responseDueAt": "Respuesta a más tardar",
+    "kind": "Tipo",
+    "detail": "Detalle",
+    "request": "Pedido del consumidor",
+    "answer": "Respuesta del proveedor",
+    "answeredAt": "Respondida el {date}",
+    "noAnswer": "Aún no hay respuesta. Te responderemos por el medio que elegiste dentro del plazo legal.",
+    "types": {
+      "reclamo": "Reclamo",
+      "queja": "Queja"
+    },
+    "statuses": {
+      "received": "Recibida",
+      "in_review": "En revisión",
+      "answered": "Respondida",
+      "closed": "Cerrada",
+      "settled": "Solucionada"
+    },
+    "newRequest": "Consultar otra hoja"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "prevMonth": "Mes anterior",
+  "nextMonth": "Mes siguiente",
+  "loading": "Cargando salidas…",
+  "error": "No pudimos cargar las salidas. Intenta de nuevo o escríbenos por WhatsApp.",
+  "legend": "Leyenda del calendario",
+  "seats": "{count, plural, one {# cupo libre} other {# cupos libres}}",
+  "notEnough": "no alcanza para {count, plural, one {# viajero} other {# viajeros}}",
+  "from": "desde {price}",
+  "selected": "seleccionada",
+  "noMark": "Sin marca: sin salida programada",
+  "state": {
+    "available": "Disponible",
+    "few": "Últimos cupos",
+    "soldOut": "Agotado",
+    "closed": "Cerrado",
+    "none": "Sin salida",
+    "past": "Fecha pasada"
+  },
+  "chosen": "Fecha elegida: {date}",
+  "chosenSeats": "{count, plural, one {# cupo libre} other {# cupos libres}}",
+  "startTime": "inicio {time}",
+  "fallbackError": "No pudimos cargar el calendario de salidas. Elige una fecha y la confirmamos contigo.",
+  "fallbackNoCalendar": "Este tour sale a pedido: elige tu fecha y confirmamos la disponibilidad."
+}

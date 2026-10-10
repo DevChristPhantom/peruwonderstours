@@ -5,7 +5,8 @@ import { AlertTriangle } from "lucide-react";
 import { useRef, type Ref } from "react";
 import { useForm } from "react-hook-form";
 
-import { describeTravelers, travelerCount, type CartLine } from "@/lib/cart/types";
+import { useTravelersText } from "@/hooks/useTravelersText";
+import { travelerCount, type CartLine } from "@/lib/cart/types";
 import { DOC_TYPES, travelersSchema, type ContactValues, type TravelersValues } from "@/lib/checkout/schemas";
 import { formatDate } from "@/lib/format";
 import { buttonClass } from "@/components/ui/button-styles";
@@ -54,6 +55,7 @@ export function TravelersStep({
   onBack: () => void;
   headingRef: Ref<HTMLHeadingElement>;
 }) {
+  const travelersText = useTravelersText();
   const summaryRef = useRef<HTMLDivElement>(null);
   const {
     register,
@@ -108,7 +110,7 @@ export function TravelersStep({
             <legend className="px-2 font-medium">
               {line.title}
               <span className="block text-sm font-normal text-foreground-muted">
-                {formatDate(line.date)} · {describeTravelers(line.travelers)}
+                {formatDate(line.date)} · {travelersText(line.travelers)}
               </span>
             </legend>
             <input type="hidden" {...register(`lines.${li}.lineId`)} />

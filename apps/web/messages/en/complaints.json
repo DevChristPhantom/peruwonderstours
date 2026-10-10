@@ -1,0 +1,12 @@
+{
+  "notice": {
+    "label": "Complaints Book",
+    "text": "Under Peru's Consumer Protection Code, {name} provides a virtual Complaints Book (Libro de Reclamaciones) for you."
+  },
+  "page": {
+    "title": "Complaints Book (Libro de Reclamaciones)",
+    "description": "{name}'s virtual Complaints Book under Peruvian Law 29571. File a claim or complaint without creating an account.",
+    "intro": "Under Peru's Consumer Protection and Defense Code, {name} provides this virtual Complaints Book (Libro de Reclamaciones). You don't need an account or a booking to use it. If you need help filling it in, message us on WhatsApp at {whatsapp}.",
+    "spanishForm": "The official complaint form is in Spanish, as required by Peruvian regulations. You may write your complaint in English."
+  }
+}

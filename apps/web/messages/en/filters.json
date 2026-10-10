@@ -1,0 +1,8 @@
+{
+  "duration": {
+    "1": "1 day",
+    "2-3": "2 to 3 days",
+    "4-6": "4 to 6 days",
+    "7+": "7 days or more"
+  }
+}

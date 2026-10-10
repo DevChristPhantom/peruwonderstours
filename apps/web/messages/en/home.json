@@ -1,0 +1,61 @@
+{
+  "metaTitle": "Tours in Puno, Lake Titicaca, Cusco and Machu Picchu",
+  "hero": {
+    "title": "Travel Peru with people who know it",
+    "lead": "Tours to Lake Titicaca, Machu Picchu, Colca Canyon and the southern coast with local guides, confirmed departures and deposit-based booking.",
+    "imageAlt": "Uros floating islands on Lake Titicaca, Puno",
+    "scroll": "Scroll to explore"
+  },
+  "featured": {
+    "title": "Featured tours",
+    "viewAll": "See all {count} tours",
+    "tabsLabel": "Filter featured tours",
+    "oneDayLink": "See day tours",
+    "groups": {
+      "all": "All",
+      "altiplano": "Altiplano & Titicaca",
+      "machuPicchu": "Machu Picchu",
+      "multi": "Multi-destination"
+    },
+    "emptyFeatured": "Our featured tours are coming soon.",
+    "emptyGroup": "There are no tours in this group yet."
+  },
+  "destinations": {
+    "title": "Destinations",
+    "viewAll": "See all destinations",
+    "railLabel": "Destinations in Peru",
+    "previous": "Previous destinations",
+    "next": "More destinations",
+    "tourCount": "{count, plural, =0 {Coming soon} one {# tour} other {# tours}}"
+  },
+  "whyUs": {
+    "title": "Why travel with us?",
+    "toursPublished": "Published tours",
+    "destinations": "Destinations",
+    "reasons": {
+      "office": {
+        "title": "Office in Puno",
+        "text": "We are a local operator: we support you before, during and after your trip."
+      },
+      "guides": {
+        "title": "Local guides",
+        "text": "Guides who live in each destination and share its history and culture."
+      },
+      "deposit": {
+        "title": "Book with a deposit",
+        "text": "Secure your spot with a deposit and pay the balance before departure."
+      },
+      "whatsapp": {
+        "title": "WhatsApp support",
+        "text": "We answer your questions right away, in English or Spanish."
+      }
+    }
+  },
+  "finalCta": {
+    "title": "Ready for your next trip?",
+    "text": "Tell us what you'd like to see and we'll build the right itinerary with you.",
+    "whatsapp": "Plan on WhatsApp",
+    "whatsappMessage": "Hi {name}, I'd like to plan a trip to Peru.",
+    "packages": "See packages"
+  }
+}

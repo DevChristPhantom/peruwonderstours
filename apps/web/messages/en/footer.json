@@ -1,0 +1,57 @@
+{
+  "title": "Footer",
+  "tagline": "Travel agency based in Puno. Tours to Lake Titicaca, Cusco, Machu Picchu, Arequipa and Peru's southern coast.",
+  "short": {
+    "terms": "Terms",
+    "payments": "Payments",
+    "privacy": "Privacy"
+  },
+  "complaintsBook": "Complaints Book (Libro de Reclamaciones)",
+  "complaintsBookHint": "File a claim or complaint online",
+  "legal": {
+    "businessName": "Company name",
+    "ruc": "Tax ID (RUC)",
+    "mincetur": "MINCETUR registration",
+    "office": "Office",
+    "email": "Email"
+  },
+  "columns": {
+    "tours": "Tours",
+    "company": "Company",
+    "help": "Help",
+    "legal": "Legal"
+  },
+  "destinations": {
+    "puno": "Puno & Lake Titicaca",
+    "cusco": "Cusco & Machu Picchu",
+    "arequipa": "Arequipa & Colca",
+    "ica": "Ica & Paracas",
+    "lima": "Lima"
+  },
+  "links": {
+    "allTours": "All tours",
+    "tourTypes": "Tour types",
+    "about": "About us",
+    "blog": "Travel blog",
+    "reviews": "Reviews",
+    "contact": "Contact",
+    "myBooking": "Access my booking",
+    "complaintStatus": "Check my complaint",
+    "favorites": "My favorites",
+    "terms": "Terms and conditions",
+    "payments": "Payment conditions",
+    "privacy": "Personal data protection",
+    "cookies": "Cookie policy"
+  },
+  "hours": "Monday to Saturday, 09:00 to 19:00 (Peru time)",
+  "whatsapp": "WhatsApp {number}",
+  "follow": "Follow us",
+  "social": {
+    "facebook": "{name} on Facebook",
+    "tripadvisor": "{name} on TripAdvisor"
+  },
+  "payments": "Payment methods",
+  "paymentsText": "Visa and Mastercard cards, and bank transfer.",
+  "esnna": "{name} rejects the sexual exploitation of children and adolescents. If you know of any case, report it to Línea 100 (Peru).",
+  "copyright": "© {year} {name}. All rights reserved."
+}

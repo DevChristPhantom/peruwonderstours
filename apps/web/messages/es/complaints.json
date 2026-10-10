@@ -1,0 +1,12 @@
+{
+  "notice": {
+    "label": "Libro de Reclamaciones",
+    "text": "Conforme al Código de Protección y Defensa del Consumidor, {name} cuenta con un Libro de Reclamaciones virtual a tu disposición."
+  },
+  "page": {
+    "title": "Libro de Reclamaciones",
+    "description": "Libro de Reclamaciones virtual de {name} (Ley 29571). Registra tu reclamo o queja sin crear una cuenta.",
+    "intro": "Conforme al Código de Protección y Defensa del Consumidor, {name} pone a tu disposición este Libro de Reclamaciones virtual. No necesitas una cuenta ni una reserva para usarlo. Si necesitas ayuda para llenarlo, escríbenos por WhatsApp al {whatsapp}.",
+    "spanishForm": ""
+  }
+}

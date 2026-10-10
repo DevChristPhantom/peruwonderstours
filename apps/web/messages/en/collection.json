@@ -1,0 +1,10 @@
+{
+  "destinationEyebrow": "Destination",
+  "destinationTitle": "Tours in {name}",
+  "destinationDescription": "Tours and excursions in {name} with local guides, confirmed departures and deposit-based booking.",
+  "categoryEyebrow": "Tour type",
+  "categoryDescription": "{name}: tours across Peru with local guides and deposit-based booking.",
+  "available": "{count, plural, =0 {No tours available yet} one {# tour available} other {# tours available}}",
+  "filterByDuration": "Filter by duration and date",
+  "empty": "There are no tours published here yet."
+}

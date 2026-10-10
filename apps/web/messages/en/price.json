@@ -1,0 +1,9 @@
+{
+  "from": "From <amount></amount> per adult",
+  "fromShort": "From <amount></amount>",
+  "onRequest": "Price on request",
+  "toQuote": "To be quoted",
+  "fullPayment": "Full payment at booking",
+  "depositAmount": "Book with {percent}% ({amount})",
+  "depositPercent": "Book with a {percent}% deposit"
+}

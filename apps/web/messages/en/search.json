@@ -1,0 +1,8 @@
+{
+  "hints": {
+    "destination": "Destination · {count, plural, =0 {coming soon} one {# tour} other {# tours}}",
+    "category": "Tour type · {count, plural, =0 {coming soon} one {# tour} other {# tours}}",
+    "tour": "Tour · {places}",
+    "severalDestinations": "Multiple destinations"
+  }
+}

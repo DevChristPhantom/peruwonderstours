@@ -4,7 +4,8 @@ import { CalendarDays, CalendarPlus, Coffee, MapPin, MessageCircle, Mountain, Us
 import Link from "next/link";
 import { useMemo } from "react";
 
-import { describeTravelers } from "@/lib/cart/types";
+import { useTravelersText } from "@/hooks/useTravelersText";
+import { useWhatsappTools } from "@/hooks/useWhatsappTools";
 import { addDays, daysBetween, formatDate } from "@/lib/format";
 import { absoluteUrl } from "@/lib/site";
 import { buildIcs, downloadIcs, PICKUP_PENDING } from "@/lib/trip/ics";
@@ -31,6 +32,8 @@ function acclimatizationText(note: AcclimatizationNote): string {
 
 /** "Mi viaje" (HU-B.A5): itinerario día a día del carrito con avisos y exportación .ics. */
 export function TripPlanView() {
+  const travelersText = useTravelersText();
+  const wa = useWhatsappTools();
   const hydrated = useCartHydrated();
   const lines = useCartStore((s) => s.lines);
   const announce = useUiStore((s) => s.announce);
@@ -75,7 +78,7 @@ export function TripPlanView() {
         date: it.start,
         days: it.days,
         location: it.region?.label ?? it.line.destinationLabel,
-        description: [`${describeTravelers(it.line.travelers)}.`, PICKUP_PENDING, "Reserva pendiente de pago: este calendario no confirma cupos."].join("\n"),
+        description: [`${travelersText(it.line.travelers)}.`, PICKUP_PENDING, "Reserva pendiente de pago: este calendario no confirma cupos."].join("\n"),
         url: absoluteUrl(it.line.path),
       })),
       { name: "Mi viaje · Peru Wonders Tours" },
@@ -85,6 +88,7 @@ export function TripPlanView() {
   };
 
   const help = cartHelpMessage(
+    wa,
     plan.items.map((it) => ({ title: it.line.title, date: it.start, travelers: it.line.travelers })),
     { step: "Mi viaje" },
   );
@@ -180,7 +184,7 @@ export function TripPlanView() {
                             </span>
                             <span className="inline-flex items-center gap-1.5">
                               <Users aria-hidden size={16} strokeWidth={1.5} />
-                              {describeTravelers(item.line.travelers)}
+                              {travelersText(item.line.travelers)}
                             </span>
                           </p>
                           {note && tourDay === 1 ? (

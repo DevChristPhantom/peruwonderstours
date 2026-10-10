@@ -57,11 +57,13 @@ const MESSAGES: Record<string, { kind: UserErrorKind; message: string }> = {
   "concurrency-conflict": { kind: "busy", message: "Hubo mucha demanda al mismo tiempo. Intenta de nuevo." },
   "idempotency-key-reused": { kind: "other", message: "Tu pedido cambió mientras se procesaba. Revisa el resumen e intenta de nuevo." },
   "too-many-requests": { kind: "busy", message: "Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo; no se te cobró nada." },
-  // La API deriva el código de 429 del título ("Demasiadas solicitudes").
-  "demasiadas-solicitudes": { kind: "busy", message: "Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo; no se te cobró nada." },
   "http-429": { kind: "busy", message: "Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo; no se te cobró nada." },
   "payload-too-large": { kind: "validation", message: "El texto enviado es demasiado largo. Acórtalo e intenta de nuevo." },
   "booking-token-required": { kind: "not-found", message: "No encontramos la reserva." },
+  // Código genérico de 404 (antes `no-encontrado`).
+  "not-found": { kind: "not-found", message: "No encontramos lo que buscabas. Revisa los datos e intenta de nuevo." },
+  // Enlace de acceso de un solo uso ya usado o vencido (410).
+  "access-link-expired": { kind: "expired", message: "Este enlace ya se usó o venció. Pide uno nuevo con tu código y correo." },
   "api-unavailable": { kind: "unavailable", message: "No pudimos conectar con el sistema de reservas. No se te cobró nada; intenta de nuevo en unos minutos." },
 };
 

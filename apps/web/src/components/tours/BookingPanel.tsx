@@ -331,34 +331,3 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
     </section>
   );
 }
-
-/** Barra inferior sticky en móvil/tablet: lleva al módulo de reserva. */
-export function MobileBookingBar({ pricing }: { pricing: TourPricing | null }) {
-  const t = useTranslations("booking");
-  const tp = useTranslations("price");
-  const f = useFormat();
-  return (
-    <div className="fixed inset-x-0 bottom-0 z-10 border-t border-border bg-surface px-4 py-3 shadow-sticky lg:hidden" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
-      <div className="flex items-center justify-between gap-4">
-        <p className="text-sm">
-          {pricing ? (
-            tp.rich("fromShort", { amount: () => <strong className="tabular">{f.money(pricing.adultCents, pricing.currency)}</strong> })
-          ) : (
-            <strong>{tp("onRequest")}</strong>
-          )}
-        </p>
-        <a
-          href="#reservar"
-          className={buttonClass("primary", "lg")}
-          onClick={() => {
-            requestAnimationFrame(() =>
-              document.querySelector<HTMLElement>('#reservar [role="grid"] button[tabindex="0"], #reservar input[type=date]')?.focus(),
-            );
-          }}
-        >
-          {t("seeDates")}
-        </a>
-      </div>
-    </div>
-  );
-}

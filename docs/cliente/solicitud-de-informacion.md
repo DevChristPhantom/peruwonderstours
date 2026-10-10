@@ -123,6 +123,8 @@ solo es válida con el pago total". Necesitamos que nos confirmes:
 44. **Sello Safe Travels:** el WTTC ya no lo mantiene activo. Proponemos retirarlo.
 45. **Tours despublicados:** no se pueden recuperar de la web. Si quieres publicarlos,
     expórtalos desde el OTM.
+46. **Dirección de la oficina de Puno:** la web antigua dice "Calle N 500", que parece un dato
+    de relleno. ¿Cuál es la dirección exacta? Es obligatoria en el Libro de Reclamaciones.
 
 ---
 *Los borradores de Política de Privacidad, Términos y Condiciones, Política de Cancelación y

@@ -1,0 +1,4 @@
+{
+  "package": "Package · {duration}",
+  "minPax": "Min. {count, plural, one {# traveler} other {# travelers}}"
+}

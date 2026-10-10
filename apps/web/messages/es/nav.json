@@ -1,0 +1,28 @@
+{
+  "media": {
+    "heroAlt": "Vista del Lago Titicaca en Puno",
+    "heroAltFallback": "Islas flotantes de los Uros en el Lago Titicaca",
+    "discover": {
+      "titicaca": {
+        "title": "Lago Titicaca",
+        "description": "Uros, Taquile y Amantaní en el lago navegable más alto del mundo."
+      },
+      "machuPicchu": {
+        "title": "Machu Picchu",
+        "description": "La ciudadela inca, en un día o como parte de un circuito por Cusco."
+      },
+      "colca": {
+        "title": "Cañón del Colca",
+        "description": "Cóndores, pueblos tradicionales y trekking desde Arequipa."
+      },
+      "paracas": {
+        "title": "Paracas e Ica",
+        "description": "Islas Ballestas, reserva de Paracas y el oasis de Huacachina."
+      }
+    },
+    "journeys": {
+      "group": "Tours en grupo",
+      "private": "Tours privados"
+    }
+  }
+}

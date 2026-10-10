@@ -1,0 +1,20 @@
+{
+  "formLabel": "Search tours",
+  "where": "Where to?",
+  "placeholder": "Destination, tour or activity",
+  "when": "When?",
+  "dateHint": "Optional",
+  "travelers": "Travelers",
+  "chooseTravelers": "Choose travelers",
+  "done": "Done",
+  "submit": "Search",
+  "quickLinks": "Popular searches",
+  "quick": {
+    "uros": "Uros & Taquile",
+    "machuPicchu": "Machu Picchu",
+    "colca": "Colca Canyon",
+    "packages": "Packages"
+  },
+  "popular": "Popular destinations",
+  "noResults": "No results for “{query}”."
+}

@@ -1,0 +1,57 @@
+{
+  "codeLabel": "Code",
+  "emailLabel": "Email",
+  "emailHint": "The same email you used when you registered it.",
+  "submit": "Send me the link",
+  "sending": "Sending…",
+  "sent": "If the details match, you'll receive an email with a sign-in link in a few minutes. The link works once and expires in 30 minutes. Please check your spam folder too.",
+  "invalid": "Please check the code and email.",
+  "busy": "You've made several attempts in a row. Wait a minute and try again.",
+  "unavailable": "We couldn't send the link right now. Try again in a few minutes or message us on WhatsApp.",
+  "expired": "This link has already been used or has expired. Request a new one below.",
+  "linkNotFound": "This link isn't valid. Request a new one below.",
+  "opening": "Opening…",
+  "privacy": "For your security, we never show booking or complaint details without verifying your email.",
+  "booking": {
+    "title": "Access my booking",
+    "description": "Get a secure link by email to view your booking, your voucher and pay the balance.",
+    "intro": "Enter your booking code and the email you booked with. We'll send you a secure link to open it.",
+    "codePlaceholder": "PWT-2026-000123",
+    "tokenTitle": "Open your booking",
+    "tokenText": "Press the button to open your booking in this browser. The link works only once.",
+    "open": "Open my booking"
+  },
+  "complaint": {
+    "title": "Check my complaint",
+    "description": "Check the status and response of your complaint form with a secure link sent to your email.",
+    "intro": "Enter your complaint form code and the email you registered. We'll send you a secure link to view it.",
+    "codePlaceholder": "LR-2026-000123",
+    "tokenTitle": "View your complaint form",
+    "tokenText": "Press the button to view your complaint form in this browser. The link works only once.",
+    "open": "View my complaint",
+    "notFound": "We couldn't open this form in this browser. Request a new link with your code and email.",
+    "sheet": "Complaint form {code}",
+    "sheetNumber": "Form no.",
+    "status": "Status",
+    "submittedAt": "Submitted",
+    "responseDueAt": "Response due by",
+    "kind": "Type",
+    "detail": "Details",
+    "request": "Consumer's request",
+    "answer": "Provider's response",
+    "answeredAt": "Answered on {date}",
+    "noAnswer": "No response yet. We'll reply through the channel you chose within the legal deadline.",
+    "types": {
+      "reclamo": "Claim (reclamo)",
+      "queja": "Complaint (queja)"
+    },
+    "statuses": {
+      "received": "Received",
+      "in_review": "Under review",
+      "answered": "Answered",
+      "closed": "Closed",
+      "settled": "Resolved"
+    },
+    "newRequest": "Check another form"
+  }
+}

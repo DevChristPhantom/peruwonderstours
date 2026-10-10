@@ -1,0 +1,10 @@
+{
+  "adults": "{count, plural, one {# adult} other {# adults}}",
+  "children": "{count, plural, one {# child} other {# children}}",
+  "infants": "{count, plural, one {# infant} other {# infants}}",
+  "travelers": "{count, plural, one {# traveler} other {# travelers}}",
+  "noTravelers": "No travelers",
+  "duration": "{days} days / {nights, plural, one {# night} other {# nights}}",
+  "durationOneDay": "1 day",
+  "durationUnknown": "Duration to be confirmed"
+}

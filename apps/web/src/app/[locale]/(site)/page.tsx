@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-import { ComplaintsBookNotice } from "@/components/complaints/ComplaintsBookNotice";
 import { DestinationsSection } from "@/components/home/DestinationsSection";
 import { FeaturedTours, type FeaturedGroup } from "@/components/home/FeaturedTours";
 import { Hero } from "@/components/home/Hero";
 import { FinalCta, TestimonialsSection, WhyUsSection } from "@/components/home/HomeSections";
+import { TrustStrip } from "@/components/layout/TrustStrip";
 import { SearchBar } from "@/components/search/SearchBar";
 import type { Locale } from "@/i18n/routing";
 import { getAllTours, getDestinations, getFeaturedTours, getNavMedia, getSearchOptions } from "@/lib/catalog";
@@ -68,7 +68,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <div className="pwt-container">
         <SearchBar options={searchOptions} />
       </div>
-      <ComplaintsBookNotice />
+      <TrustStrip locale={locale} />
       <DestinationsSection destinations={destinations} locale={locale} />
       <FeaturedTours groups={groups} totalTours={allTours.length} locale={locale} />
       <WhyUsSection tourCount={allTours.length} destinationCount={destinations.length} />
