@@ -177,6 +177,16 @@ export class PrismaBookingRepository implements BookingRepository {
     });
   }
 
+  async findByCustomer(customerId: string, limit: number): Promise<Booking[]> {
+    const rows = await this.db.booking.findMany({
+      where: { customerId, deletedAt: null, status: { not: 'pending' } },
+      include: BOOKING_INCLUDE,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+    });
+    return rows.map(mapBooking);
+  }
+
   async findBalanceDueBetween(from: Date, to: Date, limit: number): Promise<Booking[]> {
     const rows = await this.db.booking.findMany({
       where: { status: 'partially_paid', deletedAt: null, balanceDueAt: { gte: from, lte: to } },

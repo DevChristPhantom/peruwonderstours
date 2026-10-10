@@ -224,7 +224,10 @@ RETURNS boolean LANGUAGE sql IMMUTABLE PARALLEL SAFE AS $$
     ('confirmed',      'paid'),
     ('confirmed',      'cancelled'),
     ('partially_paid', 'paid'),
+    ('partially_paid', 'confirmed'),
     ('partially_paid', 'cancelled'),
+    ('paid',           'partially_paid'),
+    ('paid',           'confirmed'),
     ('paid',           'completed'),
     ('paid',           'cancelled'),
     ('cancelled',      'refunded'),
@@ -351,7 +354,7 @@ ALTER TABLE invoices
 ALTER TABLE testimonials
   ADD CONSTRAINT testimonials_rating_ck   CHECK (rating BETWEEN 1 AND 5),
   ADD CONSTRAINT testimonials_approved_ck CHECK (
-        status <> 'approved' OR (publish_consent AND approved_at IS NOT NULL));
+        status <> 'approved' OR (approved_at IS NOT NULL AND (publish_consent OR origin <> 'web')));
 
 ALTER TABLE outbox_events
   ADD CONSTRAINT outbox_events_attempts_ck CHECK (attempts >= 0);

@@ -15,16 +15,28 @@ export const STRICT_THROTTLE = 'pwt:strict-throttle';
 /** Aplica también el límite estricto (`THROTTLE_STRICT_LIMIT` por ventana). */
 export const StrictThrottle = (): MethodDecorator & ClassDecorator => SetMetadata(STRICT_THROTTLE, true);
 
+export const LINK_THROTTLE = 'pwt:link-throttle';
+
+/**
+ * Formularios públicos que disparan correos (enlaces mágicos, contacto, testimonios): límite propio
+ * por IP (`THROTTLE_LINK_LIMIT` por `THROTTLE_LINK_TTL_SECONDS`), además del estricto y el global.
+ */
+export const LinkThrottle = (): MethodDecorator & ClassDecorator => SetMetadata(LINK_THROTTLE, true);
+
+function hasFlag(context: ExecutionContext, key: string): boolean {
+  return Reflect.getMetadata(key, context.getHandler()) === true || Reflect.getMetadata(key, context.getClass()) === true;
+}
+
 function isStrict(context: ExecutionContext): boolean {
-  return (
-    Reflect.getMetadata(STRICT_THROTTLE, context.getHandler()) === true || Reflect.getMetadata(STRICT_THROTTLE, context.getClass()) === true
-  );
+  return hasFlag(context, STRICT_THROTTLE) || hasFlag(context, LINK_THROTTLE);
 }
 
 export interface ThrottleSettings {
   ttlSeconds: number;
   limit: number;
   strictLimit: number;
+  linkLimit?: number;
+  linkTtlSeconds?: number;
 }
 
 export function throttlerOptions(settings: ThrottleSettings): ThrottlerModuleOptions {
@@ -34,6 +46,12 @@ export function throttlerOptions(settings: ThrottleSettings): ThrottlerModuleOpt
     throttlers: [
       { name: 'default', ttl, limit: settings.limit },
       { name: 'strict', ttl, limit: settings.strictLimit, skipIf: (context) => !isStrict(context) },
+      {
+        name: 'link',
+        ttl: (settings.linkTtlSeconds ?? 600) * 1000,
+        limit: settings.linkLimit ?? 5,
+        skipIf: (context) => !hasFlag(context, LINK_THROTTLE),
+      },
     ],
   };
 }

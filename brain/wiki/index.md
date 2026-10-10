@@ -3,7 +3,7 @@ type: meta
 title: Wiki Index
 status: evergreen
 created: 2026-10-07
-updated: 2026-10-08
+updated: 2026-10-09
 tags:
   - meta
   - index
@@ -24,6 +24,7 @@ This catalog is updated by completed knowledge operations.
 - [[concepts/modelo-de-datos]] — esquema PostgreSQL/Prisma del MVP, ERD, máquina de estados reserva/pago, Postgres local sin admin.
 - [[concepts/revision-seguridad-sprint2]] — revisión AppSec (ASVS L2, Ley 29733) de auth staff, backoffice, pagos, reclamos, privacidad y BFF: 2 altas, 8 medias, checklist de producción.
 - [[concepts/benchmark-ota-2026]] — benchmark GYG/Viator/Klook/Civitatis/Airbnb/Booking/Despegar/Expedia/Tiqets/Headout/Inca Rail/PeruRail; 30 funcionalidades evaluadas, olas A/B/C con HU-B y Gherkin, lo que no se recomienda.
+- [[concepts/auditoria-funcional-sprint3]] — auditoría funcional (2026-10-09): crawler 91 URLs (4 políticas en 500), 12 rutas viejas en 404, i18n sin `en` (0 traducciones), enlace de reserva en correos da 404; 67 ítems, 12 bloqueantes, plan por backend/web/admin/contenido.
 
 ## Normativa
 

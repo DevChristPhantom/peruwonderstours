@@ -1,4 +1,6 @@
 import type { IdempotencyRecord } from '../../shared/domain/idempotency.js';
+import type { AccessTokenRecord } from '../../shared/domain/access-grant.js';
+import type { BlogPost, ContactMessage, Testimonial } from '../../modules/content/domain/content.js';
 import type { EmailDeliveryRecord, OutboxMessage } from '../../shared/domain/outbox.js';
 import type { ConsentRecord, LegalAcceptanceRecord } from '../../modules/privacy/domain/consent.js';
 import type { ComplaintSnapshot } from '../../modules/complaints/domain/complaint.js';
@@ -46,6 +48,9 @@ export interface InMemoryState {
   legalAcceptances: LegalAcceptanceRecord[];
   /** Días no hábiles (CalendarDate) del ámbito nacional. */
   holidays: Set<string>;
+  accessTokens: Map<string, AccessTokenRecord>;
+  testimonials: Map<string, Testimonial>;
+  contactMessages: Map<string, ContactMessage>;
 }
 
 export function emptyState(): InMemoryState {
@@ -66,6 +71,9 @@ export function emptyState(): InMemoryState {
     consents: [],
     legalAcceptances: [],
     holidays: new Set(PERU_NATIONAL_HOLIDAYS),
+    accessTokens: new Map(),
+    testimonials: new Map(),
+    contactMessages: new Map(),
   };
 }
 
@@ -79,9 +87,13 @@ export class InMemoryDataStore {
   constructor(
     readonly catalog: CatalogData = { tours: [], rates: [], destinations: [], categories: [] },
     departures: DepartureSnapshot[] = [],
+    /** Blog (solo lectura en memoria: lo administra el backoffice con PostgreSQL). */
+    readonly blogPosts: BlogPost[] = [],
+    testimonials: Testimonial[] = [],
   ) {
     this.state = emptyState();
     for (const d of departures) this.state.departures.set(d.id, { ...d });
+    for (const t of testimonials) this.state.testimonials.set(t.id, { ...t });
   }
 
   snapshot(): InMemoryState {

@@ -8,6 +8,8 @@ import { PrismaCustomerRepository } from '../../modules/customers/infrastructure
 import { PrismaPaymentEventRepository, PrismaPaymentRepository } from '../../modules/payments/infrastructure/prisma-payment.repository.js';
 import { mapPrismaError, type PrismaTx } from './prisma-client.js';
 import { PrismaIdempotencyRepository } from './prisma-idempotency.repository.js';
+import { PrismaAccessTokenRepository } from './prisma-access-token.repository.js';
+import { PrismaBlogRepository, PrismaContactRepository, PrismaTestimonialRepository } from '../../modules/content/infrastructure/prisma-content.repository.js';
 import { PrismaEmailDeliveryRepository, PrismaOutboxRepository } from './prisma-outbox.repository.js';
 import { PrismaConsentRepository, PrismaLegalAcceptanceRepository } from '../../modules/privacy/infrastructure/prisma-consent.repository.js';
 import {
@@ -36,6 +38,10 @@ export function createPrismaRepositories(tx: PrismaTx): TransactionalRepositorie
     emailDeliveries: new PrismaEmailDeliveryRepository(tx),
     consents: new PrismaConsentRepository(tx),
     legalAcceptances: new PrismaLegalAcceptanceRepository(tx),
+    accessTokens: new PrismaAccessTokenRepository(tx),
+    blog: new PrismaBlogRepository(tx),
+    testimonials: new PrismaTestimonialRepository(tx),
+    contactMessages: new PrismaContactRepository(tx),
   };
 }
 

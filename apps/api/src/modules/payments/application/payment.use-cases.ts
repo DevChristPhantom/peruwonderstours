@@ -75,7 +75,7 @@ export class PaymentUseCases {
 
     const prepared = await this.unitOfWork.run(async (repos) => {
       const now = this.clock.now();
-      const booking = await loadBookingWithAccess(repos, input.booking);
+      const booking = await loadBookingWithAccess(repos, input.booking, now);
       const existing = await repos.payments.findByIdempotencyKey(key);
       if (existing) {
         if (existing.bookingId !== booking.id) throw new IdempotencyKeyReusedError(key);
@@ -156,7 +156,7 @@ export class PaymentUseCases {
   /** Pago de la reserva indicada (404 si no existe o pertenece a otra reserva). */
   getPayment(access: BookingAccess, paymentId: string): Promise<Payment> {
     return this.unitOfWork.run(async (repos) => {
-      const booking = await loadBookingWithAccess(repos, access);
+      const booking = await loadBookingWithAccess(repos, access, this.clock.now());
       const payment = await repos.payments.findById(paymentId);
       if (!payment || payment.bookingId !== booking.id) throw new PaymentNotFoundError(paymentId);
       return payment;
@@ -166,7 +166,7 @@ export class PaymentUseCases {
   /** Pagos y reembolsos de la reserva, del más antiguo al más reciente. */
   listPayments(access: BookingAccess): Promise<Payment[]> {
     return this.unitOfWork.run(async (repos) => {
-      const booking = await loadBookingWithAccess(repos, access);
+      const booking = await loadBookingWithAccess(repos, access, this.clock.now());
       return repos.payments.findByBooking(booking.id);
     });
   }

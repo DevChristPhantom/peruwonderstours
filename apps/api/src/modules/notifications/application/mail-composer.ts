@@ -4,8 +4,16 @@ import type { ClaimedOutboxEvent } from '../../../shared/domain/outbox.js';
 import { complaintAad, COMPLAINT_LEGAL_NOTICES, formatSheetNumber, type ComplaintSnapshot } from '../../complaints/domain/complaint.js';
 import { MAIL_EVENTS } from '../domain/mail-events.js';
 import { MARKETING_PURPOSES, type MarketingPurpose } from '../../privacy/domain/consent.js';
+import type { LinkPurpose } from '../../../shared/domain/access-grant.js';
+import { contactAad } from '../../content/domain/content.js';
 import {
   balanceReminderEmail,
+  bookingAccessLinkEmail,
+  complaintAccessLinkEmail,
+  contactAcknowledgmentEmail,
+  contactAgencyEmail,
+  customerLoginLinkEmail,
+  type MailLocale,
   bookingCancelledEmail,
   bookingVoucherEmail,
   complaintAcknowledgmentEmail,
@@ -28,6 +36,8 @@ function str(value: unknown, fallback: string): string {
 export interface MailDraft extends RenderedEmail {
   template: string;
   to: string[];
+  /** Reply-To propio del correo (p. ej. aviso de contacto -> correo del cliente). */
+  replyTo?: string;
   attachments?: Array<{ filename: string; content: string; contentType: string }>;
 }
 
@@ -46,6 +56,18 @@ export interface ComposerContext {
   unsubscribeUrl(repos: TransactionalRepositories, email: string): Promise<string | null>;
   /** Enlace firmado del doble opt-in (H-05). */
   marketingConfirmationUrl(email: string, purposes: MarketingPurpose[]): string;
+  /**
+   * Emite un enlace mágico de un solo uso AL ENVIAR (F0/F6/F7): guarda solo el hash en
+   * `access_tokens` dentro de la transacción del armado y devuelve el token en claro.
+   */
+  issueLink(repos: TransactionalRepositories, params: { purpose: LinkPurpose; subjectId: string; locale: MailLocale; ttlMs: number }): Promise<string>;
+  links: { requestedTtlMinutes: number; emailTtlHours: number };
+  /** Bandeja de la agencia (formulario de contacto). */
+  agencyInboxEmail: string;
+}
+
+function asLocale(value: unknown, fallback: MailLocale = 'es'): MailLocale {
+  return value === 'en' || value === 'es' ? value : fallback;
 }
 
 /**
@@ -72,6 +94,14 @@ export class MailComposer {
         return this.booking(repos, event);
       case MAIL_EVENTS.privacyMarketingConfirmation:
         return this.marketingConfirmation(repos, event);
+      case MAIL_EVENTS.bookingAccessLinkRequested:
+        return this.bookingAccessLink(repos, event);
+      case MAIL_EVENTS.complaintAccessLinkRequested:
+        return this.complaintAccessLink(repos, event);
+      case MAIL_EVENTS.customerLoginLinkRequested:
+        return this.customerLoginLink(repos, event);
+      case MAIL_EVENTS.contactMessageReceived:
+        return this.contactMessage(repos, event);
       default:
         return { kind: 'skip', reason: `sin plantilla para ${event.eventType}` };
     }
@@ -97,6 +127,67 @@ export class MailComposer {
     };
   }
 
+  /** URL de la web con el token del enlace en la query (nunca el accessToken de una sesión). */
+  private linkUrl(locale: MailLocale, path: string, token: string): string {
+    return `${this.ctx.brand.publicWebBaseUrl}/${locale}/${path}?token=${encodeURIComponent(token)}`;
+  }
+
+  private async bookingAccessLink(repos: TransactionalRepositories, event: ClaimedOutboxEvent): Promise<ComposeResult> {
+    const booking = await repos.bookings.findById(str(event.payload['bookingId'], event.aggregateId));
+    if (!booking) return { kind: 'skip', reason: 'reserva inexistente' };
+    const s = booking.toSnapshot();
+    const customer = await repos.customers.findById(s.customerId);
+    if (!customer) return { kind: 'skip', reason: 'cliente inexistente' };
+    const locale = asLocale(event.payload['locale'], s.locale);
+    const ttlMinutes = this.ctx.links.requestedTtlMinutes;
+    const token = await this.ctx.issueLink(repos, { purpose: 'booking_link', subjectId: booking.id, locale, ttlMs: ttlMinutes * 60_000 });
+    const email = bookingAccessLinkEmail({ code: s.code, customerName: customer.firstName, linkUrl: this.linkUrl(locale, 'reserva/acceso', token), ttlMinutes, locale }, this.ctx.brand);
+    return { kind: 'send', plan: { emails: [{ template: 'booking-access-link', to: [customer.email], ...email }] } };
+  }
+
+  private async complaintAccessLink(repos: TransactionalRepositories, event: ClaimedOutboxEvent): Promise<ComposeResult> {
+    const c = await repos.complaints.findById(str(event.payload['complaintId'], event.aggregateId));
+    if (!c) return { kind: 'skip', reason: 'hoja inexistente' };
+    const locale = asLocale(event.payload['locale']);
+    const ttlMinutes = this.ctx.links.requestedTtlMinutes;
+    const token = await this.ctx.issueLink(repos, { purpose: 'complaint_link', subjectId: c.id, locale, ttlMs: ttlMinutes * 60_000 });
+    const to = [...new Set([c.consumer.email, ...(c.guardian ? [c.guardian.email] : [])])];
+    const email = complaintAccessLinkEmail(
+      { code: c.code, consumerName: c.consumer.fullName, linkUrl: this.linkUrl(locale, 'libro-de-reclamaciones/consulta', token), ttlMinutes, locale },
+      this.ctx.brand,
+    );
+    return { kind: 'send', plan: { emails: [{ template: 'complaint-access-link', to, ...email }] } };
+  }
+
+  private async customerLoginLink(repos: TransactionalRepositories, event: ClaimedOutboxEvent): Promise<ComposeResult> {
+    const customer = await repos.customers.findById(str(event.payload['customerId'], event.aggregateId));
+    if (!customer) return { kind: 'skip', reason: 'cliente inexistente' };
+    const locale = asLocale(event.payload['locale'], customer.preferredLocale);
+    const ttlMinutes = this.ctx.links.requestedTtlMinutes;
+    const token = await this.ctx.issueLink(repos, { purpose: 'customer_login_link', subjectId: customer.id, locale, ttlMs: ttlMinutes * 60_000 });
+    const email = customerLoginLinkEmail({ firstName: customer.firstName, linkUrl: this.linkUrl(locale, 'cuenta/acceso', token), ttlMinutes, locale }, this.ctx.brand);
+    return { kind: 'send', plan: { emails: [{ template: 'customer-login-link', to: [customer.email], ...email }] } };
+  }
+
+  private async contactMessage(repos: TransactionalRepositories, event: ClaimedOutboxEvent): Promise<ComposeResult> {
+    const m = await repos.contactMessages.findById(str(event.payload['contactMessageId'], event.aggregateId));
+    if (!m) return { kind: 'skip', reason: 'mensaje inexistente' };
+    const phone = m.phoneEnc ? this.ctx.cipher.decrypt(m.phoneEnc, contactAad(m.id)) : null;
+    const agency = contactAgencyEmail(
+      { id: m.id, name: m.name, email: m.email, phone, subject: m.subject, message: m.message, tourSlug: m.tourSlug, locale: m.locale, receivedAt: m.createdAt },
+      this.ctx.brand,
+    );
+    return {
+      kind: 'send',
+      plan: {
+        emails: [
+          { template: 'contact-agency', to: [this.ctx.agencyInboxEmail], replyTo: m.email, ...agency },
+          { template: 'contact-acknowledgment', to: [m.email], ...contactAcknowledgmentEmail({ name: m.name, subject: m.subject, locale: m.locale }, this.ctx.brand) },
+        ],
+      },
+    };
+  }
+
   // ---------------------------------------------------------------------------
   private async booking(repos: TransactionalRepositories, event: ClaimedOutboxEvent): Promise<ComposeResult> {
     const bookingId = str(event.payload['bookingId'], event.aggregateId);
@@ -116,25 +207,33 @@ export class MailComposer {
       paid: { amount: s.paidAmount, currency: s.currency },
       balance: { amount: s.totalAmount - s.paidAmount, currency: s.currency },
       balanceDueAt: s.balanceDueAt,
-      manageUrl: `${base}/es/reserva/${encodeURIComponent(s.code)}`,
+      manageUrl: `${base}/${s.locale}/reserva`,
+      linkTtlHours: this.ctx.links.emailTtlHours,
       unsubscribeUrl: await this.ctx.unsubscribeUrl(repos, customer.email),
+      locale: s.locale,
+    };
+    // F0: los botones "Ver mi reserva"/"Pagar el saldo" llevan un enlace mágico de un solo uso generado
+    // al enviar (nunca el accessToken de la sesión ni /reserva/CODE a secas).
+    const withLink = async (): Promise<BookingMailData> => {
+      const token = await this.ctx.issueLink(repos, { purpose: 'booking_link', subjectId: booking.id, locale: s.locale, ttlMs: this.ctx.links.emailTtlHours * 3_600_000 });
+      return { ...data, manageUrl: this.linkUrl(s.locale, 'reserva/acceso', token) };
     };
     const to = [customer.email];
     switch (event.eventType) {
       case MAIL_EVENTS.bookingConfirmed:
-        return { kind: 'send', plan: { emails: [{ template: 'booking-confirmation', to, ...bookingVoucherEmail(data, this.ctx.brand, 'confirmation') }] } };
+        return { kind: 'send', plan: { emails: [{ template: 'booking-confirmation', to, ...bookingVoucherEmail(await withLink(), this.ctx.brand, 'confirmation') }] } };
       case MAIL_EVENTS.bookingVoucherRequested:
         if (!['confirmed', 'partially_paid', 'paid', 'completed'].includes(s.status)) return { kind: 'skip', reason: `voucher no disponible en estado ${s.status}` };
-        return { kind: 'send', plan: { emails: [{ template: 'booking-voucher', to, ...bookingVoucherEmail(data, this.ctx.brand, 'voucher') }] } };
+        return { kind: 'send', plan: { emails: [{ template: 'booking-voucher', to, ...bookingVoucherEmail(await withLink(), this.ctx.brand, 'voucher') }] } };
       case MAIL_EVENTS.bookingPaymentReceived: {
         const amount = BigInt(str(event.payload['amount'], '0'));
-        return { kind: 'send', plan: { emails: [{ template: 'payment-received', to, ...paymentReceivedEmail({ ...data, payment: { amount, currency: s.currency } }, this.ctx.brand) }] } };
+        return { kind: 'send', plan: { emails: [{ template: 'payment-received', to, ...paymentReceivedEmail({ ...(await withLink()), payment: { amount, currency: s.currency } }, this.ctx.brand) }] } };
       }
       case MAIL_EVENTS.bookingBalanceReminder: {
         // Idempotente también al enviar: si ya pagó o canceló, no se recuerda nada.
         if (s.status !== 'partially_paid' || data.balance.amount <= 0n) return { kind: 'skip', reason: 'saldo ya pagado o reserva no vigente' };
         const days = Number(event.payload['daysBefore'] ?? 7);
-        return { kind: 'send', plan: { emails: [{ template: `balance-reminder-${days}d`, to, ...balanceReminderEmail(data, this.ctx.brand, days) }] } };
+        return { kind: 'send', plan: { emails: [{ template: `balance-reminder-${days}d`, to, ...balanceReminderEmail(await withLink(), this.ctx.brand, days) }] } };
       }
       case MAIL_EVENTS.bookingCancelled: {
         const refundDue = BigInt(str(event.payload['refundDueAmount'], String(s.refundDueAmount ?? 0n)));
@@ -154,7 +253,10 @@ export class MailComposer {
     const data = this.complaintData(c);
     const to = [...new Set([c.consumer.email, ...(c.guardian ? [c.guardian.email] : [])])];
     if (kind === 'ack') {
+      // F7: la constancia enlaza a la página de consulta con un enlace mágico de un solo uso.
       const sheet = complaintSheetDocument(data, this.ctx.brand);
+      const token = await this.ctx.issueLink(repos, { purpose: 'complaint_link', subjectId: c.id, locale: 'es', ttlMs: this.ctx.links.emailTtlHours * 3_600_000 });
+      data.consultUrl = this.linkUrl('es', 'libro-de-reclamaciones/consulta', token);
       return {
         kind: 'send',
         plan: {
@@ -220,7 +322,7 @@ export class MailComposer {
       consumerRequest: c.consumerRequest,
       responseChannel: c.responseChannel,
       legalNotices: COMPLAINT_LEGAL_NOTICES,
-      consultUrl: `${this.ctx.brand.publicWebBaseUrl}/es/libro-de-reclamaciones`,
+      consultUrl: `${this.ctx.brand.publicWebBaseUrl}/es/libro-de-reclamaciones/consulta`,
     };
   }
 }

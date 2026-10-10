@@ -4,6 +4,9 @@ import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { settingsFromConfigService } from './config/app-settings.js';
 import { validateEnvironment } from './config/environment.js';
+import { AccessModule } from './modules/access/access.module.js';
+import { ContentModule } from './modules/content/content.module.js';
+import { MediaModule } from './modules/media/media.module.js';
 import { BookingModule } from './modules/booking/booking.module.js';
 import { CartModule } from './modules/cart/cart.module.js';
 import { CatalogModule } from './modules/catalog/catalog.module.js';
@@ -35,6 +38,9 @@ import { throttlerOptions } from './shared/interface/throttling.js';
     ComplaintsModule,
     NotificationsModule,
     BackofficeModule,
+    AccessModule,
+    MediaModule,
+    ContentModule,
   ],
   // Rate limiting global (429 problem+json vía ProblemDetailsFilter).
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

@@ -1,7 +1,7 @@
 import type { Prisma, PrismaClient } from '../../generated/prisma/client.js';
 import type { PrismaTx } from '../../persistence/prisma/prisma-client.js';
 import type { SeedBundle } from '../../modules/catalog/infrastructure/seed/seed-files.js';
-import { mapSeedBlogPost, mapSeedCatalog, mapSeedRedirects } from '../../modules/catalog/infrastructure/seed/seed-mapper.js';
+import { mapSeedBlog, mapSeedCatalog, mapSeedRedirects, mapSeedTestimonials } from '../../modules/catalog/infrastructure/seed/seed-mapper.js';
 
 export interface SeedOptions {
   /** HU-0.1: por defecto los tours quedan en borrador hasta revisión en backoffice. */
@@ -21,6 +21,9 @@ export interface SeedReport {
   tourDestinations: number;
   redirects: { upserted: number; skippedSamePath: number };
   blogPosts: { created: number; existing: number };
+  /** Traducciones `en` creadas o actualizadas (tours, destinos, categorías, blog). */
+  translationsEn: { tours: number; destinations: number; categories: number; blogPosts: number };
+  testimonials: { created: number; existing: number };
 }
 
 /**
@@ -43,7 +46,12 @@ export async function seedDatabaseInTransaction(tx: PrismaTx, bundle: SeedBundle
     tourDestinations: 0,
     redirects: { upserted: 0, skippedSamePath: 0 },
     blogPosts: { created: 0, existing: 0 },
+    translationsEn: { tours: 0, destinations: 0, categories: 0, blogPosts: 0 },
+    testimonials: { created: 0, existing: 0 },
   };
+  /** La traducción `en` de la semilla se crea si falta y se actualiza si sigue siendo automática
+   * (machine_reviewed_pending_client) o con --refresh; nunca pisa una traducción editada en el panel. */
+  const machine = (status: string | null | undefined) => status === 'machine_reviewed_pending_client';
 
   const destinationIds = new Map<string, string>();
   for (const d of catalog.destinations) {
@@ -54,11 +62,12 @@ export async function seedDatabaseInTransaction(tx: PrismaTx, bundle: SeedBundle
     report.destinations[existing ? 'existing' : 'created'] += 1;
     destinationIds.set(d.id, row.id);
     for (const t of d.translations) {
-      await tx.destinationTranslation.upsert({
-        where: { destinationId_locale: { destinationId: row.id, locale: t.locale } },
-        create: { destinationId: row.id, locale: t.locale, name: t.name, description: t.description },
-        update: options.refreshContent ? { name: t.name, description: t.description } : {},
-      });
+      const data = { name: t.name, description: t.description, slug: t.slug ?? null, translationStatus: t.translationStatus ?? null };
+      const current = await tx.destinationTranslation.findUnique({ where: { destinationId_locale: { destinationId: row.id, locale: t.locale } } });
+      const overwrite = options.refreshContent || (t.locale === 'en' && current !== null && machine(current.translationStatus));
+      if (!current) await tx.destinationTranslation.create({ data: { destinationId: row.id, locale: t.locale, ...data } });
+      else if (overwrite) await tx.destinationTranslation.update({ where: { id: current.id }, data });
+      if (t.locale === 'en' && (!current || overwrite)) report.translationsEn.destinations += 1;
     }
   }
 
@@ -69,11 +78,12 @@ export async function seedDatabaseInTransaction(tx: PrismaTx, bundle: SeedBundle
     report.categories[existing ? 'existing' : 'created'] += 1;
     categoryIds.set(c.id, row.id);
     for (const t of c.translations) {
-      await tx.categoryTranslation.upsert({
-        where: { categoryId_locale: { categoryId: row.id, locale: t.locale } },
-        create: { categoryId: row.id, locale: t.locale, name: t.name, description: t.description },
-        update: options.refreshContent ? { name: t.name, description: t.description } : {},
-      });
+      const data = { name: t.name, description: t.description, slug: t.slug ?? null, translationStatus: t.translationStatus ?? null };
+      const current = await tx.categoryTranslation.findUnique({ where: { categoryId_locale: { categoryId: row.id, locale: t.locale } } });
+      const overwrite = options.refreshContent || (t.locale === 'en' && current !== null && machine(current.translationStatus));
+      if (!current) await tx.categoryTranslation.create({ data: { categoryId: row.id, locale: t.locale, ...data } });
+      else if (overwrite) await tx.categoryTranslation.update({ where: { id: current.id }, data });
+      if (t.locale === 'en' && (!current || overwrite)) report.translationsEn.categories += 1;
     }
   }
 
@@ -147,12 +157,13 @@ export async function seedDatabaseInTransaction(tx: PrismaTx, bundle: SeedBundle
         meetingPoint: t.meetingPoint,
         seoTitle: t.seoTitle,
         seoDescription: t.seoDescription,
+        translationStatus: t.translationStatus ?? null,
       };
-      await tx.tourTranslation.upsert({
-        where: { tourId_locale: { tourId, locale: t.locale } },
-        create: { tourId, locale: t.locale, ...content },
-        update: options.refreshContent ? content : {},
-      });
+      const current = await tx.tourTranslation.findUnique({ where: { tourId_locale: { tourId, locale: t.locale } }, select: { id: true, translationStatus: true } });
+      const overwrite = options.refreshContent || (t.locale === 'en' && current !== null && machine(current.translationStatus));
+      if (!current) await tx.tourTranslation.create({ data: { tourId, locale: t.locale, ...content } });
+      else if (overwrite) await tx.tourTranslation.update({ where: { id: current.id }, data: content });
+      if (t.locale === 'en' && (!current || overwrite)) report.translationsEn.tours += 1;
       report.tourTranslations += 1;
     }
 
@@ -177,32 +188,57 @@ export async function seedDatabaseInTransaction(tx: PrismaTx, bundle: SeedBundle
     report.redirects.upserted += 1;
   }
 
-  for (const post of bundle.blogPosts) {
-    const row = mapSeedBlogPost(post);
-    const existing = await tx.blogPostTranslation.findUnique({ where: { locale_slug: { locale: 'es', slug: row.slug } } });
+  for (const post of mapSeedBlog(bundle)) {
+    const es = post.translations.find((t) => t.locale === 'es')!;
+    const existing = await tx.blogPostTranslation.findUnique({ where: { locale_slug: { locale: 'es', slug: es.slug } } });
+    let blogPostId: string;
     if (existing) {
       report.blogPosts.existing += 1;
+      blogPostId = existing.blogPostId;
+      if (post.tags.length > 0) await tx.blogPost.updateMany({ where: { id: blogPostId, tags: { isEmpty: true } }, data: { tags: post.tags } });
+    } else {
+      const created = await tx.blogPost.create({
+        data: { status: post.status, publishedAt: post.publishedAt, coverStorageKey: post.coverStorageKey, tags: post.tags },
+      });
+      blogPostId = created.id;
+      report.blogPosts.created += 1;
+    }
+    for (const t of post.translations) {
+      const content = { slug: t.slug, title: t.title, excerpt: t.excerpt, body: t.body, seoTitle: t.seoTitle, seoDescription: t.seoDescription, translationStatus: t.translationStatus };
+      const current = await tx.blogPostTranslation.findUnique({ where: { blogPostId_locale: { blogPostId, locale: t.locale } }, select: { id: true, translationStatus: true } });
+      const overwrite = (options.refreshContent && t.locale === 'en') || (t.locale === 'en' && current !== null && machine(current.translationStatus));
+      if (!current) await tx.blogPostTranslation.create({ data: { blogPostId, locale: t.locale, ...content } });
+      else if (overwrite) await tx.blogPostTranslation.update({ where: { id: current.id }, data: content });
+      if (t.locale === 'en' && (!current || overwrite)) report.translationsEn.blogPosts += 1;
+    }
+  }
+
+  for (const t of mapSeedTestimonials(bundle.testimonials ?? [], options.now)) {
+    if (await tx.testimonial.findUnique({ where: { id: t.id }, select: { id: true } })) {
+      report.testimonials.existing += 1;
       continue;
     }
-    await tx.blogPost.create({
+    await tx.testimonial.create({
       data: {
-        status: row.publishedAt ? 'published' : 'draft',
-        publishedAt: row.publishedAt,
-        coverStorageKey: row.coverStorageKey,
-        translations: {
-          create: {
-            locale: 'es',
-            slug: row.slug,
-            title: row.title,
-            excerpt: row.excerpt,
-            body: row.body,
-            seoTitle: row.seoTitle,
-            seoDescription: row.seoDescription,
-          },
-        },
+        id: t.id,
+        authorName: t.authorName,
+        authorCountry: t.authorCountry,
+        locale: t.locale,
+        rating: t.rating,
+        body: t.body,
+        publishConsent: false,
+        status: 'approved',
+        isFeatured: t.isFeatured,
+        travelDate: t.travelDate ? new Date(`${t.travelDate}T00:00:00Z`) : null,
+        origin: 'legacy_site',
+        source: t.source,
+        sourceUrl: t.sourceUrl,
+        approvedAt: options.now,
+        moderatedAt: options.now,
+        moderationNote: 'Heredado del sitio anterior (ya era público).',
       },
     });
-    report.blogPosts.created += 1;
+    report.testimonials.created += 1;
   }
   return report;
 }

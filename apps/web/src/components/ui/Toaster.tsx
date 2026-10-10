@@ -2,6 +2,7 @@
 
 import { X } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import { useUiStore } from "@/stores/ui-store";
@@ -13,6 +14,7 @@ import { useUiStore } from "@/stores/ui-store";
 export function Toaster() {
   const toast = useUiStore((s) => s.toast);
   const dismiss = useUiStore((s) => s.dismissToast);
+  const t = useTranslations("toast");
   const [paused, setPaused] = useState(false);
   const remaining = useRef(0);
   const startedAt = useRef(0);
@@ -35,7 +37,7 @@ export function Toaster() {
   return (
     <div
       role="region"
-      aria-label="Notificaciones"
+      aria-label={t("region")}
       aria-live="polite"
       className="pointer-events-none fixed inset-x-0 bottom-4 z-[60] flex justify-center px-4 lg:justify-end lg:px-8"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
@@ -73,7 +75,7 @@ export function Toaster() {
           <button
             type="button"
             onClick={dismiss}
-            aria-label="Cerrar notificación"
+            aria-label={t("close")}
             className="inline-flex size-11 items-center justify-center rounded-sm text-foreground-muted hover:text-foreground"
           >
             <X aria-hidden size={18} strokeWidth={1.5} />

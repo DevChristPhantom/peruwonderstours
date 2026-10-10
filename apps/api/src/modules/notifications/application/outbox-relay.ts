@@ -87,7 +87,7 @@ export class OutboxRelay {
         const { transportRef } = await this.transport.send({
           template: email.template,
           from: this.settings.from,
-          replyTo: this.settings.replyTo,
+          replyTo: email.replyTo ?? this.settings.replyTo,
           to: email.to,
           subject: email.subject,
           html: email.html,

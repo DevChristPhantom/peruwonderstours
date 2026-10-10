@@ -1,40 +1,25 @@
 import { BookOpenText } from "lucide-react";
-import Link from "next/link";
-
-import { SITE, whatsappHref } from "@/lib/site";
 import Image from "next/image";
-const PENDING = "por confirmar";
+import { getTranslations } from "next-intl/server";
 
-const DESTINATIONS = [
-  { label: "Puno y lago Titicaca", href: "/es/destinos/tours-en-puno" },
-  { label: "Cusco y Machu Picchu", href: "/es/destinos/cuzco" },
-  { label: "Arequipa y Colca", href: "/es/destinos/tours-en-arequipa" },
-  { label: "Ica y Paracas", href: "/es/destinos/tours-en-ica-paracas" },
-  { label: "Lima", href: "/es/destinos/tours-en-lima" },
-];
+import { Link } from "@/i18n/navigation";
+import { SITE, whatsappHref } from "@/lib/site";
 
-// Textos legales publicados como BORRADOR desde docs/legal (E8).
-const HELP = [
-  { label: "Todos los tours", href: "/es/tours" },
-  { label: "Términos y condiciones", href: "/es/politicas/terminos-y-condiciones" },
-  { label: "Pagos, cancelación y reembolsos", href: "/es/politicas/condiciones-de-pago" },
-  { label: "Protección de datos personales", href: "/es/politicas/proteccion-de-datos-personales" },
-  { label: "Política de cookies", href: "/es/politicas/cookies" },
-  { label: "Nosotros", href: "/es/nosotros" },
-];
-
-function LegalItem({ label, value }: { label: string; value: string | null }) {
+function LegalItem({ label, value, pending }: { label: string; value: string | null; pending: string }) {
   return (
     <li>
       <span className="text-hero-muted">{label}: </span>
-      {value ?? <span className="italic">{PENDING}</span>}
+      {value ?? <span className="italic">{pending}</span>}
     </li>
   );
 }
 
 /** Footer legal (home.md §11). Datos no confirmados se muestran como "por confirmar"; no se inventan. */
-export function SiteFooter({ variant = "full" }: { variant?: "full" | "minimal" }) {
+export async function SiteFooter({ variant = "full" }: { variant?: "full" | "minimal" }) {
+  const t = await getTranslations("footer");
+  const tc = await getTranslations("common");
   const { legal } = SITE;
+  const pending = tc("pending");
   const year = new Date().getFullYear();
 
   if (variant === "minimal") {
@@ -42,28 +27,27 @@ export function SiteFooter({ variant = "full" }: { variant?: "full" | "minimal" 
       <footer className="border-t border-border bg-surface-muted">
         <div className="pwt-container flex flex-col gap-3 py-6 text-sm text-foreground-muted md:flex-row md:items-center md:justify-between">
           <p>
-            {legal.businessName ?? SITE.name} · RUC: {legal.ruc ?? PENDING}
-            {/* TODO(cliente): RUC y razón social reales. */}
+            {legal.businessName ?? SITE.name} · RUC: {legal.ruc ?? pending}
           </p>
           <ul className="flex flex-wrap gap-x-5 gap-y-2">
             <li>
-              <Link className="pwt-link" href="/es/politicas/terminos-y-condiciones">
-                Términos
+              <Link className="pwt-link" href="/politicas/terminos-y-condiciones">
+                {t("short.terms")}
               </Link>
             </li>
             <li>
-              <Link className="pwt-link" href="/es/politicas/condiciones-de-pago">
-                Pagos y cancelación
+              <Link className="pwt-link" href="/politicas/condiciones-de-pago">
+                {t("short.payments")}
               </Link>
             </li>
             <li>
-              <Link className="pwt-link" href="/es/politicas/proteccion-de-datos-personales">
-                Privacidad
+              <Link className="pwt-link" href="/politicas/proteccion-de-datos-personales">
+                {t("short.privacy")}
               </Link>
             </li>
             <li>
-              <Link className="pwt-link" href="/es/libro-de-reclamaciones">
-                Libro de Reclamaciones
+              <Link className="pwt-link" href="/libro-de-reclamaciones">
+                {t("complaintsBook")}
               </Link>
             </li>
           </ul>
@@ -75,20 +59,19 @@ export function SiteFooter({ variant = "full" }: { variant?: "full" | "minimal" 
   return (
     <footer className="bg-hero-ink text-[color:var(--pwt-hero-soft)]" aria-labelledby="footer-title">
       <h2 id="footer-title" className="sr-only">
-        Información de la agencia
+        {t("title")}
       </h2>
       <div className="pwt-container grid gap-10 py-16 md:grid-cols-2 lg:grid-cols-4">
         <div className="space-y-4">
-          <Link href="/es" className="inline-flex min-h-11 items-center" aria-label="Peru Wonders Tours, inicio">
-            <Image src="/logo.png" alt="Peru Wonders Tours" width={120} height={40} className="h-10 w-auto" />
+          <Link href="/" className="inline-flex min-h-11 items-center" aria-label={tc("logoHome")}>
+            <Image src="/logo.png" alt={tc("logoAlt")} width={120} height={40} className="h-10 w-auto" />
           </Link>
           <ul className="space-y-1.5 text-sm">
-            {/* TODO(cliente): completar razón social, RUC, registro MINCETUR y correo del dominio nuevo. */}
-            <LegalItem label="Razón social" value={legal.businessName} />
-            <LegalItem label="RUC" value={legal.ruc} />
-            <LegalItem label="Registro de agencia (MINCETUR)" value={legal.minceturRegistry} />
-            <LegalItem label="Oficina" value={legal.address} />
-            <LegalItem label="Correo" value={legal.email} />
+            <LegalItem label={t("legal.businessName")} value={legal.businessName} pending={pending} />
+            <LegalItem label={t("legal.ruc")} value={legal.ruc} pending={pending} />
+            <LegalItem label={t("legal.mincetur")} value={legal.minceturRegistry} pending={pending} />
+            <LegalItem label={t("legal.office")} value={legal.address} pending={pending} />
+            <LegalItem label={t("legal.email")} value={legal.email} pending={pending} />
             <li>
               <span className="text-hero-muted">WhatsApp: </span>
               <a className="underline underline-offset-2 hover:text-white" href={whatsappHref()} target="_blank" rel="noopener noreferrer">
@@ -100,13 +83,24 @@ export function SiteFooter({ variant = "full" }: { variant?: "full" | "minimal" 
 
         <nav aria-labelledby="footer-destinos">
           <h3 id="footer-destinos" className="mb-3 text-xs font-medium tracking-[0.08em] text-hero-muted uppercase">
-            Destinos
+            {tc("destinations")}
           </h3>
           <ul className="space-y-1 text-sm">
-            {DESTINATIONS.map((d) => (
-              <li key={d.href}>
-                <Link href={d.href} className="inline-flex min-h-11 items-center hover:text-white md:min-h-9">
-                  {d.label}
+            {(
+              [
+                ["tours-en-puno", "puno"],
+                ["cuzco", "cusco"],
+                ["tours-en-arequipa", "arequipa"],
+                ["tours-en-ica-paracas", "ica"],
+                ["tours-en-lima", "lima"],
+              ] as const
+            ).map(([slug, key]) => (
+              <li key={slug}>
+                <Link
+                  href={{ pathname: "/destinos/[slug]", params: { slug } }}
+                  className="inline-flex min-h-11 items-center hover:text-white md:min-h-9"
+                >
+                  {t(`destinations.${key}`)}
                 </Link>
               </li>
             ))}
@@ -115,13 +109,22 @@ export function SiteFooter({ variant = "full" }: { variant?: "full" | "minimal" 
 
         <nav aria-labelledby="footer-ayuda">
           <h3 id="footer-ayuda" className="mb-3 text-xs font-medium tracking-[0.08em] text-hero-muted uppercase">
-            Ayuda
+            {t("help")}
           </h3>
           <ul className="space-y-1 text-sm">
-            {HELP.map((d) => (
-              <li key={d.href}>
-                <Link href={d.href} className="inline-flex min-h-11 items-center hover:text-white md:min-h-9">
-                  {d.label}
+            {(
+              [
+                ["/tours", "allTours"],
+                ["/politicas/terminos-y-condiciones", "terms"],
+                ["/politicas/condiciones-de-pago", "payments"],
+                ["/politicas/proteccion-de-datos-personales", "privacy"],
+                ["/politicas/cookies", "cookies"],
+                ["/nosotros", "about"],
+              ] as const
+            ).map(([href, key]) => (
+              <li key={href}>
+                <Link href={href} className="inline-flex min-h-11 items-center hover:text-white md:min-h-9">
+                  {t(`links.${key}`)}
                 </Link>
               </li>
             ))}
@@ -129,25 +132,20 @@ export function SiteFooter({ variant = "full" }: { variant?: "full" | "minimal" 
         </nav>
 
         <div>
-          <h3 className="mb-3 text-xs font-medium tracking-[0.08em] text-hero-muted uppercase">Libro de Reclamaciones</h3>
+          <h3 className="mb-3 text-xs font-medium tracking-[0.08em] text-hero-muted uppercase">{t("complaintsBook")}</h3>
           <Link
-            href="/es/libro-de-reclamaciones"
+            href="/libro-de-reclamaciones"
             className="inline-flex min-h-11 items-center gap-3 rounded-md border border-[color:var(--pwt-hero-line)] px-4 py-2 text-sm text-white hover:bg-hero-hover"
           >
-            {/* TODO(cumplimiento): reemplazar por el ícono oficial del Libro de Reclamaciones. */}
+            {/* PENDIENTE(cumplimiento): ícono oficial del Libro de Reclamaciones. */}
             <BookOpenText aria-hidden size={24} strokeWidth={1.5} />
-            Libro de Reclamaciones
+            {t("complaintsBook")}
           </Link>
-          <p className="mt-4 text-sm">
-            {/* TODO(cumplimiento): validar redacción (Ley 30802). */}
-            {SITE.name} rechaza toda forma de explotación sexual de niñas, niños y adolescentes (Ley 30802).
-          </p>
+          <p className="mt-4 text-sm">{t("esnna", { name: SITE.name })}</p>
         </div>
       </div>
       <div className="border-t border-[color:var(--pwt-hero-line)]">
-        <p className="pwt-container py-6 text-sm text-hero-muted">
-          © {year} {SITE.name}. Precios en soles (S/) con impuestos incluidos.
-        </p>
+        <p className="pwt-container py-6 text-sm text-hero-muted">{t("copyright", { year, name: SITE.name })}</p>
       </div>
     </footer>
   );

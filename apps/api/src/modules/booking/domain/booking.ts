@@ -392,6 +392,31 @@ export class Booking {
     return structuredClone(this.props);
   }
 
+  /**
+   * Anulación de un pago manual mal registrado (Sprint 3, solo admin): resta del total pagado y
+   * retrocede el estado si corresponde (paid -> partially_paid | confirmed; partially_paid -> confirmed).
+   * No toca refundedAmount: no es un reembolso sino la corrección de un registro.
+   */
+  voidPayment(amount: Money, now: Date, actorType: ActorType = 'user'): StatusTransitionResult {
+    this.assertPositiveSameCurrency(amount);
+    const from = this.props.status;
+    if (!['confirmed', 'partially_paid', 'paid'].includes(from)) {
+      throw new ConflictError('booking-not-voidable', 'No se pueden anular pagos de una reserva cancelada, completada o reembolsada.', { bookingCode: this.code, status: from });
+    }
+    const newPaid = this.paid.subtract(amount);
+    if (newPaid.lessThan(Money.of(0n, this.props.currency))) {
+      throw new BusinessRuleError('void-exceeds-paid', 'La anulación supera lo pagado.', { paid: this.props.paidAmount, attempted: amount.amount });
+    }
+    if (newPaid.amount < this.props.refundedAmount) {
+      throw new BusinessRuleError('void-conflicts-refund', 'La reserva tiene reembolsos registrados por encima del nuevo total pagado.', { refunded: this.props.refundedAmount });
+    }
+    const to: BookingStatus = newPaid.equals(this.total) ? 'paid' : newPaid.amount > 0n && !newPaid.lessThan(this.deposit) ? 'partially_paid' : 'confirmed';
+    this.props.paidAmount = newPaid.amount;
+    if (to !== from) this.transition(to, now, 'manual_payment_voided', actorType);
+    this.props.updatedAt = now;
+    return { from, to, changed: from !== to };
+  }
+
   private initialPayment(): { kind: BookingPaymentKind; amount: Money } {
     return this.props.paymentOption === 'full'
       ? { kind: 'full', amount: this.total }

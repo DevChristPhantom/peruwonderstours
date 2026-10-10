@@ -1,3 +1,6 @@
+import { localePath } from "@/i18n/paths";
+import type { Locale } from "@/i18n/routing";
+
 /**
  * Lista de favoritos compartible por URL (HU-B.A4): `/es/favoritos?tours=slug-a,slug-b`.
  * Solo identificadores públicos de tours, nunca datos personales ni del navegador.
@@ -24,7 +27,7 @@ export function parseSharedSlugs(raw: string | null | undefined): string[] {
   return out;
 }
 
-export function sharePath(slugs: readonly string[]): string {
+export function sharePath(slugs: readonly string[], locale: Locale): string {
   const list = slugs.filter(isTourSlug).slice(0, MAX_FAVORITES);
-  return list.length ? `/es/favoritos?${SHARE_PARAM}=${list.join(",")}` : "/es/favoritos";
+  return localePath(locale, list.length ? { pathname: "/favoritos", query: { [SHARE_PARAM]: list.join(",") } } : "/favoritos");
 }

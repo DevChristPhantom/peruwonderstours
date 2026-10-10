@@ -2,7 +2,10 @@
 
 import clsx from "clsx";
 import { Heart } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+
+import { localePath } from "@/i18n/paths";
 
 import { canPersistFavorites, useIsFavorite, useWishlistStore } from "@/stores/wishlist-store";
 import { useUiStore } from "@/stores/ui-store";
@@ -26,31 +29,30 @@ export function FavoriteButton({ slug, title, destinationSlugs, variant = "card"
   const announce = useUiStore((s) => s.announce);
   const showToast = useUiStore((s) => s.showToast);
   const [pop, setPop] = useState(0);
+  const t = useTranslations("favorites.button");
+  const locale = useLocale();
+  const favoritesHref = localePath(locale, "/favoritos");
 
   const onClick = () => {
     const added = toggle({ slug, title, destinationSlugs });
     if (added) setPop((n) => n + 1);
     const count = useWishlistStore.getState().items.length;
     const persistent = canPersistFavorites();
-    announce(
-      added
-        ? `Guardaste ${title} en favoritos. Tienes ${count} ${count === 1 ? "favorito" : "favoritos"}.`
-        : `Quitaste ${title} de favoritos.`,
-    );
+    announce(added ? t("announceAdded", { title, count }) : t("announceRemoved", { title }));
     if (added && !persistent && !warnedNoStorage) {
       warnedNoStorage = true;
       showToast({
-        message: "Tu navegador no permite guardar datos: tus favoritos se perderán al cerrarlo.",
+        message: t("noStorage"),
         duration: 8000,
-        action: { label: "Ver favoritos", href: "/es/favoritos" },
+        action: { label: t("view"), href: favoritesHref },
       });
     } else if (added) {
-      showToast({ message: "Guardado en favoritos", action: { label: "Ver favoritos", href: "/es/favoritos" } });
+      showToast({ message: t("saved"), action: { label: t("view"), href: favoritesHref } });
     }
   };
 
   // Etiqueta fija + aria-pressed (patrón de botón conmutador): el estado lo anuncia "presionado".
-  const label = `Guardar ${title} en favoritos`;
+  const label = t("label", { title });
   const icon = (
     <span key={pop} className={pop ? "pwt-heart-pop inline-flex" : "inline-flex"}>
       <Heart aria-hidden size={20} strokeWidth={1.5} fill={active ? "currentColor" : "none"} />
@@ -67,7 +69,7 @@ export function FavoriteButton({ slug, title, destinationSlugs, variant = "card"
       >
         {icon}
         {/* Texto fijo (2.5.3 Label in Name); el estado lo comunican aria-pressed y el relleno. */}
-        Guardar en favoritos
+        {t("inline")}
       </button>
     );
   }
@@ -77,7 +79,7 @@ export function FavoriteButton({ slug, title, destinationSlugs, variant = "card"
       type="button"
       aria-pressed={active}
       aria-label={label}
-      title={active ? "Quitar de favoritos" : "Guardar en favoritos"}
+      title={active ? t("removeTitle") : t("inline")}
       onClick={onClick}
       className={clsx(
         "relative z-[2] inline-flex size-11 items-center justify-center rounded-pill bg-surface/95 shadow-xs",

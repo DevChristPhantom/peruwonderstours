@@ -1,35 +1,41 @@
-import { FileWarning } from "lucide-react";
+import { FileWarning, Languages } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
+import type { Locale } from "@/i18n/routing";
 import { loadLegalDocument, type LegalDocumentKey } from "@/lib/legal/documents";
 import { Markdown } from "@/lib/legal/markdown";
+import type { Crumb } from "@/lib/seo/json-ld";
 
 import { Breadcrumbs } from "./Breadcrumbs";
 
-/** Página legal publicada desde `docs/legal/*.md`, con aviso de BORRADOR siempre visible. */
-export function LegalDocumentPage({ doc, path, title }: { doc: LegalDocumentKey; path: string; title: string }) {
+/**
+ * Página legal publicada desde `docs/legal/*.md`, con aviso de BORRADOR siempre visible. Los textos
+ * legales existen solo en español: en inglés se avisa y el documento se marca `lang="es"`.
+ */
+export async function LegalDocumentPage({ doc, crumbs, locale }: { doc: LegalDocumentKey; crumbs: Crumb[]; locale: Locale }) {
   const legal = loadLegalDocument(doc);
+  const t = await getTranslations("legal");
   return (
     <div className="pwt-container-narrow pt-8 pb-20">
-      <Breadcrumbs
-        items={[
-          { name: "Inicio", path: "/es" },
-          { name: title, path },
-        ]}
-      />
-      <h1 className="mt-4 font-display text-h1 font-medium">{legal.title}</h1>
+      <Breadcrumbs items={crumbs} />
+      <h1 lang="es-PE" className="mt-4 font-display text-h1 font-medium">
+        {legal.title}
+      </h1>
+      {locale !== "es" ? (
+        <p role="note" className="mt-6 flex gap-3 rounded-md border border-border bg-surface-muted px-4 py-3 text-sm">
+          <Languages aria-hidden size={20} strokeWidth={1.5} className="mt-0.5 shrink-0" />
+          {t("spanishOnly")}
+        </p>
+      ) : null}
       <div
         role="note"
-        aria-label="Documento en borrador"
+        aria-label={t("draftLabel")}
         className="mt-6 flex gap-3 rounded-md border-2 border-dashed border-warning bg-warning-soft px-4 py-3 text-sm text-warning"
       >
         <FileWarning aria-hidden size={20} strokeWidth={1.5} className="mt-0.5 shrink-0" />
-        <p>
-          <strong>BORRADOR</strong> pendiente de revisión legal y de los datos de la agencia
-          {legal.draftVersion ? ` (versión ${legal.draftVersion})` : ""}. Los textos marcados como
-          &quot;POR CONFIRMAR&quot; aún no son definitivos.
-        </p>
+        <p>{legal.draftVersion ? t("draftWithVersion", { version: legal.draftVersion }) : t("draft")}</p>
       </div>
-      <div className="mt-6 text-body">
+      <div lang="es-PE" className="mt-6 text-body">
         <Markdown blocks={legal.blocks} />
       </div>
     </div>

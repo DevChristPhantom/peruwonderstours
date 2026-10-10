@@ -43,6 +43,8 @@ export interface CheckoutInput {
   customerNotes?: string | null;
   /** Total que el cliente vio y aceptó (céntimos). Si difiere del actual: 409. */
   expectedTotalAmount?: bigint;
+  /** Idioma de la reserva (correos es/en). Por defecto el del carrito. */
+  locale?: Locale;
 }
 
 export interface CheckoutResult {
@@ -144,7 +146,7 @@ export class BookingUseCases {
       const email = normalizeEmail(input.customer.email);
       let customer = await repos.customers.findByEmail(email);
       if (!customer) {
-        customer = createCustomer({ id: this.ids.next(), ...input.customer, preferredLocale: cart.locale, now });
+        customer = createCustomer({ id: this.ids.next(), ...input.customer, preferredLocale: input.locale ?? cart.locale, now });
         await repos.customers.save(customer);
       }
 
@@ -177,7 +179,7 @@ export class BookingUseCases {
         code,
         customerId: customer.id,
         cartId: cart.id,
-        locale: cart.locale,
+        locale: input.locale ?? cart.locale,
         plan,
         items,
         lastServiceDate,
@@ -219,7 +221,7 @@ export class BookingUseCases {
         customerId: customer.id,
         bookingId: booking.id,
         email: customer.email,
-        locale: cart.locale,
+        locale: input.locale ?? cart.locale,
         marketingEmail: input.marketingEmailOptIn ?? false,
         marketingWhatsapp: input.marketingWhatsappOptIn ?? false,
         meta: input.meta ?? { ip: null, userAgent: null },
@@ -241,7 +243,7 @@ export class BookingUseCases {
 
   /** Reserva por código legible + token de acceso (404 genérico si no coinciden). */
   getByCode(access: BookingAccess): Promise<Booking> {
-    return this.unitOfWork.run((repos) => loadBookingWithAccess(repos, access));
+    return this.unitOfWork.run((repos) => loadBookingWithAccess(repos, access, this.clock.now()));
   }
 
   getById(bookingId: string): Promise<Booking> {

@@ -2,6 +2,7 @@
 
 import { ChevronLeft, ChevronRight, Images, X } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { CatalogImage } from "@/lib/catalog/types";
@@ -11,6 +12,7 @@ import type { CatalogImage } from "@/lib/catalog/types";
  * con teclado (← → Esc) y contador "3 de 18".
  */
 export function TourGallery({ images, title }: { images: CatalogImage[]; title: string }) {
+  const t = useTranslations("gallery");
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openerRef = useRef<HTMLButtonElement | null>(null);
   const [index, setIndex] = useState(0);
@@ -53,7 +55,7 @@ export function TourGallery({ images, title }: { images: CatalogImage[]; title: 
           type="button"
           className="relative overflow-hidden rounded-l-lg bg-surface-muted md:row-span-2"
           onClick={(e) => openAt(0, e.currentTarget)}
-          aria-label={`Ampliar foto 1 de ${total}`}
+          aria-label={t("enlarge", { n: 1, total })}
           data-reveal-clip
         >
           <Image src={main.src} alt={main.alt} fill preload sizes="(min-width: 1024px) 640px, 66vw" className="object-cover" />
@@ -64,7 +66,7 @@ export function TourGallery({ images, title }: { images: CatalogImage[]; title: 
             type="button"
             className={`relative overflow-hidden bg-surface-muted ${i >= 2 ? "hidden lg:block" : ""} ${i === 1 ? "md:rounded-br-lg lg:rounded-none lg:rounded-tr-lg" : ""} ${i === 3 ? "lg:rounded-br-lg" : ""}`}
             onClick={(e) => openAt(i + 1, e.currentTarget)}
-            aria-label={`Ampliar foto ${i + 2} de ${total}`}
+            aria-label={t("enlarge", { n: i + 2, total })}
           >
             <Image src={img.src} alt={img.alt} fill sizes="320px" className="object-cover transition-transform duration-[900ms] ease-out hover:scale-105" />
           </button>
@@ -77,13 +79,13 @@ export function TourGallery({ images, title }: { images: CatalogImage[]; title: 
           <Image src={images[mobileIndex].src} alt={images[mobileIndex].alt} fill loading={mobileIndex === 0 ? "eager" : "lazy"} sizes="100vw" className="object-cover" />
         </div>
         <p className="absolute top-3 right-3 rounded-pill bg-hero-panel px-3 py-1 text-sm text-white" aria-live="polite">
-          {mobileIndex + 1} de {total}
+          {t("counter", { n: mobileIndex + 1, total })}
         </p>
         <div className="absolute inset-x-3 bottom-3 flex justify-between">
           <button
             type="button"
             onClick={() => setMobileIndex((i) => (i - 1 + total) % total)}
-            aria-label="Foto anterior"
+            aria-label={t("previous")}
             className="inline-flex size-11 items-center justify-center rounded-pill bg-hero-panel text-white"
           >
             <ChevronLeft aria-hidden size={20} strokeWidth={1.5} />
@@ -91,7 +93,7 @@ export function TourGallery({ images, title }: { images: CatalogImage[]; title: 
           <button
             type="button"
             onClick={() => setMobileIndex((i) => (i + 1) % total)}
-            aria-label="Foto siguiente"
+            aria-label={t("next")}
             className="inline-flex size-11 items-center justify-center rounded-pill bg-hero-panel text-white"
           >
             <ChevronRight aria-hidden size={20} strokeWidth={1.5} />
@@ -106,25 +108,25 @@ export function TourGallery({ images, title }: { images: CatalogImage[]; title: 
           className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-md px-1 text-sm font-medium text-link underline underline-offset-2"
         >
           <Images aria-hidden size={18} strokeWidth={1.5} />
-          Ver las {total} fotos
+          {t("viewAll", { total })}
         </button>
       ) : null}
 
       <dialog
         ref={dialogRef}
-        aria-label={`Fotos de ${title}`}
+        aria-label={t("dialog", { title })}
         className="pwt-modal m-auto h-full max-h-none w-full max-w-none bg-hero-ink p-0 text-white backdrop:bg-overlay"
         data-lenis-prevent
       >
         <div className="flex h-full flex-col">
           <div className="flex items-center justify-between px-4 py-3">
             <p aria-live="polite" className="tabular text-sm">
-              {index + 1} de {total}
+              {t("counter", { n: index + 1, total })}
             </p>
             <button
               type="button"
               onClick={() => dialogRef.current?.close()}
-              aria-label="Cerrar visor"
+              aria-label={t("close")}
               className="inline-flex size-11 items-center justify-center rounded-pill hover:bg-hero-hover"
               autoFocus
             >
@@ -138,7 +140,7 @@ export function TourGallery({ images, title }: { images: CatalogImage[]; title: 
             <button
               type="button"
               onClick={() => go(-1)}
-              aria-label="Foto anterior"
+              aria-label={t("previous")}
               className="inline-flex size-11 items-center justify-center rounded-pill border border-[color:var(--pwt-hero-line)] hover:bg-hero-hover"
             >
               <ChevronLeft aria-hidden size={22} strokeWidth={1.5} />
@@ -146,7 +148,7 @@ export function TourGallery({ images, title }: { images: CatalogImage[]; title: 
             <button
               type="button"
               onClick={() => go(1)}
-              aria-label="Foto siguiente"
+              aria-label={t("next")}
               className="inline-flex size-11 items-center justify-center rounded-pill border border-[color:var(--pwt-hero-line)] hover:bg-hero-hover"
             >
               <ChevronRight aria-hidden size={22} strokeWidth={1.5} />

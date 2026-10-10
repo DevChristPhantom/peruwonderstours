@@ -7,7 +7,17 @@ import { useRef, type ReactNode } from "react";
  * Carrusel manual < 768 px (scroll-snap, 82 % de ancho, botones Anterior/Siguiente, sin autoplay);
  * grilla desde 768 px (home.md §5).
  */
-export function DestinationRail({ children, label }: { children: ReactNode; label: string }) {
+export function DestinationRail({
+  children,
+  label,
+  previousLabel,
+  nextLabel,
+}: {
+  children: ReactNode;
+  label: string;
+  previousLabel: string;
+  nextLabel: string;
+}) {
   const ref = useRef<HTMLUListElement>(null);
   const scroll = (dir: 1 | -1) => {
     const el = ref.current;
@@ -31,10 +41,10 @@ export function DestinationRail({ children, label }: { children: ReactNode; labe
         {children}
       </ul>
       <div className="mt-4 flex justify-end gap-2 md:hidden">
-        <button type="button" className={btn} onClick={() => scroll(-1)} aria-label="Destino anterior">
+        <button type="button" className={btn} onClick={() => scroll(-1)} aria-label={previousLabel}>
           <ChevronLeft aria-hidden size={20} strokeWidth={1.5} />
         </button>
-        <button type="button" className={btn} onClick={() => scroll(1)} aria-label="Destino siguiente">
+        <button type="button" className={btn} onClick={() => scroll(1)} aria-label={nextLabel}>
           <ChevronRight aria-hidden size={20} strokeWidth={1.5} />
         </button>
       </div>

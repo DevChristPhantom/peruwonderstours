@@ -1,4 +1,5 @@
 import { accessTokenMatches, generateAccessToken, isWellFormedAccessToken } from '../../../shared/application/access-token.js';
+import { sessionGrantsAccess } from '../../../shared/application/access-grants.js';
 import { requestFingerprint } from '../../../shared/application/fingerprint.js';
 import type { PiiCipher } from '../../../shared/application/pii-cipher.js';
 import type { TransactionalRepositories, UnitOfWork } from '../../../shared/application/unit-of-work.js';
@@ -194,7 +195,10 @@ export class ComplaintUseCases {
       const code = access.code.trim().toUpperCase();
       const complaint = COMPLAINT_CODE_PATTERN.test(code) ? await repos.complaints.findByCode(code) : null;
       const matches = accessTokenMatches(access.token, complaint?.accessTokenHash ?? null);
-      if (!complaint || !matches) throw new ComplaintNotFoundError();
+      // Sprint 3 (F7): también una sesión `complaint_session` obtenida con el enlace del correo.
+      const viaSession =
+        !matches && complaint !== null && (await sessionGrantsAccess(repos, { token: access.token, purpose: 'complaint_session', subjectId: complaint.id, now: this.clock.now() }));
+      if (!complaint || !(matches || viaSession)) throw new ComplaintNotFoundError();
       return {
         complaint,
         consumerDocNumber: this.cipher.decrypt(complaint.consumer.docEnc, complaintAad(complaint.id, 'consumer_doc_enc')),

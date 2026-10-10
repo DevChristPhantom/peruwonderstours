@@ -1,8 +1,5 @@
 import "server-only";
 
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
-
 import { parseMarkdown } from "./markdown";
 
 /**
@@ -10,7 +7,20 @@ import { parseMarkdown } from "./markdown";
  * aviso visible de BORRADOR (brain/wiki/normativa/informacion-al-consumidor.md). Se descarta el
  * preámbulo interno (todo lo anterior al segundo H1: notas para el cliente "eliminar antes de
  * publicar") y se conserva la versión del borrador para mostrarla en el aviso.
+ *
+ * L1 (auditoría sprint 3): el contenido se INCRUSTA en el build. `next.config.ts` lee los `.md` con
+ * una ruta relativa a su propio archivo (`__dirname`) y los expone en `env` (`PWT_LEGAL_*`), que Next
+ * reemplaza de forma estática. Ya no se usa `process.cwd()` ni el disco en tiempo de ejecución:
+ * funciona con `next dev <ruta>` desde cualquier carpeta, con `next start` y en una salida standalone.
+ * (Turbopack 16.3 no resolvió `import … .md` como texto: ni `?raw` ni `type: "raw"` ni `import.meta.glob`.)
+ * Al editar un borrador hay que reiniciar `next dev` o volver a compilar.
  */
+const RAW_DOCUMENTS = {
+  terminos: process.env.PWT_LEGAL_TERMINOS,
+  privacidad: process.env.PWT_LEGAL_PRIVACIDAD,
+  cancelacion: process.env.PWT_LEGAL_CANCELACION,
+  cookies: process.env.PWT_LEGAL_COOKIES,
+};
 
 export const LEGAL_DOCUMENTS = {
   terminos: "terminos-y-condiciones.md",
@@ -27,20 +37,10 @@ export interface LegalDocument {
   blocks: ReturnType<typeof parseMarkdown>;
 }
 
-function legalDir(): string {
-  // `next build`/`next start` corren con cwd = apps/web; se acepta también la raíz del monorepo.
-  // turbopackIgnore: la carpeta se incluye explícitamente con outputFileTracingIncludes (next.config.ts);
-  // sin la marca, Turbopack rastrearía todo el proyecto por el acceso dinámico.
-  const root = /* turbopackIgnore: true */ process.cwd();
-  const candidates = [path.join(root, "../../docs/legal"), path.join(root, "docs/legal")];
-  const found = candidates.find((dir) => existsSync(dir));
-  if (!found) throw new Error("No se encontró docs/legal (borradores legales).");
-  return found;
-}
-
 export function loadLegalDocument(key: LegalDocumentKey): LegalDocument {
-  const raw = readFileSync(path.join(legalDir(), LEGAL_DOCUMENTS[key]), "utf8").replace(/\r\n/g, "\n");
-  const lines = raw.split("\n");
+  const source = RAW_DOCUMENTS[key];
+  if (!source) throw new Error(`No se encontró docs/legal/${LEGAL_DOCUMENTS[key]} (borrador legal) al compilar.`);
+  const lines = source.replace(/\r\n/g, "\n").split("\n");
   const h1 = lines.map((l, i) => (/^#\s/.test(l) ? i : -1)).filter((i) => i >= 0);
   // Primer H1 = "BORRADOR — ..."; segundo H1 = título real del documento.
   const start = h1.length > 1 ? h1[1] : (h1[0] ?? 0);

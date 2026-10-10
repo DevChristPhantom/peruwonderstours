@@ -1,17 +1,25 @@
 import "server-only";
 
 import toursJson from "@seed/tours.json";
+import toursEnJson from "@seed/en/tours.json";
 import destinationsJson from "@seed/destinations.json";
+import destinationsEnJson from "@seed/en/destinations.json";
 import categoriesJson from "@seed/categories.json";
+import categoriesEnJson from "@seed/en/categories.json";
+import slugMapJson from "@seed/en/_slug-map.json";
+
+import type { Locale } from "@/i18n/routing";
+import { categoryPath, destinationPath, tourPath } from "@/i18n/paths";
 
 import type { CatalogRepository } from "./repository";
 import { derivePaymentPolicy, durationBucketOf } from "./rules";
-import type { CatalogImage, Category, Destination, Tour, TourSummary } from "./types";
+import type { CatalogImage, Category, Destination, LocalePaths, Tour, TourSummary } from "./types";
 
 /* ---------- Forma de los JSON extraídos (data/seed/_extraction-report.md) ---------- */
 
 interface SeedTour {
   slug: string;
+  originalUrl?: string;
   newPath: string;
   title: string;
   shortTitle: string | null;
@@ -65,6 +73,27 @@ const seedTours = toursJson as unknown as SeedTour[];
 const seedDestinations = destinationsJson as unknown as SeedDestination[];
 const seedCategories = categoriesJson as unknown as SeedCategory[];
 
+/**
+ * Traducción al inglés del catálogo (`data/seed/en/`, revisión pendiente del cliente: su campo
+ * `translationStatus` NO se muestra). Cada registro en inglés apunta a su original por `originalUrl`
+ * (…/es/tours/<slug-es>) y `_slug-map.json` da el slug en inglés de cada clave en español (hreflang y
+ * selector de idioma). Lo que falte se muestra en español con `fallback: true`.
+ */
+type SlugMap = Record<"tours" | "destinations" | "categories" | "blog", Record<string, string>>;
+export const SEED_SLUG_MAP = slugMapJson as unknown as SlugMap;
+
+function byOriginalKey<T extends { slug: string; originalUrl?: string }>(list: unknown): Map<string, T> {
+  return new Map(
+    (Array.isArray(list) ? (list as T[]) : [])
+      .filter((x) => x && typeof x.slug === "string")
+      .map((x) => [x.originalUrl?.split("/").filter(Boolean).pop() ?? x.slug, x]),
+  );
+}
+
+const enByKey = byOriginalKey<SeedTour>(toursEnJson);
+const enDestinations = byOriginalKey<SeedDestination & { originalUrl?: string }>(destinationsEnJson);
+const enCategories = byOriginalKey<SeedCategory & { originalUrl?: string }>(categoriesEnJson);
+
 /* ---------- Mapeo a los tipos de dominio de la web ---------- */
 
 /**
@@ -87,23 +116,40 @@ function image(src: string | null | undefined, alt: string): CatalogImage | null
   return src ? { src, alt } : null;
 }
 
-function toSummary(t: SeedTour): TourSummary {
-  const shortTitle = t.shortTitle?.trim() || t.title;
+/** Texto del tour en el idioma pedido (o el español como respaldo). */
+function localized(t: SeedTour, locale: Locale): { text: SeedTour; fallback: boolean } {
+  if (locale === "es") return { text: t, fallback: false };
+  const en = enByKey.get(t.slug);
+  return en ? { text: en, fallback: false } : { text: t, fallback: true };
+}
+
+function tourAlternates(key: string): LocalePaths {
+  return { es: tourPath("es", key), en: tourPath("en", SEED_SLUG_MAP.tours[key] ?? enByKey.get(key)?.slug ?? key) };
+}
+
+function toSummary(t: SeedTour, locale: Locale): TourSummary {
+  const { text, fallback } = localized(t, locale);
+  const alternates = tourAlternates(t.slug);
+  const shortTitle = text.shortTitle?.trim() || text.title;
   return {
-    slug: t.slug,
-    path: t.newPath,
-    title: t.title,
+    key: t.slug,
+    slug: alternates[locale].split("/").pop()!,
+    path: alternates[locale],
+    alternates,
+    fallback,
+    title: text.title,
     shortTitle,
-    excerpt: cleanSeedText(t.cardSummary) ?? cleanSeedText(t.metaDescription) ?? "",
-    durationLabel: t.durationLabel,
+    excerpt: cleanSeedText(text.cardSummary) ?? cleanSeedText(text.metaDescription) ?? "",
+    durationLabel: text.durationLabel,
     durationDays: t.durationDays,
     durationNights: t.durationNights,
     durationBucket: durationBucketOf(t.durationDays),
-    destinationNames: t.destinations ?? [],
+    destinationNames: (locale === "en" && !fallback ? text.destinations : t.destinations) ?? [],
+    // Claves estables en español (filtros, reglas de altura, carrito).
     destinationSlugs: t.destinationSlugs,
     categorySlugs: t.categorySlugs,
     minPax: t.minPax ?? 1,
-    difficulty: t.difficulty,
+    difficulty: text.difficulty,
     featured: t.featured,
     // TODO(HU-0.3): alt descriptivo por foto cuando se re-alojen las imágenes con metadatos.
     image: image(t.heroImage ?? t.images?.[0], shortTitle),
@@ -112,81 +158,115 @@ function toSummary(t: SeedTour): TourSummary {
   };
 }
 
-function toTour(t: SeedTour): Tour {
-  const summary = toSummary(t);
+function toTour(t: SeedTour, locale: Locale): Tour {
+  const summary = toSummary(t, locale);
+  const { text } = localized(t, locale);
   const urls = Array.from(new Set([t.heroImage, ...(t.images ?? [])].filter((u): u is string => !!u)));
   return {
     ...summary,
-    metaTitle: t.metaTitle ?? summary.shortTitle,
-    metaDescription: cleanSeedText(t.metaDescription) ?? summary.excerpt,
-    description: cleanSeedText(t.description) ?? "",
-    summaryText: cleanSeedText(t.summary),
-    itinerary: (t.itinerary ?? [])
+    metaTitle: text.metaTitle ?? summary.shortTitle,
+    metaDescription: cleanSeedText(text.metaDescription) ?? summary.excerpt,
+    description: cleanSeedText(text.description) ?? "",
+    summaryText: cleanSeedText(text.summary),
+    itinerary: (text.itinerary ?? [])
       .filter((step) => step.title || step.description)
       .map((step) => ({ day: step.day, title: step.title, description: stripEmoji(step.description ?? "") })),
-    includes: t.includes ?? [],
-    notIncludes: t.notIncludes ?? [],
-    recommendations: t.recommendations ?? [],
-    important: t.important ?? [],
+    includes: text.includes ?? [],
+    notIncludes: text.notIncludes ?? [],
+    recommendations: text.recommendations ?? [],
+    important: text.important ?? [],
     // Algunas FAQ del sitio viejo vienen sin pregunta o sin respuesta: se omiten (TODO(E0): completar).
-    faqs: (t.faqs ?? []).flatMap((f) => (f.question && f.answer ? [{ question: f.question, answer: f.answer }] : [])),
-    policies: t.policies,
-    gallery: urls.map((src, i) => ({
-      src,
-      alt: `${summary.shortTitle}, foto ${i + 1} de ${urls.length}`,
-    })),
+    faqs: (text.faqs ?? []).flatMap((f) => (f.question && f.answer ? [{ question: f.question, answer: f.answer }] : [])),
+    policies: text.policies,
+    gallery: urls.map((src) => ({ src, alt: summary.shortTitle })),
   };
 }
 
-function toDestination(d: SeedDestination): Destination {
-  const alt = `Paisaje de ${d.name}`;
+function toDestination(d: SeedDestination, locale: Locale): Destination {
+  const en = enDestinations.get(d.slug);
+  const enSlug = SEED_SLUG_MAP.destinations[d.slug] ?? en?.slug ?? d.slug;
+  const alternates = { es: destinationPath("es", d.slug), en: destinationPath("en", enSlug) };
+  const text = locale === "en" && en ? en : d;
   return {
-    slug: d.slug,
-    path: d.newPath,
-    name: d.name,
-    description: d.description,
-    bannerImage: image(d.bannerImage, alt),
-    cardImage: image(d.bannerImage ?? d.cardImage, alt),
+    key: d.slug,
+    slug: locale === "es" ? d.slug : enSlug,
+    path: alternates[locale],
+    alternates,
+    fallback: locale !== "es" && !en,
+    name: text.name,
+    description: text.description,
+    bannerImage: image(d.bannerImage, text.name),
+    cardImage: image(d.bannerImage ?? d.cardImage, text.name),
     tourSlugs: d.tourSlugs,
     tourCount: d.tourSlugs.length,
   };
 }
 
-function toCategory(c: SeedCategory): Category {
+function toCategory(c: SeedCategory, locale: Locale): Category {
+  const en = enCategories.get(c.slug);
+  const enSlug = SEED_SLUG_MAP.categories[c.slug] ?? en?.slug ?? c.slug;
+  const alternates = { es: categoryPath("es", c.slug), en: categoryPath("en", enSlug) };
+  const text = locale === "en" && en ? en : c;
   return {
-    slug: c.slug,
-    path: c.newPath,
-    name: c.name,
-    description: c.description,
-    bannerImage: image(c.bannerImage, `Imagen de la categoría ${c.name}`),
+    key: c.slug,
+    slug: locale === "es" ? c.slug : enSlug,
+    path: alternates[locale],
+    alternates,
+    fallback: locale !== "es" && !en,
+    name: text.name,
+    description: text.description,
+    bannerImage: image(c.bannerImage, text.name),
     tourSlugs: c.tourSlugs,
     tourCount: c.tourSlugs.length,
   };
 }
 
-const summaries = seedTours.map(toSummary);
-const toursBySlug = new Map(seedTours.map((t) => [t.slug, t]));
-const destinations = seedDestinations.map(toDestination);
-const categories = seedCategories.map(toCategory);
+/** Slug de cualquier idioma → clave en español. */
+function keyOf(slug: string, keys: readonly string[], map: Record<string, string>): string | null {
+  if (keys.includes(slug)) return slug;
+  return Object.entries(map).find(([, en]) => en === slug)?.[0] ?? null;
+}
+const tourKeyOf = (slug: string) =>
+  keyOf(slug, seedTours.map((t) => t.slug), SEED_SLUG_MAP.tours) ??
+  [...enByKey].find(([, en]) => en.slug === slug)?.[0] ??
+  null;
+const destinationKeyOf = (slug: string) => keyOf(slug, seedDestinations.map((d) => d.slug), SEED_SLUG_MAP.destinations);
+const categoryKeyOf = (slug: string) => keyOf(slug, seedCategories.map((c) => c.slug), SEED_SLUG_MAP.categories);
 
 export const seedCatalogRepository: CatalogRepository = {
-  async listTours() {
-    return summaries;
+  async listTours(locale) {
+    return seedTours.map((t) => toSummary(t, locale));
   },
-  async getTour(slug) {
-    const t = toursBySlug.get(slug);
-    return t ? toTour(t) : null;
+  async getTour(slug, locale) {
+    const key = tourKeyOf(slug);
+    const t = key ? seedTours.find((x) => x.slug === key) : undefined;
+    return t ? toTour(t, locale) : null;
   },
-  async listDestinations() {
-    return destinations;
+  async listDestinations(locale) {
+    return seedDestinations.map((d) => toDestination(d, locale));
   },
-  async getDestination(slug) {
-    return destinations.find((d) => d.slug === slug) ?? null;
+  async getDestination(slug, locale) {
+    const key = destinationKeyOf(slug);
+    const d = seedDestinations.find((x) => x.slug === key);
+    return d ? toDestination(d, locale) : null;
   },
-  async listCategories() {
-    return categories;
+  async listCategories(locale) {
+    return seedCategories.map((c) => toCategory(c, locale));
   },
-  async getCategory(slug) {
-    return categories.find((c) => c.slug === slug) ?? null;
+  async getCategory(slug, locale) {
+    const key = categoryKeyOf(slug);
+    const c = seedCategories.find((x) => x.slug === key);
+    return c ? toCategory(c, locale) : null;
   },
+};
+
+/** Datos del seed que la API aún no expone (imágenes de destinos/categorías, título corto, resumen). */
+export const seedEnrichment = {
+  tour: (key: string) => seedTours.find((t) => t.slug === key) ?? null,
+  tourText: (key: string, locale: Locale) => {
+    const t = seedTours.find((x) => x.slug === key);
+    return t ? localized(t, locale).text : null;
+  },
+  destination: (key: string) => seedDestinations.find((d) => d.slug === key) ?? null,
+  category: (key: string) => seedCategories.find((c) => c.slug === key) ?? null,
 };

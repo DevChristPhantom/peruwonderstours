@@ -1,0 +1,811 @@
+{
+  "generatedAt": "2026-10-09",
+  "source": "https://www.andeanperutours.com (solo páginas públicas /es)",
+  "legacyBrand": {
+    "siteName": "Andean Peru Tours Travel Agency",
+    "footerLegalName": "Andean Peru Tours Travel Agency E.I.R.L.",
+    "footerRuc": "20000000000",
+    "footerRucIsPlaceholder": true,
+    "aboutLegalName": "TURINET CUZCO EIRL",
+    "aboutRuc": "20553158509",
+    "aboutBrandName": "TURINETCUZCO",
+    "authorMeta": "Danifson Ticuña Ayma",
+    "homeMetaTitle": "Andean Peru Tours Travel Agency - Agencia de viajes en Perú",
+    "homeMetaDescription": "En Qori Alva diseñamos tu viaje ideal a Machu Picchu. Ofrecemos tours en Perú con guías expertos. Explora Cusco y vive una aventura inolvidable. ¡Reserva hoy!",
+    "ogImage": "https://www.andeanperutours.com/images/og_andeanperutours.jpg",
+    "notes": [
+      "La meta description de la home menciona 'Qori Alva' (otra marca): no reutilizar.",
+      "Pie: RUC 20000000000 es placeholder; 'Quiénes somos' declara TURINET CUZCO EIRL / RUC 20553158509. El cliente debe confirmar razón social y RUC de Peru Wonders Tours.",
+      "El pie dice 'por Danifson Ticuña Ayma' (crédito del desarrollador del sitio viejo): no migrar."
+    ]
+  },
+  "aboutUs": {
+    "sourceUrl": "https://www.andeanperutours.com/es/andean-peru-tours/quienes-somos",
+    "title": "Quienes Somos",
+    "metaDescription": "TURINETCUZCO no solo organiza viajes, crea vivencias que conectan el alma con la riqueza del Perú. Durante años, hemos acompañado a viajeros de todas partes del mundo y del país en rutas que revelan la magia de nuestra cultura, la calidez de nuestra gente y los sabores únicos de nuestra gastronomía.",
+    "bannerImage": "https://www.andeanperutours.com/images/pages/5e0b3c2f-3e09-45b9-b2fd-b8282a3848ec-1746420506.jpg",
+    "history": [
+      "TURINETCUZCO no solo organiza viajes, crea vivencias que conectan el alma con la riqueza del Perú. Durante años, hemos acompañado a viajeros de todas partes del mundo y del país en rutas que revelan la magia de nuestra cultura, la calidez de nuestra gente y los sabores únicos de nuestra gastronomía.",
+      "Bajo la dirección de Yuri Santamaría Vargas, apasionado del turismo con más de 35 años de experiencia, cada viaje es cuidadosamente diseñado para descubrir la esencia del Perú. Desde recorridos tradicionales hasta aventuras personalizadas, todos nuestros servicios están pensados para emocionar, sorprender y dejar huella.",
+      "Con nosotros, no solo visitas Machu Picchu, maravilla del mundo, sino que vives su energía, su historia y su misterio... como si fueras parte de ella.",
+      "Vive Perú con el corazón. Descúbrelo con TURINETCUZCO."
+    ],
+    "team": {
+      "intro": [
+        "En TURINETCUZCO, creemos que la verdadera diferencia la hacen las personas.",
+        "Nuestro equipo está conformado por profesionales apasionados por el turismo, comprometidos con brindar un servicio de excelencia y con un profundo amor por el Perú.",
+        "Guías expertos, asesores de viaje, conductores y personal logístico trabajan de manera coordinada para garantizar que cada experiencia sea segura, enriquecedora y única.",
+        "Nos une una sola visión: hacer de cada viaje un recuerdo imborrable, compartiendo la cultura, historia y calidez de nuestra tierra.",
+        "Con TURINETCUZCO no solo viajas, te acompañan personas que entienden el valor de descubrir el mundo con el corazón."
+      ],
+      "members": [
+        {
+          "role": "Gerente General",
+          "name": "Yuri Santamaria",
+          "email": "gerencia@andeanperutours.com"
+        },
+        {
+          "role": "Comercial y ventas",
+          "name": "Sebastián Santamaria",
+          "email": "info@andeanperutours.com"
+        },
+        {
+          "role": "Operaciones y reservas",
+          "name": "Alex Alhuay",
+          "email": "operaciones@andeanperutours.com"
+        },
+        {
+          "role": "Oficina Cuzco",
+          "name": "Ruth Estrada",
+          "email": null
+        },
+        {
+          "role": "Oficina Arequipa",
+          "name": "Frank Mamani",
+          "email": null
+        },
+        {
+          "role": "Oficina Puno",
+          "name": "Jennsy Silva",
+          "email": null
+        }
+      ],
+      "founderNote": "Dirección: Yuri Santamaría Vargas, 'más de 35 años de experiencia' (según el texto original).",
+      "privacyNote": "Nombres y correos de personal publicados por el cliente en el sitio viejo. Confirmar con el cliente antes de republicarlos."
+    },
+    "mission": null,
+    "vision": null,
+    "values": null,
+    "missingNote": "La página no publica misión, visión ni valores explícitos; solo historia, equipo, datos de empresa y oficina. No se redactaron.",
+    "companyData": {
+      "Razón Social": "TURINET CUZCO EIRL",
+      "Ruc": "20553158509",
+      "Dirección Lima": "Jr. de la Roca de Vergallo 493 of 1112. Magdalena del Mar.",
+      "Dirección Cuzco": "Urbanización Kennedy B-E-17, Wanchaq.",
+      "Whatsapp": "+51 985619968",
+      "Gerente General": "Yuri Santamaria gerencia@andeanperutours.com",
+      "Comercial y ventas": "Sebastián Santamaria info@andeanperutours.com",
+      "Operaciones y reservas": "Alex Alhuay operaciones@andeanperutours.com",
+      "Oficina Cuzco": "Ruth Estrada",
+      "Oficina Arequipa": "Frank Mamani",
+      "Oficina Puno": "Jennsy Silva"
+    },
+    "headOffice": {
+      "heading": "NUESTRA OFICINA CENTRAL EN LIMA",
+      "paragraphs": [
+        "¡Estamos donde todo sucede!",
+        "Nuestra oficina se encuentra en una de las zonas más exclusivas y estratégicas de Lima, a solo 3 minutos de San Isidro y 15 minutos de Miraflores.",
+        "Ubicados en el moderno edificio Smart Business, compartimos espacio con reconocidas empresas del país, brindándote atención profesional en un entorno seguro, accesible y corporativo."
+      ]
+    },
+    "images": [
+      "https://turinet.turismoads.com/images/galleries/b36c55bd-aeaf-4fd8-ad92-3f3bd5232e10-1745463775.jpg",
+      "https://turinet.turismoads.com/images/galleries/93d10a8a-f719-448b-a67b-04b03fe14f95-1745464135.jpg",
+      "https://turinet.turismoads.com/images/galleries/d74ba75e-64ad-4259-8e13-b9c63d1ba6f1-1745464167.jpg",
+      "https://turinet.turismoads.com/images/galleries/b0685f5a-0937-41cc-adb0-e2138fc0b5d9-1745467227.jpg",
+      "https://turinet.turismoads.com/images/galleries/38c15694-372f-4a2d-8562-91ae031cfc3f-1745467247.jpg",
+      "https://turinet.turismoads.com/images/galleries/1b44e975-d893-4f7a-a3c7-33cc2da84478-1745467281.jpg",
+      "https://turinet.turismoads.com/images/galleries/491cb0b4-5b6b-4c25-8b53-3f01bc825da0-1745467301.jpg"
+    ]
+  },
+  "policies": {
+    "paymentAndConditions": {
+      "sourceUrl": "https://www.andeanperutours.com/es/andean-peru-tours/politicas-y-condiciones-de-pago",
+      "title": "Políticas y Condiciones de Pago",
+      "verbatim": true,
+      "bannerImage": "https://www.andeanperutours.com/images/pages/9a7b74c5-86a4-4a22-abcd-fe6bfe6722b6-1746420642.jpg",
+      "sections": [
+        {
+          "heading": "Políticas:",
+          "paragraphs": [
+            "Todas las políticas que la empresa establece son para favorecer el servicio en atención a nuestros clientes:",
+            "La Operadora de Turismo busca satisfacer completamente las necesidades que surjan de la prestación de cualquiera de nuestros servicios, dando así la mejor asesoría posible sobre cada viaje o Tours a realizar, y para ello se cuenta con un personal altamente capacitado y con amplia experiencia en el aérea de turismo y transporte."
+          ]
+        },
+        {
+          "heading": "POLITICAS Y CONDICIONES DE PRESTACIÓN DE SERVICIOS",
+          "paragraphs": []
+        },
+        {
+          "heading": "Turismo",
+          "paragraphs": [
+            "El organizador del plan turístico se reserva el derecho de hacer cambios en el itinerario, fechas de viaje, hoteles, transporte por otros de igual o superior categoría cuando dichos cambios redunden en beneficio de la calidad del viaje y sean necesarios para garantizar el éxito del Tours.",
+            "Todas las entradas a museos, transporte si es terrestre o aéreo y espectáculos, además de los parques nacionales, zoológicos, lugares turísticos en especial y la alimentación están incluidos únicamente cuando se detalla en el programa por medio del cual se decide viajar.",
+            "Nuestra empresa se hace responsable frente a sus clientes solamente por el contenido de los paquetes y servicios turísticos ofrecidos por los organizadores y operador turístico.",
+            "Todos los precios y tarifas presentados al cliente/comprador, están sujetos a cambio, disponibilidad y vigencia sin previo aviso. Aplican restricciones y condiciones para cada tarifa publicada según su vigencia. Las tarifas hoteleras dependen de la acomodación seleccionada y la fecha de viaje",
+            "El equipaje y cualquier objeto que el cliente lleve consigo es y será responsabilidad del mismo, por lo que la empresa no se hará responsable por perdidas, sustracciones, deterioro, daño o ilícitos en el mismo.",
+            "La empresa no se hace responsable frente a cualquier problema legal u otros inconvenientes en que pueda verse involucrado el usuario en el destino de su viaje o tours."
+          ]
+        },
+        {
+          "heading": "Transporte:",
+          "paragraphs": [
+            "El servicio de transporte será realizado de la siguiente forma de acuerdo a disposición del cliente:",
+            "Punto de Partida – Destino – Retorno, en su defecto este último debe de ser el mismo del Punto de Partida.",
+            "Cualquier punto adicional de desviación a los antes mencionados si no son negociados entre empresa y contratante generaran un costo extra y este dependerá del estudio o evaluación que la empresa de sobre el lugar adicional a visitar.",
+            "El equipaje y cualquier objeto que el usuario final o cliente de Servicio de Transporte lleve consigo es y será responsabilidad del mismo, por lo que la empresa no se hará responsable por perdidas, sustracciones, deterioro, daño o ilícitos en el mismo.",
+            "El servicio de transporte de tren, es una empresa diferente que trabaja bajo sus consideraciones. La empresa no se hace responsable por las medidas o acciones del servicio de transporte de tren.",
+            "La empresa no se hace responsable frente a cualquier problema legal u otros inconvenientes en que pueda verse involucrado el usuario en el destino de su viaje o tours."
+          ]
+        },
+        {
+          "heading": "Condiciones y formas de pago:",
+          "paragraphs": [
+            "Métodos de pago; en efectivo con moneda local, “soles” (S/.) o dólares ($) de los Estados Unidos de América, tarjeta de Crédito/débito de forma presencial o transferencia Bancaria.",
+            "Para hacer reservas se pueden realizar en nuestra oficina oabonando a nuestras cuentas de banco que será proporcionadas por uno de nuestros asesores o por medio de pago link con tarjeta de credito.",
+            "Las reservas deben efectuarse con varios días de anticipación ya que ka capacidad de ingreso a Machu Picchu es limitada.",
+            "Para hacer reservas se abona el %50 del costo total del Tours o Viaje Turístico, y el otro 50% al menos 7 días antes de la prestación de nuestro servicio. Aplica comisón de 3,5% con pago de tarjeta de crédito.",
+            "Todos los cambios en cualquier prestación de nuestros servicios son sujetos a pago de penalidades y verificación de disponibilidad",
+            "Todos los precios y tarifas presentados al cliente/comprador, están sujetos a cambio, disponibilidad y vigencia sin previo aviso. Aplican restricciones y condiciones para cada tarifa publicada según su vigencia.",
+            "En caso de cancelación de una reserva, esta debe de realizarse con un mínimo 20 días hábiles antes de la fecha reservada para la prestación del servicio, haciéndole un descuento por gastos de operación que dependerá de los servicios ya cancelados (tickets de ingresos, servicios de tren, etc.).",
+            "Si la cancelación de la reserva es a unos días antes o el mismo día, la empresa no efectúa devoluciones.",
+            "Cualquier servicio no utilizado voluntariamente no dará derecho a reclamación o reembolso alguno.",
+            "Las reservas de prestación de cualquiera de nuestros servicios serán válidas sólo cuando sean confirmadas en firme por nuestra empresa y haya sido liquidado el importe total (pago completo) de la prestación de nuestros servicios."
+          ]
+        }
+      ],
+      "fullText": "Políticas:\nTodas las políticas que la empresa establece son para favorecer el servicio en atención a nuestros clientes:\nLa Operadora de Turismo busca satisfacer completamente las necesidades que surjan de la prestación de cualquiera de nuestros servicios, dando así la mejor asesoría posible sobre cada viaje o Tours a realizar, y para ello se cuenta con un personal altamente capacitado y con amplia experiencia en el aérea de turismo y transporte.\nPOLITICAS Y CONDICIONES DE PRESTACIÓN DE SERVICIOS\nTurismo\nEl organizador del plan turístico se reserva el derecho de hacer cambios en el itinerario, fechas de viaje, hoteles, transporte por otros de igual o superior categoría cuando dichos cambios redunden en beneficio de la calidad del viaje y sean necesarios para garantizar el éxito del Tours.\nTodas las entradas a museos, transporte si es terrestre o aéreo y espectáculos, además de los parques nacionales, zoológicos, lugares turísticos en especial y la alimentación están incluidos únicamente cuando se detalla en el programa por medio del cual se decide viajar.\nNuestra empresa se hace responsable frente a sus clientes solamente por el contenido de los paquetes y servicios turísticos ofrecidos por los organizadores y operador turístico.\nTodos los precios y tarifas presentados al cliente/comprador, están sujetos a cambio, disponibilidad y vigencia sin previo aviso. Aplican restricciones y condiciones para cada tarifa publicada según su vigencia. Las tarifas hoteleras dependen de la acomodación seleccionada y la fecha de viaje\nEl equipaje y cualquier objeto que el cliente lleve consigo es y será responsabilidad del mismo, por lo que la empresa no se hará responsable por perdidas, sustracciones, deterioro, daño o ilícitos en el mismo.\nLa empresa no se hace responsable frente a cualquier problema legal u otros inconvenientes en que pueda verse involucrado el usuario en el destino de su viaje o tours.\nTransporte:\nEl servicio de transporte será realizado de la siguiente forma de acuerdo a disposición del cliente:\nPunto de Partida – Destino – Retorno, en su defecto este último debe de ser el mismo del Punto de Partida.\nCualquier punto adicional de desviación a los antes mencionados si no son negociados entre empresa y contratante generaran un costo extra y este dependerá del estudio o evaluación que la empresa de sobre el lugar adicional a visitar.\nEl equipaje y cualquier objeto que el usuario final o cliente de Servicio de Transporte lleve consigo es y será responsabilidad del mismo, por lo que la empresa no se hará responsable por perdidas, sustracciones, deterioro, daño o ilícitos en el mismo.\nEl servicio de transporte de tren, es una empresa diferente que trabaja bajo sus consideraciones. La empresa no se hace responsable por las medidas o acciones del servicio de transporte de tren.\nLa empresa no se hace responsable frente a cualquier problema legal u otros inconvenientes en que pueda verse involucrado el usuario en el destino de su viaje o tours.\nCondiciones y formas de pago:\nMétodos de pago; en efectivo con moneda local, “soles” (S/.) o dólares ($) de los Estados Unidos de América, tarjeta de Crédito/débito de forma presencial o transferencia Bancaria.\nPara hacer reservas se pueden realizar en nuestra oficina oabonando a nuestras cuentas de banco que será proporcionadas por uno de nuestros asesores o por medio de pago link con tarjeta de credito.\nLas reservas deben efectuarse con varios días de anticipación ya que ka capacidad de ingreso a Machu Picchu es limitada.\nPara hacer reservas se abona el %50 del costo total del Tours o Viaje Turístico, y el otro 50% al menos 7 días antes de la prestación de nuestro servicio. Aplica comisón de 3,5% con pago de tarjeta de crédito.\nTodos los cambios en cualquier prestación de nuestros servicios son sujetos a pago de penalidades y verificación de disponibilidad\nTodos los precios y tarifas presentados al cliente/comprador, están sujetos a cambio, disponibilidad y vigencia sin previo aviso. Aplican restricciones y condiciones para cada tarifa publicada según su vigencia.\nEn caso de cancelación de una reserva, esta debe de realizarse con un mínimo 20 días hábiles antes de la fecha reservada para la prestación del servicio, haciéndole un descuento por gastos de operación que dependerá de los servicios ya cancelados (tickets de ingresos, servicios de tren, etc.).\nSi la cancelación de la reserva es a unos días antes o el mismo día, la empresa no efectúa devoluciones.\nCualquier servicio no utilizado voluntariamente no dará derecho a reclamación o reembolso alguno.\nLas reservas de prestación de cualquiera de nuestros servicios serán válidas sólo cuando sean confirmadas en firme por nuestra empresa y haya sido liquidado el importe total (pago completo) de la prestación de nuestros servicios.",
+      "keyRulesDetected": [
+        "Reserva con 50% del total; saldo 50% al menos 7 días antes del servicio.",
+        "Comisión de 3,5% por pago con tarjeta de crédito.",
+        "Cancelación con mínimo 20 días hábiles antes, con descuento por gastos operativos (tickets, tren, etc.).",
+        "Cancelación a pocos días o el mismo día: sin devolución.",
+        "Servicio no usado voluntariamente: sin reembolso.",
+        "Reserva válida solo con confirmación en firme y pago completo (choca con el esquema 50/50: aclarar con el cliente).",
+        "Medios: efectivo (S/ o USD), tarjeta presencial, transferencia, link de pago con tarjeta."
+      ],
+      "notes": "Copiado al pie de la letra, con las erratas originales ('aérea', 'oabonando', 'ka capacidad', '%50', 'comisón'). Revisar con compliance antes de publicar: no menciona Libro de Reclamaciones ni plazos de INDECOPI."
+    },
+    "personalDataProtection": {
+      "sourceUrl": "https://www.andeanperutours.com/es/andean-peru-tours/proteccion-de-datos-personales",
+      "title": "Política de Tratamiento Protección de Datos Personales",
+      "verbatim": true,
+      "sections": [
+        {
+          "heading": "POLÍTICA DE TRATAMIENTO PROTECCIÓN DE DATOS PERSONALES",
+          "paragraphs": [
+            "NOMBRE DE LA SOCIEDAD: TURINET CUZCO EIRL",
+            "DOMICILIO:",
+            "Oficina Cusco: Urbanización Kennedy B-E-17, Wanchaq.",
+            "Oficina Lima : Jr. de la Roca de Vergallo 493 of 1112. Magdalena del Mar",
+            "RUC:: 20553158509",
+            "CORREO ELECTRÓNICO: gerencia@andeanperutours.com"
+          ]
+        },
+        {
+          "heading": "Articulo Primero Definiciones",
+          "paragraphs": [
+            "AUTORIZACIÓN: consentimiento previo, expreso e informado del titular para llevar a cabo el tratamiento de datos personales.",
+            "BASE DE DATOS: conjunto organizado de datos personales que sea objeto de tratamiento. Las “base de datos” tendrán tal condición sin importar el medio en el cual se encuentren contenidas que podrá ser físico, electrónico, manual, automatizado, herramientas informáticas, etc.",
+            "DATO PERSONAL: cualquier información vinculada o que pueda asociarse a una o varias personas naturales determinadas o determinables.",
+            "TITULAR: persona natural cuyos datos personales sean objeto de tratamiento.",
+            "TRATAMIENTO: cualquier operación o conjunto de operaciones sobre datos personales, tales como la recolección, almacenamiento, uso, circulación o supresión.",
+            "AVISO DE PRIVACIDAD: comunicación verbal o escrita generada por el responsable, dirigida al titular para el tratamiento de sus datos personales, mediante la cual se le informa acerca de la existencia de las políticas de tratamiento de información que le serán aplicables, la forma de acceder a las mismas y las finalidades del tratamiento que se pretende dar a los datos personales.",
+            "DATO PÚBLICO: es el dato que no sea semi privado, privado o sensible. Son considerados datos públicos, entre otros, los datos relativos al estado civil de las personas, a su profesión u oficio y a su calidad de comerciante o de servidor público. Por su naturaleza, los datos públicos pueden estar contenidos, entre otros, en registros públicos, documentos públicos, gacetas y boletines oficiales y sentencias judiciales debidamente ejecutoriadas que no estén sometidas a reserva.",
+            "DATOS SENSIBLES: se entiende por datos sensibles aquellos que afectan la intimidad del titular o cuyo uso indebido puede generar su discriminación, tales como aquellos que revelen el origen racial o étnico, la orientación política, las convicciones religiosas o filosóficas, la pertenencia a sindicatos, organizaciones sociales, de derechos humanos o que promueva intereses de cualquier partido político o que garanticen los derechos y garantías de partidos políticos de oposición, así como los datos relativos a la salud, a la vida sexual, y los datos biométricos.",
+            "TRANSFERENCIA: la transferencia de datos tiene lugar cuando el responsable y/o encargado del tratamiento de datos personales, ubicado en Perú, envía la información o los datos personales a un receptor, que a su vez es responsable del tratamiento y se encuentra dentro o fuera del país.",
+            "TRANSMISIÓN: tratamiento de datos personales que implica la comunicación de los mismos dentro o fuera del territorio de la República de Perú cuando tenga por objeto la realización de un tratamiento por el encargado por cuenta de un único responsable."
+          ]
+        },
+        {
+          "heading": "ARTICULO SEGUNDO. PRINCIPIOS",
+          "paragraphs": [
+            "En el desarrollo, interpretación y aplicación de la ley 1581 de 2012 se aplicarán de manera armónica e integral los siguientes principios rectores:",
+            "PRINCIPIO DE FINALIDAD: El tratamiento debe obedecer a una finalidad legítima de acuerdo con la Constitución y la Ley, la cual debe ser informada al titular.",
+            "PRINCIPIO DE LIBERTAD: El tratamiento solo puede ejercerce con el consentimiento previo, expreso, e informado del titular. Los datos personales no podrán ser obtenidos o divulgados sin previa autorización, o en ausencia de mandato legal o judicial que releve el consentimiento.",
+            "PRINCIPIO DE VERACIDAD O CALIDAD: la información sujeta a tratamiento debe ser veraz, completa, exacta, actualizada, comprobable y comprensible. Se prohíbe el tratamiento de datos parciales, incompletos, fraccionados o que induzcan a error.",
+            "PRINCIPIO DE TRANSPARENCIA: en el tratamiento debe garantizarse el derecho del titular a obtener del responsable del tratamiento o del encargado del tratamiento, en cualquier momento y sin restricciones, información acerca de la existencia de datos que le conciernan.",
+            "PRINCIPIO DE ACCESO Y CIRCULACIÓN RESTRINGIDA: el tratamiento se sujeta a los límites que se derivan de la naturaleza de los datos personales, de las disposiciones de la ley y la Constitución. En este sentido, el tratamiento sólo podrá hacerse por personas autorizadas por el titular y/o por las personas previstas por la ley.",
+            "Los datos personales, salvo la información pública, no podrán estar disponibles en internet u otros medios de divulgación o comunicación masiva, salvo que el acceso sea técnicamente controlable para brindar un conocimiento restringido sólo a los titulares o terceros autorizados.",
+            "PRINCIPIO DE SEGURIDAD: la información sujeta a tratamiento por Andean Peru Tours, se deberá manejar con las medidas técnicas, humanas y administrativas que sean necesarias para otorgar seguridad a los registros evitando su adulteración, pérdida, consulta, uso o acceso no autorizado o fraudulento.",
+            "PRINCIPIO DE CONFIDENCIALIDAD: Andean Peru Tours está obligada a garantizar la reserva de la información, inclusive después de finalizada su relación con alguna de las labores que comprende el tratamiento, pudiendo sólo realizar suministro o comunicación de datos personales cuando ello corresponda al desarrollo de las actividades autorizadas en la ley."
+          ]
+        },
+        {
+          "heading": "ARTICULO TERCERO. DERECHOS QUE LE ASISTEN AL TITULAR DE LA INFORMACIÓN",
+          "paragraphs": [
+            "El titular de los datos personales tendrá los siguientes derechos:",
+            "Conocer, actualizar y rectificar sus datos personales frente a Andean Peru Tours en su condición de responsable del tratamiento. Este derecho se podrá ejercer, entre otros, frente a datos parciales, inexactos, incompletos, fraccionados, que induzcan a error, o aquellos cuyo tratamiento esté expresamente prohibido o no haya sido autorizado.",
+            "Solicitar prueba de la autorización otorgada a Andean Peru Tours salvo cuando expresamente se exceptúe como requisito para el tratamiento (casos en los cuales no es necesaria la autorización).",
+            "Ser informado por Andean Peru Tours, previa solicitud, respecto del uso que le ha dado a sus datos personales.",
+            "Presentar ante la Superintendencia de Industria y Comercio quejas por infracciones a lo dispuesto en la ley 1581 de 2012 y las demás normas que la modifiquen, adicionen o complementen.",
+            "Revocar la autorización y/o solicitar la supresión del dato cuando en el tratamiento no se respeten los principios, derechos y garantías constitucionales y legales.",
+            "Acceder en forma gratuita a sus datos personales que hayan sido objeto de tratamiento."
+          ]
+        },
+        {
+          "heading": "Articulo Segundo: Deberes De Andean Peru Tours",
+          "paragraphs": [
+            "En virtud de la presente política de tratamiento y protección de datos personales son deberes de Andean Peru Tours los siguientes:",
+            "Garantizar al titular, en todo tiempo, el pleno y efectivo ejercicio del derecho de hábeas data.",
+            "Solicitar y conservar, copia de la respectiva autorización otorgada por el titular.",
+            "Informar debidamente al titular sobre la finalidad de la recolección y los derechos que le asisten en virtud de la autorización otorgada.",
+            "Conservar la información bajo las condiciones de seguridad necesarias para impedir su adulteración, pérdida, consulta, uso o acceso no autorizado o fraudulento.",
+            "Rectificar la información cuando sea incorrecta y comunicar lo pertinente.",
+            "Tramitar las consultas y reclamos formulados por los titulares.",
+            "Informar a la autoridad de protección de datos cuando se presenten violaciones a los códigos de seguridad y existan riesgos en la administración de la información de los titulares.",
+            "Cumplir los requerimientos e instrucciones que imparta la Superintendencia de Industria y Comercio sobre el tema en particular.",
+            "Informar a solicitud del titular sobre el uso dado a sus datos.",
+            "Garantizar que la información sea veraz, completa, exacta, actualizada, comprobable y comprensible.",
+            "Actualizar la información, atendiendo de esta forma todas las novedades respecto de los datos del titular. Adicionalmente, se deberán implementar todas las medidas necesarias para que la información se mantenga actualizada.",
+            "Respetar las condiciones de seguridad y privacidad de la información del titular.",
+            "Identificar cuando determinada información se encuentra en discusión por parte del titular.",
+            "Usar únicamente datos cuyo tratamiento esté previamente autorizado de conformidad con lo previsto en la ley 1581 de 2012."
+          ]
+        },
+        {
+          "heading": "ARTICULO TERCERO. EVENTOS EN LOS CUALES NO ES NECESARIA LA AUTORIZACIÓN DEL TITULAR DE LOS DATOS PERSONALES",
+          "paragraphs": [
+            "La autorización del titular de la información no será necesaria cuando se trate de:",
+            "Información requerida por una entidad pública o administrativa en ejercicio de sus funciones legales o por orden judicial.",
+            "Datos de naturaleza pública.",
+            "Casos de urgencia médica o sanitaria.",
+            "Tratamiento de información autorizado por la ley para fines históricos, estadísticos o científicos.",
+            "Datos relacionados con el Registro Civil de las personas."
+          ]
+        },
+        {
+          "heading": "ARTICULO CUARTO. LEGITIMACIÓN PARA EL EJERCICIO DEL DERECHO DEL TITULAR",
+          "paragraphs": [
+            "Los derechos de los titulares podrán ejercer por las siguientes personas:",
+            "Por el titular, quien deberá acreditar su identidad en forma suficiente por los distintos medios que le ponga a disposición Andean Peru Tours.",
+            "Por los causahabientes del titular (en los casos que éste falte por muerte o incapacidad), quienes deberán acreditar tal calidad.",
+            "Por el representante y/o apoderado del titular, previa acreditación de la representación o poder correspondiente.",
+            "Por estipulación a favor de otro o para otro.",
+            "Los derechos de los niños, niñas y adolescentes se ejercerán por las personas facultadas para representarlos."
+          ]
+        },
+        {
+          "heading": "ARTICULO QUINTO. TRATAMIENTO AL CUAL SERÁN SOMETIDOS LOS DATOS Y FINALIDAD DEL MISMO",
+          "paragraphs": [
+            "La información recolectada es utilizada para procesar, confirmar, cumplir y proveer los servicios y/o productos adquiridos, directamente y/o con la participación de terceros proveedores de productos o servicios, así como para promocionar y publicitar nuestras actividades, productos y servicios, realizar transacciones, efectuar reportes a las distintas autoridades administrativas de control y vigilancia nacionales o internacionales, autoridades de policía o autoridades judiciales, entidades bancarias y/o compañías aseguradoras, para fines administrativos internos y/o comerciales tales como, investigación de mercados, auditorías, reportes contables, análisis estadísticos, facturación, y ofrecimiento y/o reconocimiento de beneficios propios de nuestros programas de lealtad.",
+            "Al aceptar esta POLÍTICA DE TRATAMIENTO PROTECCIÓN DE DATOS PERSONALES nuestros huéspedes, visitantes, clientes, usuarios y proveedores en su calidad de titulares de los datos recolectados, autorizan que Andean Peru Tours realicen el tratamiento de los mismos, de forma parcial o total, incluyendo la recolección, almacenamiento, grabación, uso, circulación, procesamiento, supresión, para la ejecución de las actividades relacionadas con los servicios y productos adquiridos, tales como, realización de reservas, modificaciones, cancelaciones y cambios de la misma, reembolsos, atención de consultas, quejas y reclamos, pago de compensaciones e indemnizaciones, registros contables, correspondencia, procesamiento y verificación de tarjetas de crédito, débito y otros instrumentos de pago, identificación de fraudes y prevención de lavado de activos y de otras actividades delictivas y/o para el funcionamiento de los programas de lealtad y demás finalidades indicadas en este documento.",
+            "Lo anterior, sin perjuicio de otras finalidades que hayan sido informadas en este documento y en los términos y condiciones de cada uno de los productos y servicios propios de cada una de nuestras unidades de negocio.",
+            "Advertimos que en estas actividades pueden estar involucrados terceros proveedores, tales como proveedores de sistemas de reservas, agencias de viajes, call centers, entidades bancarias, aseguradoras, etc.",
+            "Adicionalmente, nuestros viajeros, clientes y usuarios, en su calidad de titulares de los datos recolectados, al aceptar esta política de privacidad, nos autorizan para:",
+            "Utilizar la información recibida de ellos, para fines de mercadeo de sus productos y servicios, y de los productos y servicios de terceros con los que Andean Peru Tours mantengan una relación de negocios.",
+            "Suministrar los datos personales a las autoridades de control y vigilancia de policía o judiciales, en virtud de un requerimiento legal o reglamentario y/o usar o revelar esta información y datos personales en defensa de sus derechos y/o su patrimonio en cuanto dicha defensa tenga relación con los productos y/o servicios contratados por sus viajeros, clientes y usuarios.",
+            "Permitir el acceso a la información y datos personales a los auditores o terceros contratados para llevar a cabo procesos de auditoría interna o externa propios de la actividad comercial que desarrollamos.",
+            "Consultar y actualizar los datos personales, en cualquier tiempo, con el fin de mantener actualizada dicha información.",
+            "Contratar con terceros el almacenamiento y/o procesamiento de la información y datos personales para la correcta ejecución de los contratos celebrados con nosotros, bajo los estándares de seguridad y confidencialidad a los cuales estamos obligados."
+          ]
+        },
+        {
+          "heading": "ARTICULO SEXTO. DATOS PERSONALES DE NIÑOS, NIÑAS Y ADOLESCENTES",
+          "paragraphs": [
+            "El tratamiento de datos personales de niños, niñas y adolescentes está prohibido excepto cuando se trate de datos de naturaleza pública, y cuando dicho tratamiento cumpla con los siguientes parámetros y/o requisitos:",
+            "que respondan y respeten el interés superior de los niños, niñas y adolescentes.",
+            "que se asegure el respeto de sus derechos fundamentales.",
+            "que se cuente con la autorización por parte del padre o acudiente del niño, niña o adolescente."
+          ]
+        },
+        {
+          "heading": "ARTICULO SEPTIMO. PERSONAS A QUIENES SE LES PUEDE SUMINISTRAR LA INFORMACIÓN",
+          "paragraphs": [
+            "La información que reúna las condiciones establecidas en la ley podrá suministrarse a las",
+            "siguientes personas:",
+            "A los titulares, sus causahabientes (cuando aquellos falten) o sus representantes legales.",
+            "A las entidades públicas o administrativas en ejercicio de sus funciones legales o por orden judicial.",
+            "A los terceros autorizados por el titular o por la ley."
+          ]
+        },
+        {
+          "heading": "ARTICULO DÉCIMO. AUTORIZACIÓN",
+          "paragraphs": [
+            "La recolección almacenamiento, uso, circulación o supresión de datos personales por parte de Andean Peru Tours requiere del consentimiento libre, previo, expreso e informado del titular de los mismos. Andean Peru Tours, en su condición de responsable del tratamiento de datos personales, ha dispuesto de los mecanismos necesarios para obtener la autorización de los titulares garantizando en todo caso que sea posible verificar el otorgamiento de dicha autorización.",
+            "Con la mencionada autorización, el cliente acepta las políticas y condiciones que se establecen en el presente documento."
+          ]
+        },
+        {
+          "heading": "ARTICULO OCTAVO. FORMA Y MECANISMOS PARA OTORGAR LA AUTORIZACIÓN.",
+          "paragraphs": [
+            "La autorización del titular de la información constará en cada uno de los canales y mecanismos de recolección de datos de Andean Peru Tours. Así, podrá constar en un documento físico, electrónico o en cualquier otro formato que permita garantizar su posterior consulta. La autorización será emitida por el titular previo al tratamiento de sus datos personales, de conformidad con lo dispuesto en la Ley 1581 de 2102.",
+            "Con el procedimiento de autorización consentida se garantiza que se ha puesto en conocimiento del titular de los datos personales, tanto el hecho que su información personal será recogida y utilizada para fines determinados y conocidos, como que tiene la opción de conocer cualquier alternación a los mismos y el uso específico que de ellos se ha dado. Lo anterior con el fin de que el titular tome decisiones informadas con relación a sus datos personales y controle el uso de su información personal."
+          ]
+        },
+        {
+          "heading": "ARTICULO NOVENO. PROCEDIMIENTO DE ALMACENAMIENTO DE INFORMACIÓN DE DATOS PERSONALES",
+          "paragraphs": [
+            "Andean Peru Tours adoptará medidas técnicas y administrativas adecuadas y suficientes que permitan el cuidado y conservación de los datos personales de los titulares, evitando su adulteración, pérdida, consulta, uso o acceso no autorizado o fraudulento.",
+            "De igual forma, la implementación estas medidas, permitirá la conservación de la autorización otorgada por los titulares de los datos personales para el tratamiento de los mismos.",
+            "Andean Peru Tours adoptará todos los mecanismos para guardar la confidencialidad de la información y se abstendrá de usar la información para fines diferentes a los expresamente autorizados por el titular.",
+            "No obstante lo anterior el cliente asume los riesgos que se derivan de entregar esta información en un medio como internet, el cual está sometido a diversas variables – ataques de terceros, fallas técnicas o tecnológicas, entre otras. Andean Peru Tours hará su mejor esfuerzo tecnológico para garantizar la seguridad de la información personal de todos sus clientes y/o usuarios, empleando razonables y actuales métodos de seguridad para impedir el acceso no autorizado, para mantener la exactitud de los datos y garantizar la correcta utilización de la información."
+          ]
+        },
+        {
+          "heading": "ARTICULO DÉCIMO. PROCEDIMIENTO PARA EL USO Y CIRCULACIÓN DE INFORMACIÓN.",
+          "paragraphs": [
+            "Para el evento en los cuales terceros ajenos a Andean Peru Tours requieran validar, rectificar o confirmar información correspondiente a los datos personales de los titulares contenidas en las bases de datos de Andean Peru Tours, se requerirá para el suministro de la información la autorización previa y expresa del titular para que opere la transferencia.",
+            "Andean Peru Tours se abstendrá de usar la información proporcionada por los titulares para fines de comercialización diferente a sus programas y servicios específicos."
+          ]
+        },
+        {
+          "heading": "ARTICULO DÉCIMO CUARTO. PROCEDIMIENTO PARA LA ATENCIÓN DE CONSULTAS.",
+          "paragraphs": [
+            "Los titulares podrán solicitar a Andean Peru Tours la consulta de sus datos personales. Esta solicitud deberá ser realizada por escrito dirigido al correo electrónico: gerencia@andeanperutours.com, precisando el tipo de dato que se desea consultar, nombre, apellido, cédula de ciudadanía, teléfono y correo electrónico al que se remitirá la información correspondiente.",
+            "Andean Peru Tours remitirá al titular la información consultada, la cual estará integrada por el listado de toda la información que esté vinculada con la identificación del titular en la base de datos. La consulta será atendida en un término máximo de quince (15) días hábiles, contados a partir del día siguiente a la fecha de recibo de la misma. Cuando no fuere posible atender la consulta dentro de dicho término, se informará al interesado, expresando los motivos de la demora y señalando la fecha en que se atenderá su consulta, la cual en ningún caso podrá superar los ocho (8) días hábiles siguientes al vencimiento del primer término. La consulta se atenderá por escrito y no generará costo para el titular."
+          ]
+        },
+        {
+          "heading": "ARTICULO DÉCIMO PRIMERO. PROCEDIMIENTO PARA LA SUPRESIÓN, CORRECCIÓN O ACTUALIZACIÓN DE INFORMACIÓN.",
+          "paragraphs": [
+            "Los titulares podrán en todo momento solicitar a Andean Peru Tours la supresión, corrección o actualización de sus datos personales y/o revocar la autorización otorgada para el tratamiento de los mismos, mediante la presentación de un reclamo de la siguiente manera:",
+            "El reclamo se formulará mediante comunicación dirigida al correo electrónico: gerencia@andeanperutours.comcon la identificación del titular, la descripción de los hechos que dan lugar a la solicitud, la dirección y acompañado de los documentos que soporten la solicitud de ser aplicable.",
+            "Si el reclamo resultare incompleto, Andean Peru Tours requerirá al titular dentro de los cinco (5) días hábiles siguientes a la recepción de la solicitud para que subsane las fallas. Transcurridos dos (2) meses desde la fecha del requerimiento, sin que el titular presente la información requerida, se entenderá que ha desistido del reclamo.",
+            "Una vez recibido el reclamo completo, se incluirá en la base de datos una leyenda que diga “reclamo en trámite” y el motivo del mismo, actividad que deberá realizarse en un término no superior a dos (2) días hábiles. Dicha leyenda deberá mantenerse hasta que el reclamo sea decidido.",
+            "El término máximo para atender el reclamo será de quince (15) días hábiles contados a partir del día siguiente a la fecha de su recibo. Cuando no fuere posible atender el reclamo dentro de dicho término, se informará al interesado los motivos de la demora y la fecha en que se atenderá su reclamo, la cual en ningún caso podrá superar los ocho (8) días hábiles siguientes al vencimiento del primer término."
+          ]
+        },
+        {
+          "heading": "ARTICULO DÉCIMO SEGUNDO. TEMPORALIDAD DEL TRATAMIENTO DE DATOS PERSONALES",
+          "paragraphs": [
+            "La información suministrada por los clientes y usuarios permanecerá almacenada hasta por el término de quince (15) años contados a partir de la fecha del último tratamiento, para permitirnos el cumplimiento de las obligaciones legales y/o contractuales a su cargo especialmente en materia contable, fiscal y tributaria."
+          ]
+        },
+        {
+          "heading": "ARTICULO DÉCIMO TERCERO. MODIFICACIONES A LA POLÍTICA DE PRIVACIDAD Andean Peru Tours",
+          "paragraphs": [
+            "Se reserva el derecho de efectuar en cualquier momento modificaciones o actualizaciones a esta Política de Privacidad, para la atención de novedades legislativas, políticas internas o nuevos requerimientos para la prestación u ofrecimiento de sus servicios o productos."
+          ]
+        }
+      ],
+      "fullText": "POLÍTICA DE TRATAMIENTO PROTECCIÓN DE DATOS PERSONALES\nNOMBRE DE LA SOCIEDAD: TURINET CUZCO EIRL\nDOMICILIO:\nOficina Cusco: Urbanización Kennedy B-E-17, Wanchaq.\nOficina Lima : Jr. de la Roca de Vergallo 493 of 1112. Magdalena del Mar\nRUC:: 20553158509\nCORREO ELECTRÓNICO: gerencia@andeanperutours.com\nArticulo Primero Definiciones\nAUTORIZACIÓN: consentimiento previo, expreso e informado del titular para llevar a cabo el tratamiento de datos personales.\nBASE DE DATOS: conjunto organizado de datos personales que sea objeto de tratamiento. Las “base de datos” tendrán tal condición sin importar el medio en el cual se encuentren contenidas que podrá ser físico, electrónico, manual, automatizado, herramientas informáticas, etc.\nDATO PERSONAL: cualquier información vinculada o que pueda asociarse a una o varias personas naturales determinadas o determinables.\nTITULAR: persona natural cuyos datos personales sean objeto de tratamiento.\nTRATAMIENTO: cualquier operación o conjunto de operaciones sobre datos personales, tales como la recolección, almacenamiento, uso, circulación o supresión.\nAVISO DE PRIVACIDAD: comunicación verbal o escrita generada por el responsable, dirigida al titular para el tratamiento de sus datos personales, mediante la cual se le informa acerca de la existencia de las políticas de tratamiento de información que le serán aplicables, la forma de acceder a las mismas y las finalidades del tratamiento que se pretende dar a los datos personales.\nDATO PÚBLICO: es el dato que no sea semi privado, privado o sensible. Son considerados datos públicos, entre otros, los datos relativos al estado civil de las personas, a su profesión u oficio y a su calidad de comerciante o de servidor público. Por su naturaleza, los datos públicos pueden estar contenidos, entre otros, en registros públicos, documentos públicos, gacetas y boletines oficiales y sentencias judiciales debidamente ejecutoriadas que no estén sometidas a reserva.\nDATOS SENSIBLES: se entiende por datos sensibles aquellos que afectan la intimidad del titular o cuyo uso indebido puede generar su discriminación, tales como aquellos que revelen el origen racial o étnico, la orientación política, las convicciones religiosas o filosóficas, la pertenencia a sindicatos, organizaciones sociales, de derechos humanos o que promueva intereses de cualquier partido político o que garanticen los derechos y garantías de partidos políticos de oposición, así como los datos relativos a la salud, a la vida sexual, y los datos biométricos.\nTRANSFERENCIA: la transferencia de datos tiene lugar cuando el responsable y/o encargado del tratamiento de datos personales, ubicado en Perú, envía la información o los datos personales a un receptor, que a su vez es responsable del tratamiento y se encuentra dentro o fuera del país.\nTRANSMISIÓN: tratamiento de datos personales que implica la comunicación de los mismos dentro o fuera del territorio de la República de Perú cuando tenga por objeto la realización de un tratamiento por el encargado por cuenta de un único responsable.\nARTICULO SEGUNDO. PRINCIPIOS\nEn el desarrollo, interpretación y aplicación de la ley 1581 de 2012 se aplicarán de manera armónica e integral los siguientes principios rectores:\nPRINCIPIO DE FINALIDAD: El tratamiento debe obedecer a una finalidad legítima de acuerdo con la Constitución y la Ley, la cual debe ser informada al titular.\nPRINCIPIO DE LIBERTAD: El tratamiento solo puede ejercerce con el consentimiento previo, expreso, e informado del titular. Los datos personales no podrán ser obtenidos o divulgados sin previa autorización, o en ausencia de mandato legal o judicial que releve el consentimiento.\nPRINCIPIO DE VERACIDAD O CALIDAD: la información sujeta a tratamiento debe ser veraz, completa, exacta, actualizada, comprobable y comprensible. Se prohíbe el tratamiento de datos parciales, incompletos, fraccionados o que induzcan a error.\nPRINCIPIO DE TRANSPARENCIA: en el tratamiento debe garantizarse el derecho del titular a obtener del responsable del tratamiento o del encargado del tratamiento, en cualquier momento y sin restricciones, información acerca de la existencia de datos que le conciernan.\nPRINCIPIO DE ACCESO Y CIRCULACIÓN RESTRINGIDA: el tratamiento se sujeta a los límites que se derivan de la naturaleza de los datos personales, de las disposiciones de la ley y la Constitución. En este sentido, el tratamiento sólo podrá hacerse por personas autorizadas por el titular y/o por las personas previstas por la ley.\nLos datos personales, salvo la información pública, no podrán estar disponibles en internet u otros medios de divulgación o comunicación masiva, salvo que el acceso sea técnicamente controlable para brindar un conocimiento restringido sólo a los titulares o terceros autorizados.\nPRINCIPIO DE SEGURIDAD: la información sujeta a tratamiento por Andean Peru Tours, se deberá manejar con las medidas técnicas, humanas y administrativas que sean necesarias para otorgar seguridad a los registros evitando su adulteración, pérdida, consulta, uso o acceso no autorizado o fraudulento.\nPRINCIPIO DE CONFIDENCIALIDAD: Andean Peru Tours está obligada a garantizar la reserva de la información, inclusive después de finalizada su relación con alguna de las labores que comprende el tratamiento, pudiendo sólo realizar suministro o comunicación de datos personales cuando ello corresponda al desarrollo de las actividades autorizadas en la ley.\nARTICULO TERCERO. DERECHOS QUE LE ASISTEN AL TITULAR DE LA INFORMACIÓN\nEl titular de los datos personales tendrá los siguientes derechos:\nConocer, actualizar y rectificar sus datos personales frente a Andean Peru Tours en su condición de responsable del tratamiento. Este derecho se podrá ejercer, entre otros, frente a datos parciales, inexactos, incompletos, fraccionados, que induzcan a error, o aquellos cuyo tratamiento esté expresamente prohibido o no haya sido autorizado.\nSolicitar prueba de la autorización otorgada a Andean Peru Tours salvo cuando expresamente se exceptúe como requisito para el tratamiento (casos en los cuales no es necesaria la autorización).\nSer informado por Andean Peru Tours, previa solicitud, respecto del uso que le ha dado a sus datos personales.\nPresentar ante la Superintendencia de Industria y Comercio quejas por infracciones a lo dispuesto en la ley 1581 de 2012 y las demás normas que la modifiquen, adicionen o complementen.\nRevocar la autorización y/o solicitar la supresión del dato cuando en el tratamiento no se respeten los principios, derechos y garantías constitucionales y legales.\nAcceder en forma gratuita a sus datos personales que hayan sido objeto de tratamiento.\nArticulo Segundo: Deberes De Andean Peru Tours\nEn virtud de la presente política de tratamiento y protección de datos personales son deberes de Andean Peru Tours los siguientes:\nGarantizar al titular, en todo tiempo, el pleno y efectivo ejercicio del derecho de hábeas data.\nSolicitar y conservar, copia de la respectiva autorización otorgada por el titular.\nInformar debidamente al titular sobre la finalidad de la recolección y los derechos que le asisten en virtud de la autorización otorgada.\nConservar la información bajo las condiciones de seguridad necesarias para impedir su adulteración, pérdida, consulta, uso o acceso no autorizado o fraudulento.\nRectificar la información cuando sea incorrecta y comunicar lo pertinente.\nTramitar las consultas y reclamos formulados por los titulares.\nInformar a la autoridad de protección de datos cuando se presenten violaciones a los códigos de seguridad y existan riesgos en la administración de la información de los titulares.\nCumplir los requerimientos e instrucciones que imparta la Superintendencia de Industria y Comercio sobre el tema en particular.\nInformar a solicitud del titular sobre el uso dado a sus datos.\nGarantizar que la información sea veraz, completa, exacta, actualizada, comprobable y comprensible.\nActualizar la información, atendiendo de esta forma todas las novedades respecto de los datos del titular. Adicionalmente, se deberán implementar todas las medidas necesarias para que la información se mantenga actualizada.\nRespetar las condiciones de seguridad y privacidad de la información del titular.\nIdentificar cuando determinada información se encuentra en discusión por parte del titular.\nUsar únicamente datos cuyo tratamiento esté previamente autorizado de conformidad con lo previsto en la ley 1581 de 2012.\nARTICULO TERCERO. EVENTOS EN LOS CUALES NO ES NECESARIA LA AUTORIZACIÓN DEL TITULAR DE LOS DATOS PERSONALES\nLa autorización del titular de la información no será necesaria cuando se trate de:\nInformación requerida por una entidad pública o administrativa en ejercicio de sus funciones legales o por orden judicial.\nDatos de naturaleza pública.\nCasos de urgencia médica o sanitaria.\nTratamiento de información autorizado por la ley para fines históricos, estadísticos o científicos.\nDatos relacionados con el Registro Civil de las personas.\nARTICULO CUARTO. LEGITIMACIÓN PARA EL EJERCICIO DEL DERECHO DEL TITULAR\nLos derechos de los titulares podrán ejercer por las siguientes personas:\nPor el titular, quien deberá acreditar su identidad en forma suficiente por los distintos medios que le ponga a disposición Andean Peru Tours.\nPor los causahabientes del titular (en los casos que éste falte por muerte o incapacidad), quienes deberán acreditar tal calidad.\nPor el representante y/o apoderado del titular, previa acreditación de la representación o poder correspondiente.\nPor estipulación a favor de otro o para otro.\nLos derechos de los niños, niñas y adolescentes se ejercerán por las personas facultadas para representarlos.\nARTICULO QUINTO. TRATAMIENTO AL CUAL SERÁN SOMETIDOS LOS DATOS Y FINALIDAD DEL MISMO\nLa información recolectada es utilizada para procesar, confirmar, cumplir y proveer los servicios y/o productos adquiridos, directamente y/o con la participación de terceros proveedores de productos o servicios, así como para promocionar y publicitar nuestras actividades, productos y servicios, realizar transacciones, efectuar reportes a las distintas autoridades administrativas de control y vigilancia nacionales o internacionales, autoridades de policía o autoridades judiciales, entidades bancarias y/o compañías aseguradoras, para fines administrativos internos y/o comerciales tales como, investigación de mercados, auditorías, reportes contables, análisis estadísticos, facturación, y ofrecimiento y/o reconocimiento de beneficios propios de nuestros programas de lealtad.\nAl aceptar esta POLÍTICA DE TRATAMIENTO PROTECCIÓN DE DATOS PERSONALES nuestros huéspedes, visitantes, clientes, usuarios y proveedores en su calidad de titulares de los datos recolectados, autorizan que Andean Peru Tours realicen el tratamiento de los mismos, de forma parcial o total, incluyendo la recolección, almacenamiento, grabación, uso, circulación, procesamiento, supresión, para la ejecución de las actividades relacionadas con los servicios y productos adquiridos, tales como, realización de reservas, modificaciones, cancelaciones y cambios de la misma, reembolsos, atención de consultas, quejas y reclamos, pago de compensaciones e indemnizaciones, registros contables, correspondencia, procesamiento y verificación de tarjetas de crédito, débito y otros instrumentos de pago, identificación de fraudes y prevención de lavado de activos y de otras actividades delictivas y/o para el funcionamiento de los programas de lealtad y demás finalidades indicadas en este documento.\nLo anterior, sin perjuicio de otras finalidades que hayan sido informadas en este documento y en los términos y condiciones de cada uno de los productos y servicios propios de cada una de nuestras unidades de negocio.\nAdvertimos que en estas actividades pueden estar involucrados terceros proveedores, tales como proveedores de sistemas de reservas, agencias de viajes, call centers, entidades bancarias, aseguradoras, etc.\nAdicionalmente, nuestros viajeros, clientes y usuarios, en su calidad de titulares de los datos recolectados, al aceptar esta política de privacidad, nos autorizan para:\nUtilizar la información recibida de ellos, para fines de mercadeo de sus productos y servicios, y de los productos y servicios de terceros con los que Andean Peru Tours mantengan una relación de negocios.\nSuministrar los datos personales a las autoridades de control y vigilancia de policía o judiciales, en virtud de un requerimiento legal o reglamentario y/o usar o revelar esta información y datos personales en defensa de sus derechos y/o su patrimonio en cuanto dicha defensa tenga relación con los productos y/o servicios contratados por sus viajeros, clientes y usuarios.\nPermitir el acceso a la información y datos personales a los auditores o terceros contratados para llevar a cabo procesos de auditoría interna o externa propios de la actividad comercial que desarrollamos.\nConsultar y actualizar los datos personales, en cualquier tiempo, con el fin de mantener actualizada dicha información.\nContratar con terceros el almacenamiento y/o procesamiento de la información y datos personales para la correcta ejecución de los contratos celebrados con nosotros, bajo los estándares de seguridad y confidencialidad a los cuales estamos obligados.\nARTICULO SEXTO. DATOS PERSONALES DE NIÑOS, NIÑAS Y ADOLESCENTES\nEl tratamiento de datos personales de niños, niñas y adolescentes está prohibido excepto cuando se trate de datos de naturaleza pública, y cuando dicho tratamiento cumpla con los siguientes parámetros y/o requisitos:\nque respondan y respeten el interés superior de los niños, niñas y adolescentes.\nque se asegure el respeto de sus derechos fundamentales.\nque se cuente con la autorización por parte del padre o acudiente del niño, niña o adolescente.\nARTICULO SEPTIMO. PERSONAS A QUIENES SE LES PUEDE SUMINISTRAR LA INFORMACIÓN\nLa información que reúna las condiciones establecidas en la ley podrá suministrarse a las\nsiguientes personas:\nA los titulares, sus causahabientes (cuando aquellos falten) o sus representantes legales.\nA las entidades públicas o administrativas en ejercicio de sus funciones legales o por orden judicial.\nA los terceros autorizados por el titular o por la ley.\nARTICULO DÉCIMO. AUTORIZACIÓN\nLa recolección almacenamiento, uso, circulación o supresión de datos personales por parte de Andean Peru Tours requiere del consentimiento libre, previo, expreso e informado del titular de los mismos. Andean Peru Tours, en su condición de responsable del tratamiento de datos personales, ha dispuesto de los mecanismos necesarios para obtener la autorización de los titulares garantizando en todo caso que sea posible verificar el otorgamiento de dicha autorización.\nCon la mencionada autorización, el cliente acepta las políticas y condiciones que se establecen en el presente documento.\nARTICULO OCTAVO. FORMA Y MECANISMOS PARA OTORGAR LA AUTORIZACIÓN.\nLa autorización del titular de la información constará en cada uno de los canales y mecanismos de recolección de datos de Andean Peru Tours. Así, podrá constar en un documento físico, electrónico o en cualquier otro formato que permita garantizar su posterior consulta. La autorización será emitida por el titular previo al tratamiento de sus datos personales, de conformidad con lo dispuesto en la Ley 1581 de 2102.\nCon el procedimiento de autorización consentida se garantiza que se ha puesto en conocimiento del titular de los datos personales, tanto el hecho que su información personal será recogida y utilizada para fines determinados y conocidos, como que tiene la opción de conocer cualquier alternación a los mismos y el uso específico que de ellos se ha dado. Lo anterior con el fin de que el titular tome decisiones informadas con relación a sus datos personales y controle el uso de su información personal.\nARTICULO NOVENO. PROCEDIMIENTO DE ALMACENAMIENTO DE INFORMACIÓN DE DATOS PERSONALES\nAndean Peru Tours adoptará medidas técnicas y administrativas adecuadas y suficientes que permitan el cuidado y conservación de los datos personales de los titulares, evitando su adulteración, pérdida, consulta, uso o acceso no autorizado o fraudulento.\nDe igual forma, la implementación estas medidas, permitirá la conservación de la autorización otorgada por los titulares de los datos personales para el tratamiento de los mismos.\nAndean Peru Tours adoptará todos los mecanismos para guardar la confidencialidad de la información y se abstendrá de usar la información para fines diferentes a los expresamente autorizados por el titular.\nNo obstante lo anterior el cliente asume los riesgos que se derivan de entregar esta información en un medio como internet, el cual está sometido a diversas variables – ataques de terceros, fallas técnicas o tecnológicas, entre otras. Andean Peru Tours hará su mejor esfuerzo tecnológico para garantizar la seguridad de la información personal de todos sus clientes y/o usuarios, empleando razonables y actuales métodos de seguridad para impedir el acceso no autorizado, para mantener la exactitud de los datos y garantizar la correcta utilización de la información.\nARTICULO DÉCIMO. PROCEDIMIENTO PARA EL USO Y CIRCULACIÓN DE INFORMACIÓN.\nPara el evento en los cuales terceros ajenos a Andean Peru Tours requieran validar, rectificar o confirmar información correspondiente a los datos personales de los titulares contenidas en las bases de datos de Andean Peru Tours, se requerirá para el suministro de la información la autorización previa y expresa del titular para que opere la transferencia.\nAndean Peru Tours se abstendrá de usar la información proporcionada por los titulares para fines de comercialización diferente a sus programas y servicios específicos.\nARTICULO DÉCIMO CUARTO. PROCEDIMIENTO PARA LA ATENCIÓN DE CONSULTAS.\nLos titulares podrán solicitar a Andean Peru Tours la consulta de sus datos personales. Esta solicitud deberá ser realizada por escrito dirigido al correo electrónico: gerencia@andeanperutours.com, precisando el tipo de dato que se desea consultar, nombre, apellido, cédula de ciudadanía, teléfono y correo electrónico al que se remitirá la información correspondiente.\nAndean Peru Tours remitirá al titular la información consultada, la cual estará integrada por el listado de toda la información que esté vinculada con la identificación del titular en la base de datos. La consulta será atendida en un término máximo de quince (15) días hábiles, contados a partir del día siguiente a la fecha de recibo de la misma. Cuando no fuere posible atender la consulta dentro de dicho término, se informará al interesado, expresando los motivos de la demora y señalando la fecha en que se atenderá su consulta, la cual en ningún caso podrá superar los ocho (8) días hábiles siguientes al vencimiento del primer término. La consulta se atenderá por escrito y no generará costo para el titular.\nARTICULO DÉCIMO PRIMERO. PROCEDIMIENTO PARA LA SUPRESIÓN, CORRECCIÓN O ACTUALIZACIÓN DE INFORMACIÓN.\nLos titulares podrán en todo momento solicitar a Andean Peru Tours la supresión, corrección o actualización de sus datos personales y/o revocar la autorización otorgada para el tratamiento de los mismos, mediante la presentación de un reclamo de la siguiente manera:\nEl reclamo se formulará mediante comunicación dirigida al correo electrónico: gerencia@andeanperutours.comcon la identificación del titular, la descripción de los hechos que dan lugar a la solicitud, la dirección y acompañado de los documentos que soporten la solicitud de ser aplicable.\nSi el reclamo resultare incompleto, Andean Peru Tours requerirá al titular dentro de los cinco (5) días hábiles siguientes a la recepción de la solicitud para que subsane las fallas. Transcurridos dos (2) meses desde la fecha del requerimiento, sin que el titular presente la información requerida, se entenderá que ha desistido del reclamo.\nUna vez recibido el reclamo completo, se incluirá en la base de datos una leyenda que diga “reclamo en trámite” y el motivo del mismo, actividad que deberá realizarse en un término no superior a dos (2) días hábiles. Dicha leyenda deberá mantenerse hasta que el reclamo sea decidido.\nEl término máximo para atender el reclamo será de quince (15) días hábiles contados a partir del día siguiente a la fecha de su recibo. Cuando no fuere posible atender el reclamo dentro de dicho término, se informará al interesado los motivos de la demora y la fecha en que se atenderá su reclamo, la cual en ningún caso podrá superar los ocho (8) días hábiles siguientes al vencimiento del primer término.\nARTICULO DÉCIMO SEGUNDO. TEMPORALIDAD DEL TRATAMIENTO DE DATOS PERSONALES\nLa información suministrada por los clientes y usuarios permanecerá almacenada hasta por el término de quince (15) años contados a partir de la fecha del último tratamiento, para permitirnos el cumplimiento de las obligaciones legales y/o contractuales a su cargo especialmente en materia contable, fiscal y tributaria.\nARTICULO DÉCIMO TERCERO. MODIFICACIONES A LA POLÍTICA DE PRIVACIDAD Andean Peru Tours\nSe reserva el derecho de efectuar en cualquier momento modificaciones o actualizaciones a esta Política de Privacidad, para la atención de novedades legislativas, políticas internas o nuevos requerimientos para la prestación u ofrecimiento de sus servicios o productos.",
+      "complianceWarning": "El texto se basa en la ley COLOMBIANA 1581 de 2012 y menciona a la Superintendencia de Industria y Comercio (Colombia) y la 'cédula de ciudadanía'. No cita la Ley peruana N.° 29733 ni su Reglamento ni a la Autoridad Nacional de Protección de Datos Personales (MINJUSDH). La numeración de artículos está desordenada (repite Segundo, Tercero y Décimo). Sirve solo como insumo: el borrador legal debe redactarse bajo norma peruana."
+    },
+    "esnna": {
+      "title": "Prevención ESNNA en turismo",
+      "ownPageOnLegacy": false,
+      "legacyLink": "https://www.gob.pe/15106-ministerio-de-comercio-exterior-y-turismo-prevencion-de-la-explotacion-sexual-de-ninas-ninos-y-adolescentes-en-el-ambito-del-turismo-esnna",
+      "legacyPosterImage": "https://www.perusacredexperiences.com/images/afiche-esnna.jpg",
+      "legacyPosterNote": "El sello ESNNA de la home abre en lightbox un afiche alojado en perusacredexperiences.com (dominio de TERCEROS, otra agencia). El sitio viejo no tiene texto propio de política ESNNA: no hay nada que copiar al pie de la letra.",
+      "verbatimText": null
+    }
+  },
+  "faqs": {
+    "generalPageExists": false,
+    "note": "No existe página de preguntas frecuentes generales (/es/preguntas-frecuentes devuelve 404). La FAQ de 2016 en Wayback (/pe/faqs/) es texto de relleno lorem ipsum. Se listan como 'generales' las 3 preguntas que se repiten en 17 fichas de tour.",
+    "items": [
+      {
+        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
+        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación, debido a la disponibilidad.",
+        "answerVariants": [
+          {
+            "text": "Es importante que realice la reserva de su viaje con bastante anticipación, debido a la disponibilidad.",
+            "occurrences": 10
+          },
+          {
+            "text": "Es importante que realice la reserva de su viaje con bastante anticipación ya que la entrada a Machu Picchu tiene una capacidad limitada . Si usted desea subir a la montaña de Huayna Picchu o Montaña Machu Picchu es recomendable realizarlo con anticipación.",
+            "occurrences": 4
+          },
+          {
+            "text": "Es importante que realice la reserva de su viaje con bastante anticipación ya que la entrada a Machu Picchu tiene una capacidad limitada. Si usted desea subir a la montaña de Huayna Picchu o Montaña Machu Picchu es recomendable realizarlo con anticipación.",
+            "occurrences": 2
+          },
+          {
+            "text": "Es importante que realice la reserva de su viaje con bastante anticipación ya que la entrada a Machu Picchu tiene una capacidad limitada por horario. , esto por motivos de inscripciones, boleto de Tren, compras de boletos turísticos, reserva de hotel para su estadía, etc. Si usted desea subir a la montaña de Huayna Picchu o Montaña Machu Picchu es recomendable realizarlo con anticipación.",
+            "occurrences": 1
+          }
+        ],
+        "occurrencesInTours": 17,
+        "tourSlugs": [
+          "arequipa-colca-profundo-condores-4d-3n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "aventura-andina-cusco-5d-4n",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "cusco-machu-picchu-premium-4d-3n",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-vinicunca-montana-arcoiris",
+          "laguna-humantay-espejo-turquesa",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-de-ensueno-andes-incas-8d-7n",
+          "peru-magico-cusco-lima-6d-5n",
+          "qeswachaka-experiencia-ultimo-puente-inca",
+          "waqrapukara-fortaleza-entre-nubes"
+        ]
+      },
+      {
+        "question": "¿Para que fechas están programados los paquetes turísticos?",
+        "answer": "Contamos con salidas diarias para cualquier día del año.",
+        "answerVariants": [
+          {
+            "text": "Contamos con salidas diarias para cualquier día del año.",
+            "occurrences": 17
+          }
+        ],
+        "occurrencesInTours": 17,
+        "tourSlugs": [
+          "arequipa-colca-profundo-condores-4d-3n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "aventura-andina-cusco-5d-4n",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "cusco-machu-picchu-premium-4d-3n",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-vinicunca-montana-arcoiris",
+          "laguna-humantay-espejo-turquesa",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-de-ensueno-andes-incas-8d-7n",
+          "peru-magico-cusco-lima-6d-5n",
+          "qeswachaka-experiencia-ultimo-puente-inca",
+          "waqrapukara-fortaleza-entre-nubes"
+        ]
+      },
+      {
+        "question": "¿Cual es el medio de pago para poder reservar?",
+        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online – Niubiz.",
+        "answerVariants": [
+          {
+            "text": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online – Niubiz.",
+            "occurrences": 11
+          },
+          {
+            "text": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online (pago link – Niubiz).",
+            "occurrences": 6
+          }
+        ],
+        "occurrencesInTours": 17,
+        "tourSlugs": [
+          "arequipa-colca-profundo-condores-4d-3n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "aventura-andina-cusco-5d-4n",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "cusco-machu-picchu-premium-4d-3n",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-vinicunca-montana-arcoiris",
+          "laguna-humantay-espejo-turquesa",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-de-ensueno-andes-incas-8d-7n",
+          "peru-magico-cusco-lima-6d-5n",
+          "qeswachaka-experiencia-ultimo-puente-inca",
+          "waqrapukara-fortaleza-entre-nubes"
+        ]
+      }
+    ]
+  },
+  "home": {
+    "sourceUrl": "https://www.andeanperutours.com/es",
+    "hero": {
+      "title": "Andean Peru Tours Travel Agency",
+      "eyebrow": "Peru Andean Tours",
+      "lead": "Descubre los mejores tours a Machu Picchu, Cusco, Puno, Arequipa y el Perú. ¡Reserva hoy con nosotros!",
+      "searchSuggestions": [
+        "Cusco",
+        "Machu Picchu"
+      ]
+    },
+    "sections": [
+      {
+        "key": "destinations",
+        "title": "Explora los Destinos Más Asombrosos del Perú",
+        "subtitle": "La riqueza cultural y natural peruana te espera, descubre los mejores destinos que tenemos para ti",
+        "cta": "Descubrir Todos los Destinos"
+      },
+      {
+        "key": "cuscoMachuPicchu",
+        "title": "Descubre la Magia de Cusco y Machu Picchu",
+        "subtitle": "Vive experiencias únicas desde la ciudad imperial hasta la maravilla mundial, con tours cuidadosamente diseñados para crear recuerdos inolvidables"
+      },
+      {
+        "key": "packages",
+        "title": "Paquetes turísticos en Perú",
+        "subtitle": "En Andean Peru Tours Travel Agency, preparamos los mejores paquetes turisticos en Perú, cubriendo destinos en la Costa, Sierra y Selva."
+      },
+      {
+        "key": "allTours",
+        "title": "Todos los Tours",
+        "subtitle": "Desde caminatas por la selva amazónica hasta visitas culturales en Cusco, nuestra agencia de viajes ofrece una variedad de opciones para cada tipo de viajero",
+        "cta": "Todos los tours"
+      },
+      {
+        "key": "testimonials",
+        "title": "Lo que dicen nuestros viajeros",
+        "subtitle": "Estamos muy orgullosos de cuidar las experiencias de nuestros pasajeros de inicio a fin en nuestros tours",
+        "lead": "Esto es lo que dicen nuestros pasajeros de nuestro servicio",
+        "cta": "Ver testimonios"
+      },
+      {
+        "key": "blog",
+        "title": "Nuestro Blog",
+        "subtitle": "La mejor información turística del Perú lo encuentras aquí",
+        "lead": "Inspírate en nuestras notas e información turística que tenemos y puedas planear un mejor viaje a Perú",
+        "cta": "Ver Blog"
+      },
+      {
+        "key": "contactBand",
+        "eyebrow": "¿Necesitas consejos?",
+        "title": "¿Un plan de viaje, una pregunta?",
+        "cta": "Escribe a nuestros expertos"
+      }
+    ],
+    "megaMenu": [
+      {
+        "category": "Rutas del Altiplano",
+        "tagline": "Descubre el lago Titicaca",
+        "viewAllLabel": "Ver todos los tours (6)"
+      },
+      {
+        "category": "Tours a Machupicchu",
+        "tagline": "La ruta de los Incas",
+        "viewAllLabel": "Ver todos los tours (8)"
+      },
+      {
+        "category": "Paquetes turísticos",
+        "tagline": "Tours Especiales en Perú",
+        "description": "Ofrecemos dos aspectos particulares de nuestro medio ambiente: Prácticas mágico andinas referidas a la religiosidad y espiritualidad de la sociedad de las montañas de los Andes y Observación de aves, para los amantes de esta actividad, relacionada con entornos culturales y naturales.",
+        "viewAllLabel": "Ver todos los tours (13)",
+        "note": "La descripción no corresponde a la categoría (ver informe, punto 7)."
+      },
+      {
+        "category": "Tours y Destinos",
+        "tagline": "Destinos Únicos",
+        "links": [
+          "Destinos Populares",
+          "Tipos de Tours",
+          "Ver todos los destinos",
+          "Ver todas las actividades"
+        ]
+      }
+    ],
+    "destinationCards": [
+      {
+        "name": "Cuzco",
+        "tourCountLabel": "18 Tours",
+        "text": "Reserva los mejores tours y programas de Cusco: Machu Picchu, Camino del Inca, Valle Sagrado, Salkantay y más, ¡al mejor precio."
+      },
+      {
+        "name": "Puno",
+        "tourCountLabel": "15 Tours",
+        "text": "Explore Puno y el Lago Titicaca. Ofrecemos tours a las islas de los Uros, Taquile, Amantaní y sitios arqueológicos de la región con guías expertos. Calidad y cultura."
+      },
+      {
+        "name": "Arequipa",
+        "tourCountLabel": "13 Tours",
+        "text": "Actualmente, Arequipa es una de las ciudades más pobladas de Perú y uno de los principales destinos turísticos de Perú que sobresale por sus impresionantes monumentos."
+      },
+      {
+        "name": "Ica - Paracas",
+        "tourCountLabel": "5 Tours",
+        "text": "Disfruta tus vacaciones con nosotros! Paquetes turístico Ica - Paracas todo incluido. Visita la ciudad de Ica, reserva nacional de Paracas, el Oasis de la Huacachina"
+      },
+      {
+        "name": "Lima",
+        "tourCountLabel": "4 Tours",
+        "text": "Lima es una de las ciudades más fascinantes de Latinoamérica. Si vienes por una temporada, o es tu parada antes de seguir a Machu Picchu, hay una lista de tours en Lima que no puedes pasar por alto."
+      }
+    ],
+    "whyTravelWithUs": null,
+    "whyTravelWithUsNote": "La home no tiene sección 'por qué viajar con nosotros'. Los únicos textos de confianza son la franja de sellos, 'Sitio 100% Seguro', 'Operador Turístico' y el carrusel de testimonios.",
+    "trustTexts": [
+      {
+        "text": "Sitio 100% Seguro",
+        "image": "https://www.andeanperutours.com/images/secure-payments-white.svg",
+        "note": "Afirmación genérica sin respaldo (no hay certificado ni pasarela identificada). No reutilizar sin evidencia."
+      },
+      {
+        "text": "Operador Turístico",
+        "image": "https://www.andeanperutours.com/images/footer-leading-tour-operator.png",
+        "note": "Imagen 'leading tour operator' sin entidad emisora. Usar el distintivo oficial MINCETUR si la agencia está inscrita."
+      }
+    ],
+    "chatWidget": {
+      "agentName": "Andean Peru Tours",
+      "status": "En linea",
+      "greeting": "¡Hola viajero(a)! ¿En qué podemos ayudarte hoy?",
+      "button": "Enviar Mensaje",
+      "floatingButton": "Reservar aquí"
+    }
+  },
+  "contact": {
+    "sourceUrl": "https://www.andeanperutours.com/es/contactenos",
+    "phones": [
+      {
+        "number": "+51989028802",
+        "whatsapp": true,
+        "where": "barra superior, pie y contacto"
+      },
+      {
+        "number": "+51 985619968",
+        "whatsapp": true,
+        "where": "Quiénes somos (Whatsapp)"
+      }
+    ],
+    "emails": [
+      "info@andeanperutours.com",
+      "reservas@andeanperutours.com",
+      "gerencia@andeanperutours.com",
+      "operaciones@andeanperutours.com"
+    ],
+    "addresses": [
+      {
+        "label": "Oficina Puno",
+        "address": "Calle N 500",
+        "where": "pie y contacto",
+        "note": "Parece un placeholder."
+      },
+      {
+        "label": "Dirección Lima",
+        "address": "Jr. de la Roca de Vergallo 493 of 1112. Magdalena del Mar.",
+        "where": "Quiénes somos y Protección de datos"
+      },
+      {
+        "label": "Dirección Cuzco",
+        "address": "Urbanización Kennedy B-E-17, Wanchaq.",
+        "where": "Quiénes somos y Protección de datos"
+      }
+    ],
+    "hours": {
+      "label": "Lun - Sab; 09:00 - 19:00 hr.s",
+      "days": "Mon-Sat",
+      "open": "09:00",
+      "close": "19:00",
+      "timezone": "America/Lima",
+      "where": "barra superior"
+    },
+    "whatsappLinks": [
+      "https://api.whatsapp.com/send?phone=51989028802&text=Mucho%20gusto%20Andean%20Peru%20Tours%20Travel%20Agency,%20vengo%20de%20su%20sitio%20web%20y%20tengo%20unas%20preguntas",
+      "https://api.whatsapp.com/send?phone=51989028802&text=Mucho%20gusto%20Andean%20Peru%20Tours%20Travel%20Agency,%20vengo%20de%20su%20sitio%20web%20y%20quiero%20que%20me%20ayude%20con%20mi%20viaje."
+    ],
+    "contactForm": {
+      "title": "Contáctese con Andean Peru Tours Travel Agency",
+      "lead": "Ingrese sus datos para contactarnos lo más pronto posible",
+      "fields": [
+        "Nombres",
+        "Email",
+        "Nacionalidad",
+        "Whatsapp",
+        "Mensaje"
+      ],
+      "submit": "Enviar mensaje"
+    },
+    "complaintsBook": {
+      "sourceUrl": "https://www.andeanperutours.com/es/libro-de-reclamaciones",
+      "language": "en",
+      "note": "El formulario del sitio viejo está en INGLÉS dentro de /es. Campos: persona natural/jurídica, nombres, razón social, RUC, tipo y número de documento, dirección, teléfono, email, menor de edad con apoderado, n.° de boleta, fecha del incidente, reclamo/queja, producto/servicio, moneda, monto, respuesta del proveedor, detalle y declaración jurada. No se envió."
+    }
+  },
+  "socialLinks": [
+    {
+      "network": "Facebook",
+      "url": "https://www.facebook.com/andeanperutours",
+      "handle": "andeanperutours",
+      "where": "pie, 'Síguenos en'"
+    },
+    {
+      "network": "TripAdvisor",
+      "url": "https://www.tripadvisor.com.pe/Attraction_Review-g294314-d24099610-Reviews-Andean Peru Tours_Region.html",
+      "urlEncoded": "https://www.tripadvisor.com.pe/Attraction_Review-g294314-d24099610-Reviews-Andean%20Peru%20Tours_Region.html",
+      "where": "pie, 'Síguenos en'",
+      "note": "La URL del sitio viejo trae espacios sin codificar; usar urlEncoded."
+    }
+  ],
+  "socialLinksNotFound": [
+    "Instagram",
+    "TikTok",
+    "YouTube",
+    "X/Twitter",
+    "LinkedIn"
+  ],
+  "socialLinksNote": "Solo Facebook y TripAdvisor aparecen en el HTML (pie). Pedir al cliente las URLs de Instagram, TikTok y YouTube si existen.",
+  "paymentMethods": {
+    "shownInFooter": [
+      {
+        "name": "PayPal",
+        "url": "https://www.paypal.com/paypalme/andeanperutours",
+        "logo": "https://www.andeanperutours.com/images/paybutton-paypal.svg"
+      },
+      {
+        "name": "Western Union",
+        "url": "https://www.westernunion.com/us/es/web/send-money/start",
+        "logo": "https://www.andeanperutours.com/images/paybutton-westernunion.svg"
+      }
+    ],
+    "acceptedBannerImage": "https://www.andeanperutours.com/images/payments.png",
+    "statedInPolicies": [
+      "Efectivo en soles (S/) o dólares (USD)",
+      "Tarjeta de crédito/débito presencial",
+      "Transferencia bancaria",
+      "Link de pago con tarjeta de crédito (comisión 3,5%)"
+    ],
+    "statedInTourFaqs": [
+      "Transferencia Bancaria",
+      "Visa Online / pago link – Niubiz"
+    ],
+    "note": "Inconsistencia: el pie muestra PayPal y Western Union; las políticas y FAQs hablan de transferencia y Niubiz. Confirmar con el cliente los medios vigentes y la cuenta PayPal (paypal.me/andeanperutours lleva la marca vieja)."
+  },
+  "footer": {
+    "columns": [
+      "Síguenos en",
+      "Blog Turístico",
+      "Políticas",
+      "Métodos de Pago",
+      "Enlaces Rápidos"
+    ],
+    "policyLinks": [
+      {
+        "label": "Políticas y Condiciones de Pago",
+        "url": "https://www.andeanperutours.com/es/andean-peru-tours/politicas-y-condiciones-de-pago"
+      },
+      {
+        "label": "Protección de Datos Personales",
+        "url": "https://www.andeanperutours.com/es/andean-peru-tours/proteccion-de-datos-personales"
+      },
+      {
+        "label": "Prevención ESNNA en turismo",
+        "url": "https://www.gob.pe/15106-ministerio-de-comercio-exterior-y-turismo-prevencion-de-la-explotacion-sexual-de-ninas-ninos-y-adolescentes-en-el-ambito-del-turismo-esnna"
+      }
+    ],
+    "quickLinks": [
+      "Contáctenos",
+      "Testimonios",
+      "Dejar testimonio",
+      "Libro de reclamaciones"
+    ],
+    "copyright": "© 2026 Andean Peru Tours Travel Agency. Todos los derechos reservados."
+  },
+  "unlistedTours": {
+    "found": 0,
+    "note": "No se encontraron URLs públicas de los ~9 tours despublicados: no aparecen en el HTML de home, listados, destinos, categorías ni blog, ni en Wayback Machine (que solo guarda el WordPress antiguo /pe/ de 2011-2017). Hay que exportarlos desde el OTM del cliente.",
+    "legacyWordpressSlugsInWayback": [
+      "camino-inca-4dias3noches",
+      "camino-inca-jungla-machupicchu-4dias3noches",
+      "choquequirao-4dias3noches",
+      "mollepata-salkantay-machupicchu-5dias4noches",
+      "canon-de-cotahuasi-4d3n",
+      "canon-de-cotahuasi-3d2n-2",
+      "laguna-de-mejia-y-mollendofull-day",
+      "kayak-en-el-lago-titcaca-capachica-llachon",
+      "puno-copacabana-isla-del-sol-2d1n",
+      "programas-culturales-privados-isla-suasi",
+      "corredor-aymara-full-day-puno-cutimbo-chucuito-juli-pomata-puno",
+      "urostaquile-y-luquina-chico-2d1n",
+      "campina-tour-en-bus-panoramico",
+      "monasterio-de-santa-catalina-momia-juanitapeatonal",
+      "machupicchu-2dias1-noche",
+      "valle-sagrado-full-day",
+      "canon-del-colca-full-day",
+      "canon-del-colca-3d2n-con-traslado-a-puno",
+      "laguna-de-salinasfull-day",
+      "cusco-basico-3dias2noches",
+      "cusco-machupicchu-4dias3noches",
+      "cusco-machupicchu-5dias4noches",
+      "aramu-muru-o-hayumarca-%c2%bd-dia",
+      "sillustani-victor"
+    ],
+    "legacyWordpressNote": "Slugs del WordPress antiguo (andeanperutours.com/pe/portfolio-view/...) archivados en 2016-2017. No son los despublicados del OTM actual; sirven como ideas de producto (Camino Inca, Choquequirao, Salkantay, Cotahuasi, Copacabana/Isla del Sol, Suasi) y para redirects 301 si aún reciben tráfico."
+  },
+  "blog": {
+    "bodiesComplete": true,
+    "note": "Se contrastó con el HTML vivo: los 6 cuerpos de blog-posts.json están completos. Sin cambios."
+  }
+}

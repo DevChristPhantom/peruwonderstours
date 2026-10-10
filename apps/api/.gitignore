@@ -1,2 +1,5 @@
 # Correos de desarrollo (MAIL_TRANSPORT=file): contienen datos personales de prueba.
 .mail-outbox/
+
+# Medios subidos en desarrollo (MEDIA_STORAGE=local) e imágenes importadas del sitio viejo.
+uploads/

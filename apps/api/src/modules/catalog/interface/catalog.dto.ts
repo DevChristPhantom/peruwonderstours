@@ -109,6 +109,11 @@ export class ListToursQueryDto extends LocaleCurrencyQueryDto {
 }
 
 export class DeparturesQueryDto {
+  @ApiPropertyOptional({ enum: SUPPORTED_CURRENCIES, default: 'PEN', description: 'Moneda del precio desde por fecha.' })
+  @IsOptional()
+  @IsIn(SUPPORTED_CURRENCIES)
+  currency: CurrencyCode = 'PEN';
+
   @ApiPropertyOptional({ example: '2026-11-01', description: 'Fecha inicial (YYYY-MM-DD, por defecto hoy en Lima).' })
   @IsOptional()
   @Matches(/^\d{4}-\d{2}-\d{2}$/)

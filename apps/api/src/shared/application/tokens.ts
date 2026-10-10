@@ -12,3 +12,5 @@ export const AUDIT_TRAIL_FACTORY = Symbol('AUDIT_TRAIL_FACTORY');
 export const MAIL_TRANSPORT = Symbol('MAIL_TRANSPORT');
 export const IDENTITY_STORE = Symbol('IDENTITY_STORE');
 export const PASSWORD_HASHER = Symbol('PASSWORD_HASHER');
+export const MEDIA_STORAGE = Symbol('MEDIA_STORAGE');
+export const MEDIA_URL_RESOLVER = Symbol('MEDIA_URL_RESOLVER');

@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { resolve } from 'node:path';
 import { ValidationPipe, type INestApplication } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule, type OpenAPIObject } from '@nestjs/swagger';
@@ -13,7 +14,7 @@ export const API_PREFIX = 'api/v1';
 export const DOCS_PATH = 'api/docs';
 
 /** Cabeceras que el front (servidor Next) envía y lee. */
-const ALLOWED_HEADERS = ['Authorization', 'Content-Type', 'Idempotency-Key', 'X-Cart-Token', 'X-Booking-Token', 'X-Complaint-Token', 'X-Request-Id'];
+const ALLOWED_HEADERS = ['Authorization', 'Content-Type', 'Idempotency-Key', 'X-Cart-Token', 'X-Booking-Token', 'X-Complaint-Token', 'X-Customer-Token', 'X-Request-Id'];
 const EXPOSED_HEADERS = ['Idempotent-Replayed', 'Location', 'Retry-After', 'Retry-After-strict'];
 
 /** API JSON: nada que renderizar => CSP mínima que no permite cargar ningún recurso. */
@@ -76,6 +77,24 @@ export function configureApp(app: INestApplication): AppSettings {
   app.use((req: Request, res: Response, next: NextFunction) =>
     req.path.startsWith(`/${DOCS_PATH}`) ? docsHelmet(req, res, next) : apiHelmet(req, res, next),
   );
+
+  // Medios (MEDIA_STORAGE=local): /media/<clave>. Claves direccionadas por contenido => caché inmutable.
+  // Fuera del prefijo /api/v1; un archivo inexistente cae al 404 problem+json de Nest.
+  if (settings.media.storage === 'local') {
+    expressApp.useStaticAssets(resolve(settings.media.localDir), {
+      prefix: '/media/',
+      index: false,
+      dotfiles: 'deny',
+      redirect: false,
+      maxAge: '365d',
+      immutable: true,
+      setHeaders: (res: Response) => {
+        // Las imágenes se incrustan desde el sitio (otro origen en desarrollo y con CDN).
+        res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+        res.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
+      },
+    });
+  }
 
   // Límite de tamaño del cuerpo (reemplaza los parsers por defecto de Nest; el cuerpo crudo
   // se conserva para las firmas de webhooks porque la app se crea con rawBody: true).

@@ -1,22 +1,29 @@
 "use client";
 
 import { Check, MessageCircle, ShieldCheck } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useId, useRef, useState } from "react";
 
-import { cartLineId, describeTravelers, travelerCount, type Travelers } from "@/lib/cart/types";
+import { useFormat } from "@/hooks/useFormat";
+import { useLimaToday } from "@/hooks/useClientOnly";
+import { useWhatsappTools } from "@/hooks/useWhatsappTools";
+import { Link, useRouter } from "@/i18n/navigation";
+import { localePath } from "@/i18n/paths";
+import { cartLineId, travelerCount, type Travelers } from "@/lib/cart/types";
 import type { CatalogImage, PaymentPolicy, TourPricing } from "@/lib/catalog/types";
 import { lineTotalCents, percentOfCentsCeil } from "@/lib/checkout/payment-plan";
-import { addDays, daysBetween, formatDate, formatMoney } from "@/lib/format";
-import { useLimaToday } from "@/hooks/useClientOnly";
+import { addDays, daysBetween } from "@/lib/format";
+import { describeTravelers } from "@/lib/i18n/units";
 import { tourHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
 import { useCartStore } from "@/stores/cart-store";
 import { useUiStore } from "@/stores/ui-store";
 import { buttonClass } from "@/components/ui/button-styles";
 import { Counter } from "@/components/ui/Counter";
 
+import { DepartureCalendar, type CalendarDeparture } from "./DepartureCalendar";
+
 export interface BookableTour {
+  /** Clave estable (slug en español): carrito, API y calendario. */
   slug: string;
   title: string;
   path: string;
@@ -35,12 +42,20 @@ const BALANCE_DAYS = 7;
 const MAX_TRAVELERS = 20;
 
 /**
- * Módulo de reserva (tour-detalle.md): fecha, viajeros, desglose, adelanto 50 % y CTA.
- * Sin precio publicado: "Precio a consultar" y se agrega con precio null ("por cotizar").
- * TODO(E7): calendario con disponibilidad/cupos reales (hoy: selector de fecha nativo, sin cupos).
+ * Módulo de reserva (tour-detalle.md): calendario de salidas reales con cupos y precio por fecha
+ * (W6/F9), viajeros, desglose, adelanto 50 % y CTA. Sin calendario en línea, se muestra el selector de
+ * fecha simple y se confirma la disponibilidad. Sin precio publicado: "Precio a consultar".
  */
 export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTour; anchorId?: string }) {
   const id = useId();
+  const t = useTranslations("booking");
+  const tp = useTranslations("price");
+  const tt = useTranslations("travelersPicker");
+  const tu = useTranslations("units");
+  const tc = useTranslations("calendar");
+  const locale = useLocale();
+  const f = useFormat();
+  const wa = useWhatsappTools();
   const router = useRouter();
   const addLine = useCartStore((s) => s.addLine);
   const lines = useCartStore((s) => s.lines);
@@ -48,8 +63,10 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
   const announce = useUiStore((s) => s.announce);
   const pulseCart = useUiStore((s) => s.pulseCart);
   const dateRef = useRef<HTMLInputElement>(null);
+  const calendarWrapRef = useRef<HTMLDivElement>(null);
 
   const [date, setDate] = useState("");
+  const [departure, setDeparture] = useState<CalendarDeparture | null>(null);
   const [dateError, setDateError] = useState<string | null>(null);
   const [travelers, setTravelers] = useState<Travelers>({ adults: Math.max(tour.minPax, 1), children: 0, infants: 0 });
   const [added, setAdded] = useState(false);
@@ -58,29 +75,46 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
 
   useEffect(() => {
     if (!added) return;
-    const t = setTimeout(() => setAdded(false), 1500);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setAdded(false), 1500);
+    return () => clearTimeout(timer);
   }, [added]);
 
   const minDate = today ? addDays(today, 1) : undefined;
-  const total = lineTotalCents(tour.pricing, travelers);
+  // Precio por fecha del calendario cuando existe (misma moneda); si no, el "desde" del catálogo.
+  const pricing: TourPricing | null =
+    departure?.priceFrom && tour.pricing && departure.priceFrom.currency === tour.pricing.currency
+      ? { ...tour.pricing, adultCents: departure.priceFrom.amount }
+      : tour.pricing;
+  const total = lineTotalCents(pricing, travelers);
   const fullByPolicy = tour.paymentPolicy.depositPercent >= 100;
   const closeDeparture = !!(date && today && daysBetween(today, date) <= BALANCE_DAYS);
   const percentNow = fullByPolicy || closeDeparture ? 100 : tour.paymentPolicy.depositPercent;
   const deposit = total !== null ? percentOfCentsCeil(total, percentNow) : null;
   const inCart = date ? lines.some((l) => l.id === cartLineId(tour.slug, date)) : false;
-  const set = (k: keyof Travelers) => (v: number) => setTravelers((t) => ({ ...t, [k]: v }));
+  const set = (k: keyof Travelers) => (v: number) => setTravelers((cur) => ({ ...cur, [k]: v }));
   const count = travelerCount(travelers);
+  const seatsNeeded = travelers.adults + travelers.children;
+  const notEnoughSeats = !!(departure && departure.available !== null && departure.available < seatsNeeded);
+
+  const focusDate = () => {
+    if (dateRef.current) dateRef.current.focus();
+    else calendarWrapRef.current?.querySelector<HTMLButtonElement>('[role="grid"] button[tabindex="0"]')?.focus();
+  };
 
   const validate = (): boolean => {
     if (!date) {
-      setDateError("Elige una fecha para continuar.");
-      dateRef.current?.focus();
+      setDateError(t("chooseDateError"));
+      focusDate();
       return false;
     }
     if (minDate && date < minDate) {
-      setDateError(`Elige una fecha a partir del ${formatDate(minDate)}.`);
-      dateRef.current?.focus();
+      setDateError(t("minDateError", { date: f.date(minDate) }));
+      focusDate();
+      return false;
+    }
+    if (notEnoughSeats) {
+      setDateError(t("notEnoughSeats", { count: departure!.available ?? 0 }));
+      focusDate();
       return false;
     }
     setDateError(null);
@@ -97,7 +131,7 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
       durationLabel: tour.durationLabel,
       date,
       travelers,
-      unitPricing: tour.pricing,
+      unitPricing: pricing,
       paymentPolicy: tour.paymentPolicy,
       durationDays: tour.durationDays,
       destinationSlugs: tour.destinationSlugs,
@@ -105,9 +139,7 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
     });
     const n = useCartStore.getState().lines.length;
     pulseCart();
-    announce(
-      `${replaced ? "Actualizamos" : "Se agregó"} ${tour.title}. Tu carrito tiene ${n} ${n === 1 ? "tour" : "tours"}.`,
-    );
+    announce(t(replaced ? "announceUpdated" : "announceAdded", { title: tour.title, count: n }));
     return replaced;
   };
 
@@ -116,130 +148,143 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
     const replaced = add();
     setAdded(true);
     showToast({
-      message: replaced ? "Actualizamos los viajeros de este tour en tu carrito" : "Agregado a tu carrito",
-      action: { label: "Ver carrito", href: "/es/carrito" },
+      message: replaced ? t("toastUpdated") : t("toastAdded"),
+      action: { label: t("viewCart"), href: localePath(locale, "/carrito") },
     });
   };
 
   const onBookNow = () => {
     if (!validate()) return;
     add();
-    router.push("/es/checkout");
+    router.push("/checkout");
   };
 
+  const dateField = (reason: "no-calendar" | "error") => (
+    <>
+      <input
+        ref={dateRef}
+        id={`${id}-date`}
+        type="date"
+        min={minDate}
+        value={date}
+        onChange={(e) => {
+          setDate(e.target.value);
+          setDeparture(null);
+          if (dateError) setDateError(null);
+        }}
+        aria-invalid={!!dateError}
+        aria-describedby={dateError ? `${id}-date-error` : `${id}-date-help`}
+        className="mt-2 block min-h-12 w-full rounded-md border border-border-strong bg-surface px-3 text-body aria-invalid:border-danger"
+      />
+      <p className="mt-2 text-sm text-foreground-muted">{reason === "error" ? tc("fallbackError") : tc("fallbackNoCalendar")}</p>
+    </>
+  );
+
   return (
-    <section
-      id={anchorId}
-      aria-labelledby={`${id}-title`}
-      className="scroll-mt-24 rounded-lg border border-border bg-surface p-6 shadow-md"
-    >
+    <section id={anchorId} aria-labelledby={`${id}-title`} className="scroll-mt-24 rounded-lg border border-border bg-surface p-6 shadow-md">
       <h2 id={`${id}-title`} className="sr-only">
-        Reservar este tour
+        {t("title")}
       </h2>
 
       <div>
-        {tour.pricing ? (
+        {pricing ? (
           <p className="text-sm text-foreground-muted">
-            Desde{" "}
-            <span className="tabular block text-price-lg font-semibold text-foreground">
-              {formatMoney(tour.pricing.adultCents, tour.pricing.currency)}
-            </span>
-            por persona
+            {t.rich("fromBlock", {
+              amount: () => <span className="tabular block text-price-lg font-semibold text-foreground">{f.money(pricing.adultCents, pricing.currency)}</span>,
+            })}
           </p>
         ) : (
           <>
-            <p className="text-h3 font-semibold">Precio a consultar</p>
-            <p className="mt-1 text-sm text-foreground-muted">
-              Agrégalo a tu carrito y te enviaremos el precio exacto antes de cobrar.
-            </p>
+            <p className="text-h3 font-semibold">{tp("onRequest")}</p>
+            <p className="mt-1 text-sm text-foreground-muted">{t("onRequestHelp")}</p>
           </>
         )}
       </div>
 
-      <div className="mt-6">
-        <label htmlFor={`${id}-date`} className="block font-medium">
-          Elige una fecha
-        </label>
-        <input
-          ref={dateRef}
-          id={`${id}-date`}
-          type="date"
-          min={minDate}
-          value={date}
-          onChange={(e) => {
-            setDate(e.target.value);
-            if (dateError) setDateError(null);
-          }}
-          aria-invalid={!!dateError}
-          aria-describedby={dateError ? `${id}-date-error` : `${id}-date-help`}
-          className="mt-2 block min-h-12 w-full rounded-md border border-border-strong bg-surface px-3 text-body aria-invalid:border-danger"
-        />
+      <div className="mt-6" ref={calendarWrapRef}>
+        <p id={`${id}-date-label`} className="block font-medium">
+          <label htmlFor={`${id}-date`}>{t("chooseDate")}</label>
+        </p>
+        {minDate ? (
+          <DepartureCalendar
+            tourKey={tour.slug}
+            minDate={minDate}
+            value={date}
+            seatsNeeded={seatsNeeded}
+            invalid={!!dateError}
+            describedBy={dateError ? `${id}-date-error` : `${id}-date-help`}
+            onChange={(d, dep) => {
+              setDate(d);
+              setDeparture(dep);
+              if (dateError) setDateError(null);
+              announce(tc("chosen", { date: f.date(d) }));
+            }}
+            renderFallback={dateField}
+          />
+        ) : (
+          <div className="mt-2 h-72 animate-pulse rounded-md bg-surface-muted motion-reduce:animate-none" aria-hidden="true" />
+        )}
         {dateError ? (
           <p id={`${id}-date-error`} className="mt-2 text-sm text-danger" role="alert">
             {dateError}
           </p>
         ) : (
-          <p id={`${id}-date-help`} className="mt-2 text-sm text-foreground-muted">
-            Confirmaremos la disponibilidad de cupos para tu fecha.
+          <p id={`${id}-date-help`} className="mt-2 text-sm text-foreground-muted" aria-live="polite">
+            {date ? (
+              <>
+                {tc("chosen", { date: f.date(date) })}
+                {departure?.available != null ? ` · ${tc("chosenSeats", { count: departure.available })}` : ""}
+                {departure?.startTime ? ` · ${tc("startTime", { time: departure.startTime })}` : ""}
+              </>
+            ) : (
+              t("dateHelp")
+            )}
           </p>
         )}
       </div>
 
       <fieldset className="mt-6">
-        <legend className="font-medium">¿Cuántos viajan?</legend>
+        <legend className="font-medium">{tt("legend")}</legend>
         <Counter
-          label="Adultos"
-          hint={tour.pricing ? formatMoney(tour.pricing.adultCents, tour.pricing.currency) : "12 años o más"}
-          unitName="un adulto"
+          label={tt("adults")}
+          hint={pricing ? f.money(pricing.adultCents, pricing.currency) : tt("adultsHint")}
+          unitName={tt("adultUnit")}
           value={travelers.adults}
           min={1}
           max={MAX_TRAVELERS}
           onChange={set("adults")}
         />
         <Counter
-          label="Niños"
-          hint={
-            tour.pricing?.childCents != null
-              ? `3 a 11 años · ${formatMoney(tour.pricing.childCents, tour.pricing.currency)}`
-              : "3 a 11 años"
-          }
-          unitName="un niño"
+          label={tt("children")}
+          hint={pricing?.childCents != null ? `${tt("childrenHint")} · ${f.money(pricing.childCents, pricing.currency)}` : tt("childrenHint")}
+          unitName={tt("childUnit")}
           value={travelers.children}
           max={MAX_TRAVELERS}
           onChange={set("children")}
         />
-        <Counter label="Bebés" hint="0 a 2 años · gratis" unitName="un bebé" value={travelers.infants} max={6} onChange={set("infants")} />
-        {count < tour.minPax ? (
-          <p className="mt-2 text-sm text-foreground-muted">
-            Este tour sale con mínimo {tour.minPax} viajeros. Para menos personas confirmaremos el suplemento.
-          </p>
-        ) : null}
+        <Counter label={tt("infants")} hint={tt("infantsFreeHint")} unitName={tt("infantUnit")} value={travelers.infants} max={6} onChange={set("infants")} />
+        {count < tour.minPax ? <p className="mt-2 text-sm text-foreground-muted">{t("minPax", { count: tour.minPax })}</p> : null}
       </fieldset>
 
       <div className="mt-6 space-y-3 border-t border-border pt-4" aria-live="polite">
         <div className="flex items-baseline justify-between gap-4">
-          <span className="text-foreground-muted">Total para {describeTravelers(travelers)}</span>
-          <span className="tabular font-semibold">
-            {total !== null && tour.pricing ? formatMoney(total, tour.pricing.currency) : "Por cotizar"}
-          </span>
+          <span className="text-foreground-muted">{t("totalFor", { travelers: describeTravelers(tu, travelers) })}</span>
+          <span className="tabular font-semibold">{total !== null && pricing ? f.money(total, pricing.currency) : tp("toQuote")}</span>
         </div>
         <div className="rounded-md bg-success-soft px-4 py-3 text-sm text-success">
           {fullByPolicy ? (
-            <p>Este tour requiere el pago completo al reservar porque incluye boletos de terceros.</p>
+            <p>{t("fullPolicy")}</p>
           ) : closeDeparture ? (
-            <p>Sale en menos de {BALANCE_DAYS} días: se paga completo al reservar.</p>
+            <p>{t("closeDeparture", { days: BALANCE_DAYS })}</p>
           ) : (
             <p>
-              Reserva hoy con el {percentNow} %
-              {deposit !== null && tour.pricing ? (
-                <>
-                  : <strong className="tabular">{formatMoney(deposit, tour.pricing.currency)}</strong>
-                </>
-              ) : null}
-              .{" "}
-              {date
-                ? `El saldo se paga hasta el ${formatDate(addDays(date, -BALANCE_DAYS))}.`
-                : `El saldo se paga hasta ${BALANCE_DAYS} días antes de la salida.`}
+              {deposit !== null && pricing
+                ? t.rich("depositToday", {
+                    percent: percentNow,
+                    amount: () => <strong className="tabular">{f.money(deposit, pricing.currency)}</strong>,
+                  })
+                : t("depositTodayNoAmount", { percent: percentNow })}{" "}
+              {date ? t("balanceUntil", { date: f.date(addDays(date, -BALANCE_DAYS)) }) : t("balanceBefore", { days: BALANCE_DAYS })}
             </p>
           )}
         </div>
@@ -247,9 +292,9 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
 
       {inCart ? (
         <p className="mt-4 text-sm text-foreground-muted">
-          Ya tienes este tour el {formatDate(date)} en tu carrito ·{" "}
-          <Link href="/es/carrito" className="pwt-link">
-            Ver carrito
+          {t("inCart", { date: f.date(date) })} ·{" "}
+          <Link href="/carrito" className="pwt-link">
+            {t("viewCart")}
           </Link>
         </p>
       ) : null}
@@ -259,29 +304,29 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
           {added ? (
             <>
               <Check aria-hidden size={20} strokeWidth={1.5} />
-              Agregado
+              {t("added")}
             </>
           ) : (
-            "Agregar al carrito"
+            t("addToCart")
           )}
         </button>
         <button type="button" className={buttonClass("outline", "lg", "w-full")} onClick={onBookNow}>
-          Reservar ahora
+          {t("bookNow")}
         </button>
       </div>
 
       <p className="mt-4 flex items-start gap-2 text-sm text-foreground-muted">
         <ShieldCheck aria-hidden size={18} strokeWidth={1.5} className="mt-0.5 shrink-0" />
-        Sin cargos ocultos · Pago seguro · Confirmación por correo
+        {t("trust")}
       </p>
       <a
-        href={whatsappHref(tourHelpMessage({ title: tour.title, date: date || null, travelers: date ? travelers : null }))}
+        href={whatsappHref(tourHelpMessage(wa, { title: tour.title, date: date || null, travelers: date ? travelers : null }))}
         target="_blank"
         rel="noopener noreferrer"
         className="pwt-link mt-2 inline-flex min-h-11 items-center gap-2 text-sm"
       >
         <MessageCircle aria-hidden size={18} strokeWidth={1.5} />
-        ¿Dudas? Escríbenos por WhatsApp
+        {t("questions")}
       </a>
     </section>
   );
@@ -289,29 +334,29 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
 
 /** Barra inferior sticky en móvil/tablet: lleva al módulo de reserva. */
 export function MobileBookingBar({ pricing }: { pricing: TourPricing | null }) {
+  const t = useTranslations("booking");
+  const tp = useTranslations("price");
+  const f = useFormat();
   return (
-    <div
-      className="fixed inset-x-0 bottom-0 z-10 border-t border-border bg-surface px-4 py-3 shadow-sticky lg:hidden"
-      style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
-    >
+    <div className="fixed inset-x-0 bottom-0 z-10 border-t border-border bg-surface px-4 py-3 shadow-sticky lg:hidden" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
       <div className="flex items-center justify-between gap-4">
         <p className="text-sm">
           {pricing ? (
-            <>
-              Desde <strong className="tabular">{formatMoney(pricing.adultCents, pricing.currency)}</strong> / persona
-            </>
+            tp.rich("fromShort", { amount: () => <strong className="tabular">{f.money(pricing.adultCents, pricing.currency)}</strong> })
           ) : (
-            <strong>Precio a consultar</strong>
+            <strong>{tp("onRequest")}</strong>
           )}
         </p>
         <a
           href="#reservar"
           className={buttonClass("primary", "lg")}
           onClick={() => {
-            requestAnimationFrame(() => document.querySelector<HTMLInputElement>("#reservar input[type=date]")?.focus());
+            requestAnimationFrame(() =>
+              document.querySelector<HTMLElement>('#reservar [role="grid"] button[tabindex="0"], #reservar input[type=date]')?.focus(),
+            );
           }}
         >
-          Ver fechas
+          {t("seeDates")}
         </a>
       </div>
     </div>

@@ -1,0 +1,118 @@
+[
+  {
+    "slug": "excursions",
+    "name": "Excursions",
+    "originalUrl": "https://www.andeanperutours.com/es/categorias/excursiones",
+    "newPath": "/en/categories/excursions",
+    "bannerImage": "https://www.andeanperutours.com/images/categories/saveclipapp-282112098-338245891726355-2103484089733423890-n-1766249261.jpg",
+    "declaredTourCount": 3,
+    "publishedTourCount": 3,
+    "tourSlugs": [
+      "arequipa-express-white-city-3-days",
+      "colca-canyon-trek-2-days",
+      "colca-canyon-arequipa-3-days"
+    ],
+    "tagline": null,
+    "description": null,
+    "menuImage": null,
+    "translationStatus": "machine_reviewed_pending_client"
+  },
+  {
+    "slug": "full-day-tours",
+    "name": "Full-Day Tours",
+    "originalUrl": "https://www.andeanperutours.com/es/categorias/full-days",
+    "newPath": "/en/categories/full-day-tours",
+    "bannerImage": "https://www.andeanperutours.com/images/categories/69289724-126060618745285-6861872528201368441-n-1766092998.jpg",
+    "declaredTourCount": 11,
+    "publishedTourCount": 11,
+    "tourSlugs": [
+      "sacred-valley-full-day-tour",
+      "maras-moray-full-day-tour",
+      "cusco-south-valley-full-day-tour",
+      "rainbow-mountain-vinicunca-full-day",
+      "humantay-lake-full-day-tour",
+      "machu-picchu-full-day-tour",
+      "ausangate-7-lakes-trek",
+      "arequipa-city-tour",
+      "salinas-lagoon-lojen-hot-springs-full-day",
+      "arequipa-countryside-tour",
+      "colca-canyon-full-day-tour"
+    ],
+    "tagline": null,
+    "description": null,
+    "menuImage": null,
+    "translationStatus": "machine_reviewed_pending_client"
+  },
+  {
+    "slug": "peru-vacation-packages",
+    "name": "Tour Packages",
+    "originalUrl": "https://www.andeanperutours.com/es/categorias/paquetes-turisticos-en-peru",
+    "newPath": "/en/categories/peru-vacation-packages",
+    "bannerImage": "https://www.andeanperutours.com/images/categories/manu-peru-amazon-087-01-1627415589.jpg",
+    "declaredTourCount": 16,
+    "publishedTourCount": 13,
+    "tourSlugs": [
+      "arequipa-express-white-city-3-days",
+      "sillar-route-full-day-tour",
+      "salinas-aguada-blanca-wildlife-full-day",
+      "pillones-waterfall-stone-forest-full-day",
+      "colca-canyon-arequipa-3-days",
+      "arequipa-colca-canyon-condors-4-days",
+      "best-of-peru-5-days",
+      "peru-express-lima-cusco-5-days",
+      "magical-peru-cusco-lima-6-days",
+      "dream-peru-andes-incas-8-days",
+      "andean-routes-essential-peru-8-days",
+      "ancient-peru-andean-legacy-10-days",
+      "southern-peru-coast-essentials-14-days"
+    ],
+    "tagline": "Special Tours in Peru",
+    "description": "We offer two distinctive aspects of our environment: Andean magical practices related to the religious and spiritual life of the mountain societies of the Andes, and birdwatching for lovers of this activity, set in cultural and natural surroundings.",
+    "menuImage": "https://www.andeanperutours.com/images/categories/md/manu-peru-amazon-087-01-1627415589.jpg",
+    "translationStatus": "machine_reviewed_pending_client"
+  },
+  {
+    "slug": "altiplano-routes",
+    "name": "Altiplano Routes",
+    "originalUrl": "https://www.andeanperutours.com/es/categorias/rutas-del-altiplano",
+    "newPath": "/en/categories/altiplano-routes",
+    "bannerImage": "https://www.andeanperutours.com/images/categories/saveclipapp-490894861-18183531580314755-6606558784976965071-n-1765901222.jpg",
+    "declaredTourCount": 6,
+    "publishedTourCount": 6,
+    "tourSlugs": [
+      "uros-floating-islands-tour",
+      "sillustani-tombs-tour",
+      "uros-taquile-full-day-tour",
+      "aramu-muru-gateway-private-tour",
+      "inka-uyo-fertility-temple-private-tour",
+      "titicaca-homestay-uros-amantani-taquile-2-days"
+    ],
+    "tagline": "Discover Lake Titicaca",
+    "description": "Our Altiplano Routes are a selection of specialized circuits across the Collao plateau, bringing together the most significant destinations in the Puno region and northern Bolivia. These itineraries are designed to explore the complexity of the civilizations that flourished around Lake Titicaca, from pre-Hispanic burial sites and ceremonial temples to the colonial architecture of the so-called “Romes of the Indies.” Each route offers an in-depth look at the high-Andean geography, its biodiversity and the social structures that keep the oldest traditions of the central Andes alive.",
+    "menuImage": "https://www.andeanperutours.com/images/categories/md/saveclipapp-490894861-18183531580314755-6606558784976965071-n-1765901222.jpg",
+    "translationStatus": "machine_reviewed_pending_client"
+  },
+  {
+    "slug": "machu-picchu-tours",
+    "name": "Machu Picchu Tours",
+    "originalUrl": "https://www.andeanperutours.com/es/categorias/tours-a-machu-picchu",
+    "newPath": "/en/categories/machu-picchu-tours",
+    "bannerImage": "https://www.andeanperutours.com/images/categories/246869264-369881751498602-2390540162651104147-n-1765923152.jpg",
+    "declaredTourCount": 8,
+    "publishedTourCount": 8,
+    "tourSlugs": [
+      "machu-picchu-full-day-tour",
+      "cusco-quick-getaway-3-days",
+      "imperial-cusco-explorer-4-days",
+      "cusco-machu-picchu-premium-4-days",
+      "cusco-andean-adventure-5-days",
+      "best-of-peru-5-days",
+      "magical-peru-cusco-lima-6-days",
+      "dream-peru-andes-incas-8-days"
+    ],
+    "tagline": "The Route of the Incas",
+    "description": "Our Machu Picchu Tours offer complete travel solutions to the most important Historic Sanctuary in South America. This category ranges from classic routes by panoramic train to adventure expeditions and alternative routes with outstanding scenery. Every itinerary follows quality standards that ensure efficient handling of entrance tickets, transport and specialized guiding at the citadel. We focus on giving you an expert perspective on Inca architecture, astronomy and hydraulic engineering, so you can appreciate the significance of this World Heritage Site in a safe and comfortable setting.",
+    "menuImage": "https://www.andeanperutours.com/images/categories/md/246869264-369881751498602-2390540162651104147-n-1765923152.jpg",
+    "translationStatus": "machine_reviewed_pending_client"
+  }
+]

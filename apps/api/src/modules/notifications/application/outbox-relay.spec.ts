@@ -1,3 +1,4 @@
+import { issueAccessToken } from '../../../shared/application/access-grants.js';
 import { BOOKING_SETTINGS, IDS } from '../../../../test/support/fixtures.js';
 import { BookingUseCases } from '../../booking/application/booking.use-cases.js';
 import { createHarness } from '../../../../test/support/harness.js';
@@ -44,6 +45,9 @@ function setup() {
     cipher,
     unsubscribeUrl: (repos, email) => privacy.unsubscribeUrlIfGranted(repos, email),
     marketingConfirmationUrl: (email, purposes) => privacy.buildConfirmationUrl(email, purposes),
+    issueLink: async (repos, p) => (await issueAccessToken(repos, h.ids, { ...p, now: h.clock.now() })).token,
+    links: { requestedTtlMinutes: 30, emailTtlHours: 72 },
+    agencyInboxEmail: 'agencia@pwt.test',
   });
   const relay = new OutboxRelay(h.uow, h.clock, h.ids, composer, transport, cipher, {
     batchSize: 10,

@@ -14,6 +14,8 @@ export interface BookingRepository {
    * a la versión leída: si otra transacción guardó antes, lanza ConcurrencyError (sin lost update).
    */
   save(booking: Booking): Promise<void>;
+  /** "Mis reservas": reservas del cliente, más recientes primero. */
+  findByCustomer(customerId: string, limit: number): Promise<Booking[]>;
   /** Reservas `held` con retención vencida (job de expiración). */
   findWithExpiredHold(now: Date, limit: number): Promise<Booking[]>;
   /** Reservas `partially_paid` cuyo saldo vence en [from, to] (recordatorios). */

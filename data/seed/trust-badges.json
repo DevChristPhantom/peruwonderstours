@@ -1,0 +1,257 @@
+{
+  "generatedAt": "2026-10-09",
+  "checkedAt": "2026-10-09",
+  "method": "URLs verificadas con HTTP 200 (curl con agente de navegador; gob.pe bloquea WebFetch con 418) y lectura del contenido con WebSearch/WebFetch. No se envió ningún formulario.",
+  "summaryRule": "Solo pueden mostrarse sin confirmación los elementos que son obligación legal del propio proveedor (aviso del Libro de Reclamaciones, enlace informativo ESNNA). Todo logo de entidad pública o marca de terceros requiere licencia, inscripción o autorización: requiresClientConfirmation = true.",
+  "badges": [
+    {
+      "id": "safe-travels",
+      "displayedOnLegacy": true,
+      "legacyLogo": "https://www.andeanperutours.com/images/partners/safe-travels.svg?ver=1.3",
+      "legacyAlt": "Safe Travels",
+      "legacyLinked": false,
+      "officialName": "Safe Travels Stamp (#SafeTravels: Global Protocols & Stamp for the New Normal)",
+      "issuer": "World Travel & Tourism Council (WTTC); en el Perú lo gestionó el MINCETUR con evaluación de CENFOTUR y trámite vía Dircetur/Gercetur",
+      "officialUrl": "https://wttc.org/initiatives/crisis-preparedness-management-recovery/safetravels-global-protocols-stamp",
+      "officialUrlChecked": "2026-10-09",
+      "status": "historic",
+      "statusNote": "WTTC indica en esa página que fue una iniciativa histórica y que ya no es un foco activo. Era un sello de bioseguridad COVID-19.",
+      "usageRequirements": [
+        "Se otorgaba a destinos y a empresas que implementaban los protocolos de bioseguridad del WTTC (alineados con OMS/CDC).",
+        "En el Perú, las empresas lo solicitaban a la Dircetur/Gercetur regional; el MINCETUR/CENFOTUR evaluaba el otorgamiento.",
+        "No es una certificación vigente de calidad ni de formalidad."
+      ],
+      "requiresClientConfirmation": true,
+      "clientQuestion": "¿La empresa (RUC) recibió el sello Safe Travels y conserva la constancia? Aun así, recomendamos retirarlo por ser un programa COVID ya cerrado.",
+      "recommendation": "remove",
+      "accessibleAlt": {
+        "es": "Sello Safe Travels del Consejo Mundial de Viajes y Turismo (WTTC)",
+        "en": "World Travel & Tourism Council Safe Travels stamp"
+      },
+      "sources": [
+        "https://wttc.org/initiatives/safe-travels",
+        "https://andina.pe/ingles/noticia-safe-travels-peru-suma-446-atractivos-turisticos-declarados-destinos-seguros-855107.aspx"
+      ]
+    },
+    {
+      "id": "esnna",
+      "displayedOnLegacy": true,
+      "legacyLogo": "https://www.andeanperutours.com/images/partners/esnna-horizontal.svg?v=0.1",
+      "legacyAlt": "ESNNA",
+      "legacyLinked": true,
+      "legacyLinkTarget": "https://www.perusacredexperiences.com/images/afiche-esnna.jpg",
+      "legacyLinkNote": "El logo abre un afiche alojado en el dominio de otra agencia. El pie enlaza a la página oficial del MINCETUR.",
+      "officialName": "Prevención de la Explotación Sexual de Niñas, Niños y Adolescentes en el ámbito del turismo (ESNNA)",
+      "issuer": "Ministerio de Comercio Exterior y Turismo (MINCETUR)",
+      "officialUrl": "https://www.gob.pe/15106-ministerio-de-comercio-exterior-y-turismo-prevencion-de-la-explotacion-sexual-de-ninas-ninos-y-adolescentes-en-el-ambito-del-turismo-esnna",
+      "officialUrlChecked": "2026-10-09",
+      "status": "active",
+      "usageRequirements": [
+        "El representante legal del prestador debe firmar la Declaración Jurada de Suscripción Obligatoria del Código de Conducta contra la ESNNA (Ley N.° 30802 y normas del MINCETUR).",
+        "Afiche informativo con las sanciones penales vinculadas a la ESNNA según el modelo aprobado por R.M. N.° 108-2020-MINCETUR (El Peruano, 29/06/2020).",
+        "Enlazar a la página oficial es informativo y no requiere licencia. Mostrar un logo de 'agencia comprometida' sí requiere haber suscrito el código."
+      ],
+      "requiresClientConfirmation": true,
+      "clientQuestion": "¿El representante legal firmó la Declaración Jurada del Código de Conducta ESNNA? ¿Ante qué Dircetur y con qué fecha?",
+      "recommendation": "keep_link_official; replace_poster_with_official_mincetur_version",
+      "accessibleAlt": {
+        "es": "Compromiso con la prevención de la explotación sexual de niñas, niños y adolescentes en el turismo (ESNNA). Abre la información oficial del MINCETUR",
+        "en": "Commitment to preventing the sexual exploitation of children and adolescents in tourism (ESNNA). Opens official MINCETUR information"
+      },
+      "relatedNorms": [
+        {"name": "R.M. N.° 108-2020-MINCETUR (modelo de afiche ESNNA)", "url": "https://busquedas.elperuano.pe/dispositivo/NL/1869096-1"},
+        {"name": "Ley N.° 30802", "url": "https://busquedas.elperuano.pe/normaslegales/ley-que-establece-condiciones-para-el-ingreso-de-ninas-nino-ley-n-30802-1663939-1/"}
+      ]
+    },
+    {
+      "id": "gercetur-puno",
+      "displayedOnLegacy": true,
+      "legacyLogo": "https://www.andeanperutours.com/images/partners/gercetur.svg?v=0.1",
+      "legacyAlt": "Gercetur",
+      "legacyLinked": false,
+      "officialName": "Dirección Regional de Comercio Exterior y Turismo de Puno (DIRCETUR Puno), Gobierno Regional de Puno",
+      "issuer": "Gobierno Regional de Puno",
+      "officialUrl": "https://dircetur.regionpuno.gob.pe/",
+      "officialUrlChecked": "2026-10-09",
+      "status": "active",
+      "identificationNote": "En Puno el órgano se llama DIRCETUR (Dirección Regional), no GERCETUR. 'Gercetur' es el nombre en otras regiones (p. ej. Arequipa y Lambayeque). El SVG del sitio viejo solo dice 'Ger Cetur' en vectores, sin región: no se puede confirmar a qué gobierno regional corresponde.",
+      "usageRequirements": [
+        "Es el logo institucional de un gobierno regional. No hay licencia pública de uso para privados: requiere autorización escrita.",
+        "Lo que acredita la relación con la Dircetur/Gercetur es la inscripción de la agencia en el Directorio Nacional, y eso se comunica con el distintivo MINCETUR, no con el logo regional."
+      ],
+      "requiresClientConfirmation": true,
+      "clientQuestion": "¿Ante qué Dircetur/Gercetur está inscrita la agencia (Puno, Cusco, Lima Metropolitana/MML)? ¿Tiene autorización para usar su logo?",
+      "recommendation": "replace_with_mincetur_registered_agency_badge",
+      "accessibleAlt": {
+        "es": "Agencia inscrita ante la Dirección Regional de Comercio Exterior y Turismo de Puno",
+        "en": "Agency registered with the Puno Regional Directorate of Foreign Trade and Tourism"
+      }
+    },
+    {
+      "id": "promperu",
+      "displayedOnLegacy": true,
+      "legacyLogo": "https://www.andeanperutours.com/images/partners/promperu.svg?v=0.1",
+      "legacyAlt": "Mincetur",
+      "legacyAltNote": "El archivo se llama promperu.svg pero el alt dice 'Mincetur': son entidades distintas.",
+      "legacyLinked": false,
+      "officialName": "Comisión de Promoción del Perú para la Exportación y el Turismo (PROMPERÚ)",
+      "issuer": "PROMPERÚ (adscrito al MINCETUR)",
+      "officialUrl": "https://www.gob.pe/promperu",
+      "officialUrlChecked": "2026-10-09",
+      "status": "active",
+      "usageRequirements": [
+        "El logo institucional de PROMPERÚ no se licencia a privados. Lo que PROMPERÚ licencia es la Marca Perú (ver marca-peru).",
+        "Mostrarlo sugiere aval o asociación oficial; solo procede con un convenio o una autorización escrita."
+      ],
+      "requiresClientConfirmation": true,
+      "clientQuestion": "¿Existe convenio o autorización de PROMPERÚ para usar su logo? Si no la hay, retirarlo.",
+      "recommendation": "remove_unless_written_authorization",
+      "accessibleAlt": {
+        "es": "PROMPERÚ, Comisión de Promoción del Perú para la Exportación y el Turismo",
+        "en": "PROMPERÚ, Peru's Commission for the Promotion of Exports and Tourism"
+      }
+    },
+    {
+      "id": "marca-peru",
+      "displayedOnLegacy": true,
+      "legacyLogo": "https://www.andeanperutours.com/images/partners/marca-peru.svg?v=0.1",
+      "legacyAlt": "Peru Brand",
+      "legacyLinked": false,
+      "officialName": "Marca Perú (Marca País)",
+      "issuer": "PROMPERÚ",
+      "officialUrl": "https://peru.info/es-pe/marca-peru/programa-de-licenciatarios",
+      "officialUrlChecked": "2026-10-09",
+      "procedureUrl": "https://www.gob.pe/9571-solicitar-uso-de-marca-peru-en-mis-productos-o-servicios",
+      "status": "active",
+      "usageRequirements": [
+        "Requiere licencia de uso otorgada por PROMPERÚ (D.S. N.° 003-2012-MINCETUR). Es gratuita y se pide en línea en peru.info.",
+        "Vigencia máxima de 2 años, renovable. PROMPERÚ responde en un plazo máximo de 30 días hábiles.",
+        "Para web y redes de la empresa corresponde la licencia de 'uso institucional'. Hay que seguir el manual y las guías de uso correcto que recibe el licenciatario.",
+        "Para usar marcas sectoriales primero hay que ser licenciatario de la Marca Perú."
+      ],
+      "requiresClientConfirmation": true,
+      "clientQuestion": "¿La empresa (TURINET CUZCO EIRL u otra razón social) tiene licencia vigente de Marca Perú? Pedir el número de licencia y su vencimiento. Si es de la marca vieja, ver si cubre a Peru Wonders Tours.",
+      "recommendation": "keep_only_with_valid_license",
+      "accessibleAlt": {
+        "es": "Licenciatario de la Marca Perú",
+        "en": "Official Marca Perú licensee"
+      },
+      "logoKit": {
+        "url": "https://peru.info/es-pe/marca-peru/programa-de-licenciatarios",
+        "regulation": "https://peru.info/Portals/0/Images/Licenciatario/reg_ES_oficial.pdf",
+        "license": "Solo para licenciatarios. Los archivos oficiales se entregan con la licencia."
+      }
+    },
+    {
+      "id": "sernanp",
+      "displayedOnLegacy": true,
+      "legacyLogo": "https://www.andeanperutours.com/images/partners/sernanp.svg?v=0.1",
+      "legacyAlt": "Sernanp",
+      "legacyLinked": false,
+      "officialName": "Servicio Nacional de Áreas Naturales Protegidas por el Estado (SERNANP)",
+      "issuer": "SERNANP, Ministerio del Ambiente",
+      "officialUrl": "https://www.gob.pe/sernanp",
+      "officialUrlChecked": "2026-10-09",
+      "touristPortal": "https://visitaareasnaturales.sernanp.gob.pe/",
+      "status": "active",
+      "usageRequirements": [
+        "Logo institucional del Estado: no hay licencia pública de uso para privados.",
+        "Operar en áreas naturales protegidas (p. ej. Santuario Histórico de Machu Picchu, Reserva Nacional del Titicaca, Salinas y Aguada Blanca, Paracas) exige un derecho otorgado por el SERNANP: concesión, contrato de servicio turístico, permiso, autorización o acuerdo. SERNANP publica listas de operadores autorizados por área.",
+        "Tener la autorización no da derecho a usar el logo. Lo correcto es decir 'Operador autorizado por el SERNANP en <ANP>' con el número de resolución."
+      ],
+      "requiresClientConfirmation": true,
+      "clientQuestion": "¿En qué ANP está autorizada la agencia, con qué resolución o contrato y hasta qué fecha? ¿Hay autorización escrita para el logo?",
+      "recommendation": "replace_logo_with_text_claim_if_authorized",
+      "accessibleAlt": {
+        "es": "Operador turístico autorizado por el SERNANP",
+        "en": "Tour operator authorized by SERNANP, Peru's protected areas service"
+      }
+    },
+    {
+      "id": "mincetur-agencia-registrada",
+      "displayedOnLegacy": false,
+      "officialName": "Distintivo 'Agencia de Viajes y Turismo Registrada' (Directorio Nacional de Prestadores de Servicios Turísticos Calificados)",
+      "issuer": "MINCETUR (vigilan las Dircetur/Gercetur y, en Lima, la Municipalidad Metropolitana)",
+      "officialUrl": "https://www.gob.pe/institucion/mincetur/informes-publicaciones/1892198-distintivo-para-las-agencias-de-viajes-y-turismo-inscritas",
+      "officialUrlChecked": "2026-10-09",
+      "directoryUrl": "https://consultasenlinea.mincetur.gob.pe/directoriodeserviciosturisticos/DirPrestadores/DirBusquedaPrincipal",
+      "directoryInfoUrl": "https://www.gob.pe/1012-buscar-prestadores-de-servicios-turisticos-calificados",
+      "status": "active",
+      "legalBasis": [
+        {"name": "D.S. N.° 005-2020-MINCETUR, Reglamento de Agencias de Viajes y Turismo", "url": "https://busquedas.elperuano.pe/normaslegales/aprueban-reglamento-de-agencias-de-viajes-y-turismo-decreto-supremo-n-005-2020-mincetur-1866352-4/"},
+        {"name": "R.M. N.° 061-2021-MINCETUR, aprueba el distintivo", "url": "https://busquedas.elperuano.pe/normaslegales/aprueban-el-distintivo-para-la-identificacion-de-las-agencia-resolucion-ministerial-n-061-2021-mincetur-1947877-1/"}
+      ],
+      "usageRequirements": [
+        "Solo pueden usarlo agencias inscritas en el Directorio Nacional, en su clasificación: Minorista, Mayorista y/o Operador de Turismo.",
+        "Es obligatorio exhibirlo en el exterior del local y en el canal digital (web y redes) donde se comercializan los servicios.",
+        "Usarlo sin estar inscrito expone a un procedimiento sancionador.",
+        "Hay que usar los archivos y el manual oficiales (ver logoKit)."
+      ],
+      "requiresClientConfirmation": true,
+      "clientQuestion": "Confirmar el RUC y la razón social de Peru Wonders Tours y su inscripción en el Directorio (clasificación y región). Podemos verificarlo en el directorio público con el RUC.",
+      "recommendation": "add_if_registered (alta prioridad: obligatorio para agencias inscritas que venden en línea)",
+      "accessibleAlt": {
+        "es": "Agencia de viajes y turismo registrada en el Directorio Nacional de Prestadores de Servicios Turísticos Calificados del MINCETUR",
+        "en": "Travel agency registered in MINCETUR's National Directory of Qualified Tourism Service Providers"
+      },
+      "logoKit": {
+        "manual": "https://cdn.www.gob.pe/uploads/document/file/1862177/Anexo_II_%20MANUAL-BASICO-USO-DISTINTIVO.pdf.pdf?v=1619815998",
+        "colorPdf": "https://cdn.www.gob.pe/uploads/document/file/1862178/Distintivo_colores.pdf.pdf?v=1619815998",
+        "colorAi": "https://cdn.www.gob.pe/uploads/document/file/1862191/Distintivo-colores-AI.zip?v=1619816169",
+        "bwPdf": "https://cdn.www.gob.pe/uploads/document/file/1863677/Distintivo_BlancoyNegro.pdf?v=1620048906",
+        "bwAi": "https://cdn.www.gob.pe/uploads/document/file/1863678/Distintivo_BlancoyNegro-ai.zip?v=1620048906",
+        "license": "Uso exclusivo de agencias inscritas (R.M. 061-2021-MINCETUR)."
+      }
+    },
+    {
+      "id": "indecopi-libro-reclamaciones",
+      "displayedOnLegacy": true,
+      "legacyNote": "El sitio viejo tiene /es/libro-de-reclamaciones con un formulario en inglés y un enlace de texto en el pie. No muestra ícono ni aviso en la home.",
+      "officialName": "Libro de Reclamaciones (virtual) y Aviso del Libro de Reclamaciones",
+      "issuer": "INDECOPI (Código de Protección y Defensa del Consumidor, Ley N.° 29571; Reglamento D.S. N.° 011-2011-PCM y modificatorias)",
+      "officialUrl": "https://consumidor.gob.pe/libro-de-reclamaciones/",
+      "officialUrlChecked": "2026-10-09",
+      "regulationUrl": "https://cdn.www.gob.pe/uploads/document/file/662494/Decreto_Supremo_N_011-2011-PCM.pdf?v=1588006949",
+      "indecopiFreeToolUrl": "https://consumidor.indecopi.gob.pe/tulibro/",
+      "status": "active",
+      "usageRequirements": [
+        "Es obligatorio para todo proveedor que atiende al público. No necesita licencia.",
+        "En la web, el aviso debe estar en la página de inicio, ser visible y enlazar al Libro de Reclamaciones virtual.",
+        "Al registrar el reclamo, el sistema debe permitir imprimir la Hoja de Reclamación y enviarla automáticamente al correo del consumidor con fecha y hora.",
+        "Si hay atención presencial, también se requiere el libro físico.",
+        "Plazo de respuesta: 15 días hábiles improrrogables según las modificatorias vigentes. El sitio de INDECOPI resumido por la búsqueda menciona 30 días calendario, una regla anterior: compliance debe confirmar el plazo vigente.",
+        "La hoja debe identificar al proveedor con su razón social, RUC y dirección (hoy el sitio viejo muestra un RUC placeholder)."
+      ],
+      "requiresClientConfirmation": false,
+      "requiresClientData": ["Razón social", "RUC", "Dirección del establecimiento", "Correo de respuesta"],
+      "recommendation": "mandatory (en la home y en el pie, formulario en español)",
+      "accessibleAlt": {
+        "es": "Libro de Reclamaciones: registra aquí tu queja o reclamo",
+        "en": "Complaints Book (Libro de Reclamaciones): file a complaint or claim"
+      }
+    }
+  ],
+  "touristLinks": [
+    {"id": "machu-picchu-tickets", "name": "Venta oficial de boletos a Machu Picchu y sitios del Ministerio de Cultura", "issuer": "Ministerio de Cultura", "url": "https://tuboleto.cultura.pe/", "checkedAt": "2026-10-09", "pageTitle": "Venta de Boletos en Línea | Tu Boleto", "use": "FAQ de Machu Picchu y fichas con entrada (cupo limitado)."},
+    {"id": "mincetur-directory", "name": "Directorio Nacional de Prestadores de Servicios Turísticos Calificados (consulta de agencias registradas)", "issuer": "MINCETUR", "url": "https://consultasenlinea.mincetur.gob.pe/directoriodeserviciosturisticos/DirPrestadores/DirBusquedaPrincipal", "infoUrl": "https://www.gob.pe/1012-buscar-prestadores-de-servicios-turisticos-calificados", "checkedAt": "2026-10-09", "use": "Junto al distintivo, para que el turista verifique la agencia por RUC."},
+    {"id": "peru-travel", "name": "Peru.travel, portal oficial de turismo del Perú", "issuer": "PROMPERÚ", "url": "https://www.peru.travel/es", "checkedAt": "2026-10-09", "use": "Información general del destino."},
+    {"id": "iperu", "name": "iPerú: información y asistencia al turista (24 h, gratuito)", "issuer": "PROMPERÚ", "url": "https://www.gob.pe/9725-recibir-asistencia-turistica-iperu", "checkedAt": "2026-10-09", "contact": {"phone": "+51 1 574 8000", "whatsapp": "+51 944 492 314", "email": "iperu@promperu.gob.pe"}, "contactSource": "gob.pe/promperu (noticias), resumido por WebSearch; confirmar antes de publicar", "use": "Pie o página 'Viaja seguro'."},
+    {"id": "sernanp-visit", "name": "Visita Áreas Naturales: entradas en línea, rutas y operadores autorizados en ANP", "issuer": "SERNANP", "url": "https://visitaareasnaturales.sernanp.gob.pe/", "checkedAt": "2026-10-09", "use": "Tours en Titicaca, Salinas y Aguada Blanca, Paracas y Machu Picchu."},
+    {"id": "esnna-info", "name": "Prevención de la ESNNA en el turismo", "issuer": "MINCETUR", "url": "https://www.gob.pe/15106-ministerio-de-comercio-exterior-y-turismo-prevencion-de-la-explotacion-sexual-de-ninas-ninos-y-adolescentes-en-el-ambito-del-turismo-esnna", "checkedAt": "2026-10-09", "use": "Pie, columna Políticas."},
+    {"id": "indecopi-consumer", "name": "Libro de Reclamaciones: información al consumidor", "issuer": "INDECOPI", "url": "https://consumidor.gob.pe/libro-de-reclamaciones/", "checkedAt": "2026-10-09", "use": "Página del Libro de Reclamaciones."}
+  ],
+  "excludedLinks": [
+    {"name": "SUTRAN", "reason": "No es pertinente para el turista de una agencia (fiscaliza el transporte terrestre). Incluirlo solo si la agencia opera transporte turístico propio."},
+    {"name": "AFP", "reason": "No pertinente."},
+    {"name": "Safe Travels (mapa de prestadores)", "reason": "Programa histórico; no enlazar."}
+  ],
+  "openQuestionsForClient": [
+    "Razón social y RUC definitivos de Peru Wonders Tours (el sitio viejo mezcla 'Andean Peru Tours Travel Agency E.I.R.L.', RUC 20000000000 placeholder, y 'TURINET CUZCO EIRL' con RUC 20553158509).",
+    "Inscripción en el Directorio Nacional del MINCETUR: clasificación (minorista, mayorista u operador) y región.",
+    "Constancia de la Declaración Jurada del Código de Conducta ESNNA.",
+    "Licencia de Marca Perú: número y vencimiento.",
+    "Autorizaciones del SERNANP (ANP y resolución o contrato).",
+    "Autorización escrita para logos de PROMPERÚ, SERNANP y Gercetur/Dircetur; sin ella se retiran.",
+    "Constancia Safe Travels (recomendado retirarlo de todos modos)."
+  ]
+}

@@ -1,10 +1,10 @@
 "use client";
 
 import clsx from "clsx";
-import { Check, Heart, ShoppingBag } from "lucide-react";
+import { Heart, ShoppingBag } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import NextLink from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import {
   useCallback,
   useEffect,
@@ -16,12 +16,14 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 
+import { Link, usePathname } from "@/i18n/navigation";
 import type { NavMedia } from "@/lib/catalog/types";
 import { whatsappHref } from "@/lib/site";
 import { useCartCount, useCartHydrated } from "@/stores/cart-store";
 import { useUiStore } from "@/stores/ui-store";
 import { useFavoritesCount } from "@/stores/wishlist-store";
 
+import { LanguageLinks } from "./LanguageSwitcher";
 import s from "./SiteHeader.module.css";
 
 /* ---------- Constantes de la spec (§4–§5) ---------- */
@@ -32,7 +34,6 @@ const SIZE: Record<PanelId, { w: number; h: number }> = {
   viajes: { w: 446, h: 308 },
   destinos: { w: 232, h: 218 },
 };
-const LABEL: Record<PanelId, string> = { descubre: "Descubre", viajes: "Viajes", destinos: "Destinos" };
 const PAD = 20;
 const EDGE = 12;
 const CLOSE_DELAY = 140;
@@ -260,7 +261,10 @@ function useMorphDropdown() {
 
 export function SiteHeader({ media }: { media: NavMedia }) {
   const pathname = usePathname();
-  const isHome = pathname === "/es" || pathname === "/";
+  const locale = useLocale();
+  const t = useTranslations("header");
+  const tc = useTranslations("common");
+  const isHome = pathname === "/";
   const {
     headerRef,
     navRef,
@@ -368,10 +372,10 @@ export function SiteHeader({ media }: { media: NavMedia }) {
       className={clsx(s.header, isHome ? [s.overlay, s.intro] : s.solid, isHome && scrolled && s.scrolled)}
     >
       <div className={s.bar}>
-        <Link href="/es" className={s.logo} aria-label="Peru Wonders Tours, inicio">
+        <Link href="/" className={s.logo} aria-label={tc("logoHome")}>
           <Image
             src="/logo.png"
-            alt="Peru Wonders Tours"
+            alt={tc("logoAlt")}
             width={120}
             height={40}
             className={s.logoImg}
@@ -382,7 +386,7 @@ export function SiteHeader({ media }: { media: NavMedia }) {
         <nav
           ref={navRef}
           className={s.nav}
-          aria-label="Principal"
+          aria-label={t("mainNav")}
           onPointerEnter={cancelClose}
           onPointerLeave={(e) => {
             if (e.pointerType === "mouse") scheduleClose(CLOSE_DELAY);
@@ -404,21 +408,21 @@ export function SiteHeader({ media }: { media: NavMedia }) {
                   onClick={onTriggerClick(id)}
                   onKeyDown={onTriggerKeyDown(id)}
                 >
-                  {LABEL[id]}
+                  {t(`panels.${id}`)}
                   <Chevron />
                 </button>
               </li>
             ))}
             <li>
               <Link
-                href="/es/nosotros"
+                href="/nosotros"
                 className={s.trigger}
                 onPointerEnter={(e) => {
                   if (e.pointerType === "mouse") scheduleClose(LINK_CLOSE_DELAY);
                 }}
                 onFocus={() => close()}
               >
-                Nosotros
+                {t("about")}
               </Link>
             </li>
           </ul>
@@ -434,7 +438,7 @@ export function SiteHeader({ media }: { media: NavMedia }) {
               <ul className={s.discoverList}>
                 {media.discover.map((item, i) => (
                   <li key={item.key}>
-                    <Link
+                    <NextLink
                       href={item.href}
                       className={s.discoverRow}
                       data-active={discoverIndex === i}
@@ -444,7 +448,7 @@ export function SiteHeader({ media }: { media: NavMedia }) {
                     >
                       <span className={s.discoverTitle}>{item.title}</span>
                       <span className={s.discoverDesc}>{item.description}</span>
-                    </Link>
+                    </NextLink>
                   </li>
                 ))}
               </ul>
@@ -466,10 +470,10 @@ export function SiteHeader({ media }: { media: NavMedia }) {
               onKeyDown={onPanelKeyDown("viajes")}
             >
               {media.journeys.map((item) => (
-                <Link key={item.key} href={item.href} className={s.journeyCard} onClick={close}>
+                <NextLink key={item.key} href={item.href} className={s.journeyCard} onClick={close}>
                   {item.image ? <Image src={item.image.src} alt="" fill sizes="216px" /> : null}
                   <span className={s.journeyTitle}>{item.title}</span>
-                </Link>
+                </NextLink>
               ))}
             </div>
 
@@ -480,9 +484,9 @@ export function SiteHeader({ media }: { media: NavMedia }) {
               onKeyDown={onPanelKeyDown("destinos")}
             >
               {media.regions.map((item) => (
-                <Link key={item.key} href={item.href} onClick={close}>
+                <NextLink key={item.key} href={item.href} onClick={close}>
                   {item.label}
-                </Link>
+                </NextLink>
               ))}
             </div>
           </div>
@@ -495,26 +499,16 @@ export function SiteHeader({ media }: { media: NavMedia }) {
               className={s.langButton}
               aria-expanded={langOpen}
               aria-controls={langId}
-              aria-label="Idioma: Español"
+              aria-label={t("languageButton", { language: t(`languageName.${locale}`) })}
               onClick={() => setLangOpen((v) => !v)}
             >
-              ES
+              {locale.toUpperCase()}
               <Chevron />
             </button>
             {langOpen ? (
-              <ul id={langId} className={s.langMenu}>
-                <li>
-                  <span aria-current="true" lang="es">
-                    Español <Check aria-hidden size={16} strokeWidth={1.5} />
-                  </span>
-                </li>
-                <li>
-                  {/* TODO(E10): habilitar cuando exista la versión en inglés. */}
-                  <span aria-disabled="true" lang="en">
-                    English <small>Próximamente</small>
-                  </span>
-                </li>
-              </ul>
+              <div id={langId}>
+                <LanguageLinks className={s.langMenu} onNavigate={() => setLangOpen(false)} />
+              </div>
             ) : null}
           </div>
 
@@ -530,7 +524,7 @@ export function SiteHeader({ media }: { media: NavMedia }) {
             className={s.menuButton}
             aria-expanded={sheetOpen}
             aria-controls={sheetId}
-            aria-label={sheetOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-label={sheetOpen ? t("closeMenu") : t("openMenu")}
             onClick={() => setSheetOpen((v) => !v)}
           >
             <svg className={s.menuIcon} viewBox="0 0 16 8" aria-hidden="true" focusable="false">
@@ -551,48 +545,53 @@ export function SiteHeader({ media }: { media: NavMedia }) {
           if ((e.target as HTMLElement).closest("a")) setSheetOpen(false);
         }}
       >
-        <nav aria-label="Menú móvil">
-          <h3>Descubre</h3>
+        <nav aria-label={t("mobileNav")}>
+          <h3>{t("panels.descubre")}</h3>
           <ul>
             {media.discover.map((item) => (
               <li key={item.key}>
-                <Link href={item.href}>{item.title}</Link>
+                <NextLink href={item.href}>{item.title}</NextLink>
               </li>
             ))}
           </ul>
-          <h3>Viajes</h3>
+          <h3>{t("panels.viajes")}</h3>
           <ul>
             {media.journeys.map((item) => (
               <li key={item.key}>
-                <Link href={item.href}>{item.title}</Link>
+                <NextLink href={item.href}>{item.title}</NextLink>
               </li>
             ))}
           </ul>
-          <h3>Destinos</h3>
+          <h3>{t("panels.destinos")}</h3>
           <ul>
             {media.regions.map((item) => (
               <li key={item.key}>
-                <Link href={item.href}>{item.label}</Link>
+                <NextLink href={item.href}>{item.label}</NextLink>
               </li>
             ))}
           </ul>
           <div className={s.sheetDivider} />
           <ul>
             <li>
-              <Link href="/es/nosotros">Nosotros</Link>
+              <Link href="/nosotros">{t("about")}</Link>
             </li>
             <li>
-              <Link href="/es/tours">Ver todos los tours</Link>
+              <Link href="/tours">{tc("viewAllTours")}</Link>
             </li>
             <li>
-              <a href={whatsappHref("Hola, quiero información sobre sus tours.")} target="_blank" rel="noopener noreferrer">
-                Escríbenos por WhatsApp
+              <Link href="/mis-reservas">{t("myBookings")}</Link>
+            </li>
+            <li>
+              <Link href="/contactenos">{t("contact")}</Link>
+            </li>
+            <li>
+              <a href={whatsappHref(t("whatsappMessage"))} target="_blank" rel="noopener noreferrer">
+                {tc("whatsappUs")}
               </a>
             </li>
-            <li>
-              <span className={s.sheetItem}>Idioma: Español · English (próximamente)</span>
-            </li>
           </ul>
+          <h3>{t("language")}</h3>
+          <LanguageLinks />
         </nav>
       </div>
     </header>
@@ -604,9 +603,10 @@ export function SiteHeader({ media }: { media: NavMedia }) {
 /** Favoritos (HU-B.A4): contador visible que sube al guardar. */
 function FavoritesLink() {
   const count = useFavoritesCount();
-  const label = count === 0 ? "Favoritos, ninguno guardado" : `Favoritos, ${count} ${count === 1 ? "tour" : "tours"}`;
+  const t = useTranslations("header");
+  const label = t("favoritesLabel", { count });
   return (
-    <Link href="/es/favoritos" className={s.iconButton} aria-label={label}>
+    <Link href="/favoritos" className={s.iconButton} aria-label={label}>
       <Heart aria-hidden size={20} strokeWidth={1.5} />
       {count > 0 ? (
         <span className={s.badge} aria-hidden="true">
@@ -623,7 +623,8 @@ function CartButton() {
   const pulse = useUiStore((st) => st.cartPulse);
   const openDrawer = useUiStore((st) => st.openCartDrawer);
   const shown = hydrated ? count : 0;
-  const label = shown === 0 ? "Carrito, vacío" : `Carrito, ${shown} ${shown === 1 ? "tour" : "tours"}`;
+  const t = useTranslations("header");
+  const label = t("cartLabel", { count: shown });
 
   return (
     <button
@@ -647,19 +648,20 @@ function CartButton() {
 function ReserveCta() {
   const count = useCartCount();
   const openDrawer = useUiStore((st) => st.openCartDrawer);
+  const t = useTranslations("header");
   return (
     <Link
-      href="/es/tours"
+      href="/tours"
       className={s.cta}
       onClick={(e) => {
-        // home.md: abre el carrito si tiene ítems; si no, lleva a /es/tours.
+        // home.md: abre el carrito si tiene ítems; si no, lleva a /tours.
         if (count > 0) {
           e.preventDefault();
           openDrawer(e.currentTarget);
         }
       }}
     >
-      Reservar
+      {t("book")}
     </Link>
   );
 }

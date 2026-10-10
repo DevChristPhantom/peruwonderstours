@@ -3,7 +3,9 @@ import { startOfDayInLima } from '../../../../shared/domain/calendar-date.js';
 import type { CatalogData } from '../../../../persistence/in-memory/in-memory-data-store.js';
 import type { Category, Destination } from '../../domain/taxonomy.js';
 import type { Difficulty, Tour, TourMedia } from '../../domain/tour.js';
-import type { SeedBlogPost, SeedBundle, SeedRedirectRule, SeedTour } from './seed-files.js';
+import type { BlogPost, BlogPostTranslation, Testimonial } from '../../../content/domain/content.js';
+import type { TourTranslation } from '../../domain/tour.js';
+import { matchTranslations, type SeedBlogPost, type SeedBundle, type SeedRedirectRule, type SeedTestimonial, type SeedTour } from './seed-files.js';
 
 /** UUID determinista (formato v5 sobre SHA-1) para ids estables entre reinicios del modo demo. */
 export function deterministicUuid(namespace: string, name: string): string {
@@ -92,25 +94,7 @@ export function mapSeedTour(seed: SeedTour, ids: { destinations: Map<string, str
     isFeatured: Boolean(seed.featured),
     cancellationPolicyCode: null,
     publishedAt: options.publish ? options.publishedAt : null,
-    translations: [
-      {
-        locale: 'es',
-        slug: seed.slug,
-        title: truncate(seed.title, 200) ?? seed.slug,
-        summary: truncate(seed.cardSummary ?? seed.description ?? seed.title, 600) ?? seed.title,
-        description: seed.description?.trim() || null,
-        itinerary: (seed.itinerary ?? []).map((d) => ({ day: d.day, title: d.title, description: d.description })),
-        includes: seed.includes ?? [],
-        notIncluded: seed.notIncludes ?? [],
-        recommendations: seed.recommendations ?? [],
-        faqs: (seed.faqs ?? []).filter((f) => f.question && f.answer),
-        importantNotes: seed.important ?? [],
-        policies: seed.policies?.trim() || null,
-        meetingPoint: null,
-        seoTitle: truncate(seed.metaTitle ?? seed.shortTitle ?? seed.title, 70),
-        seoDescription: truncate(seed.metaDescription ?? seed.cardSummary, 170),
-      },
-    ],
+    translations: [mapTourTranslation(seed, 'es', null)],
     media: images,
     destinations: (seed.destinationSlugs ?? [])
       .map((slug) => ids.destinations.get(slug))
@@ -119,26 +103,81 @@ export function mapSeedTour(seed: SeedTour, ids: { destinations: Map<string, str
   };
 }
 
+/** Contenido traducible de un tour de la semilla en un idioma (la traducción `en` trae su propio slug). */
+export function mapTourTranslation(seed: SeedTour, locale: 'es' | 'en', translationStatus: string | null): TourTranslation {
+  return {
+    locale,
+    slug: seed.slug,
+    title: truncate(seed.title, 200) ?? seed.slug,
+    summary: truncate(seed.cardSummary ?? seed.description ?? seed.title, 600) ?? seed.title,
+    description: seed.description?.trim() || null,
+    itinerary: (seed.itinerary ?? []).map((d) => ({ day: d.day, title: d.title, description: d.description })),
+    includes: seed.includes ?? [],
+    notIncluded: seed.notIncludes ?? [],
+    recommendations: seed.recommendations ?? [],
+    faqs: (seed.faqs ?? []).filter((f) => f.question && f.answer),
+    importantNotes: seed.important ?? [],
+    policies: seed.policies?.trim() || null,
+    meetingPoint: null,
+    seoTitle: truncate(seed.metaTitle ?? seed.shortTitle ?? seed.title, 70),
+    seoDescription: truncate(seed.metaDescription ?? seed.cardSummary, 170),
+    translationStatus,
+  };
+}
+
+const slugOk = (slug: string | undefined | null): slug is string => typeof slug === 'string' && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug) && slug.length <= 160;
+
 export function mapSeedCatalog(bundle: SeedBundle, options: SeedMapOptions): CatalogData {
-  const destinations: Destination[] = bundle.destinations.map((d, index) => ({
-    id: deterministicUuid('destination', d.slug),
-    slug: d.slug,
-    parentId: null,
-    status: 'published',
-    sortOrder: index,
-    translations: [{ locale: 'es', name: d.name, description: d.description ?? null }],
-  }));
-  const categories: Category[] = bundle.categories.map((c, index) => ({
-    id: deterministicUuid('category', c.slug),
-    slug: c.slug,
-    sortOrder: index,
-    translations: [{ locale: 'es', name: c.name, description: c.description ?? null }],
-  }));
+  const en = bundle.en;
+  const enDest = matchTranslations(bundle.destinations, en?.destinations ?? []);
+  const enCat = matchTranslations(bundle.categories, en?.categories ?? []);
+  const enTour = matchTranslations(bundle.tours, en?.tours ?? []);
+  const destinations: Destination[] = bundle.destinations.map((d, index) => {
+    const t = enDest.get(d);
+    return {
+      id: deterministicUuid('destination', d.slug),
+      slug: d.slug,
+      parentId: null,
+      status: 'published',
+      sortOrder: index,
+      translations: [
+        { locale: 'es', name: d.name, description: d.description ?? null, slug: null, translationStatus: null },
+        ...(t ? [{ locale: 'en' as const, name: t.name, description: t.description ?? null, slug: slugOk(t.slug) && t.slug !== d.slug ? t.slug : null, translationStatus: t.translationStatus ?? null }] : []),
+      ],
+    };
+  });
+  const categories: Category[] = bundle.categories.map((c, index) => {
+    const t = enCat.get(c);
+    return {
+      id: deterministicUuid('category', c.slug),
+      slug: c.slug,
+      sortOrder: index,
+      translations: [
+        { locale: 'es', name: c.name, description: c.description ?? null, slug: null, translationStatus: null },
+        ...(t ? [{ locale: 'en' as const, name: t.name, description: t.description ?? null, slug: slugOk(t.slug) && t.slug !== c.slug ? t.slug : null, translationStatus: t.translationStatus ?? null }] : []),
+      ],
+    };
+  });
   const ids = {
     destinations: new Map(destinations.map((d) => [d.slug, d.id])),
     categories: new Map(categories.map((c) => [c.slug, c.id])),
   };
-  const tours = bundle.tours.map((t) => mapSeedTour(t, ids, options));
+  const tours = bundle.tours.map((t) => {
+    const tour = mapSeedTour(t, ids, options);
+    const tr = enTour.get(t);
+    if (tr && slugOk(tr.slug)) {
+      tour.translations.push(mapTourTranslation(tr, 'en', tr.translationStatus ?? 'machine_reviewed_pending_client'));
+      // Alt en inglés de las fotos (si no venía).
+      for (const m of tour.media) m.altEn = m.altEn ?? truncate(tr.title, 250);
+    }
+    return tour;
+  });
+  const enSlugs = new Set<string>();
+  for (const tour of tours) {
+    const s = tour.translations.find((x) => x.locale === 'en')?.slug;
+    if (s && enSlugs.has(s)) throw new Error(`Slug en duplicado en la semilla: ${s}`);
+    if (s) enSlugs.add(s);
+  }
   const codes = new Set(tours.map((t) => t.code));
   if (codes.size !== tours.length) throw new Error('Colisión de códigos de tour en la semilla.');
   return { tours, rates: [], destinations, categories };
@@ -192,6 +231,65 @@ export interface SeedBlogPostRow {
   seoDescription: string | null;
   coverStorageKey: string | null;
   publishedAt: Date | null;
+}
+
+/** Blog de la semilla como entidad de dominio (modo seed en memoria): `es` + `en` si existe. */
+export function mapSeedBlog(bundle: SeedBundle): BlogPost[] {
+  const enBlog = matchTranslations(bundle.blogPosts, bundle.en?.blogPosts ?? []);
+  return bundle.blogPosts.map((post) => {
+    const es = mapSeedBlogPost(post);
+    const tr = enBlog.get(post);
+    const translations: BlogPostTranslation[] = [
+      { locale: 'es', slug: es.slug, title: es.title, excerpt: es.excerpt, body: es.body, seoTitle: es.seoTitle, seoDescription: es.seoDescription, translationStatus: null },
+    ];
+    if (tr && slugOk(tr.slug)) {
+      const en = mapSeedBlogPost(tr);
+      translations.push({ locale: 'en', slug: en.slug, title: en.title, excerpt: en.excerpt, body: en.body, seoTitle: en.seoTitle, seoDescription: en.seoDescription, translationStatus: tr.translationStatus ?? 'machine_reviewed_pending_client' });
+    }
+    const at = es.publishedAt ?? new Date(0);
+    return {
+      id: deterministicUuid('blog', es.slug),
+      status: es.publishedAt ? 'published' : 'draft',
+      coverStorageKey: es.coverStorageKey,
+      publishedAt: es.publishedAt,
+      tags: normalizeTags(post.tags),
+      translations,
+      createdAt: at,
+      updatedAt: at,
+    };
+  });
+}
+
+export function normalizeTags(tags: readonly string[] | undefined): string[] {
+  return [...new Set((tags ?? []).map((t) => t.trim().toLowerCase().slice(0, 60)).filter(Boolean))].slice(0, 20);
+}
+
+/**
+ * Testimonios heredados del sitio viejo: ya eran públicos, se cargan aprobados con
+ * `origin = legacy_site` y su fuente (p. ej. tripadvisor). Nunca se inventan.
+ */
+export function mapSeedTestimonials(items: readonly SeedTestimonial[], now: Date): Testimonial[] {
+  return items
+    .filter((t) => t.authorName && t.text && Number.isInteger(t.rating) && t.rating >= 1 && t.rating <= 5)
+    .map((t) => ({
+      id: deterministicUuid('testimonial', t.id),
+      tourId: null,
+      authorName: t.authorName.trim().slice(0, 120),
+      authorCountry: t.countryCode && /^[A-Za-z]{2}$/.test(t.countryCode) ? t.countryCode.toUpperCase() : null,
+      locale: t.language === 'en' ? 'en' : 'es',
+      rating: t.rating,
+      body: t.text.trim().slice(0, 3000),
+      publishConsent: false,
+      privacyNoticeVersion: null,
+      status: 'approved',
+      isFeatured: true,
+      travelDate: t.date && /^\d{4}-\d{2}-\d{2}$/.test(t.date) ? t.date : null,
+      origin: 'legacy_site',
+      source: (t.source ?? 'legacy').trim().toLowerCase().slice(0, 60),
+      sourceUrl: (t.sourceUrl ?? t.sourceProfileUrl ?? null)?.replace(/ /g, '%20').slice(0, 500) ?? null,
+      createdAt: now,
+      approvedAt: now,
+    }));
 }
 
 export function mapSeedBlogPost(post: SeedBlogPost): SeedBlogPostRow {

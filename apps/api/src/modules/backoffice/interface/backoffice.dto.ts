@@ -1,3 +1,4 @@
+import { TRANSLATION_STATUSES } from '../../../shared/domain/i18n.js';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import {
@@ -228,6 +229,10 @@ export class TranslationDto {
   @ApiPropertyOptional({ nullable: true }) @IsOptional() @IsString() @MaxLength(2000) meetingPoint?: string | null;
   @ApiPropertyOptional({ nullable: true }) @IsOptional() @IsString() @MaxLength(70) seoTitle?: string | null;
   @ApiPropertyOptional({ nullable: true }) @IsOptional() @IsString() @MaxLength(170) seoDescription?: string | null;
+  @ApiPropertyOptional({ nullable: true, enum: TRANSLATION_STATUSES, description: 'Por defecto null (revisada por el staff).' })
+  @IsOptional()
+  @IsIn(TRANSLATION_STATUSES)
+  translationStatus?: (typeof TRANSLATION_STATUSES)[number] | null;
 }
 
 export class MediaDto {

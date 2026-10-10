@@ -46,6 +46,7 @@ export interface TranslationInput {
   meetingPoint?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
+  translationStatus?: string | null;
 }
 
 export interface MediaInput {
@@ -94,7 +95,7 @@ export function assertTourDuration(t: { type: TourType; durationDays: number | n
 
 function presentTour(row: TourDetailRow, activeRateCount: number) {
   const publication = checkPublication({
-    translations: row.translations.map((t) => ({ locale: t.locale, title: t.title, summary: t.summary, itinerary: t.itinerary })),
+    translations: row.translations.map((t) => ({ locale: t.locale, title: t.title, summary: t.summary, itinerary: t.itinerary, translationStatus: t.translationStatus })),
     media: row.media.map((m) => ({ isCover: m.isCover, kind: m.kind })),
     activeRateCount,
   });
@@ -139,6 +140,8 @@ function presentTour(row: TourDetailRow, activeRateCount: number) {
       meetingPoint: t.meetingPoint,
       seoTitle: t.seoTitle,
       seoDescription: t.seoDescription,
+      /** Estado de la traducción (p. ej. machine_reviewed_pending_client); null = redactada/revisada por el staff. */
+      translationStatus: t.translationStatus,
       updatedAt: t.updatedAt,
     })),
     media: row.media.map((m) => ({
@@ -187,7 +190,7 @@ export class ToursAdminService {
           where,
           orderBy: { updatedAt: 'desc' },
           ...pageArgs(query),
-          include: { translations: { where: { locale: 'es' }, select: { title: true } }, media: { where: { isCover: true }, select: { storageKey: true } } },
+          include: { translations: { select: { locale: true, title: true, translationStatus: true } }, media: { where: { isCover: true }, select: { storageKey: true } } },
         }),
       ]);
       return {
@@ -198,7 +201,9 @@ export class ToursAdminService {
           slug: t.slug,
           type: t.type,
           status: t.status,
-          title: t.translations[0]?.title ?? null,
+          title: t.translations.find((x) => x.locale === 'es')?.title ?? null,
+          /** Completitud por idioma para el panel (A2/I9). */
+          translations: t.translations.map((x) => ({ locale: x.locale, translationStatus: x.translationStatus })),
           coverUrl: t.media[0]?.storageKey ?? null,
           isFeatured: t.isFeatured,
           publishedAt: t.publishedAt,
@@ -296,7 +301,7 @@ export class ToursAdminService {
       const row = await ctx.tx.tour.findUniqueOrThrow({ where: { id }, include: { translations: true, media: true } });
       const activeRateCount = await ctx.tx.rate.count({ where: { tourId: id, isActive: true, deletedAt: null } });
       const check = checkPublication({
-        translations: row.translations.map((t) => ({ locale: t.locale, title: t.title, summary: t.summary, itinerary: t.itinerary })),
+        translations: row.translations.map((t) => ({ locale: t.locale, title: t.title, summary: t.summary, itinerary: t.itinerary, translationStatus: t.translationStatus })),
         media: row.media.map((m) => ({ isCover: m.isCover, kind: m.kind })),
         activeRateCount,
       });
@@ -357,6 +362,8 @@ export class ToursAdminService {
         meetingPoint: input.meetingPoint ?? null,
         seoTitle: input.seoTitle ?? null,
         seoDescription: input.seoDescription ?? null,
+        // Guardar desde el panel cuenta como revisión del staff salvo que se indique otro estado.
+        translationStatus: input.translationStatus ?? null,
       };
       if (existing) await ctx.tx.tourTranslation.update({ where: { id: existing.id }, data });
       else await ctx.tx.tourTranslation.create({ data: { id: this.ids.next(), tourId: id, locale, ...data } });

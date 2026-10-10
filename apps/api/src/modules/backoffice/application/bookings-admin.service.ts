@@ -329,7 +329,7 @@ export class BookingsAdminService {
         if (replay.bookingId !== booking.id || replay.amount !== input.amount || replay.kind !== 'refund') throw new IdempotencyKeyReusedError(key);
         return { replayed: true, refundId: replay.id, bookingStatus: booking.status, refunded: { amount: booking.refunded.amount, currency: booking.currency } };
       }
-      const payments = await ctx.tx.payment.findMany({ where: { bookingId: booking.id, status: 'succeeded' } });
+      const payments = await ctx.tx.payment.findMany({ where: { bookingId: booking.id, status: 'succeeded', voidedAt: null } });
       const parent = input.parentPaymentId
         ? payments.find((p) => p.id === input.parentPaymentId && p.kind !== 'refund')
         : payments.filter((p) => p.kind !== 'refund').sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0];

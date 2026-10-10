@@ -43,10 +43,3 @@ export function travelerCount(t: Travelers): number {
   return t.adults + t.children + t.infants;
 }
 
-export function describeTravelers(t: Travelers): string {
-  const parts: string[] = [];
-  if (t.adults) parts.push(`${t.adults} ${t.adults === 1 ? "adulto" : "adultos"}`);
-  if (t.children) parts.push(`${t.children} ${t.children === 1 ? "niño" : "niños"}`);
-  if (t.infants) parts.push(`${t.infants} ${t.infants === 1 ? "bebé" : "bebés"}`);
-  return parts.join(", ") || "Sin viajeros";
-}

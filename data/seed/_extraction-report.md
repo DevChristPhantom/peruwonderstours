@@ -86,3 +86,37 @@ Se proponen rutas nuevas solo donde la ruta vieja lleva la marca anterior
 (`/es/andean-peru-tours/quienes-somos` → `/es/nosotros`, políticas → `/es/politicas/...`) y para los
 endpoints de formulario (`/es/reservar-tour`, `/es/resultados-busqueda`). Si se renombra
 "cuzco" a "cusco", agregar la regla correspondiente.
+
+## Extracción 2 (2026-10-09)
+
+Alcance: solo páginas públicas `/es` (home, quienes-somos, políticas de pago, protección de datos,
+testimonios, contáctenos, libro-de-reclamaciones vista sin enviar, blog, tours, destinos). Unas 15 peticiones
+al sitio viejo, a ≤1 petición/s. No se entró a `/otm/` ni se envió ningún formulario. No se descargaron imágenes
+(los SVG de sellos se leyeron una sola vez para identificarlos). No se tocó `data/seed/en/` (solo se leyeron
+los títulos en inglés para los alt).
+
+| Archivo | Contenido |
+|---|---|
+| `site-content.json` | Quiénes somos (historia, equipo con 6 personas, datos de empresa, oficina Lima), política de pago y política de datos **al pie de la letra** (secciones + `fullText`), ESNNA, FAQ, textos de la home, contacto, horario, redes, medios de pago, pie, tours despublicados y estado del blog. |
+| `testimonials.json` | 4 testimonios (los únicos visibles), todos de TripAdvisor con 5/5 burbujas. |
+| `media-manifest.json` | 404 imágenes únicas (340 de tour, 14 de blog, 14 de páginas, 7 de sellos, 5 de destinos, 5 de categorías, 9 de marca, 4 ilustraciones/banderas, 3 de pago, 2 de confianza, 1 de TripAdvisor) + `officialAssets` (kits oficiales). 16 alojadas en terceros: 15 en `turinet.turismoads.com` (8 del blog y 7 de quiénes somos) y 1 en `perusacredexperiences.com` (afiche ESNNA). |
+| `trust-badges.json` | 8 sellos (6 del sitio viejo + distintivo MINCETUR + Libro de Reclamaciones), 7 enlaces oficiales para el turista y preguntas abiertas. |
+
+Hallazgos:
+1. **Redes**: solo Facebook (`https://www.facebook.com/andeanperutours`) y TripAdvisor (URL con espacios sin codificar).
+   No hay Instagram, TikTok ni YouTube en el HTML.
+2. **Sin misión, visión ni valores** publicados. No se redactaron.
+3. **Protección de datos copiada de una plantilla colombiana** (Ley 1581 de 2012, Superintendencia de Industria y Comercio, "cédula de ciudadanía").
+   No sirve como base legal en el Perú (Ley 29733); usarla solo como insumo.
+4. **Política de pago**: 50% al reservar y 50% 7 días antes, 3,5% de recargo con tarjeta y cancelación con ≥20 días hábiles; además dice que la reserva solo es válida con el pago completo
+   (contradicción). Se copió con sus erratas.
+5. **ESNNA**: no hay texto propio. El sello abre un afiche alojado en el dominio de otra agencia.
+6. **FAQ generales**: no existe la página (404). Se tomaron las 3 preguntas repetidas en 17 fichas. La FAQ archivada de 2016 es lorem ipsum.
+7. **Testimonios**: `/es/testimonios` está vacía; los 4 de la home no tienen enlace individual (`sourceUrl: null`).
+8. **Medios de pago incoherentes**: el pie muestra PayPal (`paypal.me/andeanperutours`) y Western Union; las políticas y FAQs hablan de transferencia y Niubiz.
+9. **Tours despublicados**: 0 URLs accesibles (ni en el HTML ni en Wayback). Se listan 24 slugs del WordPress antiguo `/pe/portfolio-view/` (2016-2017) como referencia.
+10. **Blog**: los 6 cuerpos ya estaban completos.
+11. Meta description de la home menciona "Qori Alva" (otra marca). Horario: Lun-Sáb 09:00-19:00. Segundo WhatsApp en quiénes somos: +51 985619968.
+12. **Sellos**: Safe Travels es un programa histórico (WTTC lo declara inactivo). PromPerú, SERNANP y Gercetur son logos institucionales sin licencia pública.
+    Marca Perú exige licencia de PromPerú. El distintivo MINCETUR es obligatorio en la web si la agencia está inscrita en el Directorio.
+    El Libro de Reclamaciones es obligatorio, debe ir en la home y hoy está en inglés. En Puno el órgano es DIRCETUR, no GERCETUR.

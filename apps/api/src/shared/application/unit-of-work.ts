@@ -1,4 +1,6 @@
+import type { AccessTokenRepository } from '../domain/access-grant.js';
 import type { IdempotencyRepository } from '../domain/idempotency.js';
+import type { BlogRepository, ContactRepository, TestimonialRepository } from '../../modules/content/domain/content.js';
 import type { EmailDeliveryRepository, OutboxQueue, OutboxRepository } from '../domain/outbox.js';
 import type { ConsentRepository, LegalAcceptanceRepository } from '../../modules/privacy/domain/consent.js';
 import type { ComplaintRepository, ComplaintSequence, HolidayCalendar } from '../../modules/complaints/domain/complaint.repository.js';
@@ -27,6 +29,11 @@ export interface TransactionalRepositories {
   emailDeliveries: EmailDeliveryRepository;
   consents: ConsentRepository;
   legalAcceptances: LegalAcceptanceRepository;
+  /** Enlaces mágicos y sesiones opacas (Sprint 3). */
+  accessTokens: AccessTokenRepository;
+  blog: BlogRepository;
+  testimonials: TestimonialRepository;
+  contactMessages: ContactRepository;
 }
 
 /**

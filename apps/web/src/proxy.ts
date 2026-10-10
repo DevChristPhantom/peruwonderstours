@@ -1,10 +1,19 @@
-import { NextResponse, type NextRequest } from "next/server";
+import createIntlMiddleware from "next-intl/middleware";
+import { NextRequest, NextResponse } from "next/server";
+
+import { routing } from "./i18n/routing";
 
 /**
- * Cabeceras de seguridad del sitio público (H-02). Proxy de Next 16 (runtime Node.js).
+ * Proxy de Next 16 (runtime Node.js): idioma (next-intl) + cabeceras de seguridad (H-02).
+ *
+ * 1. next-intl resuelve el idioma de la URL, redirige lo que no lo tiene (`/tours` → `/es/tours`) y
+ *    reescribe las rutas traducidas (`/en/complaints-book` → carpeta interna `libro-de-reclamaciones`).
+ * 2. Sobre su respuesta (next, rewrite o redirect) se aplican la CSP y el resto de cabeceras.
  *
  * CSP con nonce por petición en las rutas DINÁMICAS con datos sensibles (checkout, reserva y pago,
- * Libro de Reclamaciones, privacidad, comparador): `script-src 'nonce-…' 'strict-dynamic'`.
+ * Libro de Reclamaciones, privacidad, comparador, cuenta y formularios): `script-src 'nonce-…'
+ * 'strict-dynamic'`. El nonce viaja en las cabeceras de la PETICIÓN que next-intl copia al reescribir
+ * (se le pasa una petición clonada con `x-nonce` y la CSP), así Next lo aplica a sus scripts.
  *
  * Las páginas de catálogo son SSG/ISR (Core Web Vitals): su HTML se genera sin petición y no puede
  * llevar nonce, y Next inserta scripts en línea para hidratar. Ahí la CSP permite `'unsafe-inline'`
@@ -17,7 +26,22 @@ import { NextResponse, type NextRequest } from "next/server";
  * `<style>` sí exigen nonce en las rutas dinámicas.
  */
 
-const NONCE_ROUTES = [/^\/es\/checkout(\/|$)/, /^\/es\/reserva\//, /^\/es\/libro-de-reclamaciones(\/|$)/, /^\/es\/privacidad\//, /^\/es\/comparar(\/|$)/];
+const handleI18nRouting = createIntlMiddleware(routing);
+
+/** Rutas sensibles (externas, en ambos idiomas) que se renderizan por petición con nonce. */
+const NONCE_ROUTES = [
+  /^\/(es|en)\/checkout(\/|$)/,
+  /^\/es\/reserva\//,
+  /^\/en\/booking\//,
+  /^\/es\/libro-de-reclamaciones(\/|$)/,
+  /^\/en\/complaints-book(\/|$)/,
+  /^\/es\/privacidad\//,
+  /^\/en\/privacy\//,
+  /^\/es\/comparar(\/|$)/,
+  /^\/en\/compare(\/|$)/,
+  /^\/es\/(mis-reservas|cuenta|contactenos|dejar-testimonio)(\/|$)/,
+  /^\/en\/(my-bookings|account|contact|leave-a-review)(\/|$)/,
+];
 
 /** Fotos del cliente servidas temporalmente desde su sitio (HU-0.3; ver next.config images). */
 const IMAGE_ORIGINS = "https://www.andeanperutours.com";
@@ -45,10 +69,18 @@ function csp(nonce: string | null, dev: boolean): string {
   ].join("; ");
 }
 
+/** Páginas y el manifest de la reserva pasan por next-intl; el resto (archivos, íconos) no. */
+function isLocalizable(pathname: string): boolean {
+  if (pathname.startsWith("/icons/") || pathname.startsWith("/api/")) return false;
+  if (pathname.endsWith("/manifest.webmanifest")) return true;
+  return !/\.[a-z0-9]+$/i.test(pathname);
+}
+
 export function proxy(request: NextRequest) {
   const dev = process.env.NODE_ENV !== "production";
   const reportOnly = process.env.CSP_REPORT_ONLY === "true";
-  const sensitive = NONCE_ROUTES.some((re) => re.test(request.nextUrl.pathname));
+  const pathname = request.nextUrl.pathname;
+  const sensitive = NONCE_ROUTES.some((re) => re.test(pathname));
   const nonce = sensitive ? Buffer.from(crypto.randomUUID()).toString("base64") : null;
   const policy = csp(nonce, dev);
   const cspHeader = reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
@@ -59,7 +91,16 @@ export function proxy(request: NextRequest) {
     // Next lee el nonce de la CSP de la PETICIÓN y lo aplica a sus scripts y estilos.
     requestHeaders.set("Content-Security-Policy", policy);
   }
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+
+  let response: NextResponse;
+  if (isLocalizable(pathname)) {
+    // next-intl copia las cabeceras de la petición recibida a la reescritura: se le pasa la clonada.
+    const forwarded = nonce ? new NextRequest(request, { headers: requestHeaders }) : request;
+    response = handleI18nRouting(forwarded);
+  } else {
+    response = NextResponse.next({ request: { headers: requestHeaders } });
+  }
+
   response.headers.set(cspHeader, policy);
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
@@ -71,14 +112,8 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    {
-      // Páginas (no estáticos con hash ni imágenes optimizadas). El SW y los íconos llevan sus cabeceras desde next.config.
-      source: "/((?!_next/static|_next/image|favicon.ico|sw-voucher.js|robots.txt|sitemap.xml).*)",
-      missing: [
-        { type: "header", key: "next-router-prefetch" },
-        { type: "header", key: "purpose", value: "prefetch" },
-      ],
-    },
-  ],
+  // Páginas (no estáticos con hash ni imágenes optimizadas). El SW y los íconos llevan sus cabeceras
+  // desde next.config. Incluye los prefetch: sin el proxy, las rutas traducidas (`/en/cart`) no se
+  // reescribirían y el prefetch daría 404.
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|sw-voucher.js|robots.txt|sitemap.xml).*)"],
 };

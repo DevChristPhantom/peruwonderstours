@@ -1,7 +1,9 @@
 import { Global, Inject, Injectable, Logger, Module, type OnApplicationShutdown } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_SETTINGS, settingsFromConfigService, type AppSettings } from '../config/app-settings.js';
-import { CATALOG_REPOSITORY, CLOCK, ID_GENERATOR, PERSISTENCE_BACKEND, PII_CIPHER, UNIT_OF_WORK } from '../shared/application/tokens.js';
+import { CATALOG_REPOSITORY, CLOCK, ID_GENERATOR, MEDIA_STORAGE, MEDIA_URL_RESOLVER, PERSISTENCE_BACKEND, PII_CIPHER, UNIT_OF_WORK } from '../shared/application/tokens.js';
+import { MediaUrlResolver } from '../modules/media/domain/media.js';
+import { LocalMediaStorage } from '../modules/media/infrastructure/local-media-storage.js';
 import { AesGcmPiiCipher, DEVELOPMENT_PII_KEY_BASE64 } from '../shared/infrastructure/aes-gcm-pii-cipher.js';
 import type { Clock } from '../shared/domain/ports.js';
 import { SystemClock, UuidV7Generator } from '../shared/infrastructure/system.js';
@@ -37,8 +39,11 @@ class PersistenceLifecycle implements OnApplicationShutdown {
         return AesGcmPiiCipher.fromBase64(settings.piiEncryptionKey ?? DEVELOPMENT_PII_KEY_BASE64);
       },
     },
+    { provide: MEDIA_URL_RESOLVER, inject: [APP_SETTINGS], useFactory: (s: AppSettings) => new MediaUrlResolver(s.media.publicBaseUrl) },
+    // Puerto MediaStorage: hoy solo `local`; un adaptador S3/R2 se elige aquí por MEDIA_STORAGE.
+    { provide: MEDIA_STORAGE, inject: [APP_SETTINGS], useFactory: (s: AppSettings) => new LocalMediaStorage(s.media.localDir) },
     PersistenceLifecycle,
   ],
-  exports: [APP_SETTINGS, CLOCK, ID_GENERATOR, PERSISTENCE_BACKEND, UNIT_OF_WORK, CATALOG_REPOSITORY, PII_CIPHER],
+  exports: [APP_SETTINGS, CLOCK, ID_GENERATOR, PERSISTENCE_BACKEND, UNIT_OF_WORK, CATALOG_REPOSITORY, PII_CIPHER, MEDIA_URL_RESOLVER, MEDIA_STORAGE],
 })
 export class PersistenceModule {}

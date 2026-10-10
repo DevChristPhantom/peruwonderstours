@@ -20,8 +20,9 @@ export const BOOKING_STATUS_TRANSITIONS: Readonly<Record<BookingStatus, readonly
   pending: ['held', 'confirmed', 'cancelled'],
   held: ['partially_paid', 'paid', 'confirmed', 'cancelled'],
   confirmed: ['partially_paid', 'paid', 'cancelled'],
-  partially_paid: ['paid', 'cancelled'],
-  paid: ['completed', 'cancelled'],
+  // Retrocesos (partially_paid/paid -> confirmed/partially_paid): solo la anulación de un pago manual (Sprint 3).
+  partially_paid: ['paid', 'confirmed', 'cancelled'],
+  paid: ['partially_paid', 'confirmed', 'completed', 'cancelled'],
   cancelled: ['refunded'],
   completed: ['refunded'],
   refunded: [],

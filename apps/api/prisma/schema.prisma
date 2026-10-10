@@ -387,6 +387,10 @@ model Destination {
   longitude Decimal?  @db.Decimal(9, 6)
   status    PublicationStatus @default(draft)
   sortOrder Int       @default(0) @map("sort_order")
+  /// Portada (clave del almacenamiento de medios o URL absoluta). Sprint 3.
+  coverStorageKey String? @map("cover_storage_key")
+  /// Bloqueo optimista del backoffice (Sprint 3).
+  version   Int       @default(0)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
@@ -404,16 +408,21 @@ model DestinationTranslation {
   id             String   @id @default(uuid(7)) @db.Uuid
   destinationId  String   @map("destination_id") @db.Uuid
   locale         Locale
+  /// Slug del idioma (null = se usa el slug canónico del destino). Sprint 3 (I3).
+  slug           String?  @db.VarChar(160)
   name           String   @db.VarChar(160)
   description    String?
   seoTitle       String?  @map("seo_title") @db.VarChar(70)
   seoDescription String?  @map("seo_description") @db.VarChar(170)
+  /// Estado de la traducción (p. ej. machine_reviewed_pending_client). Null = redactada por el staff.
+  translationStatus String? @map("translation_status") @db.VarChar(40)
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   destination Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
 
   @@unique([destinationId, locale])
+  @@unique([locale, slug])
   @@map("destination_translations")
 }
 
@@ -421,6 +430,10 @@ model Category {
   id        String    @id @default(uuid(7)) @db.Uuid
   slug      String    @unique @db.VarChar(120)
   sortOrder Int       @default(0) @map("sort_order")
+  /// Portada (clave del almacenamiento de medios o URL absoluta). Sprint 3.
+  coverStorageKey String? @map("cover_storage_key")
+  /// Bloqueo optimista del backoffice (Sprint 3).
+  version   Int       @default(0)
   createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
@@ -435,14 +448,18 @@ model CategoryTranslation {
   id         String   @id @default(uuid(7)) @db.Uuid
   categoryId String   @map("category_id") @db.Uuid
   locale     Locale
+  /// Slug del idioma (null = se usa el slug canónico). Sprint 3 (I3).
+  slug       String?  @db.VarChar(120)
   name       String   @db.VarChar(120)
   description String?
+  translationStatus String? @map("translation_status") @db.VarChar(40)
   createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt  DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@unique([categoryId, locale])
+  @@unique([locale, slug])
   @@map("category_translations")
 }
 
@@ -527,6 +544,9 @@ model TourTranslation {
   meetingPoint    String?  @map("meeting_point")
   seoTitle        String?  @map("seo_title") @db.VarChar(70)
   seoDescription  String?  @map("seo_description") @db.VarChar(170)
+  /// Estado de la traducción (machine_reviewed_pending_client = traducción automática revisada,
+  /// pendiente de validar por el cliente). Null = redactada por el staff. Sprint 3.
+  translationStatus String? @map("translation_status") @db.VarChar(40)
   /// unaccent(lower(title || summary)) — para similitud trigram (typos, autocompletar).
   searchText      String?  @map("search_text")
   /// to_tsvector('spanish'|'english', unaccent(...)) — full-text con pesos A/B/C.
@@ -1006,6 +1026,13 @@ model Payment {
   raw               Json?
   /// Staff que registró un pago manual (efectivo/transferencia al llegar).
   recordedByUserId  String?         @map("recorded_by_user_id") @db.Uuid
+  /// Anulación de un pago manual mal registrado (solo admin, ADR-0003). El pago sigue `succeeded`
+  /// y se compensa con un contra-asiento (`isReversal`, kind refund, parent = este pago).
+  voidedAt          DateTime?       @map("voided_at") @db.Timestamptz(6)
+  voidedByUserId    String?         @map("voided_by_user_id") @db.Uuid
+  voidReason        String?         @map("void_reason") @db.VarChar(500)
+  /// Contra-asiento de una anulación: resta de paid_amount (no de refunded_amount).
+  isReversal        Boolean         @default(false) @map("is_reversal")
   succeededAt       DateTime?       @map("succeeded_at") @db.Timestamptz(6)
   createdAt         DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -1022,7 +1049,9 @@ model Payment {
   @@index([bookingId, createdAt])
   @@index([status, createdAt])
   // A lo sumo un adelanto/pago total exitoso por reserva (evita doble cobro).
-  @@unique([bookingId, status], where: raw("status = 'succeeded' AND kind IN ('deposit','full')"), map: "payments_one_succeeded_deposit_or_full_key")
+  @@unique([bookingId, status], where: raw("status = 'succeeded' AND kind IN ('deposit','full') AND voided_at IS NULL"), map: "payments_one_succeeded_deposit_or_full_key")
+  // Pagos manuales del día (tablero, ADR-0003).
+  @@index([provider, succeededAt])
   // Un solo intento de cobro no terminal por reserva (H-01): evita dos cobros en paralelo.
   @@unique([bookingId], where: raw("status IN ('pending','requires_action','authorized') AND kind <> 'refund'"), map: "payments_one_active_per_booking_key")
   @@index([parentPaymentId])
@@ -1463,6 +1492,10 @@ model BlogPost {
   status        PublicationStatus @default(draft)
   coverStorageKey String?         @map("cover_storage_key")
   publishedAt   DateTime?         @map("published_at") @db.Timestamptz(6)
+  /// Etiquetas libres (minúsculas). Sprint 3.
+  tags          String[]          @default([]) @db.VarChar(60)
+  /// Bloqueo optimista del backoffice (Sprint 3).
+  version       Int               @default(0)
   createdAt     DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
   deletedAt     DateTime?         @map("deleted_at") @db.Timestamptz(6)
@@ -1485,6 +1518,7 @@ model BlogPostTranslation {
   body           String
   seoTitle       String?  @map("seo_title") @db.VarChar(70)
   seoDescription String?  @map("seo_description") @db.VarChar(170)
+  translationStatus String? @map("translation_status") @db.VarChar(40)
   searchText     String?  @map("search_text")
   createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -1509,9 +1543,23 @@ model Testimonial {
   rating            Int              @db.SmallInt
   body              String           @db.VarChar(3000)
   publishConsent    Boolean          @default(false) @map("publish_consent")
+  /// Versión del aviso de privacidad aceptado al enviar (Ley 29733). Sprint 3.
+  privacyNoticeVersion String?       @map("privacy_notice_version") @db.VarChar(40)
   status            ModerationStatus @default(pending)
+  /// Destacado en la home (solo aprobados).
+  isFeatured        Boolean          @default(false) @map("is_featured")
+  /// Fecha del viaje declarada (opcional).
+  travelDate        DateTime?        @map("travel_date") @db.Date
   approvedByUserId  String?          @map("approved_by_user_id") @db.Uuid
   approvedAt        DateTime?        @map("approved_at") @db.Timestamptz(6)
+  moderatedAt       DateTime?        @map("moderated_at") @db.Timestamptz(6)
+  moderationNote    String?          @map("moderation_note") @db.VarChar(500)
+  /// Origen: web (formulario con consentimiento), legacy_site (ya publicado en el sitio viejo),
+  /// admin (transcrito por el staff). CHECK en la migración.
+  origin            String           @default("web") @db.VarChar(20)
+  /// Fuente externa del testimonio heredado (p. ej. tripadvisor) y su URL.
+  source            String?          @db.VarChar(60)
+  sourceUrl         String?          @map("source_url") @db.VarChar(500)
   createdAt         DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
   deletedAt         DateTime?        @map("deleted_at") @db.Timestamptz(6)
@@ -1523,6 +1571,54 @@ model Testimonial {
   @@index([tourId, status])
   @@index([status, createdAt])
   @@map("testimonials")
+}
+
+/// Mensaje del formulario de contacto (Sprint 3, F3). PII mínima; teléfono cifrado (AES-256-GCM,
+/// AAD `contact_messages:phone_enc:<id>`). Estados: new -> answered | archived.
+model ContactMessage {
+  id              String    @id @default(uuid(7)) @db.Uuid
+  name            String    @db.VarChar(120)
+  email           String    @db.VarChar(254)
+  phoneEnc        Bytes?    @map("phone_enc")
+  subject         String    @db.VarChar(150)
+  message         String
+  tourSlug        String?   @map("tour_slug") @db.VarChar(160)
+  locale          Locale    @default(es)
+  /// new | answered | archived (CHECK en la migración).
+  status          String    @default("new") @db.VarChar(20)
+  privacyNoticeVersion String @map("privacy_notice_version") @db.VarChar(40)
+  answeredAt      DateTime? @map("answered_at") @db.Timestamptz(6)
+  answeredByUserId String?  @map("answered_by_user_id") @db.Uuid
+  archivedAt      DateTime? @map("archived_at") @db.Timestamptz(6)
+  internalNote    String?   @map("internal_note") @db.VarChar(2000)
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([status, createdAt(sort: Desc)])
+  @@map("contact_messages")
+}
+
+/// Tokens opacos de acceso sin contraseña (Sprint 3): enlaces mágicos de un solo uso y sesiones.
+/// Solo se guarda SHA-256(token) en hex. `purpose` (CHECK en la migración):
+///   booking_link / booking_session         -> subject = bookings.id
+///   complaint_link / complaint_session     -> subject = complaints.id
+///   customer_login_link / customer_session -> subject = customers.id
+model AccessToken {
+  id         String    @id @default(uuid(7)) @db.Uuid
+  purpose    String    @db.VarChar(40)
+  subjectId  String    @map("subject_id") @db.Uuid
+  tokenHash  String    @unique @map("token_hash") @db.Char(64)
+  /// Idioma del enlace (correo y página de destino).
+  locale     Locale    @default(es)
+  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(6)
+  consumedAt DateTime? @map("consumed_at") @db.Timestamptz(6)
+  revokedAt  DateTime? @map("revoked_at") @db.Timestamptz(6)
+  lastUsedAt DateTime? @map("last_used_at") @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([subjectId, purpose])
+  @@index([expiresAt])
+  @@map("access_tokens")
 }
 
 // -----------------------------------------------------------------------------

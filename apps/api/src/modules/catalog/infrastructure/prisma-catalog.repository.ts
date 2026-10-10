@@ -94,6 +94,7 @@ export function mapTourRow(row: TourRow): Tour {
       meetingPoint: t.meetingPoint,
       seoTitle: t.seoTitle,
       seoDescription: t.seoDescription,
+      translationStatus: t.translationStatus,
     })),
     media: row.media.map((m) => ({
       url: m.storageKey,
@@ -137,7 +138,8 @@ export class PrismaCatalogRepository implements CatalogRepository {
   async searchTours(criteria: TourSearchCriteria): Promise<Page<TourListing>> {
     const where: Prisma.TourWhereInput = {
       ...PUBLISHED,
-      translations: { some: { locale: criteria.locale } },
+      // I6: en `en` también entran los tours que solo tienen `es` (se sirven con fallback).
+      translations: { some: { locale: { in: criteria.locale === 'es' ? ['es'] : [criteria.locale, 'es'] } } },
       ...(criteria.type ? { type: criteria.type } : {}),
       ...(criteria.difficulty ? { difficulty: criteria.difficulty } : {}),
       ...(criteria.featured !== undefined ? { isFeatured: criteria.featured } : {}),
@@ -207,23 +209,32 @@ export class PrismaCatalogRepository implements CatalogRepository {
     };
   }
 
+  /** Puntaje por tour; en `en` se buscan ambas traducciones (fallback) y se toma el mejor. */
   private async textScores(text: string, locale: Locale): Promise<Map<string, number>> {
-    const config = locale === 'en' ? 'en_unaccent' : 'es_unaccent';
+    const locales = locale === 'es' ? ['es'] : [locale, 'es'];
     const rows = await this.db.$queryRaw<Array<{ tour_id: string; score: number }>>`
-      SELECT tour_id::text AS tour_id,
-             (ts_rank(search_vector, websearch_to_tsquery(${config}::regconfig, ${text}))
-              + word_similarity(lower(immutable_unaccent(${text})), search_text))::float8 AS score
-        FROM tour_translations
-       WHERE locale = ${locale}::locale
-         AND (search_vector @@ websearch_to_tsquery(${config}::regconfig, ${text})
-              OR word_similarity(lower(immutable_unaccent(${text})), search_text) >= 0.3)`;
+      SELECT tour_id::text AS tour_id, max(score)::float8 AS score
+        FROM (
+          SELECT t.tour_id,
+                 ts_rank(t.search_vector, websearch_to_tsquery(c.cfg, ${text}))
+                   + word_similarity(lower(immutable_unaccent(${text})), t.search_text) AS score,
+                 t.search_vector @@ websearch_to_tsquery(c.cfg, ${text}) AS hit,
+                 word_similarity(lower(immutable_unaccent(${text})), t.search_text) AS sim
+            FROM tour_translations t
+           CROSS JOIN LATERAL (SELECT (CASE WHEN t.locale = 'en' THEN 'en_unaccent' ELSE 'es_unaccent' END)::regconfig AS cfg) c
+           WHERE t.locale::text = ANY(${locales}::text[])
+        ) s
+       WHERE hit OR sim >= 0.3
+       GROUP BY tour_id`;
     return new Map(rows.map((r) => [r.tour_id, Number(r.score)]));
   }
 
   async findTourBySlug(slug: string, locale: Locale): Promise<Tour | null> {
     const row =
       (await this.db.tour.findFirst({ where: { slug, deletedAt: null }, include: TOUR_INCLUDE })) ??
-      (await this.db.tour.findFirst({ where: { deletedAt: null, translations: { some: { locale, slug } } }, include: TOUR_INCLUDE }));
+      (await this.db.tour.findFirst({ where: { deletedAt: null, translations: { some: { locale, slug } } }, include: TOUR_INCLUDE })) ??
+      // Slug de OTRO idioma: el caso de uso responde 301 al slug correcto (I3).
+      (await this.db.tour.findFirst({ where: { deletedAt: null, translations: { some: { slug } } }, include: TOUR_INCLUDE }));
     return row ? mapTourRow(row) : null;
   }
 
@@ -245,7 +256,8 @@ export class PrismaCatalogRepository implements CatalogRepository {
       parentId: d.parentId,
       status: d.status,
       sortOrder: d.sortOrder,
-      translations: d.translations.map((t) => ({ locale: t.locale, name: t.name, description: t.description })),
+      coverStorageKey: d.coverStorageKey,
+      translations: d.translations.map((t) => ({ locale: t.locale, name: t.name, description: t.description, slug: t.slug, translationStatus: t.translationStatus })),
     }));
   }
 
@@ -255,7 +267,8 @@ export class PrismaCatalogRepository implements CatalogRepository {
       id: c.id,
       slug: c.slug,
       sortOrder: c.sortOrder,
-      translations: c.translations.map((t) => ({ locale: t.locale, name: t.name, description: t.description })),
+      coverStorageKey: c.coverStorageKey,
+      translations: c.translations.map((t) => ({ locale: t.locale, name: t.name, description: t.description, slug: t.slug, translationStatus: t.translationStatus })),
     }));
   }
 

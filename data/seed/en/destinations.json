@@ -1,0 +1,120 @@
+[
+  {
+    "slug": "cusco",
+    "name": "Cusco",
+    "originalUrl": "https://www.andeanperutours.com/es/destinos/cuzco",
+    "newPath": "/en/destinations/cusco",
+    "bannerImage": "https://www.andeanperutours.com/images/cities/69289724-126060618745285-6861872528201368441-n-1766248271.jpg",
+    "declaredTourCount": 18,
+    "publishedTourCount": 17,
+    "tourSlugs": [
+      "humantay-lake-full-day-tour",
+      "qeswachaka-last-inca-bridge-tour",
+      "sacred-valley-full-day-tour",
+      "maras-moray-full-day-tour",
+      "cusco-south-valley-full-day-tour",
+      "rainbow-mountain-vinicunca-full-day",
+      "machu-picchu-full-day-tour",
+      "waqrapukara-fortress-trek",
+      "ausangate-7-lakes-trek",
+      "cusco-quick-getaway-3-days",
+      "cusco-machu-picchu-premium-4-days",
+      "imperial-cusco-explorer-4-days",
+      "cusco-andean-adventure-5-days",
+      "peru-express-lima-cusco-5-days",
+      "andean-routes-essential-peru-8-days",
+      "ancient-peru-andean-legacy-10-days",
+      "southern-peru-coast-essentials-14-days"
+    ],
+    "description": "Book the best tours and trips in Cusco: Machu Picchu, the Inca Trail, the Sacred Valley, Salkantay and more, at the best price!",
+    "cardImage": "https://www.andeanperutours.com/images/cities/sm/69289724-126060618745285-6861872528201368441-n-1766248271.jpg",
+    "translationStatus": "machine_reviewed_pending_client"
+  },
+  {
+    "slug": "arequipa",
+    "name": "Arequipa",
+    "originalUrl": "https://www.andeanperutours.com/es/destinos/tours-en-arequipa",
+    "newPath": "/en/destinations/arequipa",
+    "bannerImage": "https://www.andeanperutours.com/images/cities/mirador-yanahuara-1625087231.jpg",
+    "declaredTourCount": 13,
+    "publishedTourCount": 13,
+    "tourSlugs": [
+      "arequipa-express-white-city-3-days",
+      "sillar-route-full-day-tour",
+      "salinas-aguada-blanca-wildlife-full-day",
+      "pillones-waterfall-stone-forest-full-day",
+      "arequipa-city-tour",
+      "salinas-lagoon-lojen-hot-springs-full-day",
+      "arequipa-countryside-tour",
+      "colca-canyon-full-day-tour",
+      "colca-canyon-trek-2-days",
+      "colca-canyon-arequipa-3-days",
+      "arequipa-colca-canyon-condors-4-days",
+      "ancient-peru-andean-legacy-10-days",
+      "southern-peru-coast-essentials-14-days"
+    ],
+    "description": "Today, Arequipa is one of Peru’s most populous cities and one of its leading tourist destinations, standing out for its impressive monuments.",
+    "cardImage": "https://www.andeanperutours.com/images/cities/sm/mirador-yanahuara-1625087231.jpg",
+    "translationStatus": "machine_reviewed_pending_client"
+  },
+  {
+    "slug": "ica-paracas",
+    "name": "Ica - Paracas",
+    "originalUrl": "https://www.andeanperutours.com/es/destinos/tours-en-ica-paracas",
+    "newPath": "/en/destinations/ica-paracas",
+    "bannerImage": "https://www.andeanperutours.com/images/cities/saveclipapp-446115389-1101675260892783-3016599930400644429-n-1766248299.jpg",
+    "declaredTourCount": 5,
+    "publishedTourCount": 1,
+    "tourSlugs": [
+      "southern-peru-coast-essentials-14-days"
+    ],
+    "description": "Enjoy your vacation with us! All-inclusive Ica – Paracas tour packages. Visit the city of Ica, the Paracas National Reserve and the Huacachina Oasis.",
+    "cardImage": "https://www.andeanperutours.com/images/cities/sm/saveclipapp-446115389-1101675260892783-3016599930400644429-n-1766248299.jpg",
+    "translationStatus": "machine_reviewed_pending_client"
+  },
+  {
+    "slug": "lima",
+    "name": "Lima",
+    "originalUrl": "https://www.andeanperutours.com/es/destinos/tours-en-lima",
+    "newPath": "/en/destinations/lima",
+    "bannerImage": "https://www.andeanperutours.com/images/cities/pachacamac-2-1625083128.jpg",
+    "declaredTourCount": 4,
+    "publishedTourCount": 4,
+    "tourSlugs": [
+      "peru-express-lima-cusco-5-days",
+      "andean-routes-essential-peru-8-days",
+      "ancient-peru-andean-legacy-10-days",
+      "southern-peru-coast-essentials-14-days"
+    ],
+    "description": "Lima is one of the most fascinating cities in Latin America. Whether you’re staying for a while or just stopping over on your way to Machu Picchu, there are tours in Lima you shouldn’t miss.",
+    "cardImage": "https://www.andeanperutours.com/images/cities/sm/pachacamac-2-1625083128.jpg",
+    "translationStatus": "machine_reviewed_pending_client"
+  },
+  {
+    "slug": "puno",
+    "name": "Puno",
+    "originalUrl": "https://www.andeanperutours.com/es/destinos/tours-en-puno",
+    "newPath": "/en/destinations/puno",
+    "bannerImage": "https://www.andeanperutours.com/images/cities/saveclipapp-281813272-575966233845843-6151745336466195975-n-1766248192.jpg",
+    "declaredTourCount": 15,
+    "publishedTourCount": 13,
+    "tourSlugs": [
+      "uros-floating-islands-tour",
+      "sillustani-tombs-tour",
+      "uros-taquile-full-day-tour",
+      "aramu-muru-gateway-private-tour",
+      "inka-uyo-fertility-temple-private-tour",
+      "titicaca-homestay-uros-amantani-taquile-2-days",
+      "classic-puno-lake-titicaca-3-days",
+      "route-of-the-sun-cusco-to-puno-3-days",
+      "titicaca-homestay-uros-amantani-taquile-3-days",
+      "titicaca-culture-uros-llachon-taquile-3-days",
+      "andean-routes-essential-peru-8-days",
+      "ancient-peru-andean-legacy-10-days",
+      "southern-peru-coast-essentials-14-days"
+    ],
+    "description": "Explore Puno and Lake Titicaca. We offer tours to the Uros, Taquile and Amantaní islands and the region’s archaeological sites with expert guides. Quality and culture.",
+    "cardImage": "https://www.andeanperutours.com/images/cities/sm/saveclipapp-281813272-575966233845843-6151745336466195975-n-1766248192.jpg",
+    "translationStatus": "machine_reviewed_pending_client"
+  }
+]

@@ -35,8 +35,29 @@ const TITLES: Record<number, string> = {
   503: 'Servicio no disponible',
 };
 
-function slug(status: number): string {
-  return (TITLES[status] ?? 'error').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/\s+/g, '-');
+/**
+ * I10: código estable en INGLÉS (kebab-case) para los errores HTTP genéricos (rutas inexistentes,
+ * rate limit, 405...). Antes se derivaba del título en español ("no-encontrado").
+ */
+const GENERIC_CODES: Record<number, string> = {
+  400: 'bad-request',
+  401: 'unauthorized',
+  403: 'forbidden',
+  404: 'not-found',
+  405: 'method-not-allowed',
+  409: 'conflict',
+  410: 'gone',
+  413: 'payload-too-large',
+  415: 'unsupported-media-type',
+  422: 'unprocessable-entity',
+  428: 'precondition-required',
+  429: 'too-many-requests',
+  500: 'internal-error',
+  503: 'service-unavailable',
+};
+
+export function genericProblemCode(status: number): string {
+  return GENERIC_CODES[status] ?? (status >= 500 ? 'internal-error' : 'error');
 }
 
 /**
@@ -118,7 +139,7 @@ export class ProblemDetailsFilter implements ExceptionFilter {
         status,
         detail: status >= 500 ? undefined : message,
         instance,
-        code: slug(status),
+        code: genericProblemCode(status),
         traceId,
       };
     }

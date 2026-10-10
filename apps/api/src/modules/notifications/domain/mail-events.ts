@@ -16,6 +16,12 @@ export const MAIL_EVENTS = {
   bookingCancelled: 'booking.cancelled',
   /** H-05: enlace del doble opt-in de marketing al correo del titular. */
   privacyMarketingConfirmation: 'privacy.marketing_confirmation',
+  /** Sprint 3: enlaces mágicos (el token se genera al enviar; el payload nunca lleva secretos). */
+  bookingAccessLinkRequested: 'booking.access_link_requested',
+  complaintAccessLinkRequested: 'complaint.access_link_requested',
+  customerLoginLinkRequested: 'customer.login_link_requested',
+  /** F3: aviso a la agencia + acuse al remitente. */
+  contactMessageReceived: 'contact.message_received',
 } as const;
 
 export type MailEventType = (typeof MAIL_EVENTS)[keyof typeof MAIL_EVENTS];

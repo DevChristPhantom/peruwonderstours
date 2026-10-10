@@ -27,6 +27,15 @@ export const PERMISSIONS = [
   'privacy:manage',
   'users:manage',
   'audit:read',
+  // Sprint 3
+  'content:read',
+  'content:write',
+  'content:publish',
+  'contact:read',
+  'contact:manage',
+  'media:upload',
+  /** Anular pagos manuales con contra-asiento: SOLO admin (ADR-0003). */
+  'payments:void',
 ] as const;
 export type Permission = (typeof PERMISSIONS)[number];
 
@@ -52,6 +61,12 @@ export const ROLE_PERMISSIONS: Readonly<Record<StaffRole, readonly Permission[]>
     'complaints:respond',
     'complaints:manage',
     'privacy:read',
+    'content:read',
+    'content:write',
+    'content:publish',
+    'contact:read',
+    'contact:manage',
+    'media:upload',
   ],
   agent: [
     'dashboard:read',
@@ -62,6 +77,8 @@ export const ROLE_PERMISSIONS: Readonly<Record<StaffRole, readonly Permission[]>
     'bookings:resend-voucher',
     'payments:record',
     'complaints:read',
+    'content:read',
+    'contact:read',
   ],
 };
 

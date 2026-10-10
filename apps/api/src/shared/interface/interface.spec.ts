@@ -58,7 +58,7 @@ describe('RFC 9457 problem+json', () => {
   });
 
   it('HttpException => about:blank; errores desconocidos => 500 sin filtrar detalles internos', () => {
-    expect(capture(new NotFoundException('Cannot GET /x')).body).toMatchObject({ type: 'about:blank', status: 404, code: 'no-encontrado' });
+    expect(capture(new NotFoundException('Cannot GET /x')).body).toMatchObject({ type: 'about:blank', status: 404, code: 'not-found' });
     const internal = capture(new Error('password=secreto en stack'));
     expect(internal.status).toBe(500);
     expect(JSON.stringify(internal.body)).not.toContain('secreto');

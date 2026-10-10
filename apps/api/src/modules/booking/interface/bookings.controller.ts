@@ -107,6 +107,11 @@ export class CheckoutDto {
   @MaxLength(2000)
   customerNotes?: string;
 
+  @ApiPropertyOptional({ enum: ['es', 'en'], description: 'Idioma de la reserva y de sus correos (por defecto el del carrito).' })
+  @IsOptional()
+  @IsIn(['es', 'en'])
+  locale?: 'es' | 'en';
+
   @ApiPropertyOptional({ description: 'Total que el cliente vio (céntimos). Si cambió => 409 total-changed.' })
   @IsOptional()
   @IsInt()
@@ -212,6 +217,7 @@ export class BookingsController {
       meta: requestMeta(req),
       customerNotes: body.customerNotes ?? null,
       expectedTotalAmount: body.expectedTotalAmount !== undefined ? BigInt(body.expectedTotalAmount) : undefined,
+      locale: body.locale,
     });
     if (result.replayed) {
       res.status(200).setHeader('Idempotent-Replayed', 'true');

@@ -3,6 +3,7 @@ import type { BookingSettings } from '../modules/booking/application/booking.use
 import type { CartSettings } from '../modules/cart/application/cart.use-cases.js';
 import type { ComplaintSettings } from '../modules/complaints/application/complaint.use-cases.js';
 import { parseRefundTiersJson, type RefundTier } from '../modules/backoffice/domain/cancellation-policy.js';
+import type { AccessSettings } from '../shared/application/access-grants.js';
 import type { DataSource, EnvironmentVariables } from './environment.js';
 
 export const APP_SETTINGS = Symbol('APP_SETTINGS');
@@ -18,7 +19,7 @@ export interface AppSettings {
   /** Valor para `app.set('trust proxy', …)`. */
   trustProxy: boolean | number | string;
   bodyLimitKb: number;
-  throttle: { ttlSeconds: number; limit: number; strictLimit: number };
+  throttle: { ttlSeconds: number; limit: number; strictLimit: number; linkLimit: number; linkTtlSeconds: number };
   swaggerEnabled: boolean;
   problemTypeBaseUrl: string;
   sandbox: { webhookSecret: string; checkoutBaseUrl: string; webhookToleranceSeconds: number };
@@ -32,6 +33,17 @@ export interface AppSettings {
   outbox: OutboxSettings;
   privacy: PrivacySettings;
   backoffice: { refundTiers: RefundTier[]; cancellationPolicyVersion: string };
+  access: AccessSettings;
+  contact: { agencyInboxEmail: string; privacyNoticeVersion: string };
+  media: MediaSettings;
+}
+
+export interface MediaSettings {
+  storage: 'local';
+  localDir: string;
+  publicBaseUrl: string;
+  maxUploadBytes: number;
+  legacyHosts: string[];
 }
 
 export interface StaffAuthSettings {
@@ -94,7 +106,13 @@ export function settingsFromEnvironment(env: EnvironmentVariables): AppSettings 
     corsOrigins: env.WEB_ORIGIN.split(',').map((o) => o.trim().replace(/\/$/, '')).filter(Boolean),
     trustProxy: parseTrustProxy(env.TRUST_PROXY),
     bodyLimitKb: env.BODY_LIMIT_KB,
-    throttle: { ttlSeconds: env.THROTTLE_TTL_SECONDS, limit: env.THROTTLE_LIMIT, strictLimit: env.THROTTLE_STRICT_LIMIT },
+    throttle: {
+      ttlSeconds: env.THROTTLE_TTL_SECONDS,
+      limit: env.THROTTLE_LIMIT,
+      strictLimit: env.THROTTLE_STRICT_LIMIT,
+      linkLimit: env.THROTTLE_LINK_LIMIT,
+      linkTtlSeconds: env.THROTTLE_LINK_TTL_SECONDS,
+    },
     swaggerEnabled: env.SWAGGER_ENABLED,
     problemTypeBaseUrl: env.PROBLEM_TYPE_BASE_URL.replace(/\/$/, ''),
     sandbox: {
@@ -162,6 +180,21 @@ export function settingsFromEnvironment(env: EnvironmentVariables): AppSettings 
       cancellationPolicyVersion: env.CANCELLATION_POLICY_VERSION,
     },
     backoffice: { refundTiers: parseRefundTiersJson(env.CANCELLATION_REFUND_TIERS), cancellationPolicyVersion: env.CANCELLATION_POLICY_VERSION },
+    access: {
+      requestedLinkTtlMinutes: env.ACCESS_LINK_TTL_MINUTES,
+      emailLinkTtlHours: env.EMAIL_LINK_TTL_HOURS,
+      resourceSessionTtlDays: env.RESOURCE_SESSION_TTL_DAYS,
+      customerSessionTtlDays: env.CUSTOMER_SESSION_TTL_DAYS,
+      maxLinksPerHour: env.ACCESS_LINKS_PER_HOUR,
+    },
+    contact: { agencyInboxEmail: env.AGENCY_INBOX_EMAIL.trim().toLowerCase(), privacyNoticeVersion: env.PRIVACY_NOTICE_VERSION },
+    media: {
+      storage: env.MEDIA_STORAGE,
+      localDir: env.MEDIA_LOCAL_DIR,
+      publicBaseUrl: env.MEDIA_PUBLIC_BASE_URL.replace(/\/$/, ''),
+      maxUploadBytes: env.MEDIA_MAX_UPLOAD_MB * 1024 * 1024,
+      legacyHosts: env.LEGACY_MEDIA_HOSTS.split(',').map((h) => h.trim().toLowerCase()).filter(Boolean),
+    },
   };
 }
 
@@ -180,6 +213,9 @@ export function settingsFromConfigService(config: ConfigService): AppSettings {
     'MAIL_TRANSPORT', 'MAIL_OUTBOX_DIR', 'MAIL_FROM', 'MAIL_REPLY_TO', 'SMTP_HOST', 'SMTP_PORT', 'SMTP_SECURE', 'SMTP_USER', 'SMTP_PASSWORD',
     'OUTBOX_RELAY_ENABLED', 'OUTBOX_RELAY_INTERVAL_MS', 'OUTBOX_MAX_ATTEMPTS', 'OUTBOX_BATCH_SIZE', 'REMINDER_JOB_INTERVAL_MS',
     'PUBLIC_WEB_BASE_URL', 'CONTACT_EMAIL', 'CONTACT_PHONE', 'MARKETING_LINK_SECRET', 'MARKETING_CONSENT_VERSION', 'CANCELLATION_REFUND_TIERS',
+    'ACCESS_LINK_TTL_MINUTES', 'EMAIL_LINK_TTL_HOURS', 'RESOURCE_SESSION_TTL_DAYS', 'CUSTOMER_SESSION_TTL_DAYS', 'ACCESS_LINKS_PER_HOUR',
+    'THROTTLE_LINK_LIMIT', 'THROTTLE_LINK_TTL_SECONDS', 'AGENCY_INBOX_EMAIL',
+    'MEDIA_STORAGE', 'MEDIA_LOCAL_DIR', 'MEDIA_PUBLIC_BASE_URL', 'MEDIA_MAX_UPLOAD_MB', 'LEGACY_MEDIA_HOSTS',
   ] as const;
   const env = Object.fromEntries(keys.map((k) => [k, config.get<unknown>(k)])) as unknown as EnvironmentVariables;
   return settingsFromEnvironment(env);

@@ -1,14 +1,19 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import { breadcrumbJsonLd, JsonLd, type Crumb } from "@/lib/seo/json-ld";
 
-/** Migas de pan + JSON-LD BreadcrumbList. El último ítem es la página actual. */
-export function Breadcrumbs({ items }: { items: Crumb[] }) {
+/**
+ * Migas de pan + JSON-LD BreadcrumbList. El último ítem es la página actual. Las rutas llegan ya
+ * resueltas por idioma (`localePath`), por eso se usa `next/link`.
+ */
+export async function Breadcrumbs({ items }: { items: Crumb[] }) {
+  const t = await getTranslations("common");
   return (
     <>
       <JsonLd data={breadcrumbJsonLd(items)} />
-      <nav aria-label="Migas de pan" className="text-sm text-foreground-muted">
+      <nav aria-label={t("breadcrumbs")} className="text-sm text-foreground-muted">
         <ol className="flex flex-wrap items-center gap-1">
           {items.map((item, i) => {
             const last = i === items.length - 1;

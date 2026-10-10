@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import { MapPin, Route, Tag } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useId, useMemo, useRef, useState } from "react";
 
 import { matchesQuery } from "@/lib/catalog/rules";
@@ -37,6 +38,7 @@ export function DestinationCombobox({
   inputClassName,
 }: DestinationComboboxProps) {
   const id = useId();
+  const t = useTranslations("searchBar");
   const listId = `${id}-list`;
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
@@ -112,7 +114,7 @@ export function DestinationCombobox({
       >
         {!query.trim() ? (
           <p className="px-4 pt-3 pb-1 text-xs font-medium tracking-[0.08em] text-foreground-muted uppercase">
-            Destinos populares
+            {t("popular")}
           </p>
         ) : null}
         <ul id={listId} role="listbox" aria-label={label} className="max-h-80 overflow-y-auto p-1" data-lenis-prevent>
@@ -146,7 +148,7 @@ export function DestinationCombobox({
         </ul>
         {query.trim() && results.length === 0 ? (
           <p className="px-4 py-3 text-sm text-foreground-muted" role="status">
-            No encontramos «{query.trim()}». Prueba con un destino como Puno o Cusco.
+            {t("noResults", { query: query.trim() })}
           </p>
         ) : null}
       </div>

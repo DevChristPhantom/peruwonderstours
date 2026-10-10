@@ -1,3 +1,4 @@
+import { pickTranslation } from '../../../shared/domain/i18n.js';
 import { addDays, type CalendarDate } from '../../../shared/domain/calendar-date.js';
 
 export const LOCALES = ['es', 'en'] as const;
@@ -46,6 +47,8 @@ export interface TourTranslation {
   meetingPoint: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
+  /** Metadato del panel (no se publica): p. ej. machine_reviewed_pending_client. */
+  translationStatus?: string | null;
 }
 
 export interface TourMedia {
@@ -97,6 +100,15 @@ export function isTourPublished(tour: Tour): boolean {
 /** Traducción solicitada; sin fallback entre idiomas (HU-10.2: no mezclar idiomas). */
 export function findTranslation(tour: Tour, locale: Locale): TourTranslation | undefined {
   return tour.translations.find((t) => t.locale === locale);
+}
+
+/**
+ * I6 (Sprint 3): traducción pedida o, si falta, la canónica `es` (`fallback: true`).
+ * Regla uniforme para todo el contenido público (ver shared/domain/i18n.ts).
+ */
+export function resolveTourTranslation(tour: Tour, locale: Locale): { translation: TourTranslation; locale: Locale; fallback: boolean } | undefined {
+  const picked = pickTranslation(tour.translations, locale);
+  return picked ? { translation: picked.value, locale: picked.locale, fallback: picked.fallback } : undefined;
 }
 
 /** Título para snapshots (reserva): idioma pedido o, si falta, el canónico `es`. */

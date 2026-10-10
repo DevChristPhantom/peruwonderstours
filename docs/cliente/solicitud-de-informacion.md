@@ -81,6 +81,49 @@ solo es válida con el pago total". Necesitamos que nos confirmes:
     contador.
 30. ¿Podemos pedir **reseñas** por correo o WhatsApp después de cada viaje?
 
+## 7. Sellos y certificaciones
+
+31. ¿Cuáles de estos sellos tiene **Peru Wonders Tours**, la empresa nueva, y no solo
+    AndeanPeruTours? Mostrar un sello que no se tiene puede considerarse publicidad engañosa.
+    Para cada uno, envíanos el certificado o la constancia:
+    - **Safe Travels** (protocolo de bioseguridad, otorgado vía PromPerú/WTTC).
+    - **Marca Perú** (requiere licencia de uso de PromPerú).
+    - **Directorio Nacional de Prestadores de Servicios Turísticos (MINCETUR)** y su distintivo.
+    - **Protégeme / Código de Conducta ESNNA** (obligatorio para agencias).
+    - Registro o autorización de **GERCETUR Puno**.
+32. **Redes sociales** de la nueva marca (Facebook, Instagram, TikTok, TripAdvisor, YouTube):
+    ¿se mantienen las de AndeanPeruTours o se crean nuevas?
+
+## 8. Contenido de los tours (detectado al traducir al inglés)
+
+33. **Marca en el blog:** los artículos dicen "Andean Peru Tours", "más de 30 años de
+    experiencia" y enlazan a andeanperutours.com. ¿Los cambiamos a Peru Wonders Tours? ¿El dato
+    de los 30 años se mantiene?
+34. **Público:** algunos artículos y tours están pensados para viajeros de México, Colombia,
+    España o Latinoamérica, y algunos tienen guía solo en español. ¿Se muestran también en la web
+    en inglés?
+35. **Precios del blog:** dicen "desde USD 699/850" o "USD 850–1 200". ¿Siguen vigentes?
+36. **Boleto Turístico del Cusco:** algunos tours lo incluyen y otros no, con contradicciones
+    (Moray, Tipón, city tours). ¿Cuál es la regla?
+37. **Tren a Machu Picchu:** ¿la clase incluida es Expedition/Voyager o Vistadome?
+38. **Dificultad:** 37 de 41 tours dicen "Fácil", incluso Vinicunca, Humantay, Waqrapukara y el
+    trekking del Colca. ¿Nos indicas la dificultad real de cada uno?
+39. **Peru Express:** la descripción dice que incluye vuelos internos, pero no los incluye.
+    ¿Cuál es lo correcto?
+40. **Textos incompletos:** el itinerario de Humantay está cortado y algunas preguntas
+    frecuentes tienen notas de borrador. Hay unas 40 contradicciones menores por tour; te
+    pasaremos la lista para que las confirmes.
+
+41. **Equipo:** la web antigua muestra 6 personas con cargo y correo. ¿Siguen en la empresa y
+    autorizan que publiquemos su nombre, foto y correo?
+42. **Medios de pago:** el pie muestra PayPal y Western Union, pero las políticas hablan de
+    transferencia y Niubiz. ¿Cuáles aceptas hoy?
+43. **Otra marca:** la descripción de la home menciona "Qori Alva". ¿Tiene relación con tu
+    empresa o la quitamos?
+44. **Sello Safe Travels:** el WTTC ya no lo mantiene activo. Proponemos retirarlo.
+45. **Tours despublicados:** no se pueden recuperar de la web. Si quieres publicarlos,
+    expórtalos desde el OTM.
+
 ---
 *Los borradores de Política de Privacidad, Términos y Condiciones, Política de Cancelación y
 Política de Cookies ya están preparados. Se completarán con estos datos y conviene que los

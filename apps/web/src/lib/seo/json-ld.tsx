@@ -1,3 +1,4 @@
+import type { Locale } from "@/i18n/routing";
 import type { Faq, Tour, TourSummary } from "@/lib/catalog/types";
 import { absoluteUrl, SITE } from "@/lib/site";
 
@@ -38,14 +39,15 @@ export function organizationJsonLd(): JsonLdObject {
     "@type": "TravelAgency",
     name: SITE.name,
     url: SITE.url,
-    areaServed: { "@type": "Country", name: "Perú" },
+    areaServed: { "@type": "Country", name: "Peru" },
   };
 }
 
 /**
  * TouristTrip (+ Offer solo si hay tarifa real). Sin AggregateRating: no hay reseñas reales aún.
+ * `dayLabel` traduce "Día N" para pasos sin título.
  */
-export function touristTripJsonLd(tour: Tour): JsonLdObject {
+export function touristTripJsonLd(tour: Tour, locale: Locale, dayLabel: (day: number) => string): JsonLdObject {
   const url = absoluteUrl(tour.path);
   const data: JsonLdObject = {
     "@context": "https://schema.org",
@@ -53,6 +55,7 @@ export function touristTripJsonLd(tour: Tour): JsonLdObject {
     name: tour.title,
     description: tour.metaDescription || tour.excerpt,
     url,
+    inLanguage: tour.fallback ? "es" : locale,
     image: tour.gallery.slice(0, 6).map((g) => g.src),
     touristType: tour.categorySlugs,
     provider: { "@type": "TravelAgency", name: SITE.name, url: SITE.url },
@@ -62,7 +65,7 @@ export function touristTripJsonLd(tour: Tour): JsonLdObject {
       itemListElement: tour.itinerary.map((step, i) => ({
         "@type": "ListItem",
         position: i + 1,
-        name: step.title ?? `Día ${step.day}`,
+        name: step.title ?? dayLabel(step.day),
         description: step.description.slice(0, 300),
       })),
     },
@@ -104,5 +107,20 @@ export function itemListJsonLd(name: string, tours: TourSummary[]): JsonLdObject
       url: absoluteUrl(t.path),
       name: t.title,
     })),
+  };
+}
+
+export function blogPostingJsonLd(post: { title: string; excerpt: string; path: string; image: string | null; publishedAt: string | null; author: string | null }, locale: Locale): JsonLdObject {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    url: absoluteUrl(post.path),
+    inLanguage: locale,
+    ...(post.image ? { image: [post.image] } : {}),
+    ...(post.publishedAt ? { datePublished: post.publishedAt } : {}),
+    author: { "@type": post.author ? "Person" : "Organization", name: post.author ?? SITE.name },
+    publisher: { "@type": "TravelAgency", name: SITE.name, url: SITE.url },
   };
 }

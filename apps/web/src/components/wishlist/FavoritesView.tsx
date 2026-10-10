@@ -1,9 +1,12 @@
 "use client";
 
 import { Heart, HeartOff, Info, Link2, Share2 } from "lucide-react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { useId, useMemo, useRef, useState, type ReactNode } from "react";
+
+import { Link } from "@/i18n/navigation";
+import { localePath } from "@/i18n/paths";
 
 import { parseSharedSlugs, SHARE_PARAM, sharePath } from "@/lib/wishlist/share";
 import { useUiStore } from "@/stores/ui-store";
@@ -56,20 +59,21 @@ function UnavailableItem({
   similar: FavoriteCatalogEntry[];
   onRemove?: () => void;
 }) {
+  const t = useTranslations("favorites");
   return (
     <article className="flex h-full flex-col rounded-lg border border-dashed border-border-strong bg-surface p-5">
       <p className="inline-flex w-fit items-center gap-1.5 rounded-pill bg-surface-muted px-3 py-1 text-sm text-foreground-muted">
         <HeartOff aria-hidden size={16} strokeWidth={1.5} />
-        Ya no disponible
+        {t("unavailable")}
       </p>
-      <h3 className="mt-3 text-h4 font-medium">{title ?? "Un tour de esta lista"}</h3>
-      <p className="mt-1 text-sm text-foreground-muted">Este tour ya no se ofrece. Te sugerimos tours parecidos:</p>
+      <h3 className="mt-3 text-h4 font-medium">{title ?? t("unknownTour")}</h3>
+      <p className="mt-1 text-sm text-foreground-muted">{t("unavailableText")}</p>
       {similar.length ? (
         <ul className="mt-3 space-y-1">
-          {similar.map((t) => (
-            <li key={t.slug}>
-              <Link href={`/es/tours/${t.slug}`} className="pwt-link inline-flex min-h-11 items-center">
-                {t.title}
+          {similar.map((s) => (
+            <li key={s.slug}>
+              <Link href={{ pathname: "/tours/[slug]", params: { slug: s.slug } }} className="pwt-link inline-flex min-h-11 items-center">
+                {s.title}
               </Link>
             </li>
           ))}
@@ -77,7 +81,7 @@ function UnavailableItem({
       ) : null}
       {onRemove ? (
         <button type="button" className={buttonClass("ghost", "md", "mt-auto w-fit")} onClick={onRemove}>
-          Quitar de favoritos
+          {t("remove")}
         </button>
       ) : null}
     </article>
@@ -86,6 +90,8 @@ function UnavailableItem({
 
 export function FavoritesView({ catalog, cards }: FavoritesViewProps) {
   const id = useId();
+  const t = useTranslations("favorites");
+  const locale = useLocale();
   const params = useSearchParams();
   const shared = useMemo(() => parseSharedSlugs(params.get(SHARE_PARAM)), [params]);
   const hydrated = useWishlistHydrated();
@@ -106,7 +112,7 @@ export function FavoritesView({ catalog, cards }: FavoritesViewProps) {
     return (
       <div aria-busy="true" className="mt-6">
         <div className="h-10 w-56 animate-pulse rounded-md bg-surface-muted motion-reduce:animate-none" />
-        <span className="sr-only">Cargando tus favoritos…</span>
+        <span className="sr-only">{t("loading")}</span>
       </div>
     );
   }
@@ -119,10 +125,9 @@ export function FavoritesView({ catalog, cards }: FavoritesViewProps) {
     const notSaved = available.filter((s) => !savedSlugs.has(s));
     return (
       <div className="mt-4">
-        <h1 className="font-display text-h1 font-medium">Lista de tours compartida</h1>
+        <h1 className="font-display text-h1 font-medium">{t("sharedTitle")}</h1>
         <p className="mt-2 max-w-prose text-foreground-muted">
-          Alguien compartió contigo {shared.length} {shared.length === 1 ? "tour" : "tours"}. El enlace solo contiene los
-          tours, ningún dato personal.
+          {t("sharedText", { count: shared.length })}
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
           {notSaved.length ? (
@@ -136,16 +141,16 @@ export function FavoritesView({ catalog, cards }: FavoritesViewProps) {
                     return { slug, title: t.title, destinationSlugs: t.destinationSlugs };
                   }),
                 );
-                announce(`Guardaste ${added} ${added === 1 ? "tour" : "tours"} en tus favoritos.`);
-                showToast({ message: "Guardados en tus favoritos", action: { label: "Ver mis favoritos", href: "/es/favoritos" } });
+                announce(t("announceSavedMany", { count: added }));
+                showToast({ message: t("savedMany"), action: { label: t("viewMine"), href: localePath(locale, "/favoritos") } });
               }}
             >
               <Heart aria-hidden size={18} strokeWidth={1.5} />
-              Guardar en mis favoritos
+              {t("saveAll")}
             </button>
           ) : null}
-          <Link href="/es/favoritos" className={buttonClass("outline", "md")}>
-            Ver mis favoritos
+          <Link href="/favoritos" className={buttonClass("outline", "md")}>
+            {t("viewMine")}
           </Link>
         </div>
         <ul className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -169,24 +174,24 @@ export function FavoritesView({ catalog, cards }: FavoritesViewProps) {
 
   /* ---------- Mis favoritos (este navegador) ---------- */
   const onShare = async () => {
-    const url = new URL(sharePath(items.map((i) => i.slug)), window.location.origin).toString();
-    const text = "Mira estos tours que guardé en Peru Wonders Tours";
+    const url = new URL(sharePath(items.map((i) => i.slug), locale), window.location.origin).toString();
+    const text = t("shareText");
     try {
       if (typeof navigator.share === "function") {
-        await navigator.share({ title: "Mis tours favoritos", text, url });
-        announce("Lista compartida.");
+        await navigator.share({ title: t("shareTitle"), text, url });
+        announce(t("shared"));
         return;
       }
       await navigator.clipboard.writeText(url);
       setShareUrl(url);
-      announce("Enlace copiado. Pégalo para compartir tu lista.");
-      showToast({ message: "Enlace copiado: solo incluye los tours, sin datos personales." });
+      announce(t("copiedAnnounce"));
+      showToast({ message: t("copiedToast") });
     } catch (error) {
       // Cancelado por el usuario o portapapeles bloqueado: se muestra el enlace para copiarlo a mano.
       if (error instanceof DOMException && error.name === "AbortError") return;
       setShareUrl(url);
       requestAnimationFrame(() => shareInputRef.current?.select());
-      announce("No pudimos copiar el enlace. Cópialo del campo de texto.");
+      announce(t("copyFailed"));
     }
   };
 
@@ -194,17 +199,15 @@ export function FavoritesView({ catalog, cards }: FavoritesViewProps) {
     <div className="mt-4">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="font-display text-h1 font-medium">Mis favoritos</h1>
+          <h1 className="font-display text-h1 font-medium">{t("title")}</h1>
           <p className="mt-2 text-foreground-muted">
-            {items.length
-              ? `${items.length} ${items.length === 1 ? "tour guardado" : "tours guardados"} en este navegador.`
-              : "Guarda tours con el corazón para decidir con calma."}
+            {items.length ? t("savedCount", { count: items.length }) : t("intro")}
           </p>
         </div>
         {items.length ? (
           <button type="button" className={buttonClass("secondary", "md")} onClick={onShare}>
             <Share2 aria-hidden size={18} strokeWidth={1.5} />
-            Compartir mi lista
+            {t("share")}
           </button>
         ) : null}
       </div>
@@ -212,8 +215,7 @@ export function FavoritesView({ catalog, cards }: FavoritesViewProps) {
       {persistent === false ? (
         <p className="mt-5 flex gap-2 rounded-md bg-warning-soft p-4 text-sm text-warning" role="status">
           <Info aria-hidden size={18} strokeWidth={1.5} className="mt-0.5 shrink-0" />
-          Tu navegador no permite guardar datos (por ejemplo, en modo privado): tus favoritos funcionan mientras tengas
-          esta pestaña abierta, pero no se conservarán al cerrarla. Comparte tu lista para no perderla.
+          {t("noStorage")}
         </p>
       ) : null}
 
@@ -221,7 +223,7 @@ export function FavoritesView({ catalog, cards }: FavoritesViewProps) {
         <div className="mt-5 max-w-xl">
           <label htmlFor={`${id}-share`} className="flex items-center gap-2 text-sm font-medium">
             <Link2 aria-hidden size={16} strokeWidth={1.5} />
-            Enlace para compartir (sin datos personales)
+            {t("shareLink")}
           </label>
           <input
             ref={shareInputRef}
@@ -246,7 +248,7 @@ export function FavoritesView({ catalog, cards }: FavoritesViewProps) {
                   similar={similarTo(entry, catalog, savedSlugs)}
                     onRemove={() => {
                     remove(entry.slug);
-                    announce(`Quitaste ${entry.title} de favoritos.`);
+                    announce(t("removed", { title: entry.title }));
                   }}
                 />
               )}
@@ -256,12 +258,12 @@ export function FavoritesView({ catalog, cards }: FavoritesViewProps) {
       ) : (
         <div className="mt-10 flex flex-col items-center rounded-lg border border-dashed border-border-strong px-6 py-14 text-center">
           <Heart aria-hidden size={32} strokeWidth={1.5} className="text-foreground-muted" />
-          <h2 className="mt-4 text-h3 font-medium">Aún no guardaste tours</h2>
+          <h2 className="mt-4 text-h3 font-medium">{t("emptyTitle")}</h2>
           <p className="mt-2 max-w-prose text-foreground-muted">
-            Pulsa el corazón en cualquier tour para guardarlo aquí y compartir la lista con quien viaja contigo.
+            {t("emptyText")}
           </p>
-          <Link href="/es/tours" className={buttonClass("secondary", "lg", "mt-6")}>
-            Ver tours
+          <Link href="/tours" className={buttonClass("secondary", "lg", "mt-6")}>
+            {t("viewTours")}
           </Link>
         </div>
       )}

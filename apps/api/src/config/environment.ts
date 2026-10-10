@@ -368,6 +368,80 @@ export class EnvironmentVariables {
   @Length(1, 40)
   MARKETING_CONSENT_VERSION = '2026-10-draft';
 
+  // --- Sprint 3: acceso sin contraseña (enlaces mágicos y sesiones opacas) ---
+  /** Vigencia de un enlace pedido por el usuario (recuperar reserva, consulta de reclamo, login). */
+  @Type(() => Number)
+  @IsInt()
+  @Min(5)
+  @Max(120)
+  ACCESS_LINK_TTL_MINUTES = 30;
+
+  /** Vigencia del enlace de un solo uso incluido en voucher, recordatorio de saldo y pago recibido. */
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(336)
+  EMAIL_LINK_TTL_HOURS = 72;
+
+  /** Sesión de acceso a una reserva u hoja de reclamo obtenida con un enlace (días). */
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(90)
+  RESOURCE_SESSION_TTL_DAYS = 30;
+
+  /** Sesión de cliente "Mis reservas" (días; revocable con POST /me/logout). */
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(90)
+  CUSTOMER_SESSION_TTL_DAYS = 30;
+
+  /** Enlaces enviados por reserva/hoja/cliente y hora (además del rate limit por IP). */
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(50)
+  ACCESS_LINKS_PER_HOUR = 5;
+
+  /** Rate limit por IP de los formularios que envían correo (enlaces, contacto, testimonios). */
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  THROTTLE_LINK_LIMIT = 5;
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  THROTTLE_LINK_TTL_SECONDS = 600;
+
+  /** Bandeja de la agencia que recibe los mensajes del formulario de contacto. */
+  @IsString()
+  @Matches(/^[^@\s]+@[^@\s]+\.[^@\s]+$/, { message: 'AGENCY_INBOX_EMAIL debe ser un correo.' })
+  AGENCY_INBOX_EMAIL = 'reservas@peruwonderstours.com';
+
+  // --- Medios (subida de imágenes) ---
+  /** local = disco (desarrollo, MEDIA_LOCAL_DIR servido en /media/*). S3/R2: adaptador pendiente. */
+  @IsIn(['local'])
+  MEDIA_STORAGE: 'local' = 'local';
+
+  @IsString()
+  MEDIA_LOCAL_DIR = 'uploads';
+
+  /** URL pública con la que se sirven las claves de medios (sin barra final). */
+  @IsUrl({ require_tld: false, require_protocol: true })
+  MEDIA_PUBLIC_BASE_URL = 'http://localhost:3001/media';
+
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(25)
+  MEDIA_MAX_UPLOAD_MB = 8;
+
+  /** Hosts del sitio viejo cuyas imágenes importa `pnpm media:import-legacy` (coma). */
+  @IsString()
+  LEGACY_MEDIA_HOSTS = 'www.andeanperutours.com,andeanperutours.com';
+
   // --- Política de cancelación (SUPUESTO pendiente del cliente, RN-04/05) ---
   /**
    * Tramos de reembolso del monto pagado según días HÁBILES antes del primer servicio,
@@ -398,6 +472,7 @@ export function validateEnvironment(config: Record<string, unknown>): Environmen
     if (!env.MARKETING_LINK_SECRET) messages.push('MARKETING_LINK_SECRET es obligatoria en producción.');
     if (env.MAIL_TRANSPORT === 'file' || env.MAIL_TRANSPORT === 'memory') messages.push('MAIL_TRANSPORT debe ser "smtp" (o "disabled") en producción.');
     if (!env.PUBLIC_WEB_BASE_URL.startsWith('https://')) messages.push('PUBLIC_WEB_BASE_URL debe usar https en producción.');
+    if (!env.MEDIA_PUBLIC_BASE_URL.startsWith('https://')) messages.push('MEDIA_PUBLIC_BASE_URL debe usar https en producción.');
   }
   try {
     parseRefundTiersJson(env.CANCELLATION_REFUND_TIERS);

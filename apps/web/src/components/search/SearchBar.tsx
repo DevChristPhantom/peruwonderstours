@@ -2,12 +2,14 @@
 
 import clsx from "clsx";
 import { Search } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter as useNextRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 
 import type { SearchOption } from "@/lib/catalog/types";
-import { describeTravelers, type Travelers } from "@/lib/cart/types";
+import type { Travelers } from "@/lib/cart/types";
+import { Link, useRouter } from "@/i18n/navigation";
+import { describeTravelers } from "@/lib/i18n/units";
 import { addDays, todayInLima } from "@/lib/format";
 import { applyPhraseToParams, parsePhrase } from "@/lib/search/phrase";
 import { useLimaToday } from "@/hooks/useClientOnly";
@@ -15,21 +17,26 @@ import { buttonClass } from "@/components/ui/button-styles";
 import { Counter } from "@/components/ui/Counter";
 import { DestinationCombobox } from "./DestinationCombobox";
 
+/** Accesos rápidos (claves en español: la ficha redirige al slug del idioma). */
 const QUICK_LINKS = [
-  { label: "Uros y Taquile", href: "/es/tours/tour-islas-de-los-uros-y-taquile-full-day" },
-  { label: "Machu Picchu", href: "/es/categorias/tours-a-machu-picchu" },
-  { label: "Colca 2D/1N", href: "/es/tours/trekking-canon-del-colca-2-dias" },
-  { label: "Paquetes de varios días", href: "/es/categorias/paquetes-turisticos-en-peru" },
-];
+  { key: "uros", href: { pathname: "/tours/[slug]", params: { slug: "tour-islas-de-los-uros-y-taquile-full-day" } } },
+  { key: "machuPicchu", href: { pathname: "/categorias/[slug]", params: { slug: "tours-a-machu-picchu" } } },
+  { key: "colca", href: { pathname: "/tours/[slug]", params: { slug: "trekking-canon-del-colca-2-dias" } } },
+  { key: "packages", href: { pathname: "/categorias/[slug]", params: { slug: "paquetes-turisticos-en-peru" } } },
+] as const;
 
 const fieldBox = "flex flex-col justify-center gap-1 px-4 py-3 lg:px-5";
 const inputCls =
   "mt-1 block w-full min-h-11 rounded-md border border-border-strong bg-surface px-3 text-body text-foreground " +
   "placeholder:text-foreground-muted lg:border-transparent lg:px-0 lg:min-h-8 focus-visible:outline-2 focus-visible:outline-ring";
 
-/** Buscador de la home (home.md §4): destino, fecha y viajeros → /es/tours con query string. */
+/** Buscador de la home (home.md §4): destino, fecha y viajeros → /tours con query string. */
 export function SearchBar({ options }: { options: SearchOption[] }) {
   const router = useRouter();
+  const nextRouter = useNextRouter();
+  const t = useTranslations("searchBar");
+  const tu = useTranslations("units");
+  const tt = useTranslations("travelersPicker");
   const id = useId();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<SearchOption | null>(null);
@@ -70,29 +77,29 @@ export function SearchBar({ options }: { options: SearchOption[] }) {
     if (travelers.infants) params.set("bebes", String(travelers.infants));
 
     if (selected?.kind === "tour") {
-      router.push(`${selected.href}?${params}`);
+      nextRouter.push(`${selected.href}?${params}`);
       return;
     }
     if (selected?.kind === "destination") params.set("destino", selected.value);
     else if (selected?.kind === "category") params.set("categoria", selected.value);
     else if (query.trim()) {
-      // HU-B.A9: "titicaca julio 4 personas" → destino, mes y viajeros (chips editables en /es/tours).
+      // HU-B.A9: "titicaca julio 4 personas" → destino, mes y viajeros (chips editables en /tours).
       const parsed = parsePhrase(query, todayInLima());
       if (!parsed.understood) params.set("q", query.trim());
       else {
         // La fecha exacta elegida manda sobre el mes de la frase.
-        router.push(`/es/tours?${applyPhraseToParams(date ? { ...parsed, month: null } : parsed, params)}`);
+        router.push({ pathname: "/tours", query: Object.fromEntries(applyPhraseToParams(date ? { ...parsed, month: null } : parsed, params)) });
         return;
       }
     }
-    router.push(`/es/tours?${params}`);
+    router.push({ pathname: "/tours", query: Object.fromEntries(params) });
   };
 
   return (
     <div className="pwt-search-in relative z-10 -mt-12">
       <form
         role="search"
-        aria-label="Buscar tours"
+        aria-label={t("formLabel")}
         onSubmit={onSubmit}
         className="mx-auto grid max-w-[1080px] grid-cols-1 overflow-visible rounded-lg border border-border bg-surface shadow-lg md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_auto] lg:divide-x lg:divide-border"
       >
@@ -103,15 +110,15 @@ export function SearchBar({ options }: { options: SearchOption[] }) {
             onQueryChange={setQuery}
             selected={selected}
             onSelect={setSelected}
-            label="¿A dónde vas?"
-            placeholder="Ej.: titicaca julio 4 personas"
+            label={t("where")}
+            placeholder={t("placeholder")}
             inputClassName={inputCls}
           />
         </div>
 
         <div className={fieldBox}>
           <label htmlFor={`${id}-date`} className="block text-sm font-medium text-foreground">
-            ¿Cuándo?
+            {t("when")}
           </label>
           <input
             id={`${id}-date`}
@@ -123,13 +130,13 @@ export function SearchBar({ options }: { options: SearchOption[] }) {
             aria-describedby={`${id}-date-hint`}
           />
           <span id={`${id}-date-hint`} className="sr-only">
-            Opcional. Formato día, mes y año.
+            {t("dateHint")}
           </span>
         </div>
 
         <div className={clsx(fieldBox, "relative")} ref={paxRef}>
           <span id={`${id}-pax-label`} className="block text-sm font-medium text-foreground">
-            Viajeros
+            {t("travelers")}
           </span>
           <button
             ref={paxButtonRef}
@@ -141,34 +148,34 @@ export function SearchBar({ options }: { options: SearchOption[] }) {
             onClick={() => setPaxOpen((v) => !v)}
             className={clsx(inputCls, "text-left")}
           >
-            <span id={`${id}-pax-value`}>{describeTravelers(travelers)}</span>
+            <span id={`${id}-pax-value`}>{describeTravelers(tu, travelers)}</span>
           </button>
           {paxOpen ? (
             <div
               id={`${id}-pax`}
               role="dialog"
-              aria-label="Elegir viajeros"
+              aria-label={t("chooseTravelers")}
               className="absolute top-full right-0 left-0 z-30 mt-2 rounded-lg border border-border bg-surface p-4 shadow-lg lg:left-auto lg:w-80"
             >
               <Counter
-                label="Adultos"
-                hint="12 años o más"
-                unitName="un adulto"
+                label={tt("adults")}
+                hint={tt("adultsHint")}
+                unitName={tt("adultUnit")}
                 value={travelers.adults}
                 min={1}
                 onChange={(adults) => setTravelers((t) => ({ ...t, adults }))}
               />
               <Counter
-                label="Niños"
-                hint="3 a 11 años"
-                unitName="un niño"
+                label={tt("children")}
+                hint={tt("childrenHint")}
+                unitName={tt("childUnit")}
                 value={travelers.children}
                 onChange={(children) => setTravelers((t) => ({ ...t, children }))}
               />
               <Counter
-                label="Bebés"
-                hint="0 a 2 años"
-                unitName="un bebé"
+                label={tt("infants")}
+                hint={tt("infantsHint")}
+                unitName={tt("infantUnit")}
                 value={travelers.infants}
                 onChange={(infants) => setTravelers((t) => ({ ...t, infants }))}
               />
@@ -180,7 +187,7 @@ export function SearchBar({ options }: { options: SearchOption[] }) {
                   paxButtonRef.current?.focus();
                 }}
               >
-                Listo
+                {t("done")}
               </button>
             </div>
           ) : null}
@@ -189,20 +196,20 @@ export function SearchBar({ options }: { options: SearchOption[] }) {
         <div className="flex items-center p-3 md:col-span-2 lg:col-span-1">
           <button type="submit" className={buttonClass("primary", "xl", "w-full lg:w-auto")}>
             <Search aria-hidden size={20} strokeWidth={1.5} />
-            Buscar tours
+            {t("submit")}
           </button>
         </div>
       </form>
 
-      <nav aria-label="Accesos rápidos" className="mx-auto mt-4 max-w-[1080px]">
+      <nav aria-label={t("quickLinks")} className="mx-auto mt-4 max-w-[1080px]">
         <ul className="flex flex-wrap justify-center gap-2">
           {QUICK_LINKS.map((q) => (
-            <li key={q.href}>
+            <li key={q.key}>
               <Link
                 href={q.href}
                 className="inline-flex min-h-11 items-center rounded-pill border border-border-strong px-4 text-sm text-foreground transition-colors duration-150 hover:bg-surface-muted"
               >
-                {q.label}
+                {t(`quick.${q.key}`)}
               </Link>
             </li>
           ))}

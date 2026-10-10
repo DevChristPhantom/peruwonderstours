@@ -2,7 +2,9 @@
 
 import clsx from "clsx";
 import { Check, GitCompareArrows } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+
+import { usePathname } from "@/i18n/navigation";
 
 import { MAX_COMPARE, useCompareStore } from "@/stores/compare-store";
 import { useUiStore } from "@/stores/ui-store";
@@ -14,39 +16,37 @@ export function CompareToggle({ slug, title, className }: { slug: string; title:
   const toggle = useCompareStore((s) => s.toggle);
   const announce = useUiStore((s) => s.announce);
   const showToast = useUiStore((s) => s.showToast);
+  const t = useTranslations("compare");
+  const locale = useLocale();
   // En la ficha no hay bandeja del comparador: se confirma con un toast.
-  const onDetail = /^\/es\/tours\/[^/]+$/.test(usePathname());
+  const onDetail = usePathname() === "/tours/[slug]";
 
   const onClick = () => {
     const result = toggle({ slug, title });
     const items = useCompareStore.getState().items;
     if (result === "full") {
-      announce(`Puedes comparar hasta ${MAX_COMPARE} tours. Quita uno para agregar ${title}.`);
+      announce(t("fullAnnounce", { max: MAX_COMPARE, title }));
       showToast({
-        message: `Puedes comparar hasta ${MAX_COMPARE} tours`,
+        message: t("full", { max: MAX_COMPARE }),
         duration: 7000,
-        action: { label: "Comparar ahora", href: compareHref(items.map((i) => i.slug)) },
+        action: { label: t("compareNow"), href: compareHref(items.map((i) => i.slug), locale) },
       });
       return;
     }
     if (onDetail && result === "added") {
       showToast({
-        message: `Agregado al comparador (${items.length} de ${MAX_COMPARE})`,
-        action: items.length >= 2 ? { label: "Comparar ahora", href: compareHref(items.map((i) => i.slug)) } : undefined,
+        message: t("addedToast", { count: items.length, max: MAX_COMPARE }),
+        action: items.length >= 2 ? { label: t("compareNow"), href: compareHref(items.map((i) => i.slug), locale) } : undefined,
       });
     }
-    announce(
-      result === "added"
-        ? `${title} agregado al comparador (${items.length} de ${MAX_COMPARE}).`
-        : `${title} quitado del comparador.`,
-    );
+    announce(result === "added" ? t("addedAnnounce", { title, count: items.length, max: MAX_COMPARE }) : t("removedAnnounce", { title }));
   };
 
   return (
     <button
       type="button"
       aria-pressed={active}
-      aria-label={`Comparar ${title}`}
+      aria-label={t("toggleLabel", { title })}
       onClick={onClick}
       className={clsx(
         "relative z-[2] inline-flex min-h-11 items-center gap-2 rounded-pill border px-3 text-sm font-medium",
@@ -59,7 +59,7 @@ export function CompareToggle({ slug, title, className }: { slug: string; title:
       )}
     >
       {active ? <Check aria-hidden size={16} strokeWidth={2} /> : <GitCompareArrows aria-hidden size={16} strokeWidth={1.5} />}
-      Comparar
+      {t("toggle")}
     </button>
   );
 }

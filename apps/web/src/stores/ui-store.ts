@@ -33,6 +33,12 @@ interface UiState {
   dismissToast: () => void;
   announce: (message: string) => void;
   pulseCart: () => void;
+  /**
+   * Rutas equivalentes de la página actual en cada idioma (selector de idioma). Las fijan las páginas
+   * con slugs traducidos (tour, destino, categoría, blog); null = se calcula desde la ruta.
+   */
+  localeAlternates: { es: string; en: string } | null;
+  setLocaleAlternates: (value: { es: string; en: string } | null) => void;
 }
 
 let toastSeq = 0;
@@ -53,4 +59,6 @@ export const useUiStore = create<UiState>()((set) => ({
     setTimeout(() => set({ announcement: message }), 50);
   },
   pulseCart: () => set((s) => ({ cartPulse: s.cartPulse + 1 })),
+  localeAlternates: null,
+  setLocaleAlternates: (localeAlternates) => set({ localeAlternates }),
 }));

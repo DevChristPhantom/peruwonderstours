@@ -31,9 +31,12 @@ export interface TourPricing {
  * Política de pago del tour (RN-13/RN-14).
  * depositPercent: 50 por defecto; 100 si el tour exige pago completo (boletos de terceros).
  */
+/** Motivo del pago completo (se traduce en la UI con `payment.fullReason.<código>`). */
+export type FullPaymentReason = "third-party-tickets";
+
 export interface PaymentPolicy {
   depositPercent: number;
-  fullPaymentReason: string | null;
+  fullPaymentReason: FullPaymentReason | null;
 }
 
 export interface CatalogImage {
@@ -43,9 +46,22 @@ export interface CatalogImage {
 
 export type DurationBucket = "1" | "2-3" | "4-6" | "7+";
 
+/** Rutas de la misma ficha en cada idioma (hreflang y selector de idioma). */
+export type LocalePaths = Record<"es" | "en", string>;
+
 export interface TourSummary {
+  /**
+   * Clave estable del tour: su slug en español. La usan el carrito, favoritos, el comparador y los
+   * filtros (destinationSlugs/categorySlugs también son claves en español), así no cambian con el idioma.
+   */
+  key: string;
+  /** Slug en el idioma pedido (puede estar traducido). */
   slug: string;
+  /** Ruta pública en el idioma pedido (`/en/tours/<slug-en>`). */
   path: string;
+  alternates: LocalePaths;
+  /** true si el texto se muestra en español porque falta la traducción (aviso discreto). */
+  fallback: boolean;
   title: string;
   shortTitle: string;
   excerpt: string;
@@ -91,8 +107,11 @@ export interface Tour extends TourSummary {
 }
 
 export interface Destination {
+  key: string;
   slug: string;
   path: string;
+  alternates: LocalePaths;
+  fallback: boolean;
   name: string;
   description: string | null;
   bannerImage: CatalogImage | null;
@@ -102,8 +121,11 @@ export interface Destination {
 }
 
 export interface Category {
+  key: string;
   slug: string;
   path: string;
+  alternates: LocalePaths;
+  fallback: boolean;
   name: string;
   description: string | null;
   bannerImage: CatalogImage | null;

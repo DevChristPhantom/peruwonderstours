@@ -3,7 +3,8 @@ import type { DurationBucket } from "@/lib/catalog/types";
 
 /**
  * Búsqueda por frase basada en reglas, sin IA (HU-B.A9).
- * "titicaca julio 4 personas" → destino Puno · mes julio · 4 viajeros.
+ * "titicaca julio 4 personas" / "titicaca july 4 people" → destino Puno · mes julio · 4 viajeros.
+ * Entiende frases en español y en inglés (I2).
  *
  * Reglas:
  * - Todo lo entendido se devuelve para mostrarse como chips editables: nunca hay filtros ocultos.
@@ -37,6 +38,7 @@ export interface ParsedPhrase {
  */
 const DESTINATIONS: { alias: string; slug: string; label: string; keep?: boolean }[] = [
   { alias: "lago titicaca", slug: "tours-en-puno", label: "Puno" },
+  { alias: "lake titicaca", slug: "tours-en-puno", label: "Puno" },
   { alias: "titicaca", slug: "tours-en-puno", label: "Puno" },
   { alias: "puno", slug: "tours-en-puno", label: "Puno" },
   { alias: "juliaca", slug: "tours-en-puno", label: "Puno" },
@@ -70,6 +72,9 @@ const CATEGORIES: { alias: string; slug: string; label: string }[] = [
   { alias: "excursiones", slug: "excursiones", label: "Excursiones" },
   { alias: "excursion", slug: "excursiones", label: "Excursiones" },
   { alias: "altiplano", slug: "rutas-del-altiplano", label: "Rutas del Altiplano" },
+  { alias: "packages", slug: "paquetes-turisticos-en-peru", label: "Paquetes turísticos" },
+  { alias: "package", slug: "paquetes-turisticos-en-peru", label: "Paquetes turísticos" },
+  { alias: "excursions", slug: "excursiones", label: "Excursiones" },
 ];
 
 const MONTHS: [string, number][] = [
@@ -98,6 +103,21 @@ const MONTHS: [string, number][] = [
   ["oct", 10],
   ["nov", 11],
   ["dic", 12],
+  // Inglés ("march" y "may" se omiten en abreviatura; "may" es ambiguo).
+  ["january", 1],
+  ["february", 2],
+  ["march", 3],
+  ["april", 4],
+  ["june", 6],
+  ["july", 7],
+  ["august", 8],
+  ["september", 9],
+  ["october", 10],
+  ["november", 11],
+  ["december", 12],
+  ["jan", 1],
+  ["aug", 8],
+  ["dec", 12],
 ];
 
 export const MONTH_NAMES = [
@@ -128,12 +148,23 @@ const NUMBER_WORDS: Record<string, number> = {
   ocho: 8,
   nueve: 9,
   diez: 10,
+  one: 1,
+  two: 2,
+  three: 3,
+  four: 4,
+  five: 5,
+  six: 6,
+  seven: 7,
+  eight: 8,
+  nine: 9,
+  ten: 10,
 };
 
 const STOPWORDS = new Set([
   "a", "al", "en", "el", "la", "los", "las", "de", "del", "para", "por", "con", "y", "e", "o", "un", "una",
   "tour", "tours", "viaje", "viajes", "quiero", "queremos", "ir", "somos", "mes", "fecha", "busco", "buscamos",
   "peru", "conocer", "visitar",
+  "the", "in", "to", "of", "for", "and", "trip", "travel", "want", "we", "are", "visit", "go", "on",
 ]);
 
 const NUM = `(\\d{1,2}|${Object.keys(NUMBER_WORDS).join("|")})`;
@@ -184,24 +215,24 @@ export function parsePhrase(input: string, today: string): ParsedPhrase {
   const kept: string[] = [];
 
   // Viajeros: "4 personas", "para 4", "somos cuatro", "2 adultos y 1 nino", "pareja".
-  const kids = new RegExp(`(?:^|\\s)${NUM}\\s+(?:ninos|nino|ninas|nina|hijos|hijo|menores)(?=\\s|$)`).exec(text);
+  const kids = new RegExp(`(?:^|\\s)${NUM}\\s+(?:ninos|nino|ninas|nina|hijos|hijo|menores|children|child|kids|kid)(?=\\s|$)`).exec(text);
   if (kids) {
     result.children = clampPax(toNumber(kids[1]));
     text = text.replace(kids[0], " ");
   }
   const pax =
-    new RegExp(`(?:^|\\s)${NUM}\\s+(?:personas|persona|pax|viajeros|viajero|adultos|adulto|gente)(?=\\s|$)`).exec(text) ??
-    new RegExp(`(?:^|\\s)(?:para|somos)\\s+${NUM}(?=\\s|$)`).exec(text);
+    new RegExp(`(?:^|\\s)${NUM}\\s+(?:personas|persona|pax|viajeros|viajero|adultos|adulto|gente|people|persons|person|travelers|traveler|travellers|adults|adult)(?=\\s|$)`).exec(text) ??
+    new RegExp(`(?:^|\\s)(?:para|somos|for)\\s+${NUM}(?=\\s|$)`).exec(text);
   if (pax) {
     result.adults = clampPax(toNumber(pax[1]));
     text = text.replace(pax[0], " ");
-  } else if (/(^|\s)(en\s+)?pareja(\s|$)/.test(text)) {
+  } else if (/(^|\s)((en\s+)?pareja|(a\s+)?couple)(\s|$)/.test(text)) {
     result.adults = 2;
-    text = text.replace(/(^|\s)(en\s+)?pareja(?=\s|$)/, " ");
+    text = text.replace(/(^|\s)((en\s+)?pareja|(a\s+)?couple)(?=\s|$)/, " ");
   }
 
   // Duración: "3 dias", "full day" se trata como categoría.
-  const days = new RegExp(`(?:^|\\s)${NUM}\\s+(?:dias|dia)(?=\\s|$)`).exec(text);
+  const days = new RegExp(`(?:^|\\s)${NUM}\\s+(?:dias|dia|days|day)(?=\\s|$)`).exec(text);
   if (days) {
     result.duration = durationBucketOf(toNumber(days[1]));
     text = text.replace(days[0], " ");
@@ -253,7 +284,7 @@ export function parsePhrase(input: string, today: string): ParsedPhrase {
   return result;
 }
 
-/** Aplica la frase a parámetros de URL de /es/tours (destino, categoria, mes, adultos, ninos, duracion, q). */
+/** Aplica la frase a parámetros de URL de /tours (destino, categoria, mes, adultos, ninos, duracion, q). */
 export function applyPhraseToParams(parsed: ParsedPhrase, params: URLSearchParams): URLSearchParams {
   const next = new URLSearchParams(params.toString());
   if (parsed.destination) next.set("destino", parsed.destination.slug);

@@ -16,19 +16,12 @@ const FULL_PAYMENT_CATEGORIES = new Set(["tours-a-machu-picchu"]);
 export function derivePaymentPolicy(categorySlugs: readonly string[]): PaymentPolicy {
   const requiresFull = categorySlugs.some((slug) => FULL_PAYMENT_CATEGORIES.has(slug));
   return requiresFull
-    ? {
-        depositPercent: 100,
-        fullPaymentReason: "Incluye boletos de terceros (tren o ingreso a Machu Picchu)",
-      }
+    ? { depositPercent: 100, fullPaymentReason: "third-party-tickets" }
     : { depositPercent: DEFAULT_DEPOSIT_PERCENT, fullPaymentReason: null };
 }
 
-export const DURATION_BUCKETS: { value: DurationBucket; label: string }[] = [
-  { value: "1", label: "1 día" },
-  { value: "2-3", label: "2 a 3 días" },
-  { value: "4-6", label: "4 a 6 días" },
-  { value: "7+", label: "7 días o más" },
-];
+/** Rangos de duración del filtro. La etiqueta se traduce con `filters.duration.<valor>`. */
+export const DURATION_BUCKETS: { value: DurationBucket }[] = [{ value: "1" }, { value: "2-3" }, { value: "4-6" }, { value: "7+" }];
 
 export function durationBucketOf(days: number | null): DurationBucket | null {
   if (days === null || days < 1) return null;
@@ -42,13 +35,6 @@ export function isDurationBucket(value: string | null | undefined): value is Dur
   return DURATION_BUCKETS.some((b) => b.value === value);
 }
 
-/** Etiqueta legible de duración a partir de días/noches ("4 días / 3 noches", "Día completo"). */
-export function formatDuration(days: number | null, nights: number | null): string {
-  if (!days) return "Duración por confirmar";
-  if (days === 1) return "1 día";
-  const n = nights ?? days - 1;
-  return `${days} días / ${n} ${n === 1 ? "noche" : "noches"}`;
-}
 
 const SYNONYMS: [RegExp, string][] = [
   [/\bcuzco\b/g, "cusco"],

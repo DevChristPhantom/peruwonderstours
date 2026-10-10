@@ -1,24 +1,29 @@
 import "server-only";
 
+import type { Locale } from "@/i18n/routing";
+import { categoryPath, destinationPath, tourPath } from "@/i18n/paths";
 import { apiJson, ApiError } from "@/lib/api/client";
 import { env } from "@/lib/env";
 
 import type { CatalogRepository } from "./repository";
-import { derivePaymentPolicy, durationBucketOf, formatDuration } from "./rules";
-import { cleanSeedText, seedCatalogRepository } from "./seed-repository";
-import type { CatalogImage, Category, Destination, PaymentPolicy, Tour, TourPricing, TourSummary } from "./types";
+import { derivePaymentPolicy, durationBucketOf } from "./rules";
+import { cleanSeedText, seedCatalogRepository, seedEnrichment } from "./seed-repository";
+import type { CatalogImage, Category, Destination, LocalePaths, PaymentPolicy, Tour, TourPricing, TourSummary } from "./types";
 
 /**
- * Catálogo desde la API NestJS (`GET /tours`, `/tours/:slug`, `/destinations`, `/categories`).
+ * Catálogo desde la API NestJS (`GET /tours`, `/tours/:slug`, `/destinations`, `/categories`) con
+ * `locale=es|en` (I5). Contrato de idioma (brief del backend, sprint 3): cada recurso trae
+ * `{ locale, fallback }`; con `fallback: true` el texto viene en español porque falta la traducción.
+ * El detalle trae `alternateLocales: [{ locale, slug }]` para el hreflang y el selector de idioma.
+ * Si la API aún devuelve 0 resultados en inglés (comportamiento previo, I6), se usa el español con
+ * `fallback: true`. Los registros se unen entre idiomas por `id`: la CLAVE estable de cada tour,
+ * destino y categoría es su slug en español.
  *
- * Caché (ISR): cada `fetch` lleva `revalidate: 3600` y el tag `catalog`; el backoffice invalida con
- * `revalidateTag('catalog', 'max')` (Route Handler a crear cuando exista el webhook de publicación).
+ * Caché (ISR): cada `fetch` lleva `revalidate: 3600` y el tag `catalog`.
  *
- * Degradación (decisión Sprint 1): si la API no responde (red, timeout o 5xx) se usa el seed
- * (`data/seed`, el mismo origen con el que se cargó la BD) para esa petición, y se registra un aviso.
- * Así `next build` no falla sin API y el sitio sigue navegable; al vencer la revalidación (1 h) o con
- * `revalidateTag`, las páginas vuelven a leer la API. Un 4xx de la API NO cae al seed (es un error real).
- * Un corto "circuit breaker" evita esperar el timeout en cada página del build cuando la API está caída.
+ * Degradación (decisión Sprint 1): si la API no responde (red, timeout o 5xx) se usa el seed para esa
+ * petición y se registra un aviso. Un 4xx de la API NO cae al seed. Un corto "circuit breaker" evita
+ * esperar el timeout en cada página del build cuando la API está caída.
  *
  * Enriquecimiento temporal desde el seed (la API aún no los expone): imágenes de destinos/categorías,
  * título corto, resumen en viñetas y pertenencia a varias categorías (la API guarda una sola).
@@ -36,7 +41,14 @@ interface ApiMoney {
   currency: "PEN" | "USD";
 }
 
-interface ApiTourCard {
+interface ApiLocalized {
+  /** Idioma del texto devuelto. */
+  locale?: Locale;
+  /** true = texto en español por falta de traducción. */
+  fallback?: boolean;
+}
+
+interface ApiTourCard extends ApiLocalized {
   id: string;
   slug: string;
   title: string;
@@ -73,9 +85,10 @@ interface ApiTourDetail extends ApiTourCard {
   category: { id: string; slug: string } | null;
   destinations: { id: string; slug: string; isPrimary: boolean }[];
   rates: { paxType: string; residency: string; amount: ApiMoney }[];
+  alternateLocales?: { locale: Locale; slug: string }[];
 }
 
-interface ApiTaxon {
+interface ApiTaxon extends ApiLocalized {
   id: string;
   slug: string;
   name: string;
@@ -114,26 +127,96 @@ async function withFallback<T>(label: string, fromApi: () => Promise<T>, fromSee
   }
 }
 
-/* ---------- Mapeo a los tipos de la web ---------- */
-
-interface Taxonomy {
-  destinations: Map<string, ApiTaxon>;
-  categories: Map<string, ApiTaxon>;
-}
-
 const q = (params: Record<string, string | number>) =>
   new URLSearchParams(Object.entries(params).map(([k, v]) => [k, String(v)])).toString();
 
-async function loadTaxonomy(): Promise<Taxonomy> {
-  const [destinations, categories] = await Promise.all([
-    cached<ListEnvelope<ApiTaxon>>(`/destinations?${q({ locale: "es" })}`),
-    cached<ListEnvelope<ApiTaxon>>(`/categories?${q({ locale: "es" })}`),
-  ]);
-  return {
-    destinations: new Map(destinations.data.map((d) => [d.id, d])),
-    categories: new Map(categories.data.map((c) => [c.id, c])),
-  };
+/** ¿El texto viene realmente en el idioma pedido? */
+function isFallback(item: ApiLocalized | undefined, locale: Locale): boolean {
+  if (locale === "es") return false;
+  if (!item) return true;
+  if (item.fallback !== undefined) return item.fallback;
+  return item.locale !== undefined && item.locale !== locale;
 }
+
+/* ---------- Taxonomía (destinos y categorías) por idioma, unida por id ---------- */
+
+interface TaxonEntry {
+  es: ApiTaxon;
+  /** Registro en el idioma pedido (o el español si falta). */
+  text: ApiTaxon;
+  key: string;
+  alternates: { es: string; en: string };
+  fallback: boolean;
+}
+
+interface Taxonomy {
+  destinations: Map<string, TaxonEntry>;
+  categories: Map<string, TaxonEntry>;
+}
+
+async function loadTaxonomy(locale: Locale): Promise<Taxonomy> {
+  const fetchList = (resource: "destinations" | "categories", lang: Locale) =>
+    cached<ListEnvelope<ApiTaxon>>(`/${resource}?${q({ locale: lang })}`).then((r) => r.data);
+  const build = async (resource: "destinations" | "categories") => {
+    const [es, en] = await Promise.all([fetchList(resource, "es"), fetchList(resource, "en").catch(() => [] as ApiTaxon[])]);
+    const enById = new Map(en.map((x) => [x.id, x]));
+    return new Map(
+      es.map((item) => {
+        const translated = enById.get(item.id);
+        const enSlug = translated && !isFallback(translated, "en") ? translated.slug : item.slug;
+        const text = locale === "en" && translated ? translated : item;
+        return [
+          item.id,
+          {
+            es: item,
+            text,
+            key: item.slug,
+            alternates: { es: item.slug, en: enSlug },
+            fallback: locale === "en" ? isFallback(translated, "en") : false,
+          } satisfies TaxonEntry,
+        ];
+      }),
+    );
+  };
+  const [destinations, categories] = await Promise.all([build("destinations"), build("categories")]);
+  return { destinations, categories };
+}
+
+/* ---------- Tours por idioma, unidos por id ---------- */
+
+async function listAllCards(locale: Locale): Promise<ApiTourCard[]> {
+  const params = { locale, currency: env.CATALOG_CURRENCY, sort: "featured", pageSize: PAGE_SIZE };
+  const first = await cached<ListEnvelope<ApiTourCard>>(`/tours?${q({ ...params, page: 1 })}`);
+  const pages = first.meta?.totalPages ?? 1;
+  const rest = await Promise.all(
+    Array.from({ length: Math.max(0, pages - 1) }, (_, i) => cached<ListEnvelope<ApiTourCard>>(`/tours?${q({ ...params, page: i + 2 })}`)),
+  );
+  return [first, ...rest].flatMap((p) => p.data);
+}
+
+interface CardEntry {
+  es: ApiTourCard;
+  text: ApiTourCard;
+  fallback: boolean;
+  alternates: LocalePaths;
+}
+
+async function loadCards(locale: Locale): Promise<CardEntry[]> {
+  const [es, en] = await Promise.all([listAllCards("es"), listAllCards("en").catch(() => [] as ApiTourCard[])]);
+  const enById = new Map(en.map((c) => [c.id, c]));
+  return es.map((card) => {
+    const translated = enById.get(card.id);
+    const enSlug = translated && !isFallback(translated, "en") ? translated.slug : card.slug;
+    return {
+      es: card,
+      text: locale === "en" && translated ? translated : card,
+      fallback: locale === "en" ? isFallback(translated, "en") : false,
+      alternates: { es: tourPath("es", card.slug), en: tourPath("en", enSlug) },
+    };
+  });
+}
+
+/* ---------- Mapeo a los tipos de la web ---------- */
 
 function pricingOf(priceFrom: ApiMoney | null, rates: ApiTourDetail["rates"] = []): TourPricing | null {
   if (!priceFrom) return null;
@@ -147,44 +230,56 @@ function pricingOf(priceFrom: ApiMoney | null, rates: ApiTourDetail["rates"] = [
 }
 
 function policyOf(categorySlugs: string[], requiresTravelerDocument?: boolean): PaymentPolicy {
-  if (requiresTravelerDocument) {
-    return { depositPercent: 100, fullPaymentReason: "Incluye boletos de terceros (tren o ingreso a Machu Picchu)" };
-  }
+  if (requiresTravelerDocument) return { depositPercent: 100, fullPaymentReason: "third-party-tickets" };
   return derivePaymentPolicy(categorySlugs);
 }
 
-async function toSummary(card: ApiTourCard, taxonomy: Taxonomy): Promise<TourSummary> {
-  const seed = await seedCatalogRepository.getTour(card.slug);
-  const destinations = card.destinationIds.map((id) => taxonomy.destinations.get(id)).filter((d): d is ApiTaxon => !!d);
-  const apiCategory = card.categoryId ? taxonomy.categories.get(card.categoryId)?.slug : undefined;
+function durationLabelOf(days: number | null, nights: number | null): string {
+  if (!days) return "";
+  return days === 1 ? "1D" : `${days}D/${nights ?? days - 1}N`;
+}
+
+function toSummary(entry: CardEntry, taxonomy: Taxonomy, locale: Locale): TourSummary {
+  const { es, text, fallback, alternates } = entry;
+  const key = es.slug;
+  const seed = seedEnrichment.tour(key);
+  const seedText = seedEnrichment.tourText(key, fallback ? "es" : locale);
+  const destinations = es.destinationIds.map((id) => taxonomy.destinations.get(id)).filter((d): d is TaxonEntry => !!d);
+  const apiCategory = es.categoryId ? taxonomy.categories.get(es.categoryId)?.key : undefined;
   const categorySlugs = Array.from(new Set([...(apiCategory ? [apiCategory] : []), ...(seed?.categorySlugs ?? [])]));
-  const shortTitle = seed?.shortTitle ?? card.title;
-  const image: CatalogImage | null = card.coverImage ? { src: card.coverImage.url, alt: shortTitle } : null;
+  const shortTitle = (fallback ? null : seedText?.shortTitle?.trim()) || (locale === "es" ? seed?.shortTitle?.trim() : null) || text.title;
+  const image: CatalogImage | null = es.coverImage ? { src: es.coverImage.url, alt: text.coverImage?.alt || shortTitle } : null;
   return {
-    slug: card.slug,
-    path: `/es/tours/${card.slug}`,
-    title: card.title,
+    key,
+    slug: locale === "es" ? es.slug : alternates.en.split("/").pop()!,
+    path: alternates[locale],
+    alternates,
+    fallback,
+    title: text.title,
     shortTitle,
-    excerpt: cleanSeedText(card.summary) ?? "",
-    durationLabel: seed?.durationLabel ?? formatDuration(card.durationDays, card.durationNights),
-    durationDays: card.durationDays,
-    durationNights: card.durationNights,
-    durationBucket: durationBucketOf(card.durationDays),
-    destinationNames: destinations.map((d) => d.name),
-    destinationSlugs: destinations.map((d) => d.slug),
+    excerpt: cleanSeedText(text.summary) ?? "",
+    durationLabel: seed?.durationLabel ?? durationLabelOf(es.durationDays, es.durationNights),
+    durationDays: es.durationDays,
+    durationNights: es.durationNights,
+    durationBucket: durationBucketOf(es.durationDays),
+    destinationNames: destinations.map((d) => d.text.name),
+    destinationSlugs: destinations.map((d) => d.key),
     categorySlugs,
-    minPax: card.minPax,
-    difficulty: card.difficulty,
-    featured: card.isFeatured,
+    minPax: es.minPax,
+    difficulty: text.difficulty,
+    featured: es.isFeatured,
     image,
-    pricing: pricingOf(card.priceFrom),
+    pricing: pricingOf(es.priceFrom),
     paymentPolicy: policyOf(categorySlugs),
   };
 }
 
-async function toTour(detail: ApiTourDetail, taxonomy: Taxonomy): Promise<Tour> {
-  const summary = await toSummary(detail, taxonomy);
-  const seed = await seedCatalogRepository.getTour(detail.slug);
+function toTour(detail: ApiTourDetail, entry: CardEntry, taxonomy: Taxonomy, locale: Locale): Tour {
+  const fallback = locale === "en" ? isFallback(detail, "en") : false;
+  const enSlug = detail.alternateLocales?.find((a) => a.locale === "en")?.slug;
+  const alternates: LocalePaths = enSlug && !fallback ? { es: entry.alternates.es, en: tourPath("en", enSlug) } : entry.alternates;
+  const summary = toSummary({ ...entry, text: detail, fallback, alternates }, taxonomy, locale);
+  const seedText = seedEnrichment.tourText(summary.key, fallback ? "es" : locale);
   const images = detail.media.filter((m) => m.kind === "image");
   return {
     ...summary,
@@ -193,7 +288,7 @@ async function toTour(detail: ApiTourDetail, taxonomy: Taxonomy): Promise<Tour> 
     metaTitle: detail.seo.title,
     metaDescription: cleanSeedText(detail.seo.description) ?? summary.excerpt,
     description: cleanSeedText(detail.description) ?? "",
-    summaryText: seed?.summaryText ?? null,
+    summaryText: seedText?.summary ? cleanSeedText(seedText.summary) : null,
     itinerary: detail.itinerary
       .filter((d) => d.title || d.description)
       .map((d) => ({ day: d.day, title: d.title, description: d.description ?? "" })),
@@ -204,89 +299,110 @@ async function toTour(detail: ApiTourDetail, taxonomy: Taxonomy): Promise<Tour> 
     faqs: (detail.faqs ?? []).filter((f) => f.question && f.answer),
     policies: detail.policies,
     // TODO(HU-0.3): alt descriptivo por foto cuando la API tenga metadatos por imagen (hoy repite el título).
-    gallery: images.map((m, i) => ({ src: m.url, alt: `${summary.shortTitle}, foto ${i + 1} de ${images.length}` })),
+    gallery: images.map((m) => ({ src: m.url, alt: m.alt || summary.shortTitle })),
   };
 }
 
-async function listAllCards(): Promise<ApiTourCard[]> {
-  const params = { locale: "es", currency: env.CATALOG_CURRENCY, sort: "featured", pageSize: PAGE_SIZE };
-  const first = await cached<ListEnvelope<ApiTourCard>>(`/tours?${q({ ...params, page: 1 })}`);
-  const pages = first.meta?.totalPages ?? 1;
-  const rest = await Promise.all(
-    Array.from({ length: Math.max(0, pages - 1) }, (_, i) => cached<ListEnvelope<ApiTourCard>>(`/tours?${q({ ...params, page: i + 2 })}`)),
-  );
-  return [first, ...rest].flatMap((p) => p.data);
+async function apiTours(locale: Locale): Promise<TourSummary[]> {
+  const [cards, taxonomy] = await Promise.all([loadCards(locale), loadTaxonomy(locale)]);
+  return cards.map((c) => toSummary(c, taxonomy, locale));
 }
 
-async function apiTours(): Promise<TourSummary[]> {
-  const [cards, taxonomy] = await Promise.all([listAllCards(), loadTaxonomy()]);
-  return Promise.all(cards.map((c) => toSummary(c, taxonomy)));
+function taxonAlternates(entry: TaxonEntry, kind: "destination" | "category"): LocalePaths {
+  const make = kind === "destination" ? destinationPath : categoryPath;
+  return { es: make("es", entry.alternates.es), en: make("en", entry.alternates.en) };
 }
 
-async function apiDestinations(): Promise<Destination[]> {
-  const [taxonomy, tours, seed] = await Promise.all([loadTaxonomy(), apiTours(), seedCatalogRepository.listDestinations()]);
+async function apiDestinations(locale: Locale): Promise<Destination[]> {
+  const [taxonomy, tours] = await Promise.all([loadTaxonomy(locale), apiTours(locale)]);
   return [...taxonomy.destinations.values()].map((d) => {
-    const s = seed.find((x) => x.slug === d.slug);
-    const tourSlugs = tours.filter((t) => t.destinationSlugs.includes(d.slug)).map((t) => t.slug);
+    const s = seedEnrichment.destination(d.key);
+    const tourSlugs = tours.filter((t) => t.destinationSlugs.includes(d.key)).map((t) => t.key);
+    const alternates = taxonAlternates(d, "destination");
+    const alt = d.text.name;
     return {
-      slug: d.slug,
-      path: `/es/destinos/${d.slug}`,
-      name: d.name,
-      description: cleanSeedText(d.description),
-      bannerImage: s?.bannerImage ?? null,
-      cardImage: s?.cardImage ?? null,
+      key: d.key,
+      slug: d.alternates[locale],
+      path: alternates[locale],
+      alternates,
+      fallback: d.fallback,
+      name: d.text.name,
+      description: cleanSeedText(d.text.description),
+      bannerImage: s?.bannerImage ? { src: s.bannerImage, alt } : null,
+      cardImage: s?.bannerImage || s?.cardImage ? { src: (s.bannerImage ?? s.cardImage)!, alt } : null,
       tourSlugs,
       tourCount: tourSlugs.length,
     };
   });
 }
 
-async function apiCategories(): Promise<Category[]> {
-  const [taxonomy, tours, seed] = await Promise.all([loadTaxonomy(), apiTours(), seedCatalogRepository.listCategories()]);
+async function apiCategories(locale: Locale): Promise<Category[]> {
+  const [taxonomy, tours] = await Promise.all([loadTaxonomy(locale), apiTours(locale)]);
   return [...taxonomy.categories.values()].map((c) => {
-    const s = seed.find((x) => x.slug === c.slug);
-    const tourSlugs = tours.filter((t) => t.categorySlugs.includes(c.slug)).map((t) => t.slug);
+    const s = seedEnrichment.category(c.key);
+    const tourSlugs = tours.filter((t) => t.categorySlugs.includes(c.key)).map((t) => t.key);
+    const alternates = taxonAlternates(c, "category");
     return {
-      slug: c.slug,
-      path: `/es/categorias/${c.slug}`,
-      name: c.name,
-      description: cleanSeedText(c.description),
-      bannerImage: s?.bannerImage ?? null,
+      key: c.key,
+      slug: c.alternates[locale],
+      path: alternates[locale],
+      alternates,
+      fallback: c.fallback,
+      name: c.text.name,
+      description: cleanSeedText(c.text.description),
+      bannerImage: s?.bannerImage ? { src: s.bannerImage, alt: c.text.name } : null,
       tourSlugs,
       tourCount: tourSlugs.length,
     };
   });
 }
 
-async function apiTour(slug: string): Promise<Tour | null> {
-  let detail: ApiTourDetail;
-  try {
-    detail = (await cached<{ data: ApiTourDetail }>(`/tours/${encodeURIComponent(slug)}?${q({ locale: "es", currency: env.CATALOG_CURRENCY })}`)).data;
-  } catch (error) {
-    if (error instanceof ApiError && error.status === 404) return null;
-    throw error;
+async function apiTour(slug: string, locale: Locale): Promise<Tour | null> {
+  const cards = await loadCards(locale);
+  // El slug puede venir en cualquier idioma (o ser la clave en español).
+  const entry = cards.find((c) => c.es.slug === slug || c.alternates.en.endsWith(`/${slug}`) || c.text.slug === slug);
+  if (!entry) return null;
+  const localSlug = locale === "es" ? entry.es.slug : entry.alternates.en.split("/").pop()!;
+  const fetchDetail = async (s: string, lang: Locale) => {
+    try {
+      return (await cached<{ data: ApiTourDetail }>(`/tours/${encodeURIComponent(s)}?${q({ locale: lang, currency: env.CATALOG_CURRENCY })}`)).data;
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) return null;
+      throw error;
+    }
+  };
+  let detail = await fetchDetail(localSlug, locale);
+  // Sin traducción y sin fallback en la API: se muestra el español marcado como respaldo.
+  if (!detail && locale !== "es") {
+    const es = await fetchDetail(entry.es.slug, "es");
+    detail = es ? { ...es, locale: "es", fallback: true } : null;
   }
-  return toTour(detail, await loadTaxonomy());
+  if (!detail) return null;
+  return toTour(detail, entry, await loadTaxonomy(locale), locale);
+}
+
+function findTaxon<T extends { key: string; slug: string; alternates: LocalePaths }>(list: T[], slug: string): T | null {
+  return list.find((x) => x.key === slug || x.slug === slug || x.alternates.en.endsWith(`/${slug}`) || x.alternates.es.endsWith(`/${slug}`)) ?? null;
 }
 
 export function createApiCatalogRepository(): CatalogRepository {
   const seed = seedCatalogRepository;
   return {
-    listTours: () => withFallback("tours", apiTours, () => seed.listTours()),
-    getTour: (slug) => withFallback(`tour ${slug}`, () => apiTour(slug), () => seed.getTour(slug)),
-    listDestinations: () => withFallback("destinations", apiDestinations, () => seed.listDestinations()),
-    getDestination: (slug) =>
+    listTours: (locale) => withFallback("tours", () => apiTours(locale), () => seed.listTours(locale)),
+    getTour: (slug, locale) => withFallback(`tour ${slug}`, () => apiTour(slug, locale), () => seed.getTour(slug, locale)),
+    listDestinations: (locale) => withFallback("destinations", () => apiDestinations(locale), () => seed.listDestinations(locale)),
+    getDestination: (slug, locale) =>
       withFallback(
         `destination ${slug}`,
-        async () => (await apiDestinations()).find((d) => d.slug === slug) ?? null,
-        () => seed.getDestination(slug),
+        async () => findTaxon(await apiDestinations(locale), slug),
+        () => seed.getDestination(slug, locale),
       ),
-    listCategories: () => withFallback("categories", apiCategories, () => seed.listCategories()),
-    getCategory: (slug) =>
+    listCategories: (locale) => withFallback("categories", () => apiCategories(locale), () => seed.listCategories(locale)),
+    getCategory: (slug, locale) =>
       withFallback(
         `category ${slug}`,
-        async () => (await apiCategories()).find((c) => c.slug === slug) ?? null,
-        () => seed.getCategory(slug),
+        async () => findTaxon(await apiCategories(locale), slug),
+        () => seed.getCategory(slug, locale),
       ),
   };
 }

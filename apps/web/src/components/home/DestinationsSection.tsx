@@ -1,11 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
 import type { Destination } from "@/lib/catalog/types";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { localePath } from "@/i18n/paths";
+import type { Locale } from "@/i18n/routing";
 import { DestinationRail } from "./DestinationRail";
 
-export function DestinationCard({ destination, featured = false }: { destination: Destination; featured?: boolean }) {
+export async function DestinationCard({ destination, featured = false }: { destination: Destination; featured?: boolean }) {
+  const t = await getTranslations("home.destinations");
   return (
     <article
       className={
@@ -32,26 +36,21 @@ export function DestinationCard({ destination, featured = false }: { destination
             {destination.name}
           </Link>
         </h3>
-        <p className="text-sm text-hero-soft">
-          {destination.tourCount} {destination.tourCount === 1 ? "tour" : "tours"}
-        </p>
+        <p className="text-sm text-hero-soft">{t("tourCount", { count: destination.tourCount })}</p>
       </div>
     </article>
   );
 }
 
-export function DestinationsSection({ destinations }: { destinations: Destination[] }) {
+export async function DestinationsSection({ destinations, locale }: { destinations: Destination[]; locale: Locale }) {
+  const t = await getTranslations("home.destinations");
   return (
     <section className="pwt-section" aria-labelledby="destinos-title">
       <div className="pwt-container">
-        <SectionHeading
-          id="destinos-title"
-          title="Destinos que conocemos de memoria"
-          link={{ href: "/es/destinos", label: "Ver todos los destinos" }}
-        />
-        <DestinationRail label="Destinos">
+        <SectionHeading id="destinos-title" title={t("title")} link={{ href: localePath(locale, "/destinos"), label: t("viewAll") }} />
+        <DestinationRail label={t("railLabel")} previousLabel={t("previous")} nextLabel={t("next")}>
           {destinations.map((d, i) => (
-            <li key={d.slug} className={`w-[82%] shrink-0 snap-start md:w-auto ${i === 0 ? "lg:row-span-2 xl:row-span-1" : ""}`}>
+            <li key={d.key} className={`w-[82%] shrink-0 snap-start md:w-auto ${i === 0 ? "lg:row-span-2 xl:row-span-1" : ""}`}>
               <DestinationCard destination={d} featured={i === 0} />
             </li>
           ))}

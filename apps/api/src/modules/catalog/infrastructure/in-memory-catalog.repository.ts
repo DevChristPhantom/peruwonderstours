@@ -29,7 +29,7 @@ export class InMemoryCatalogRepository implements CatalogRepository {
 
     const scored: Array<TourListing & { score: number }> = [];
     for (const tour of this.data.tours) {
-      const translation = findTranslation(tour, criteria.locale);
+      const translation = findTranslation(tour, criteria.locale) ?? findTranslation(tour, 'es');
       if (!isTourPublished(tour) || !translation) continue;
       if (destination && !tour.destinations.some((d) => d.destinationId === destination.id)) continue;
       if (category && tour.categoryId !== category.id) continue;
@@ -82,7 +82,8 @@ export class InMemoryCatalogRepository implements CatalogRepository {
   findTourBySlug(slug: string, locale: string): Promise<Tour | null> {
     const tour =
       this.data.tours.find((t) => t.slug === slug) ??
-      this.data.tours.find((t) => t.translations.some((tr) => tr.locale === locale && tr.slug === slug));
+      this.data.tours.find((t) => t.translations.some((tr) => tr.locale === locale && tr.slug === slug)) ??
+      this.data.tours.find((t) => t.translations.some((tr) => tr.slug === slug));
     return Promise.resolve(tour ?? null);
   }
 

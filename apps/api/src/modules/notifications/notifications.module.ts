@@ -5,6 +5,7 @@ import { CLOCK, ID_GENERATOR, MAIL_TRANSPORT, PII_CIPHER, UNIT_OF_WORK } from '.
 import type { UnitOfWork } from '../../shared/application/unit-of-work.js';
 import type { Clock, IdGenerator } from '../../shared/domain/ports.js';
 import { PrivacyUseCases } from '../privacy/application/privacy.use-cases.js';
+import { issueAccessToken } from '../../shared/application/access-grants.js';
 import { MailComposer } from './application/mail-composer.js';
 import type { MailTransport } from './application/mail-transport.js';
 import { BalanceReminderJob, OutboxRelay } from './application/outbox-relay.js';
@@ -90,8 +91,8 @@ export class NotificationsScheduler implements OnApplicationBootstrap, OnApplica
     { provide: MAIL_TRANSPORT, inject: [APP_SETTINGS], useFactory: (s: AppSettings) => createMailTransport(s) },
     {
       provide: MailComposer,
-      inject: [APP_SETTINGS, PII_CIPHER, PrivacyUseCases],
-      useFactory: (s: AppSettings, cipher: PiiCipher, privacy: PrivacyUseCases) =>
+      inject: [APP_SETTINGS, PII_CIPHER, PrivacyUseCases, ID_GENERATOR, CLOCK],
+      useFactory: (s: AppSettings, cipher: PiiCipher, privacy: PrivacyUseCases, ids: IdGenerator, clock: Clock) =>
         new MailComposer({
           brand: {
             providerLegalName: s.complaints.provider.legalName,
@@ -103,6 +104,9 @@ export class NotificationsScheduler implements OnApplicationBootstrap, OnApplica
           cipher,
           unsubscribeUrl: (repos, email) => privacy.unsubscribeUrlIfGranted(repos, email),
           marketingConfirmationUrl: (email, purposes) => privacy.buildConfirmationUrl(email, purposes),
+          issueLink: async (repos, p) => (await issueAccessToken(repos, ids, { ...p, now: clock.now() })).token,
+          links: { requestedTtlMinutes: s.access.requestedLinkTtlMinutes, emailTtlHours: s.access.emailLinkTtlHours },
+          agencyInboxEmail: s.contact.agencyInboxEmail,
         }),
     },
     {

@@ -29,6 +29,17 @@ import { Payment, type PaymentEvent, type PaymentProviderCode } from '../../modu
 import type { PaymentEventRepository, PaymentRepository } from '../../modules/payments/domain/payment.repository.js';
 import { ConcurrencyError, ConflictError } from '../../shared/domain/domain-error.js';
 import type { InMemoryDataStore } from './in-memory-data-store.js';
+import type { AccessTokenPurpose, AccessTokenRecord, AccessTokenRepository } from '../../shared/domain/access-grant.js';
+import type { ContentLocale } from '../../shared/domain/i18n.js';
+import {
+  isBlogPostVisible,
+  type BlogPost,
+  type BlogRepository,
+  type ContactMessage,
+  type ContactRepository,
+  type Testimonial,
+  type TestimonialRepository,
+} from '../../modules/content/domain/content.js';
 
 class InMemoryCartRepository implements CartRepository {
   constructor(private readonly store: InMemoryDataStore) {}
@@ -107,6 +118,15 @@ class InMemoryBookingRepository implements BookingRepository {
     return Promise.resolve(
       [...this.store.state.bookings.values()]
         .filter((b) => b.status === 'partially_paid' && b.balanceDueAt !== null && b.balanceDueAt >= from && b.balanceDueAt <= to)
+        .slice(0, limit)
+        .map((b) => Booking.restore(b)),
+    );
+  }
+  findByCustomer(customerId: string, limit: number): Promise<Booking[]> {
+    return Promise.resolve(
+      [...this.store.state.bookings.values()]
+        .filter((b) => b.customerId === customerId && b.status !== 'pending')
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
         .slice(0, limit)
         .map((b) => Booking.restore(b)),
     );
@@ -386,6 +406,97 @@ class InMemoryLegalAcceptanceRepository implements LegalAcceptanceRepository {
   }
 }
 
+class InMemoryAccessTokenRepository implements AccessTokenRepository {
+  constructor(private readonly store: InMemoryDataStore) {}
+  private get map() {
+    return this.store.state.accessTokens;
+  }
+  insert(record: AccessTokenRecord): Promise<void> {
+    if ([...this.map.values()].some((r) => r.tokenHash === record.tokenHash)) return Promise.reject(new ConflictError('unique-violation', 'Token duplicado.'));
+    this.map.set(record.id, { ...record });
+    return Promise.resolve();
+  }
+  findByHash(tokenHash: string): Promise<AccessTokenRecord | null> {
+    const found = [...this.map.values()].find((r) => r.tokenHash === tokenHash);
+    return Promise.resolve(found ? { ...found } : null);
+  }
+  consume(id: string, now: Date): Promise<boolean> {
+    const r = this.map.get(id);
+    if (!r || r.consumedAt || r.revokedAt || r.expiresAt.getTime() <= now.getTime()) return Promise.resolve(false);
+    r.consumedAt = now;
+    return Promise.resolve(true);
+  }
+  revoke(id: string, now: Date): Promise<void> {
+    const r = this.map.get(id);
+    if (r && !r.revokedAt) r.revokedAt = now;
+    return Promise.resolve();
+  }
+  revokeAllForSubject(subjectId: string, purpose: AccessTokenPurpose, now: Date): Promise<number> {
+    let count = 0;
+    for (const r of this.map.values()) {
+      if (r.subjectId === subjectId && r.purpose === purpose && !r.revokedAt && r.expiresAt.getTime() > now.getTime()) {
+        r.revokedAt = now;
+        count += 1;
+      }
+    }
+    return Promise.resolve(count);
+  }
+  touch(id: string, now: Date): Promise<void> {
+    const r = this.map.get(id);
+    if (r) r.lastUsedAt = now;
+    return Promise.resolve();
+  }
+  countCreatedSince(subjectId: string, purpose: AccessTokenPurpose, since: Date): Promise<number> {
+    return Promise.resolve([...this.map.values()].filter((r) => r.subjectId === subjectId && r.purpose === purpose && r.createdAt.getTime() >= since.getTime()).length);
+  }
+}
+
+class InMemoryBlogRepository implements BlogRepository {
+  constructor(private readonly store: InMemoryDataStore) {}
+  listPublished(params: { now: Date; page: number; pageSize: number; tag?: string }): Promise<{ items: BlogPost[]; total: number }> {
+    const all = this.store.blogPosts
+      .filter((p) => isBlogPostVisible(p, params.now) && (!params.tag || p.tags.includes(params.tag)))
+      .sort((a, b) => (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0) || b.id.localeCompare(a.id));
+    const start = (params.page - 1) * params.pageSize;
+    return Promise.resolve({ items: structuredClone(all.slice(start, start + params.pageSize)), total: all.length });
+  }
+  findBySlug(slug: string, preferredLocale: ContentLocale): Promise<BlogPost | null> {
+    const found =
+      this.store.blogPosts.find((p) => p.translations.some((t) => t.locale === preferredLocale && t.slug === slug)) ??
+      this.store.blogPosts.find((p) => p.translations.some((t) => t.slug === slug));
+    return Promise.resolve(found ? structuredClone(found) : null);
+  }
+}
+
+class InMemoryTestimonialRepository implements TestimonialRepository {
+  constructor(private readonly store: InMemoryDataStore) {}
+  insert(testimonial: Testimonial): Promise<void> {
+    this.store.state.testimonials.set(testimonial.id, structuredClone(testimonial));
+    return Promise.resolve();
+  }
+  listApproved(params: { locale?: ContentLocale; tourId?: string; featured?: boolean; page: number; pageSize: number }): Promise<{ items: Testimonial[]; total: number }> {
+    const all = [...this.store.state.testimonials.values()]
+      .filter((t) => t.status === 'approved' && (t.publishConsent || t.origin !== 'web'))
+      .filter((t) => (!params.locale || t.locale === params.locale) && (!params.tourId || t.tourId === params.tourId))
+      .filter((t) => params.featured === undefined || t.isFeatured === params.featured)
+      .sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || (b.approvedAt?.getTime() ?? 0) - (a.approvedAt?.getTime() ?? 0));
+    const start = (params.page - 1) * params.pageSize;
+    return Promise.resolve({ items: structuredClone(all.slice(start, start + params.pageSize)), total: all.length });
+  }
+}
+
+class InMemoryContactRepository implements ContactRepository {
+  constructor(private readonly store: InMemoryDataStore) {}
+  insert(message: ContactMessage): Promise<void> {
+    this.store.state.contactMessages.set(message.id, structuredClone(message));
+    return Promise.resolve();
+  }
+  findById(id: string): Promise<ContactMessage | null> {
+    const found = this.store.state.contactMessages.get(id);
+    return Promise.resolve(found ? structuredClone(found) : null);
+  }
+}
+
 export function createInMemoryRepositories(store: InMemoryDataStore): TransactionalRepositories {
   const outbox = new InMemoryOutboxRepository(store);
   return {
@@ -406,5 +517,9 @@ export function createInMemoryRepositories(store: InMemoryDataStore): Transactio
     emailDeliveries: new InMemoryEmailDeliveryRepository(store),
     consents: new InMemoryConsentRepository(store),
     legalAcceptances: new InMemoryLegalAcceptanceRepository(store),
+    accessTokens: new InMemoryAccessTokenRepository(store),
+    blog: new InMemoryBlogRepository(store),
+    testimonials: new InMemoryTestimonialRepository(store),
+    contactMessages: new InMemoryContactRepository(store),
   };
 }

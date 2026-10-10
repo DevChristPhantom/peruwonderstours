@@ -352,7 +352,7 @@ describe('API v1 en modo seed (e2e)', () => {
     }
     expect(res?.status).toBe(429);
     expect(res?.headers['content-type']).toContain('application/problem+json');
-    expect(res?.body).toMatchObject({ status: 429, code: 'demasiadas-solicitudes' });
+    expect(res?.body).toMatchObject({ status: 429, code: 'too-many-requests' });
     expect(Number(res?.headers['retry-after-strict'])).toBeGreaterThan(0);
     // El límite global sigue permitiendo lecturas.
     await http.get('/api/v1/health').expect(200);

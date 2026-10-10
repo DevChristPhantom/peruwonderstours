@@ -8,7 +8,7 @@ import type { CatalogRepository } from '../modules/catalog/domain/catalog.reposi
 import { InMemoryCatalogRepository } from '../modules/catalog/infrastructure/in-memory-catalog.repository.js';
 import { generateDemoPricing } from '../modules/catalog/infrastructure/seed/demo-pricing.js';
 import { readSeedBundle } from '../modules/catalog/infrastructure/seed/seed-files.js';
-import { mapSeedCatalog } from '../modules/catalog/infrastructure/seed/seed-mapper.js';
+import { mapSeedBlog, mapSeedCatalog, mapSeedTestimonials } from '../modules/catalog/infrastructure/seed/seed-mapper.js';
 import { InMemoryDataStore } from './in-memory/in-memory-data-store.js';
 import { InMemoryUnitOfWork } from './in-memory/in-memory-unit-of-work.js';
 
@@ -41,9 +41,11 @@ export function inMemoryBackend(store: InMemoryDataStore, kind: 'seed' | 'memory
 export async function buildSeedStore(settings: Pick<AppSettings, 'seedDataDir' | 'demoPricing'>, clock: Clock): Promise<InMemoryDataStore> {
   const bundle = await readSeedBundle(settings.seedDataDir);
   const catalog = mapSeedCatalog(bundle, { publish: true, publishedAt: clock.now() });
-  if (!settings.demoPricing) return new InMemoryDataStore(catalog);
+  const blog = mapSeedBlog(bundle);
+  const testimonials = mapSeedTestimonials(bundle.testimonials ?? [], clock.now());
+  if (!settings.demoPricing) return new InMemoryDataStore(catalog, [], blog, testimonials);
   const demo = generateDemoPricing(catalog.tours, { today: toLimaCalendarDate(clock.now()), departureDays: 180, capacity: 12 });
-  return new InMemoryDataStore({ ...catalog, rates: demo.rates }, demo.departures);
+  return new InMemoryDataStore({ ...catalog, rates: demo.rates }, demo.departures, blog, testimonials);
 }
 
 export async function createPersistenceBackend(settings: AppSettings, clock: Clock): Promise<PersistenceBackend> {
