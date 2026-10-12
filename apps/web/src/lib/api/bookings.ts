@@ -78,6 +78,8 @@ export interface CheckoutInput {
   customer: { email: string; firstName: string; lastName: string; country?: string };
   customerNotes?: string;
   expectedTotalAmount?: number;
+  /** Idioma de la reserva y de sus correos de confirmación. */
+  locale?: "es" | "en";
 }
 
 export interface CheckoutResult {
@@ -101,6 +103,7 @@ export async function checkout(input: CheckoutInput): Promise<CheckoutResult> {
       acceptPrivacyPolicy: true,
       customerNotes: input.customerNotes || undefined,
       expectedTotalAmount: input.expectedTotalAmount,
+      locale: input.locale,
     },
   });
   if (!res) throw new ApiError(404, "booking-not-found", null);

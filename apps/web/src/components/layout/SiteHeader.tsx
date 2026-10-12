@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { Heart, ShoppingBag } from "lucide-react";
+import { Heart, ShoppingBag, UserRound } from "lucide-react";
 import Image from "next/image";
 import NextLink from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -512,6 +512,8 @@ export function SiteHeader({ media }: { media: NavMedia }) {
             ) : null}
           </div>
 
+          <AccountLink />
+
           <FavoritesLink />
 
           <CartButton />
@@ -599,6 +601,16 @@ export function SiteHeader({ media }: { media: NavMedia }) {
 }
 
 /* ---------- Favoritos, carrito y CTA ---------- */
+
+/** Cuenta sin contraseña: "Mis reservas" (si no hay sesión, la página ofrece el enlace de acceso). */
+function AccountLink() {
+  const t = useTranslations("header");
+  return (
+    <Link href="/mis-reservas" className={s.iconButton} aria-label={t("myBookings")} title={t("myBookings")}>
+      <UserRound aria-hidden size={20} strokeWidth={1.5} />
+    </Link>
+  );
+}
 
 /** Favoritos (HU-B.A4): contador visible que sube al guardar. */
 function FavoritesLink() {

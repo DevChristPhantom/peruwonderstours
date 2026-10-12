@@ -2,6 +2,8 @@
 
 import { checkout } from "@/lib/api/bookings";
 import { toUserError } from "@/lib/api/problems";
+import { requestLocale } from "@/lib/i18n/request-locale";
+import type { Locale } from "@/i18n/routing";
 import {
   COUNTRY_ISO,
   placeInputSchema,
@@ -27,19 +29,20 @@ import {
  * de carrito/reserva y las claves de idempotencia viven en cookies httpOnly (lib/checkout/session.ts).
  */
 
-function fail<T>(error: unknown): ActionResult<T> {
-  const f = failureFrom(error);
+function fail<T>(error: unknown, locale: Locale): ActionResult<T> {
+  const f = failureFrom(error, locale);
   return { ok: false, error: f.error, ...f.extra };
 }
 
 /** Paso 3: crea/revalida el carrito en la API y devuelve precios, cupos y opciones de pago vigentes. */
 export async function prepareCheckoutAction(raw: unknown): Promise<ActionResult<CheckoutQuote>> {
+  const locale = await requestLocale();
   const parsed = prepareInputSchema.safeParse(raw);
-  if (!parsed.success) return { ok: false, error: toUserError("validation-failed") };
+  if (!parsed.success) return { ok: false, error: toUserError("validation-failed", undefined, locale) };
   try {
-    return { ok: true, data: await prepareQuote(parsed.data) };
+    return { ok: true, data: await prepareQuote(parsed.data, locale) };
   } catch (error) {
-    return fail(error);
+    return fail(error, locale);
   }
 }
 
@@ -49,10 +52,11 @@ export async function prepareCheckoutAction(raw: unknown): Promise<ActionResult<
  * Reintentos y doble clic reutilizan la misma clave (cookie `pwt_checkout_attempt`).
  */
 export async function placeBookingAction(raw: unknown): Promise<ActionResult<PlaceResult>> {
+  const locale = await requestLocale();
   const parsed = placeInputSchema.safeParse(raw);
   if (!parsed.success) {
     const terms = parsed.error.issues.some((i) => i.path[0] === "acceptTerms" || i.path[0] === "acceptPrivacy");
-    return { ok: false, error: toUserError(terms ? "consent-required" : "validation-failed") };
+    return { ok: false, error: toUserError(terms ? "consent-required" : "validation-failed", undefined, locale) };
   }
   const input = parsed.data;
 
@@ -64,7 +68,7 @@ export async function placeBookingAction(raw: unknown): Promise<ActionResult<Pla
     const resumable = attempt?.booking && (!cart || cart.id === attempt.cartId) ? attempt : null;
 
     if (!resumable) {
-      if (!cart) throw new CheckoutFailure(toUserError("cart-expired"), { requote: true });
+      if (!cart) throw new CheckoutFailure(toUserError("cart-expired", undefined, locale), { requote: true });
       const sameOrder =
         attempt && attempt.cartId === cart.id && attempt.option === input.option && attempt.total === input.expectedTotalCents;
       attempt = sameOrder
@@ -86,6 +90,8 @@ export async function placeBookingAction(raw: unknown): Promise<ActionResult<Pla
         },
         customerNotes: input.notes?.slice(0, 2000),
         expectedTotalAmount: input.expectedTotalCents,
+        // Los correos de confirmación salen en el idioma en que se hizo la reserva.
+        locale,
       });
       if (!result.accessToken) {
         // Contrato pendiente del backend: sin token no podemos mostrar la reserva de forma segura.
@@ -94,7 +100,10 @@ export async function placeBookingAction(raw: unknown): Promise<ActionResult<Pla
           {
             code: "booking-token-missing",
             kind: "other",
-            message: `Guardamos tu reserva ${result.booking.code}, pero no pudimos abrirla aquí. Te escribiremos por correo y WhatsApp para completar el pago.`,
+            message:
+              locale === "en"
+                ? `We saved your booking ${result.booking.code}, but could not open it here. We will contact you by email and WhatsApp to complete the payment.`
+                : `Guardamos tu reserva ${result.booking.code}, pero no pudimos abrirla aquí. Te escribiremos por correo y WhatsApp para completar el pago.`,
           },
           { bookingCode: result.booking.code },
         );
@@ -113,19 +122,19 @@ export async function placeBookingAction(raw: unknown): Promise<ActionResult<Pla
     try {
       outcome = await payBooking({ bookingCode: booking.code, token: booking.token, payKey, method: input.method, simulate: input.simulate });
     } catch (error) {
-      const f = failureFrom(error);
+      const f = failureFrom(error, locale);
       throw new CheckoutFailure(f.error, { bookingCode: booking.code });
     }
 
     if (outcome === "failed") {
       // Nueva clave para el siguiente intento: la anterior ya quedó asociada a un cobro rechazado.
       await writeAttempt({ ...attempt!, payKey: undefined });
-      throw new CheckoutFailure(toUserError("payment-rejected"), { bookingCode: booking.code });
+      throw new CheckoutFailure(toUserError("payment-rejected", undefined, locale), { bookingCode: booking.code });
     }
 
     await clearAttempt();
     return { ok: true, data: { code: booking.code, payment: outcome } };
   } catch (error) {
-    return fail(error);
+    return fail(error, locale);
   }
 }

@@ -2,6 +2,7 @@ import "server-only";
 
 import type { Locale } from "@/i18n/routing";
 
+import type { Booking } from "./bookings";
 import { apiJson, apiRequest } from "./client";
 
 /**
@@ -13,13 +14,12 @@ import { apiJson, apiRequest } from "./client";
  * - `POST /bookings/access-link/exchange { token }` → `{ code, accessToken }`.
  * - Igual para `/complaints/access-link`.
  * - `POST /customers/login-link { email, locale }` → 202; `POST /customers/login-link/exchange { token }`
- *   → `{ sessionToken }`; `GET /me`, `GET /me/bookings`, `POST /me/logout` con la sesión del cliente.
+ *   → `{ sessionToken }`; `GET /me/bookings`, `POST /me/logout` con la sesión del cliente.
  * - `POST /me/bookings/:code/access` → `{ code, accessToken }` (abrir una reserva propia).
  */
 
 /** Cabecera con la que la API recibe la sesión del cliente (BFF → API): `X-Customer-Token`, sin prefijo. */
 const CUSTOMER_HEADER = "x-customer-token";
-const bearer = (token: string) => token;
 
 export interface ExchangeResult {
   code: string;
@@ -46,65 +46,33 @@ export async function exchangeComplaintAccessLink(token: string): Promise<Exchan
 
 /* ---------- Cuenta de cliente ---------- */
 
-export interface CustomerProfile {
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-}
-
-export interface CustomerBooking {
-  code: string;
-  status: string;
-  createdAt: string | null;
-  firstTravelDate: string | null;
-  total: { amount: number; currency: "PEN" | "USD" } | null;
-  items: { tourTitle: string; travelDate: string; paxCount: number }[];
-}
-
 export async function requestCustomerLoginLink(email: string, locale: Locale): Promise<void> {
   await apiRequest("/customers/login-link", { method: "POST", body: { email, locale } });
 }
 
 export async function exchangeCustomerLoginLink(token: string): Promise<{ sessionToken: string; expiresAt: string | null }> {
-  const res = await apiJson<{ data: { sessionToken?: string; token?: string; accessToken?: string; expiresAt?: string } }>(
-    "/customers/login-link/exchange",
-    { method: "POST", body: { token } },
-  );
-  const sessionToken = res.data.sessionToken ?? res.data.token ?? res.data.accessToken;
-  if (!sessionToken) throw new Error("La API no devolvió la sesión del cliente.");
-  return { sessionToken, expiresAt: res.data.expiresAt ?? null };
+  const res = await apiJson<{ data: { sessionToken?: string; expiresAt?: string } }>("/customers/login-link/exchange", {
+    method: "POST",
+    body: { token },
+  });
+  if (!res.data.sessionToken) throw new Error("La API no devolvió la sesión del cliente.");
+  return { sessionToken: res.data.sessionToken, expiresAt: res.data.expiresAt ?? null };
 }
 
-export async function getMe(session: string): Promise<CustomerProfile | null> {
-  const res = await apiRequest<{ data: CustomerProfile }>("/me", { headers: { [CUSTOMER_HEADER]: bearer(session) }, nullOn404: true });
-  return res?.body.data ?? null;
-}
-
-export async function listMyBookings(session: string): Promise<CustomerBooking[]> {
-  const res = await apiJson<{ data: Partial<CustomerBooking> & { code: string; items?: CustomerBooking["items"] }[] }>("/me/bookings", {
-    headers: { [CUSTOMER_HEADER]: bearer(session) },
-  });
-  return (res.data as (Partial<CustomerBooking> & { code: string })[]).map((b) => {
-    const items = b.items ?? [];
-    return {
-      code: b.code,
-      status: b.status ?? "pending",
-      createdAt: b.createdAt ?? null,
-      firstTravelDate: b.firstTravelDate ?? items.map((i) => i.travelDate).sort()[0] ?? null,
-      total: b.total ?? null,
-      items,
-    };
-  });
+/** Reservas del cliente (más recientes primero), con la misma vista que `GET /bookings/:code`. */
+export async function listMyBookings(session: string): Promise<Booking[]> {
+  const res = await apiJson<{ data: Booking[] }>("/me/bookings?limit=50", { headers: { [CUSTOMER_HEADER]: session } });
+  return res.data;
 }
 
 export async function grantMyBookingAccess(session: string, code: string): Promise<ExchangeResult> {
   const res = await apiJson<{ data: ExchangeResult }>(`/me/bookings/${encodeURIComponent(code)}/access`, {
     method: "POST",
-    headers: { [CUSTOMER_HEADER]: bearer(session) },
+    headers: { [CUSTOMER_HEADER]: session },
   });
   return res.data;
 }
 
 export async function logoutCustomer(session: string): Promise<void> {
-  await apiRequest("/me/logout", { method: "POST", headers: { [CUSTOMER_HEADER]: bearer(session) } });
+  await apiRequest("/me/logout", { method: "POST", headers: { [CUSTOMER_HEADER]: session }, body: {} });
 }

@@ -1,7 +1,9 @@
+import type { Locale } from "@/i18n/routing";
+
 /**
  * Traducción de códigos problem+json de la API (RFC 9457, `code` en kebab-case inglés) a mensajes
- * claros en español para el viajero. Módulo puro: lo usa el servidor para armar la respuesta de las
- * Server Actions; el navegador solo recibe `{ code, message }`.
+ * claros para el viajero, en su idioma (es/en). Módulo puro: lo usa el servidor para armar la
+ * respuesta de las Server Actions; el navegador solo recibe `{ code, message }`.
  */
 
 export type UserErrorKind = "sold-out" | "price-changed" | "payment-rejected" | "not-found" | "expired" | "validation" | "busy" | "unavailable" | "other";
@@ -14,57 +16,63 @@ export interface UserError {
   field?: string;
 }
 
-const MESSAGES: Record<string, { kind: UserErrorKind; message: string }> = {
+/** Mensaje por código: [tipo, español, inglés]. */
+const MESSAGES: Record<string, [UserErrorKind, string, string]> = {
   // Cupo / fechas
-  "sold-out": { kind: "sold-out", message: "Ya no quedan cupos para la fecha elegida. Elige otra fecha en tu carrito." },
-  "sales-closed": { kind: "sold-out", message: "Las ventas para esa fecha ya cerraron. Elige una fecha posterior." },
-  "no-departure": { kind: "sold-out", message: "No hay salida programada para esa fecha. Elige otra fecha." },
-  "departure-required": { kind: "sold-out", message: "Hay varias salidas ese día y no pudimos elegir una con cupo. Escríbenos por WhatsApp." },
-  "departure-mismatch": { kind: "sold-out", message: "La salida elegida ya no corresponde a esa fecha. Elige la fecha otra vez." },
-  "above-max-pax": { kind: "validation", message: "Superas el máximo de viajeros permitido para este tour." },
-  "below-min-pax": { kind: "validation", message: "Este tour necesita más viajeros como mínimo." },
-  "minor-without-adult": { kind: "validation", message: "Los niños deben viajar acompañados de al menos un adulto." },
-  "invalid-pax-quantity": { kind: "validation", message: "Revisa la cantidad de viajeros." },
+  "sold-out": ["sold-out", "Ya no quedan cupos para la fecha elegida. Elige otra fecha en tu carrito.", "There are no seats left for the chosen date. Pick another date in your cart."],
+  "sales-closed": ["sold-out", "Las ventas para esa fecha ya cerraron. Elige una fecha posterior.", "Sales for that date are closed. Pick a later date."],
+  "no-departure": ["sold-out", "No hay salida programada para esa fecha. Elige otra fecha.", "There is no departure scheduled for that date. Pick another date."],
+  "departure-required": ["sold-out", "Hay varias salidas ese día y no pudimos elegir una con cupo. Escríbenos por WhatsApp.", "There are several departures that day and we could not pick one with seats. Message us on WhatsApp."],
+  "departure-mismatch": ["sold-out", "La salida elegida ya no corresponde a esa fecha. Elige la fecha otra vez.", "The chosen departure no longer matches that date. Pick the date again."],
+  "above-max-pax": ["validation", "Superas el máximo de viajeros permitido para este tour.", "You are above the maximum number of travelers for this tour."],
+  "below-min-pax": ["validation", "Este tour necesita más viajeros como mínimo.", "This tour needs more travelers."],
+  "minor-without-adult": ["validation", "Los niños deben viajar acompañados de al menos un adulto.", "Children must travel with at least one adult."],
+  "invalid-pax-quantity": ["validation", "Revisa la cantidad de viajeros.", "Check the number of travelers."],
   // Precio
-  "total-changed": { kind: "price-changed", message: "El precio de tu reserva cambió. Revisa el nuevo total antes de pagar." },
-  "cart-has-issues": { kind: "price-changed", message: "Algunos tours de tu carrito cambiaron de precio o ya no tienen cupo. Revísalos antes de pagar." },
-  "rate-not-available": { kind: "validation", message: "Este tour aún no tiene precio para reservar en línea. Consúltalo por WhatsApp." },
-  "deposit-not-available": { kind: "validation", message: "Para esta reserva solo está disponible el pago del 100 %." },
+  "total-changed": ["price-changed", "El precio de tu reserva cambió. Revisa el nuevo total antes de pagar.", "The price of your booking changed. Check the new total before paying."],
+  "cart-has-issues": ["price-changed", "Algunos tours de tu carrito cambiaron de precio o ya no tienen cupo. Revísalos antes de pagar.", "Some tours in your cart changed price or are sold out. Review them before paying."],
+  "rate-not-available": ["validation", "Este tour aún no tiene precio para reservar en línea. Consúltalo por WhatsApp.", "This tour does not have an online price yet. Ask us on WhatsApp."],
+  "deposit-not-available": ["validation", "Para esta reserva solo está disponible el pago del 100 %.", "Only full payment is available for this booking."],
   // Carrito / reserva
-  "cart-not-found": { kind: "expired", message: "Tu sesión de pago expiró. Vuelve a revisar tu carrito para continuar." },
-  "cart-expired": { kind: "expired", message: "Tu sesión de pago expiró. Vuelve a revisar tu carrito para continuar." },
-  "cart-not-active": { kind: "expired", message: "Este pedido ya se procesó. Revisa tu correo o tu reserva." },
-  "cart-already-checked-out": { kind: "expired", message: "Este pedido ya se convirtió en una reserva. Revisa tu correo." },
-  "cart-empty": { kind: "validation", message: "Tu carrito está vacío." },
-  "cart-full": { kind: "validation", message: "Tu carrito tiene demasiados tours. Divide la reserva en dos." },
-  "cart-item-duplicate": { kind: "validation", message: "Tienes el mismo tour y fecha repetidos en el carrito." },
-  "tour-not-found": { kind: "not-found", message: "Este tour ya no está disponible para reservar en línea." },
-  "booking-not-found": { kind: "not-found", message: "No encontramos la reserva." },
-  "hold-expired": { kind: "expired", message: "Se venció el tiempo para pagar y liberamos tus cupos. Vuelve al carrito para intentarlo de nuevo." },
-  "booking-not-payable": { kind: "expired", message: "Esta reserva ya no admite pagos. Escríbenos por WhatsApp si necesitas ayuda." },
-  "booking-already-paid": { kind: "other", message: "Tu reserva ya está pagada." },
+  "cart-not-found": ["expired", "Tu sesión de pago expiró. Vuelve a revisar tu carrito para continuar.", "Your checkout session expired. Review your cart again to continue."],
+  "cart-expired": ["expired", "Tu sesión de pago expiró. Vuelve a revisar tu carrito para continuar.", "Your checkout session expired. Review your cart again to continue."],
+  "cart-not-active": ["expired", "Este pedido ya se procesó. Revisa tu correo o tu reserva.", "This order was already processed. Check your email or your booking."],
+  "cart-already-checked-out": ["expired", "Este pedido ya se convirtió en una reserva. Revisa tu correo.", "This order is already a booking. Check your email."],
+  "cart-empty": ["validation", "Tu carrito está vacío.", "Your cart is empty."],
+  "cart-full": ["validation", "Tu carrito tiene demasiados tours. Divide la reserva en dos.", "Your cart has too many tours. Split the booking in two."],
+  "cart-item-duplicate": ["validation", "Tienes el mismo tour y fecha repetidos en el carrito.", "You have the same tour and date twice in your cart."],
+  "tour-not-found": ["not-found", "Este tour ya no está disponible para reservar en línea.", "This tour is no longer available to book online."],
+  "booking-not-found": ["not-found", "No encontramos la reserva.", "We could not find the booking."],
+  "hold-expired": ["expired", "Se venció el tiempo para pagar y liberamos tus cupos. Vuelve al carrito para intentarlo de nuevo.", "The time to pay ran out and we released your seats. Go back to the cart to try again."],
+  "booking-not-payable": ["expired", "Esta reserva ya no admite pagos. Escríbenos por WhatsApp si necesitas ayuda.", "This booking no longer accepts payments. Message us on WhatsApp if you need help."],
+  "booking-already-paid": ["other", "Tu reserva ya está pagada.", "Your booking is already paid."],
   // Pago
-  "payment-rejected": { kind: "payment-rejected", message: "Tu banco rechazó el pago. No se te cobró nada; prueba con otra tarjeta o con Yape." },
-  "payment-gateway-error": { kind: "unavailable", message: "La pasarela de pagos no respondió. No se te cobró nada; intenta de nuevo en unos minutos." },
-  "payment-not-found": { kind: "not-found", message: "No encontramos el pago. Intenta de nuevo." },
+  "payment-rejected": ["payment-rejected", "Tu banco rechazó el pago. No se te cobró nada; prueba con otra tarjeta o con Yape.", "Your bank declined the payment. You were not charged; try another card or Yape."],
+  "payment-gateway-error": ["unavailable", "La pasarela de pagos no respondió. No se te cobró nada; intenta de nuevo en unos minutos.", "The payment gateway did not respond. You were not charged; try again in a few minutes."],
+  "payment-not-found": ["not-found", "No encontramos el pago. Intenta de nuevo.", "We could not find the payment. Try again."],
   // Consentimiento / datos
-  "consent-required": { kind: "validation", message: "Acepta los Términos y la Política de privacidad para continuar.", },
-  "invalid-email": { kind: "validation", message: "Revisa el correo electrónico." },
-  "invalid-country": { kind: "validation", message: "Revisa el país de residencia." },
-  "validation-failed": { kind: "validation", message: "Revisa los datos ingresados." },
+  "consent-required": ["validation", "Acepta los Términos y la Política de privacidad para continuar.", "Accept the Terms and the Privacy Policy to continue."],
+  "invalid-email": ["validation", "Revisa el correo electrónico.", "Check the email address."],
+  "invalid-country": ["validation", "Revisa el país de residencia.", "Check the country of residence."],
+  "validation-failed": ["validation", "Revisa los datos ingresados.", "Check the information you entered."],
   // Concurrencia / disponibilidad
-  "idempotency-in-progress": { kind: "busy", message: "Ya estamos procesando tu pago. Espera unos segundos sin cerrar esta página." },
-  "concurrency-conflict": { kind: "busy", message: "Hubo mucha demanda al mismo tiempo. Intenta de nuevo." },
-  "idempotency-key-reused": { kind: "other", message: "Tu pedido cambió mientras se procesaba. Revisa el resumen e intenta de nuevo." },
-  "too-many-requests": { kind: "busy", message: "Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo; no se te cobró nada." },
-  "http-429": { kind: "busy", message: "Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo; no se te cobró nada." },
-  "payload-too-large": { kind: "validation", message: "El texto enviado es demasiado largo. Acórtalo e intenta de nuevo." },
-  "booking-token-required": { kind: "not-found", message: "No encontramos la reserva." },
+  "idempotency-in-progress": ["busy", "Ya estamos procesando tu pago. Espera unos segundos sin cerrar esta página.", "We are already processing your payment. Wait a few seconds without closing this page."],
+  "concurrency-conflict": ["busy", "Hubo mucha demanda al mismo tiempo. Intenta de nuevo.", "There was a lot of demand at the same time. Try again."],
+  "idempotency-key-reused": ["other", "Tu pedido cambió mientras se procesaba. Revisa el resumen e intenta de nuevo.", "Your order changed while it was being processed. Check the summary and try again."],
+  "too-many-requests": ["busy", "Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo; no se te cobró nada.", "You made several attempts in a row. Wait a minute and try again; you were not charged."],
+  "http-429": ["busy", "Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo; no se te cobró nada.", "You made several attempts in a row. Wait a minute and try again; you were not charged."],
+  "payload-too-large": ["validation", "El texto enviado es demasiado largo. Acórtalo e intenta de nuevo.", "The text you sent is too long. Shorten it and try again."],
+  "booking-token-required": ["not-found", "No encontramos la reserva.", "We could not find the booking."],
   // Código genérico de 404 (antes `no-encontrado`).
-  "not-found": { kind: "not-found", message: "No encontramos lo que buscabas. Revisa los datos e intenta de nuevo." },
+  "not-found": ["not-found", "No encontramos lo que buscabas. Revisa los datos e intenta de nuevo.", "We could not find what you were looking for. Check the details and try again."],
   // Enlace de acceso de un solo uso ya usado o vencido (410).
-  "access-link-expired": { kind: "expired", message: "Este enlace ya se usó o venció. Pide uno nuevo con tu código y correo." },
-  "api-unavailable": { kind: "unavailable", message: "No pudimos conectar con el sistema de reservas. No se te cobró nada; intenta de nuevo en unos minutos." },
+  "access-link-expired": ["expired", "Este enlace ya se usó o venció. Pide uno nuevo con tu código y correo.", "This link was already used or expired. Request a new one with your code and email."],
+  "api-unavailable": ["unavailable", "No pudimos conectar con el sistema de reservas. No se te cobró nada; intenta de nuevo en unos minutos.", "We could not reach the booking system. You were not charged; try again in a few minutes."],
+};
+
+const GENERIC: Record<Locale, string> = {
+  es: "No pudimos completar la operación. Intenta de nuevo o escríbenos por WhatsApp.",
+  en: "We could not complete the operation. Try again or message us on WhatsApp.",
 };
 
 const FIELD_BY_CODE: Record<string, string> = {
@@ -73,27 +81,25 @@ const FIELD_BY_CODE: Record<string, string> = {
   "invalid-country": "country",
 };
 
-export function toUserError(code: string, fallbackDetail?: string): UserError {
+export function toUserError(code: string, fallbackDetail?: string, locale: Locale = "es"): UserError {
   const known = MESSAGES[code] ?? (code.includes("429") || code.includes("too-many") ? MESSAGES["http-429"] : undefined);
-  if (known) return { code, ...known, field: FIELD_BY_CODE[code] };
-  return {
-    code,
-    kind: "other",
-    // El `detail` de la API ya viene en español (es-PE) para errores de dominio; se usa como respaldo.
-    message: fallbackDetail?.trim() || "No pudimos completar la operación. Intenta de nuevo o escríbenos por WhatsApp.",
-  };
+  if (known) {
+    const [kind, es, en] = known;
+    return { code, kind, message: locale === "en" ? en : es, field: FIELD_BY_CODE[code] };
+  }
+  // El `detail` de la API viene en español (es-PE): solo sirve de respaldo en la página en español.
+  const detail = locale === "es" ? fallbackDetail?.trim() : undefined;
+  return { code, kind: "other", message: detail || GENERIC[locale] };
 }
 
+const CART_ISSUES: Record<string, Record<Locale, string>> = {
+  sold_out: { es: "ya no quedan cupos para esa fecha.", en: "no seats left for that date." },
+  date_unavailable: { es: "la fecha ya no está disponible.", en: "the date is no longer available." },
+  price_changed: { es: "el precio cambió.", en: "the price changed." },
+};
+
 /** Mensaje por tipo de incidencia del carrito (`issues[].type` de la API). */
-export function cartIssueMessage(type: string, code: string, tourTitle: string): string {
-  switch (type) {
-    case "sold_out":
-      return `${tourTitle}: ya no quedan cupos para esa fecha.`;
-    case "date_unavailable":
-      return `${tourTitle}: la fecha ya no está disponible.`;
-    case "price_changed":
-      return `${tourTitle}: el precio cambió.`;
-    default:
-      return `${tourTitle}: ${toUserError(code).message}`;
-  }
+export function cartIssueMessage(type: string, code: string, tourTitle: string, locale: Locale = "es"): string {
+  const text = CART_ISSUES[type]?.[locale] ?? toUserError(code, undefined, locale).message;
+  return `${tourTitle}: ${text}`;
 }

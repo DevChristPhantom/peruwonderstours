@@ -1,14 +1,17 @@
 "use client";
 
 import { CloudDownload, Info, Smartphone, WifiOff } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
-import { formatDateTime } from "@/lib/format";
+import { useFormat } from "@/hooks/useFormat";
+import { bookingPath } from "@/i18n/paths";
 import { safeLocalStorage } from "@/stores/safe-storage";
 import { buttonClass } from "@/components/ui/button-styles";
 
 /** Lo que se compara entre visitas para avisar cambios (sin datos personales). */
 export interface VoucherSnapshot {
+  /** Estado de la API (`paid`, `confirmed`…): se traduce al mostrarlo, así no depende del idioma. */
   status: string;
   items: { id: string; title: string; date: string; pax: number }[];
 }
@@ -30,7 +33,8 @@ interface BeforeInstallPromptEvent extends Event {
 type SaveState = { kind: "idle" } | { kind: "saving" } | { kind: "saved"; at: string | null; stale?: boolean } | { kind: "error" };
 
 const SW_URL = "/sw-voucher.js";
-const SW_SCOPE = "/es/reserva/";
+
+type Translate = ReturnType<typeof useTranslations<"voucher">>;
 
 function subscribeOnline(cb: () => void) {
   window.addEventListener("online", cb);
@@ -82,19 +86,20 @@ function ask<T>(worker: ServiceWorker, message: Record<string, unknown>, timeout
   });
 }
 
-function describeChanges(prev: VoucherSnapshot, next: VoucherSnapshot): string[] {
+function describeChanges(prev: VoucherSnapshot, next: VoucherSnapshot, t: Translate): string[] {
   const changes: string[] = [];
-  if (prev.status !== next.status) changes.push(`Estado: ahora "${next.status}" (antes "${prev.status}").`);
+  const label = (status: string) => (t.has(`status.${status}` as never) ? t(`status.${status}` as never) : status);
+  if (prev.status !== next.status) changes.push(t("changes.status", { now: label(next.status), before: label(prev.status) }));
   for (const item of next.items) {
     const old = prev.items.find((p) => p.id === item.id);
     if (!old) {
-      changes.push(`Se agregó ${item.title}.`);
+      changes.push(t("changes.added", { title: item.title }));
       continue;
     }
-    if (old.date !== item.date) changes.push(`Cambió la fecha de ${item.title}.`);
-    if (old.pax !== item.pax) changes.push(`Cambió la cantidad de viajeros de ${item.title}.`);
+    if (old.date !== item.date) changes.push(t("changes.date", { title: item.title }));
+    if (old.pax !== item.pax) changes.push(t("changes.pax", { title: item.title }));
   }
-  for (const old of prev.items) if (!next.items.some((i) => i.id === old.id)) changes.push(`Se quitó ${old.title}.`);
+  for (const old of prev.items) if (!next.items.some((i) => i.id === old.id)) changes.push(t("changes.removed", { title: old.title }));
   return changes;
 }
 
@@ -107,6 +112,9 @@ function isSnapshot(value: unknown): value is VoucherSnapshot {
  * dispositivo, ofrece instalarla en la pantalla de inicio y avisa si la reserva cambió.
  */
 export function VoucherOffline({ code, renderedAt, snapshot, autoSave }: VoucherOfflineProps) {
+  const t = useTranslations("voucher");
+  const locale = useLocale();
+  const fmt = useFormat();
   const online = useOnline();
   const [state, setState] = useState<SaveState>({ kind: "idle" });
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
@@ -114,7 +122,9 @@ export function VoucherOffline({ code, renderedAt, snapshot, autoSave }: Voucher
   const isIos = useSyncExternalStore(noopSubscribe, iosBrowser, () => false);
   const supported = useSyncExternalStore(noopSubscribe, swSupported, () => true);
   const workerRef = useRef<ServiceWorker | null>(null);
-  const path = `/es/reserva/${code}`;
+  // `/es/reserva/CODIGO` o `/en/booking/CODIGO`; el SW se registra con la carpeta de reservas del idioma.
+  const path = bookingPath(locale, code);
+  const scope = path.slice(0, path.lastIndexOf("/") + 1);
 
   // Cambios desde la última visita (p. ej. operaciones cambió la fecha).
   useEffect(() => {
@@ -128,9 +138,9 @@ export function VoucherOffline({ code, renderedAt, snapshot, autoSave }: Voucher
     }
     const current = JSON.stringify(snapshot);
     // eslint-disable-next-line react-hooks/set-state-in-effect -- comparación con localStorage, solo existe en el cliente
-    if (isSnapshot(prev)) setChanges(describeChanges(prev, snapshot));
+    if (isSnapshot(prev)) setChanges(describeChanges(prev, snapshot, t));
     safeLocalStorage.setItem(key, current);
-  }, [code, snapshot]);
+  }, [code, snapshot, t]);
 
   useEffect(() => {
     const onPrompt = (e: Event) => {
@@ -160,7 +170,7 @@ export function VoucherOffline({ code, renderedAt, snapshot, autoSave }: Voucher
     let cancelled = false;
     (async () => {
       try {
-        const reg = await navigator.serviceWorker.register(SW_URL, { scope: SW_SCOPE });
+        const reg = await navigator.serviceWorker.register(SW_URL, { scope });
         const worker = reg.active ?? reg.waiting ?? reg.installing;
         const ready = worker?.state === "activated" ? worker : (await navigator.serviceWorker.ready).active;
         if (cancelled || !ready) return;
@@ -189,7 +199,7 @@ export function VoucherOffline({ code, renderedAt, snapshot, autoSave }: Voucher
     return () => {
       cancelled = true;
     };
-  }, [autoSave, path, supported]);
+  }, [autoSave, path, scope, supported]);
 
   const forget = async () => {
     const worker = workerRef.current;
@@ -203,13 +213,13 @@ export function VoucherOffline({ code, renderedAt, snapshot, autoSave }: Voucher
       {!online || (state.kind === "saved" && state.stale) ? (
         <p role="status" className="flex gap-2 rounded-md bg-warning-soft p-3 text-warning">
           <WifiOff aria-hidden size={18} strokeWidth={1.5} className="mt-0.5 shrink-0" />
-          Sin conexión: estás viendo la copia guardada, actualizada el {formatDateTime(renderedAt)} (hora de Lima).
+          {t("offline", { date: fmt.dateTime(renderedAt) })}
         </p>
       ) : null}
 
       {changes.length ? (
         <div role="status" className="rounded-md border border-warning bg-warning-soft p-3 text-warning">
-          <p className="font-medium">Tu reserva cambió desde tu última visita:</p>
+          <p className="font-medium">{t("changes.title")}</p>
           <ul className="mt-1 list-disc pl-5">
             {changes.map((c) => (
               <li key={c}>{c}</li>
@@ -223,17 +233,17 @@ export function VoucherOffline({ code, renderedAt, snapshot, autoSave }: Voucher
           <p className="flex items-start gap-2 text-success">
             <CloudDownload aria-hidden size={18} strokeWidth={1.5} className="mt-0.5 shrink-0" />
             <span>
-              {`Disponible sin conexión en este dispositivo${state.at ? ` · guardado el ${formatDateTime(state.at)}` : ""}`.replace(/\.?$/, ".")}
+              {state.at ? t("savedAt", { date: fmt.dateTime(state.at) }) : t("saved")}
             </span>
           </p>
         ) : state.kind === "saving" ? (
-          <p className="text-foreground-muted">Guardando tu voucher en este dispositivo…</p>
+          <p className="text-foreground-muted">{t("saving")}</p>
         ) : state.kind === "error" ? (
-          <p className="text-danger">No pudimos guardar el voucher. Revisa tu conexión e inténtalo de nuevo.</p>
+          <p className="text-danger">{t("saveError")}</p>
         ) : !supported ? (
           <p className="flex items-start gap-2 text-foreground-muted">
             <Info aria-hidden size={18} strokeWidth={1.5} className="mt-0.5 shrink-0" />
-            Este navegador no permite guardar páginas sin conexión. Toma una captura de pantalla del QR.
+            {t("unsupported")}
           </p>
         ) : null}
       </div>
@@ -242,12 +252,12 @@ export function VoucherOffline({ code, renderedAt, snapshot, autoSave }: Voucher
         {supported && (state.kind === "idle" || state.kind === "error") ? (
           <button type="button" className={buttonClass("secondary", "md")} onClick={save} disabled={!online}>
             <CloudDownload aria-hidden size={18} strokeWidth={1.5} />
-            Guardar en este dispositivo
+            {t("save")}
           </button>
         ) : null}
         {state.kind === "saved" && online ? (
           <button type="button" className={buttonClass("ghost", "md")} onClick={save}>
-            Actualizar copia
+            {t("refresh")}
           </button>
         ) : null}
         {installEvent ? (
@@ -261,18 +271,18 @@ export function VoucherOffline({ code, renderedAt, snapshot, autoSave }: Voucher
             }}
           >
             <Smartphone aria-hidden size={18} strokeWidth={1.5} />
-            Añadir a la pantalla de inicio
+            {t("install")}
           </button>
         ) : null}
         {state.kind === "saved" ? (
           <button type="button" className={buttonClass("ghost", "md")} onClick={forget}>
-            Quitar de este dispositivo
+            {t("forget")}
           </button>
         ) : null}
       </div>
       {isIos && !installEvent ? (
         <p className="text-foreground-muted">
-          En iPhone: toca Compartir y luego “Añadir a pantalla de inicio” para abrir tu voucher como app.
+          {t("ios")}
         </p>
       ) : null}
     </div>

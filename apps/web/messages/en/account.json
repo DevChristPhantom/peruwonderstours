@@ -1,0 +1,50 @@
+{
+  "states": {
+    "idle": "",
+    "sent": "If that email has bookings with us, you will receive a sign-in link in a few minutes. The link works only once. Check your spam folder too.",
+    "invalid": "Check the email address.",
+    "busy": "You made several attempts in a row. Wait a minute and try again.",
+    "unavailable": "We could not complete the request right now. Try again in a few minutes or message us on WhatsApp.",
+    "expired": "This link was already used or expired. Request a new one below.",
+    "linkNotFound": "This link is not valid. Request a new one below."
+  },
+  "access": {
+    "title": "Access my bookings",
+    "description": "Get a secure link by email to see all your bookings, no password needed.",
+    "intro": "Enter the email you booked with. We will send you a secure link to see all your bookings, no password needed.",
+    "emailLabel": "Email address",
+    "emailHint": "The same email you used to book.",
+    "submit": "Send me the link",
+    "sending": "Sending…",
+    "tokenTitle": "Open your bookings",
+    "tokenText": "Press the button to open your bookings in this browser. The link works only once.",
+    "open": "See my bookings",
+    "opening": "Signing in…",
+    "privacy": "For your security, we never show your bookings without verifying your email.",
+    "byCode": "Only want to see one booking?",
+    "byCodeLink": "Use its booking code",
+    "alreadyIn": "You are already signed in on this browser.",
+    "goToBookings": "Go to my bookings",
+    "loggedOut": "You signed out on this browser."
+  },
+  "bookings": {
+    "title": "My bookings",
+    "description": "All your bookings with Peru Wonders Tours: status, dates and voucher.",
+    "listLabel": "Your bookings",
+    "logout": "Sign out",
+    "loggingOut": "Signing out…",
+    "signIn": "Get a sign-in link",
+    "problems": {
+      "signedOut": "To see your bookings, we send a secure link to your email. No password needed.",
+      "expired": "Your session expired. Request a new link to sign in again.",
+      "unavailable": "We could not load your bookings right now. Try again in a few minutes."
+    },
+    "openError": "We could not open that booking. Try again or message us on WhatsApp.",
+    "empty": "You don't have any bookings with this email yet.",
+    "browseTours": "Browse tours",
+    "travelDate": "travels on {date}",
+    "open": "Open",
+    "openLabel": "Open booking {code}",
+    "opening": "Opening…"
+  }
+}

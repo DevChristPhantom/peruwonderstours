@@ -1,0 +1,50 @@
+{
+  "states": {
+    "idle": "",
+    "sent": "Si ese correo tiene reservas con nosotros, en unos minutos recibirás un enlace para entrar. El enlace sirve una sola vez. Revisa también tu carpeta de spam.",
+    "invalid": "Revisa el correo electrónico.",
+    "busy": "Hiciste varios intentos seguidos. Espera un minuto e inténtalo de nuevo.",
+    "unavailable": "No pudimos completar la solicitud en este momento. Intenta de nuevo en unos minutos o escríbenos por WhatsApp.",
+    "expired": "Este enlace ya se usó o venció. Pide uno nuevo abajo.",
+    "linkNotFound": "Este enlace no es válido. Pide uno nuevo abajo."
+  },
+  "access": {
+    "title": "Acceder a mis reservas",
+    "description": "Recibe en tu correo un enlace seguro para ver todas tus reservas, sin contraseña.",
+    "intro": "Escribe el correo con el que reservaste. Te enviaremos un enlace seguro para ver todas tus reservas, sin contraseña.",
+    "emailLabel": "Correo electrónico",
+    "emailHint": "El mismo correo que usaste al reservar.",
+    "submit": "Enviarme el enlace",
+    "sending": "Enviando…",
+    "tokenTitle": "Entra a tus reservas",
+    "tokenText": "Pulsa el botón para entrar a tus reservas en este navegador. El enlace sirve una sola vez.",
+    "open": "Ver mis reservas",
+    "opening": "Entrando…",
+    "privacy": "Por tu seguridad, nunca mostramos tus reservas sin verificar tu correo.",
+    "byCode": "¿Solo quieres ver una reserva?",
+    "byCodeLink": "Entra con su código",
+    "alreadyIn": "Ya tienes una sesión abierta en este navegador.",
+    "goToBookings": "Ir a mis reservas",
+    "loggedOut": "Cerraste sesión en este navegador."
+  },
+  "bookings": {
+    "title": "Mis reservas",
+    "description": "Todas tus reservas con Peru Wonders Tours: estado, fechas y voucher.",
+    "listLabel": "Tus reservas",
+    "logout": "Cerrar sesión",
+    "loggingOut": "Cerrando sesión…",
+    "signIn": "Recibir enlace de acceso",
+    "problems": {
+      "signedOut": "Para ver tus reservas, te enviamos un enlace seguro a tu correo. No necesitas contraseña.",
+      "expired": "Tu sesión venció. Pide un enlace nuevo para volver a entrar.",
+      "unavailable": "No pudimos cargar tus reservas en este momento. Intenta de nuevo en unos minutos."
+    },
+    "openError": "No pudimos abrir esa reserva. Intenta de nuevo o escríbenos por WhatsApp.",
+    "empty": "Aún no tienes reservas con este correo.",
+    "browseTours": "Ver tours",
+    "travelDate": "viaje el {date}",
+    "open": "Abrir",
+    "openLabel": "Abrir la reserva {code}",
+    "opening": "Abriendo…"
+  }
+}

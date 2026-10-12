@@ -5,7 +5,7 @@ import { absoluteUrl } from "@/lib/site";
 /** El sitio viejo tenía `Disallow: /`; el nuevo permite indexar (HU-0.4). */
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [{ userAgent: "*", allow: "/", disallow: ["/es/checkout", "/es/carrito", "/es/reserva/", "/en/checkout", "/en/cart", "/en/booking/"] }],
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/es/checkout", "/es/carrito", "/es/reserva/", "/en/checkout", "/en/cart", "/en/booking/", "/es/mis-reservas", "/es/cuenta/", "/en/my-bookings", "/en/account/"] }],
     sitemap: absoluteUrl("/sitemap.xml"),
   };
 }

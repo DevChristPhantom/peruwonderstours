@@ -1,0 +1,50 @@
+{
+  "metaDescription": "Your cart as a day-by-day itinerary, with date and acclimatization notices.",
+  "loading": "Loading your trip…",
+  "title": "My trip",
+  "empty": "When you add tours to your cart you will see your day-by-day plan here, with notices about overlapping dates and altitude acclimatization.",
+  "range": "From {from} to {to} · {days, plural, one {# day} other {# days}} · {tours, plural, one {# tour} other {# tours}}",
+  "download": "Download calendar (.ics)",
+  "backToCart": "Back to cart",
+  "sameDay": "{titles} are on the same day in the same city. We will make sure the schedules do not clash.",
+  "planLabel": "Day-by-day plan",
+  "day": "Day {n}",
+  "dayRange": "Days {from} to {to}",
+  "freeDays": "{count, plural, one {Free or transfer day} other {Free or transfer days}}",
+  "overlapping": "Overlapping dates",
+  "tourDay": "Day {n} of {total}",
+  "tourEnd": "end of tour",
+  "severalDestinations": "Several destinations",
+  "tooLong": "Your trip lasts more than 4 months; we show it up to {date}.",
+  "helpLabel": "Help with your trip",
+  "pickupTitle": "Schedules and pickup",
+  "pickupText": "Pickup times are confirmed when you book, in Lima time. The calendar will include them once confirmed.",
+  "whatsapp": "Questions about your plan? Message us on WhatsApp",
+  "altitude": {
+    "title": "Altitude acclimatization",
+    "text": "Puno, Cusco and the Colca are above 3,400 m. Arriving a day early, staying hydrated and eating light reduces altitude sickness (soroche).",
+    "where": "{region} ({meters} m above sea level)",
+    "starts": "{date}: {title} starts in {where}.",
+    "from": "You are coming from {region}, at {meters} m: the change in altitude is big.",
+    "demanding": "This is a demanding tour for the altitude: we recommend arriving at least one day early and resting.",
+    "easy": "If you arrive that same day, we recommend resting for a few hours and taking it easy.",
+    "notBlocking": "(A recommendation; it does not block your booking.)"
+  },
+  "ics": {
+    "pickup": "Pickup time and place: we will confirm them on WhatsApp (Lima time).",
+    "notConfirmed": "Booking pending payment: this calendar does not confirm seats.",
+    "calendarName": "My trip · Peru Wonders Tours",
+    "fileName": "my-trip-peru-wonders-tours.ics",
+    "announce": "We downloaded your trip calendar."
+  },
+  "conflict": {
+    "title": "These tours overlap",
+    "item": "{title} ({date}{days, plural, =1 {} other {, # days}})",
+    "and": " and ",
+    "overlapOn": " overlap on {dates}.",
+    "help": "Change the date of one of them or confirm it is correct (for example, if different groups are traveling).",
+    "change": "Change dates",
+    "confirmed": "You confirmed the dates. You can now continue with the booking.",
+    "confirm": "The dates are correct"
+  }
+}

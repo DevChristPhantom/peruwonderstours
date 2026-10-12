@@ -1,12 +1,14 @@
 "use client";
 
 import { CheckCircle2, Printer } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 
 import { COMPLAINT_DEFINITIONS, COMPLAINT_LEGENDS, CONFORMITY_TEXT, DOC_TYPES, amountToCents, type ComplaintReceipt } from "@/lib/complaints/schema";
 import { formatDateTime, formatInstantDate, formatMoney } from "@/lib/format";
 import { buttonClass } from "@/components/ui/button-styles";
 
+/** La constancia es el documento legal: se emite en español en todos los idiomas (Anexo I). */
 const PENDING = "por confirmar";
 
 function Row({ label, value }: { label: string; value: string | null | undefined }) {
@@ -25,6 +27,8 @@ function Row({ label, value }: { label: string; value: string | null | undefined
  */
 export function ComplaintReceiptView({ receipt }: { receipt: ComplaintReceipt }) {
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const locale = useLocale();
+  const t = useTranslations("complaints.receipt");
   useEffect(() => headingRef.current?.focus(), []);
   const v = receipt.values;
   const amount = amountToCents(v.claimedAmount);
@@ -32,14 +36,17 @@ export function ComplaintReceiptView({ receipt }: { receipt: ComplaintReceipt })
 
   return (
     <div className="pwt-print-area">
-      <div className="rounded-lg border border-success bg-success-soft p-5 text-success print:hidden" role="status">
+      <div lang={locale} className="rounded-lg border border-success bg-success-soft p-5 text-success print:hidden" role="status">
         <p className="flex items-center gap-2 font-medium">
           <CheckCircle2 aria-hidden size={20} strokeWidth={1.5} />
-          Registramos tu hoja de reclamación
+          {t("registered")}
         </p>
         <p className="mt-1 text-sm text-foreground">
-          Te enviaremos una copia a {v.email}. Guarda o imprime esta constancia; responderemos a más tardar el{" "}
-          <strong>{formatInstantDate(receipt.responseDueAt)}</strong>.
+          {t.rich("copySent", {
+            email: v.email,
+            date: formatInstantDate(receipt.responseDueAt, locale),
+            strong: (chunks) => <strong>{chunks}</strong>,
+          })}
         </p>
       </div>
 
@@ -100,7 +107,7 @@ export function ComplaintReceiptView({ receipt }: { receipt: ComplaintReceipt })
 
       <button type="button" className={buttonClass("primary", "lg", "mt-8 print:hidden")} onClick={() => window.print()}>
         <Printer aria-hidden size={18} strokeWidth={1.5} />
-        Imprimir o guardar como PDF
+        <span lang={locale}>{t("print")}</span>
       </button>
     </div>
   );

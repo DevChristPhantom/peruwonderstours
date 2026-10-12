@@ -17,6 +17,7 @@ import {
   type Residency,
 } from "@/lib/api/carts";
 import { ApiError } from "@/lib/api/client";
+import type { Locale } from "@/i18n/routing";
 import { cartIssueMessage, toUserError, type UserError } from "@/lib/api/problems";
 import { env } from "@/lib/env";
 
@@ -33,14 +34,14 @@ export class CheckoutFailure extends Error {
   }
 }
 
-export function failureFrom(error: unknown): CheckoutFailure {
+export function failureFrom(error: unknown, locale: Locale = "es"): CheckoutFailure {
   if (error instanceof CheckoutFailure) return error;
   if (error instanceof ApiError) {
     const requote = ["total-changed", "cart-has-issues", "sold-out"].includes(error.code);
-    return new CheckoutFailure(toUserError(error.code, error.status < 500 ? error.problem?.detail : undefined), { requote });
+    return new CheckoutFailure(toUserError(error.code, error.status < 500 ? error.problem?.detail : undefined, locale), { requote });
   }
   console.error("[checkout] error inesperado", error);
-  return new CheckoutFailure(toUserError("api-unavailable"));
+  return new CheckoutFailure(toUserError("api-unavailable", undefined, locale));
 }
 
 export function residencyFor(country: string): Residency {
@@ -75,19 +76,21 @@ async function addLine(
   line: PrepareInput["lines"][number],
   currency: ApiCurrency,
   residency: Residency,
+  locale: Locale,
 ): Promise<{ cart: ApiCart | null; issue: QuoteIssue | null }> {
+  const err = (code: string, detail?: string) => toUserError(code, detail, locale).message;
   const issue = (message: string): { cart: null; issue: QuoteIssue } => ({ cart: null, issue: { lineId: line.id, message: `${line.title}: ${message}`, blocking: true } });
 
   const tour = await getBookableTour(line.tourSlug, currency);
-  if (!tour) return issue(toUserError("tour-not-found").message);
-  if (!tour.bookable) return issue(toUserError("rate-not-available").message);
+  if (!tour) return issue(err("tour-not-found"));
+  if (!tour.bookable) return issue(err("rate-not-available"));
 
   const pax: AddItemInput["pax"] = [
     { paxType: "adult" as const, residency, quantity: line.travelers.adults },
     { paxType: "child" as const, residency, quantity: line.travelers.children },
   ].filter((p) => p.quantity > 0);
   // La API no tiene tipo "bebé": los menores de 2 años viajan sin costo y se informan en las notas.
-  if (pax.length === 0) return issue(toUserError("minor-without-adult").message);
+  if (pax.length === 0) return issue(err("minor-without-adult"));
 
   const input: AddItemInput = { tourId: tour.id, travelDate: line.date, pax };
   try {
@@ -99,20 +102,20 @@ async function addLine(
       const needed = pax.reduce((n, p) => n + p.quantity, 0);
       const departures = await listDepartures(line.tourSlug, line.date);
       const pick = departures.find((d) => !d.isClosed && (d.available === null || d.available >= needed));
-      if (!pick) return issue(toUserError("sold-out").message);
+      if (!pick) return issue(err("sold-out"));
       try {
         return { cart: await addCartItem(cartId, token, { ...input, departureId: pick.id }), issue: null };
       } catch (retry) {
-        if (retry instanceof ApiError && !retry.unavailable) return issue(toUserError(retry.code, retry.problem?.detail).message);
+        if (retry instanceof ApiError && !retry.unavailable) return issue(err(retry.code, retry.problem?.detail));
         throw retry;
       }
     }
     if (error.unavailable) throw error;
-    return issue(toUserError(error.code, error.problem?.detail).message);
+    return issue(err(error.code, error.problem?.detail));
   }
 }
 
-function quoteFromCart(cart: ApiCart, input: PrepareInput, extraIssues: QuoteIssue[]): Omit<CheckoutQuote, "plans" | "booking"> {
+function quoteFromCart(cart: ApiCart, input: PrepareInput, extraIssues: QuoteIssue[], locale: Locale): Omit<CheckoutQuote, "plans" | "booking"> {
   const byKey = new Map(input.lines.map((l) => [lineKey(l.tourSlug, l.date), l]));
   const byItem = new Map<string, string>();
   const lines: QuoteLine[] = cart.items.map((item) => {
@@ -139,7 +142,7 @@ function quoteFromCart(cart: ApiCart, input: PrepareInput, extraIssues: QuoteIss
       .filter((i) => i.type !== "price_changed" || i.blocking)
       .map((i) => {
         const line = lines.find((l) => l.lineId === byItem.get(i.itemId));
-        return { lineId: line?.lineId ?? null, message: cartIssueMessage(i.type, i.code, line?.title ?? "Un tour"), blocking: i.blocking };
+        return { lineId: line?.lineId ?? null, message: cartIssueMessage(i.type, i.code, line?.title ?? "Tour", locale), blocking: i.blocking };
       }),
   ];
   const priceChanged = lines.some((l) => l.priceChanged);
@@ -189,7 +192,7 @@ function quoteFromBooking(booking: Booking): CheckoutQuote {
  * Sincroniza el carrito local (Zustand) con un carrito de la API y lo revalida (precio y cupo).
  * Reutiliza el carrito de la cookie si el pedido no cambió; si cambió, crea uno nuevo.
  */
-export async function prepareQuote(input: PrepareInput): Promise<CheckoutQuote> {
+export async function prepareQuote(input: PrepareInput, locale: Locale = "es"): Promise<CheckoutQuote> {
   const currency: ApiCurrency = input.lines.find((l) => l.currency)?.currency ?? env.CATALOG_CURRENCY;
   const fp = orderFingerprint(input, currency);
   const residency = residencyFor(input.country);
@@ -224,7 +227,7 @@ export async function prepareQuote(input: PrepareInput): Promise<CheckoutQuote> 
     token = created.token;
     cart = created.cart;
     for (const line of input.lines) {
-      const added = await addLine(cart.id, token, line, currency, residency);
+      const added = await addLine(cart.id, token, line, currency, residency, locale);
       if (added.cart) cart = added.cart;
       if (added.issue) issues.push(added.issue);
     }
@@ -232,7 +235,7 @@ export async function prepareQuote(input: PrepareInput): Promise<CheckoutQuote> 
     else await clearCartSession();
   }
 
-  const base = quoteFromCart(cart, input, issues);
+  const base = quoteFromCart(cart, input, issues, locale);
   let plans: CheckoutQuote["plans"] = null;
   if (cart.items.length > 0) {
     const options = await getPaymentOptions(cart.id, token);

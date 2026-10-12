@@ -1,13 +1,14 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
+import { useFormat } from "@/hooks/useFormat";
 import { useTravelersText } from "@/hooks/useTravelersText";
 import type { CartLine } from "@/lib/cart/types";
 import type { PaymentPlan } from "@/lib/checkout/payment-plan";
-import { formatDate } from "@/lib/format";
-import { formatTotals, lineTotalLabel, POR_COTIZAR } from "./cart-helpers";
+import { useCartMoney } from "./cart-helpers";
 
 interface OrderSummaryProps {
   lines: CartLine[];
@@ -18,7 +19,10 @@ interface OrderSummaryProps {
 }
 
 /** Resumen del pedido (carrito y checkout): el total es el mismo en ambos. */
-export function OrderSummary({ lines, plan, title = "Resumen", showThumbnails = false, children }: OrderSummaryProps) {
+export function OrderSummary({ lines, plan, title, showThumbnails = false, children }: OrderSummaryProps) {
+  const t = useTranslations("cart");
+  const fmt = useFormat();
+  const money = useCartMoney();
   const travelersText = useTravelersText();
   const earliestDue = plan.lines
     .map((l) => l.balanceDueDate)
@@ -29,7 +33,7 @@ export function OrderSummary({ lines, plan, title = "Resumen", showThumbnails = 
   return (
     <section aria-labelledby="order-summary-title" className="rounded-lg border border-border bg-surface p-5 shadow-md md:p-6">
       <h2 id="order-summary-title" className="text-h4 font-medium">
-        {title}
+        {title ?? t("summary")}
       </h2>
       <ul className="mt-4 space-y-3">
         {lines.map((line) => (
@@ -42,32 +46,32 @@ export function OrderSummary({ lines, plan, title = "Resumen", showThumbnails = 
             <div className="min-w-0 flex-1">
               <p className="line-clamp-2 font-medium text-foreground">{line.title}</p>
               <p className="text-foreground-muted">
-                {formatDate(line.date)} · {travelersText(line.travelers)}
+                {fmt.date(line.date)} · {travelersText(line.travelers)}
               </p>
             </div>
-            <span className="tabular shrink-0 font-medium">{lineTotalLabel(line)}</span>
+            <span className="tabular shrink-0 font-medium">{money.lineTotal(line)}</span>
           </li>
         ))}
       </ul>
 
       <dl className="mt-5 space-y-2 border-t border-border pt-4">
         <div className="flex items-baseline justify-between gap-4">
-          <dt className="text-foreground-muted">Total (impuestos incluidos)</dt>
-          <dd className="tabular text-price-lg font-semibold">{formatTotals(plan.totals, "totalCents")}</dd>
+          <dt className="text-foreground-muted">{t("totalTaxes")}</dt>
+          <dd className="tabular text-price-lg font-semibold">{money.totals(plan.totals, "totalCents")}</dd>
         </div>
         {hasPriced ? (
           <>
             <div className="flex items-baseline justify-between gap-4">
-              <dt className="text-foreground-muted">{plan.option === "deposit" ? "Hoy pagas desde" : "Hoy pagas"}</dt>
-              <dd className="tabular font-semibold text-success">{formatTotals(plan.totals, "payNowCents")}</dd>
+              <dt className="text-foreground-muted">{plan.option === "deposit" ? t("payTodayFrom") : t("payToday")}</dt>
+              <dd className="tabular font-semibold text-success">{money.totals(plan.totals, "payNowCents")}</dd>
             </div>
-            {plan.totals.some((t) => t.balanceCents > 0) ? (
+            {plan.totals.some((tot) => tot.balanceCents > 0) ? (
               <div className="flex items-baseline justify-between gap-4">
-                <dt className="text-foreground-muted">Saldo pendiente</dt>
+                <dt className="text-foreground-muted">{t("balanceDue")}</dt>
                 <dd className="tabular text-right">
-                  {formatTotals(plan.totals, "balanceCents")}
+                  {money.totals(plan.totals, "balanceCents")}
                   {earliestDue ? (
-                    <span className="block text-sm text-foreground-muted">el primero vence el {formatDate(earliestDue)}</span>
+                    <span className="block text-sm text-foreground-muted">{t("firstDue", { date: fmt.date(earliestDue) })}</span>
                   ) : null}
                 </dd>
               </div>
@@ -78,9 +82,7 @@ export function OrderSummary({ lines, plan, title = "Resumen", showThumbnails = 
 
       {plan.unpricedCount > 0 ? (
         <p className="mt-4 rounded-md bg-warning-soft px-3 py-2 text-sm text-warning">
-          {plan.unpricedCount === lines.length
-            ? `Precio ${POR_COTIZAR.toLowerCase()}: te enviaremos el monto exacto antes de cobrar.`
-            : `${plan.unpricedCount} ${plan.unpricedCount === 1 ? "tour" : "tours"} ${POR_COTIZAR.toLowerCase()}: no se cobran hoy.`}
+          {plan.unpricedCount === lines.length ? t("summaryAllUnpriced") : t("summarySomeUnpriced", { count: plan.unpricedCount })}
         </p>
       ) : null}
 

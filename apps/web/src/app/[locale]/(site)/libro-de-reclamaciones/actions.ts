@@ -5,7 +5,9 @@ import { cookies } from "next/headers";
 
 import { ApiError } from "@/lib/api/client";
 import { submitComplaint, type ComplaintDraftBody } from "@/lib/api/complaints";
+import { localePath } from "@/i18n/paths";
 import { toUserError } from "@/lib/api/problems";
+import { requestLocale } from "@/lib/i18n/request-locale";
 import {
   amountToCents,
   complaintSchema,
@@ -48,7 +50,21 @@ const FIELD_MAP: Record<string, string> = {
 };
 
 const ATTEMPT_COOKIE = "pwt_lr_attempt";
-const ATTEMPT_PATH = "/es/libro-de-reclamaciones";
+
+const TEXT = {
+  es: {
+    checkFields: "Revisa los campos indicados.",
+    checkField: "Revisa este campo.",
+    unavailable: (wa: string) =>
+      `No pudimos registrar tu hoja en este momento. Intenta de nuevo en unos minutos; si persiste, escríbenos por WhatsApp al ${wa} o acércate a nuestra oficina, donde tenemos el Libro de Reclamaciones de respaldo.`,
+  },
+  en: {
+    checkFields: "Check the highlighted fields.",
+    checkField: "Check this field.",
+    unavailable: (wa: string) =>
+      `We could not register your complaint right now. Try again in a few minutes; if it persists, message us on WhatsApp at ${wa} or visit our office, where we keep the backup paper Complaints Book.`,
+  },
+} as const;
 
 /**
  * Registra la Hoja de Reclamación en la API (BFF). Idempotencia: la clave se guarda en una cookie
@@ -56,11 +72,15 @@ const ATTEMPT_PATH = "/es/libro-de-reclamaciones";
  * devuelven la MISMA hoja; si el consumidor cambia el contenido, se usa una clave nueva.
  */
 export async function submitComplaintAction(raw: unknown): Promise<ComplaintActionResult> {
+  const locale = await requestLocale();
+  const text = TEXT[locale];
+  // La cookie del intento vive en la ruta del formulario de cada idioma (/es/libro-de-reclamaciones, /en/complaints-book).
+  const attemptPath = localePath(locale, "/libro-de-reclamaciones");
   const parsed = complaintSchema.safeParse(raw);
   if (!parsed.success) {
     return {
       ok: false,
-      message: "Revisa los campos indicados.",
+      message: text.checkFields,
       fieldErrors: parsed.error.issues.map((i) => ({ path: String(i.path[0] ?? "fullName"), message: i.message })),
     };
   }
@@ -92,7 +112,7 @@ export async function submitComplaintAction(raw: unknown): Promise<ComplaintActi
   const store = await cookies();
   const [prevFp, prevKey] = (store.get(ATTEMPT_COOKIE)?.value ?? "").split(".");
   const key = prevFp === fp && prevKey && /^[0-9a-f-]{36}$/.test(prevKey) ? prevKey : randomUUID();
-  const cookieOptions = { httpOnly: true, sameSite: "lax" as const, secure: isProduction, path: ATTEMPT_PATH };
+  const cookieOptions = { httpOnly: true, sameSite: "lax" as const, secure: isProduction, path: attemptPath };
   store.set(ATTEMPT_COOKIE, `${fp}.${key}`, { ...cookieOptions, maxAge: 60 * 60 });
 
   try {
@@ -128,19 +148,23 @@ export async function submitComplaintAction(raw: unknown): Promise<ComplaintActi
       if (apiFields?.length) {
         return {
           ok: false,
-          message: "Revisa los campos indicados.",
-          fieldErrors: apiFields.map((f) => ({ path: FIELD_MAP[f.field] ?? "fullName", message: f.messages[0] ?? "Revisa este campo." })),
+          message: text.checkFields,
+          // Los mensajes por campo de la API vienen en español: en inglés se usa uno genérico.
+          fieldErrors: apiFields.map((f) => ({
+            path: FIELD_MAP[f.field] ?? "fullName",
+            message: (locale === "es" ? f.messages[0] : undefined) ?? text.checkField,
+          })),
         };
       }
       if (error.unavailable || error.status === 404) {
         return {
           ok: false,
-          message: `No pudimos registrar tu hoja en este momento. Intenta de nuevo en unos minutos; si persiste, escríbenos por WhatsApp al ${SITE.whatsapp.display} o acércate a nuestra oficina, donde tenemos el Libro de Reclamaciones de respaldo.`,
+          message: text.unavailable(SITE.whatsapp.display),
         };
       }
-      return { ok: false, message: toUserError(error.code, error.problem?.detail).message };
+      return { ok: false, message: toUserError(error.code, error.problem?.detail, locale).message };
     }
     console.error("[libro-de-reclamaciones] error inesperado", error);
-    return { ok: false, message: toUserError("api-unavailable").message };
+    return { ok: false, message: toUserError("api-unavailable", undefined, locale).message };
   }
 }

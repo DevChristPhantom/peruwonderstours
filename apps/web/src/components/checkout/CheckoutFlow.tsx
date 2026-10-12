@@ -2,10 +2,10 @@
 
 import clsx from "clsx";
 import { Check, ChevronDown } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { Link, useRouter } from "@/i18n/navigation";
 import { computePaymentPlan, type PaymentOption } from "@/lib/checkout/payment-plan";
 import type { CheckoutQuote, PlaceResult } from "@/lib/checkout/api-checkout";
 import type { ContactValues, TravelersValues } from "@/lib/checkout/schemas";
@@ -16,7 +16,7 @@ import { useTripGate } from "@/stores/trip-store";
 import { useIsClient } from "@/hooks/useClientOnly";
 import { safeSessionStorage } from "@/stores/safe-storage";
 import { useUiStore } from "@/stores/ui-store";
-import { formatTotals } from "@/components/cart/cart-helpers";
+import { useCartMoney } from "@/components/cart/cart-helpers";
 import { OrderSummary } from "@/components/cart/OrderSummary";
 import { TripConflictAlert } from "@/components/trip/TripConflictAlert";
 import { buttonClass } from "@/components/ui/button-styles";
@@ -26,10 +26,10 @@ import { QuoteSummary } from "./QuoteSummary";
 import { buildTravelerDefaults, TravelersStep } from "./TravelersStep";
 
 type Step = 1 | 2 | 3;
-const STEPS: { n: Step; label: string }[] = [
-  { n: 1, label: "Tus datos" },
-  { n: 2, label: "Viajeros" },
-  { n: 3, label: "Pago" },
+const STEPS: { n: Step; key: "contact" | "travelers" | "payment" }[] = [
+  { n: 1, key: "contact" },
+  { n: 2, key: "travelers" },
+  { n: 3, key: "payment" },
 ];
 
 const DRAFT_KEY = "pwt-checkout-draft";
@@ -67,16 +67,18 @@ function saveDraft(draft: Draft) {
 }
 
 function StepIndicator({ step, maxReached, onGo }: { step: Step; maxReached: Step; onGo: (s: Step) => void }) {
+  const t = useTranslations("checkout");
   return (
-    <nav aria-label="Pasos del pago" className="mb-8">
+    <nav aria-label={t("stepsLabel")} className="mb-8">
       <p className="mb-2 text-sm text-foreground-muted md:hidden">
-        Paso {step} de 3 · {STEPS[step - 1].label}
+        {t("stepOf", { step, total: 3 })} · {t(`steps.${STEPS[step - 1].key}`)}
       </p>
       <div className="h-1 overflow-hidden rounded-pill bg-surface-muted md:hidden" aria-hidden="true">
         <div className="h-full bg-primary transition-[width] duration-500" style={{ width: `${(step / 3) * 100}%` }} />
       </div>
       <ol className="hidden items-center gap-3 md:flex">
-        {STEPS.map(({ n, label }, i) => {
+        {STEPS.map(({ n, key }, i) => {
+          const label = t(`steps.${key}`);
           const done = n < step;
           const reachable = n <= maxReached && n !== step;
           const content = (
@@ -94,7 +96,7 @@ function StepIndicator({ step, maxReached, onGo }: { step: Step; maxReached: Ste
               </span>
               <span className={n === step ? "font-medium" : "text-foreground-muted"}>
                 {label}
-                {done ? <span className="sr-only"> (completado)</span> : null}
+                {done ? <span className="sr-only"> {t("stepDone")}</span> : null}
               </span>
             </>
           );
@@ -117,6 +119,9 @@ function StepIndicator({ step, maxReached, onGo }: { step: Step; maxReached: Ste
 }
 
 export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: number | null }) {
+  const t = useTranslations("checkout");
+  const tc = useTranslations("cart");
+  const money = useCartMoney();
   const router = useRouter();
   const hydrated = useCartHydrated();
   const lines = useCartStore((s) => s.lines);
@@ -142,8 +147,8 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
       return;
     }
     headingRef.current?.focus();
-    announce(`Paso ${step} de 3: ${STEPS[step - 1].label}.`);
-  }, [step, announce]);
+    announce(t("stepAnnounce", { step, total: 3, label: t(`steps.${STEPS[step - 1].key}`) }));
+  }, [step, announce, t]);
 
   const today = useMemo(() => todayInLima(), []);
   const plan = useMemo(() => computePaymentPlan(lines, option, today), [lines, option, today]);
@@ -161,7 +166,7 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
       <div className="pwt-container py-16" aria-busy="true">
         <div className="h-8 w-64 animate-pulse rounded-md bg-surface-muted motion-reduce:animate-none" />
         <div className="mt-6 h-96 animate-pulse rounded-lg bg-surface-muted motion-reduce:animate-none" />
-        <span className="sr-only">Cargando el pago…</span>
+        <span className="sr-only">{t("loading")}</span>
       </div>
     );
   }
@@ -169,10 +174,10 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
   if (lines.length === 0) {
     return (
       <div className="pwt-container-narrow py-20 text-center">
-        <h1 className="font-display text-h1 font-medium">No hay tours para pagar</h1>
-        <p className="mt-3 text-foreground-muted">Tu carrito está vacío. Elige un tour para continuar.</p>
-        <Link href="/es/tours" className={buttonClass("secondary", "lg", "mt-6")}>
-          Ver tours
+        <h1 className="font-display text-h1 font-medium">{t("emptyTitle")}</h1>
+        <p className="mt-3 text-foreground-muted">{t("emptyText")}</p>
+        <Link href="/tours" className={buttonClass("secondary", "lg", "mt-6")}>
+          {tc("browseTours")}
         </Link>
       </div>
     );
@@ -182,10 +187,10 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
   if (pendingConflicts.length) {
     return (
       <div className="pwt-container-narrow py-12">
-        <h1 className="mb-6 font-display text-h1 font-medium">Antes de pagar</h1>
+        <h1 className="mb-6 font-display text-h1 font-medium">{t("beforePaying")}</h1>
         <TripConflictAlert lines={lines} />
-        <Link href="/es/mi-viaje" className="pwt-link mt-4 inline-flex min-h-11 items-center">
-          Ver mi viaje día a día
+        <Link href="/mi-viaje" className="pwt-link mt-4 inline-flex min-h-11 items-center">
+          {tc("viewTrip")}
         </Link>
       </div>
     );
@@ -195,7 +200,7 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
     safeSessionStorage.removeItem(DRAFT_KEY);
     clearCart();
     // La reserva se lee en el servidor con el token de la cookie httpOnly (BFF).
-    router.replace(`/es/reserva/${encodeURIComponent(code)}`);
+    router.replace({ pathname: "/reserva/[codigo]", params: { codigo: code } });
   };
 
   // Se fusiona con los valores por defecto: borradores antiguos pueden no tener campos nuevos.
@@ -205,10 +210,10 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
     <div className="pwt-container py-8 md:py-12">
       {PAYMENTS_MODE === "sandbox" ? (
         <p className="mb-6 rounded-md border border-dashed border-warning bg-warning-soft px-4 py-2 text-sm text-warning">
-          Entorno de pruebas (sandbox): los pagos son simulados; las reservas y cupos se registran en el sistema de pruebas.
+          {t("sandboxBanner")}
         </p>
       ) : null}
-      <h1 className="sr-only">Pago de tu reserva</h1>
+      <h1 className="sr-only">{t("pageTitle")}</h1>
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,640px)_380px] lg:justify-between xl:grid-cols-[minmax(0,640px)_400px]">
         <div className="min-w-0">
@@ -217,7 +222,7 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
           {/* Resumen plegable en móvil/tablet */}
           <details className="mb-8 rounded-lg border border-border bg-surface lg:hidden">
             <summary className="flex min-h-12 cursor-pointer items-center justify-between gap-3 px-4 font-medium">
-              <span>Ver resumen · {formatTotals(plan.totals, "totalCents")}</span>
+              <span>{t("viewSummary", { total: money.totals(plan.totals, "totalCents") })}</span>
               <ChevronDown aria-hidden size={18} strokeWidth={1.5} />
             </summary>
             <div className="border-t border-border p-2">
@@ -242,7 +247,7 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
                 headingRef={headingRef}
                 lines={lines}
                 contact={contact}
-                defaultValues={buildTravelerDefaults(lines, contact, draft.travelers)}
+                defaultValues={buildTravelerDefaults(lines, contact, draft.travelers, t("travelers.peruvian"))}
                 onBack={() => go(1)}
                 onSubmit={(values) => {
                   const next = { ...draft, travelers: values };
@@ -269,18 +274,18 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
           </div>
         </div>
 
-        <aside className="hidden lg:block" aria-label="Resumen del pedido">
+        <aside className="hidden lg:block" aria-label={t("summaryLabel")}>
           <div className="sticky top-24">
             {step === 3 && quote ? (
               <QuoteSummary quote={quote} option={option}>
-                <Link href="/es/carrito" className="pwt-link mt-4 inline-flex min-h-11 items-center text-sm">
-                  Editar carrito
+                <Link href="/carrito" className="pwt-link mt-4 inline-flex min-h-11 items-center text-sm">
+                  {t("editCart")}
                 </Link>
               </QuoteSummary>
             ) : (
-              <OrderSummary lines={lines} plan={plan} title="Tu pedido" showThumbnails>
-                <Link href="/es/carrito" className="pwt-link mt-4 inline-flex min-h-11 items-center text-sm">
-                  Editar carrito
+              <OrderSummary lines={lines} plan={plan} title={tc("yourOrder")} showThumbnails>
+                <Link href="/carrito" className="pwt-link mt-4 inline-flex min-h-11 items-center text-sm">
+                  {t("editCart")}
                 </Link>
               </OrderSummary>
             )}

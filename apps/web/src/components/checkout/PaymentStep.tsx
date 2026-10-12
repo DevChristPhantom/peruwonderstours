@@ -3,34 +3,38 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { AlertTriangle, CreditCard, Landmark, Loader2, Lock, MessageCircle, RefreshCw, Smartphone } from "lucide-react";
-import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type Ref } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
 import { placeBookingAction, prepareCheckoutAction } from "@/app/[locale]/(checkout)/checkout/actions";
 import type { UserError } from "@/lib/api/problems";
+import { useFormat } from "@/hooks/useFormat";
 import { useTravelersText } from "@/hooks/useTravelersText";
+import { Link } from "@/i18n/navigation";
 import { useWhatsappTools } from "@/hooks/useWhatsappTools";
 import type { CartLine } from "@/lib/cart/types";
 import type { ActionResult, CheckoutQuote, PlaceResult, PlanView } from "@/lib/checkout/api-checkout";
 import { lineTotalCents, type PaymentOption } from "@/lib/checkout/payment-plan";
 import { paymentStepSchema, type ContactValues, type PaymentStepValues, type TravelersValues } from "@/lib/checkout/schemas";
-import { formatDate, formatInstantDate, formatMoney } from "@/lib/format";
 import type { PaymentMethod, PaymentRequest, PaymentWidgetHandle } from "@/lib/payments/types";
 import { cartHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
 import { useUiStore } from "@/stores/ui-store";
 import { buttonClass } from "@/components/ui/button-styles";
 import { HoldTimer } from "./HoldTimer";
 import { SandboxPaymentWidget } from "./SandboxPaymentWidget";
-import { ErrorSummary, fieldId, flattenErrors } from "./form-fields";
+import { ErrorSummary, fieldId, flattenErrors, useErrorText } from "./form-fields";
 
-const METHODS: { value: PaymentMethod; label: string; icon: typeof CreditCard; note: string }[] = [
-  { value: "card", label: "Tarjeta", icon: CreditCard, note: "Visa, Mastercard, Amex, Diners" },
-  { value: "yape", label: "Yape", icon: Smartphone, note: "Pago desde tu celular" },
-  { value: "pagoefectivo", label: "PagoEfectivo", icon: Landmark, note: "Banca por internet o agentes (código CIP 24 h)" },
+const METHODS: { value: PaymentMethod; icon: typeof CreditCard }[] = [
+  { value: "card", icon: CreditCard },
+  { value: "yape", icon: Smartphone },
+  { value: "pagoefectivo", icon: Landmark },
 ];
 
-/** Notas para la reserva: hotel, necesidades y bebés (la API no tiene tipo de pasajero "bebé"). */
+/**
+ * Notas para la reserva: hotel, necesidades y bebés (la API no tiene tipo de pasajero "bebé").
+ * Las lee el equipo de operaciones de la agencia: van siempre en español (no son texto de la UI).
+ */
 function buildNotes(lines: CartLine[], travelers: TravelersValues | null): string | undefined {
   const parts: string[] = [];
   if (travelers?.hotel) parts.push(`Hotel para el recojo: ${travelers.hotel}`);
@@ -67,6 +71,10 @@ export function PaymentStep({
   /** Comisión por tarjeta (RN-03). null = no configurada → no se muestra ni se menciona. */
   cardFeePercent: number | null;
 }) {
+  const t = useTranslations("checkout.payment");
+  const tc = useTranslations("checkout");
+  const fmt = useFormat();
+  const errorText = useErrorText();
   const announce = useUiStore((s) => s.announce);
   const travelersText = useTravelersText();
   const wa = useWhatsappTools();
@@ -95,9 +103,9 @@ export function PaymentStep({
       onQuote(res.ok ? res.data : null);
       if (!res.ok) return;
       const q = res.data;
-      if (q.issues.some((i) => i.blocking)) announce("Hay tours de tu carrito que no se pueden reservar. Revisa los avisos.");
-      else if (q.priceChanged) announce("El precio de tu pedido cambió. Revisa el nuevo total antes de pagar.");
-      else announce(`Precios y cupos confirmados. Total ${formatMoney(q.totalCents, q.currency)}.`);
+      if (q.issues.some((i) => i.blocking)) announce(t("announceBlocked"));
+      else if (q.priceChanged) announce(t("announcePriceChanged"));
+      else announce(t("announceConfirmed", { total: fmt.money(q.totalCents, q.currency) }));
     },
   });
   const { mutate: runPrepare } = prepare;
@@ -136,7 +144,7 @@ export function PaymentStep({
   /* ---------- 2. Reserva + cobro sandbox (Server Action) ---------- */
   const pay = useMutation({
     mutationFn: async (values: PaymentStepValues) => {
-      if (!quote || !plan) throw new Error("Sin cotización");
+      if (!quote || !plan) throw new Error("No quote");
       const confirmation = widgetRef.current ? await widgetRef.current.collect() : { simulate: "approved" as const };
       return placeBookingAction({
         option: effectiveOption,
@@ -163,7 +171,7 @@ export function PaymentStep({
       if (res.requote) runPrepare();
     },
     onError: () => {
-      setApiError({ code: "api-unavailable", kind: "unavailable", message: "No pudimos conectar con el sistema de reservas. No se te cobró nada; intenta de nuevo." });
+      setApiError({ code: "api-unavailable", kind: "unavailable", message: t("connectionError") });
       requestAnimationFrame(() => apiErrorRef.current?.focus());
     },
   });
@@ -178,14 +186,14 @@ export function PaymentStep({
           amountCents: plan.payNowCents + (cardFeePercent && method === "card" ? Math.round((plan.payNowCents * cardFeePercent) / 100) : 0),
           currency: quote.currency,
           option: effectiveOption,
-          description: `Reserva · ${lines.length} ${lines.length === 1 ? "tour" : "tours"}`,
+          description: t("requestDescription", { count: lines.length }),
           providerSessionToken: null,
         }
       : null;
 
   const onValid = (values: PaymentStepValues) => {
     if (quote?.priceChanged && !values.ackPrice) {
-      setError("ackPrice", { type: "custom", message: "Confirma que aceptas el nuevo precio para continuar." });
+      setError("ackPrice", { type: "custom", message: t("ackPriceRequired") });
       requestAnimationFrame(() => summaryRef.current?.focus());
       return;
     }
@@ -197,11 +205,11 @@ export function PaymentStep({
     return (
       <div aria-busy="true">
         <h2 id="step-payment-title" ref={headingRef} tabIndex={-1} className="font-display text-h2 font-medium focus:outline-none">
-          Pago
+          {t("title")}
         </h2>
         <p className="mt-4 flex items-center gap-2 text-foreground-muted" role="status">
           <Loader2 aria-hidden size={18} strokeWidth={1.5} className="animate-spin motion-reduce:animate-none" />
-          Confirmando precios y cupos en tiempo real…
+          {t("confirming")}
         </p>
         <div className="mt-6 h-64 animate-pulse rounded-lg bg-surface-muted motion-reduce:animate-none" />
       </div>
@@ -209,58 +217,58 @@ export function PaymentStep({
   }
 
   if (!quote) {
-    const message = prepareError?.message ?? "No pudimos conectar con el sistema de reservas. No se te cobró nada; intenta de nuevo.";
+    const message = prepareError?.message ?? t("connectionError");
     return (
       <div>
         <h2 id="step-payment-title" ref={headingRef} tabIndex={-1} className="font-display text-h2 font-medium focus:outline-none">
-          Pago
+          {t("title")}
         </h2>
         <div role="alert" className="mt-6 rounded-md border border-danger bg-danger-soft p-4 text-danger">
-          <p className="font-medium">No pudimos preparar tu pago</p>
+          <p className="font-medium">{t("prepareFailed")}</p>
           <p className="mt-1 text-sm">{message}</p>
         </div>
         <div className="mt-6 flex flex-wrap gap-3">
           <button type="button" className={buttonClass("primary", "lg")} onClick={() => runPrepare()}>
             <RefreshCw aria-hidden size={18} strokeWidth={1.5} />
-            Intentar de nuevo
+            {t("retry")}
           </button>
-          <Link href="/es/carrito" className={buttonClass("ghost", "lg")}>
-            Volver al carrito
+          <Link href="/carrito" className={buttonClass("ghost", "lg")}>
+            {t("backToCart")}
           </Link>
         </div>
       </div>
     );
   }
 
-  const money = (cents: number) => formatMoney(cents, quote.currency);
+  const money = (cents: number) => fmt.money(cents, quote.currency);
   // HU-B.A10: contexto del pedido (tours, fechas, código de reserva si ya existe). Sin datos personales.
   const helpHref = (bookingCode: string | null) =>
     whatsappHref(
       cartHelpMessage(
         wa,
         lines.map((l) => ({ title: l.title, date: l.date, travelers: l.travelers })),
-        { step: "pago", bookingCode },
+        { step: t("whatsappStep"), bookingCode },
       ),
     );
   // Comisión por tarjeta: solo si está configurada, visible ANTES de pagar y sumada al total
   // (Código del Consumidor art. 7). Requiere que la API la cobre antes de activarla (ver reporte).
   const cardFee = cardFeePercent && method === "card" && plan ? Math.round((plan.payNowCents * cardFeePercent) / 100) : 0;
   const payTodayCents = plan ? plan.payNowCents + cardFee : 0;
-  const payLabel = plan ? `Pagar ${money(payTodayCents)}` : "Pagar";
+  const payLabel = plan ? t("payAmount", { amount: money(payTodayCents) }) : t("pay");
 
   return (
     <form noValidate aria-labelledby="step-payment-title" onSubmit={(e) => handleSubmit(onValid, () => requestAnimationFrame(() => summaryRef.current?.focus()))(e)}>
       <h2 id="step-payment-title" ref={headingRef} tabIndex={-1} className="font-display text-h2 font-medium focus:outline-none">
-        Pago
+        {t("title")}
       </h2>
-      <p className="mt-2 mb-6 text-foreground-muted">Revisa el monto, elige cómo pagar y confirma.</p>
+      <p className="mt-2 mb-6 text-foreground-muted">{t("intro")}</p>
 
       {submitCount > 0 ? <ErrorSummary ref={summaryRef} errors={flattenErrors(errors)} /> : null}
 
       {apiError ? (
         <ErrorSummary
           ref={apiErrorRef}
-          title="No pudimos completar el pago:"
+          title={t("payFailed")}
           errors={[{ path: apiError.field ?? "submit", message: apiError.message }]}
         >
           <a
@@ -270,13 +278,13 @@ export function PaymentStep({
             className="mt-3 inline-flex min-h-11 items-center gap-2 text-sm underline underline-offset-2"
           >
             <MessageCircle aria-hidden size={18} strokeWidth={1.5} />
-            Ayuda por WhatsApp
+            {t("whatsappHelp")}
           </a>
           {apiError.bookingCode ? (
             <p className="mt-3 text-sm">
-              Tu reserva <span className="font-mono">{apiError.bookingCode}</span> sigue guardada mientras dure el tiempo de pago.{" "}
-              <Link href={`/es/reserva/${apiError.bookingCode}`} className="underline underline-offset-2">
-                Ver mi reserva
+              {t.rich("bookingKept", { code: apiError.bookingCode, mono: (chunks) => <span className="font-mono">{chunks}</span> })}{" "}
+              <Link href={{ pathname: "/reserva/[codigo]", params: { codigo: apiError.bookingCode } }} className="underline underline-offset-2">
+                {t("viewBooking")}
               </Link>
             </p>
           ) : null}
@@ -288,15 +296,15 @@ export function PaymentStep({
         <div role="alert" className="mb-6 rounded-md border border-danger bg-danger-soft p-4 text-danger">
           <p className="flex items-center gap-2 font-medium">
             <AlertTriangle aria-hidden size={18} strokeWidth={1.5} />
-            Antes de pagar, corrige tu carrito:
+            {t("fixCart")}
           </p>
           <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
             {blocking.map((i, n) => (
               <li key={`${i.lineId}-${n}`}>{i.message}</li>
             ))}
           </ul>
-          <Link href="/es/carrito" className="mt-3 inline-flex min-h-11 items-center underline underline-offset-2">
-            Editar carrito
+          <Link href="/carrito" className="mt-3 inline-flex min-h-11 items-center underline underline-offset-2">
+            {tc("editCart")}
           </Link>
         </div>
       ) : null}
@@ -304,13 +312,13 @@ export function PaymentStep({
       {/* Cambios de precio detectados al revalidar */}
       {quote.priceChanged ? (
         <div className="mb-6 rounded-md border border-warning bg-warning-soft p-4 text-sm text-warning" role="status">
-          <p className="font-medium text-foreground">El precio cambió desde que agregaste estos tours:</p>
+          <p className="font-medium text-foreground">{t("priceChangedTitle")}</p>
           <ul className="mt-2 space-y-1 text-foreground">
             {quote.lines
               .filter((l) => l.priceChanged)
               .map((l) => (
                 <li key={l.lineId}>
-                  {l.title}: <s className="text-foreground-muted">{l.previousCents !== null ? money(l.previousCents) : "por cotizar"}</s>{" "}
+                  {l.title}: <s className="text-foreground-muted">{l.previousCents !== null ? money(l.previousCents) : t("onRequest")}</s>{" "}
                   <span className="tabular font-semibold">{money(l.subtotalCents)}</span>
                 </li>
               ))}
@@ -324,11 +332,11 @@ export function PaymentStep({
               aria-describedby={errors.ackPrice ? `${fieldId("ackPrice")}-error` : undefined}
               {...register("ackPrice")}
             />
-            <span>Entiendo y acepto el nuevo total de {money(quote.totalCents)}.</span>
+            <span>{t("ackPrice", { total: money(quote.totalCents) })}</span>
           </label>
           {errors.ackPrice ? (
             <p id={`${fieldId("ackPrice")}-error`} className="mt-1 ml-8 text-danger">
-              {errors.ackPrice.message}
+              {errorText(errors.ackPrice.message)}
             </p>
           ) : null}
         </div>
@@ -337,12 +345,12 @@ export function PaymentStep({
       {/* 3.1 ¿Cuánto quieres pagar hoy? */}
       {plans && depositAvailable && plans.deposit && plans.full ? (
         <fieldset>
-          <legend className="text-h4 font-medium">¿Cuánto quieres pagar hoy?</legend>
+          <legend className="text-h4 font-medium">{t("howMuch")}</legend>
           <div className="mt-4 space-y-3">
             {(
               [
-                ["deposit", `Pagar ${plans.deposit.depositPercent} % ahora`, "Reserva tus cupos hoy y paga el resto antes de viajar.", plans.deposit],
-                ["full", "Pagar el 100 % ahora", "Sin saldos pendientes. Recibes un solo comprobante.", plans.full],
+                ["deposit", t("depositOption", { percent: plans.deposit.depositPercent }), t("depositHelp"), plans.deposit],
+                ["full", t("fullOption"), t("fullHelp"), plans.full],
               ] as const
             ).map(([value, label, help, p]) => (
               <label
@@ -366,10 +374,10 @@ export function PaymentStep({
       ) : plan ? (
         <p className="rounded-md bg-surface-muted p-4">
           {lockedOption
-            ? `Tu reserva ${quote.booking?.code} ya está guardada: completa el pago de ${money(plan.payNowCents)}.`
+            ? t("lockedOption", { code: quote.booking?.code ?? "", amount: money(plan.payNowCents) })
             : plans?.depositUnavailableReason
-              ? `Este pedido se paga completo: ${plans.depositUnavailableReason}`
-              : "Este pedido se paga completo: incluye boletos de terceros o salidas en menos de 7 días."}
+              ? t("fullOnlyReason", { reason: plans.depositUnavailableReason })
+              : t("fullOnly")}
         </p>
       ) : null}
 
@@ -382,7 +390,7 @@ export function PaymentStep({
               return (
                 <li key={l.lineId} className="flex justify-between gap-4">
                   <span className="text-foreground-muted">
-                    {l.title} · {formatDate(l.date)}
+                    {l.title} · {fmt.date(l.date)}
                     {local ? ` · ${travelersText(local.travelers)}` : ""}
                   </span>
                   <span className="tabular">{money(l.subtotalCents)}</span>
@@ -391,36 +399,36 @@ export function PaymentStep({
             })}
           </ul>
           <p className="mt-3 flex items-baseline justify-between border-t border-border pt-3">
-            <span>Total de la reserva</span>
+            <span>{t("bookingTotal")}</span>
             <span className="tabular font-semibold">{money(quote.totalCents)}</span>
           </p>
           {cardFee > 0 ? (
             <>
               <p className="mt-1 flex items-baseline justify-between">
-                <span>{effectiveOption === "deposit" ? "Adelanto" : "Pago"}</span>
+                <span>{effectiveOption === "deposit" ? t("deposit") : t("payment")}</span>
                 <span className="tabular">{money(plan.payNowCents)}</span>
               </p>
               <p className="mt-1 flex items-baseline justify-between">
-                <span>Comisión por pago con tarjeta ({cardFeePercent} %)</span>
+                <span>{t("cardFee", { percent: cardFeePercent ?? 0 })}</span>
                 <span className="tabular">{money(cardFee)}</span>
               </p>
             </>
           ) : null}
           <p className="mt-1 flex items-baseline justify-between font-medium">
-            <span>Hoy pagas</span>
+            <span>{t("payToday")}</span>
             <span className="tabular text-success">{money(payTodayCents)}</span>
           </p>
           {plan.balanceCents > 0 ? (
             <>
               <p className="mt-1 flex items-baseline justify-between">
-                <span>Saldo pendiente</span>
+                <span>{t("balance")}</span>
                 <span className="tabular">{money(plan.balanceCents)}</span>
               </p>
               {plan.balanceDueAt ? (
-                <p className="text-sm text-foreground-muted">Vence el {formatInstantDate(plan.balanceDueAt)}.</p>
+                <p className="text-sm text-foreground-muted">{t("dueOn", { date: fmt.instant(plan.balanceDueAt) })}</p>
               ) : null}
               <p className="mt-3 text-sm text-foreground-muted">
-                Cómo pagar el saldo: desde la página de tu reserva, con el enlace que te enviaremos por correo y WhatsApp.
+                {t("howToPayBalance")}
               </p>
             </>
           ) : null}
@@ -430,9 +438,9 @@ export function PaymentStep({
       {/* 3.2 Método de pago */}
       {canPay && request ? (
         <fieldset className="mt-8">
-          <legend className="text-h4 font-medium">Método de pago</legend>
+          <legend className="text-h4 font-medium">{t("method")}</legend>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
-            {METHODS.map(({ value, label, icon: Icon, note }) => (
+            {METHODS.map(({ value, icon: Icon }) => (
               <label
                 key={value}
                 className="flex cursor-pointer flex-col gap-1 rounded-lg border-2 border-border p-3 has-[:checked]:border-primary has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring"
@@ -440,11 +448,11 @@ export function PaymentStep({
                 <span className="flex items-center gap-2 font-medium">
                   <input type="radio" value={value} className="size-5" {...register("method")} />
                   <Icon aria-hidden size={18} strokeWidth={1.5} />
-                  {label}
+                  {t(`methods.${value}.label`)}
                 </span>
-                <span className="text-sm text-foreground-muted">{note}</span>
+                <span className="text-sm text-foreground-muted">{t(`methods.${value}.note`)}</span>
                 {value === "card" && cardFeePercent ? (
-                  <span className="text-sm text-foreground-muted">Comisión de {cardFeePercent} % sobre el monto a pagar</span>
+                  <span className="text-sm text-foreground-muted">{t("cardFeeNote", { percent: cardFeePercent })}</span>
                 ) : null}
               </label>
             ))}
@@ -460,39 +468,39 @@ export function PaymentStep({
         <div className="rounded-lg border border-border p-4 text-sm">
           <div className="flex justify-between gap-4">
             <p>
-              <span className="font-medium">Contacto:</span> {contact.firstName} {contact.lastName} · {contact.email}
+              <span className="font-medium">{t("contact")}</span> {contact.firstName} {contact.lastName} · {contact.email}
             </p>
             <button type="button" className="pwt-link shrink-0" onClick={onBackToContact}>
-              Editar
+              {t("edit")}
             </button>
           </div>
           <div className="mt-2 flex justify-between gap-4">
             <p>
-              <span className="font-medium">Viajeros:</span> {lines.length} {lines.length === 1 ? "tour" : "tours"}
+              <span className="font-medium">{t("travelers")}</span> {t("tourCount", { count: lines.length })}
             </p>
             <button type="button" className="pwt-link shrink-0" onClick={onBackToTravelers}>
-              Editar
+              {t("edit")}
             </button>
           </div>
         </div>
 
         <div className="rounded-lg bg-surface-muted p-4 text-sm">
-          <p className="font-medium">Política de cancelación (resumen)</p>
+          <p className="font-medium">{t("cancellationTitle")}</p>
           {/* TODO(cliente/cumplimiento): texto completo y tabla de penalidades (RN-04 a RN-07) en modal. */}
           <ul className="mt-2 list-disc space-y-1 pl-5 text-foreground-muted">
-            <li>Cancelaciones con al menos 20 días hábiles: se descuentan gastos de servicios ya emitidos.</li>
-            <li>Boletos de tren, ingreso a Machu Picchu y sobrevuelos no son reembolsables una vez emitidos.</li>
-            <li>Cancelaciones con pocos días o servicios no usados: sin devolución.</li>
+            <li>{t("cancellation1")}</li>
+            <li>{t("cancellation2")}</li>
+            <li>{t("cancellation3")}</li>
           </ul>
-          <Link href="/es/politicas/condiciones-de-pago" target="_blank" className="pwt-link mt-2 inline-flex min-h-11 items-center">
-            Ver política completa
+          <Link href="/politicas/condiciones-de-pago" target="_blank" className="pwt-link mt-2 inline-flex min-h-11 items-center">
+            {t("fullPolicy")}
           </Link>
         </div>
 
         {quote.booking?.holdExpiresAt ? (
           <HoldTimer expiresAt={quote.booking.holdExpiresAt} onExpire={() => setExpired(true)} />
         ) : (
-          <p className="text-sm text-foreground-muted">Al confirmar guardamos tus cupos 15 minutos mientras se procesa el pago.</p>
+          <p className="text-sm text-foreground-muted">{t("holdNote")}</p>
         )}
 
         <div>
@@ -506,24 +514,28 @@ export function PaymentStep({
               {...register("terms")}
             />
             <span>
-              Acepto los{" "}
-              <Link href="/es/politicas/terminos-y-condiciones" target="_blank" className="pwt-link">
-                Términos y condiciones
-              </Link>{" "}
-              y la{" "}
-              <Link href="/es/politicas/condiciones-de-pago" target="_blank" className="pwt-link">
-                Política de pagos y cancelación
-              </Link>
-              , y declaro haber leído la{" "}
-              <Link href="/es/politicas/proteccion-de-datos-personales" target="_blank" className="pwt-link">
-                Política de privacidad
-              </Link>
-              .
+              {t.rich("terms", {
+                terms: (chunks) => (
+                  <Link href="/politicas/terminos-y-condiciones" target="_blank" className="pwt-link">
+                    {chunks}
+                  </Link>
+                ),
+                payments: (chunks) => (
+                  <Link href="/politicas/condiciones-de-pago" target="_blank" className="pwt-link">
+                    {chunks}
+                  </Link>
+                ),
+                privacy: (chunks) => (
+                  <Link href="/politicas/proteccion-de-datos-personales" target="_blank" className="pwt-link">
+                    {chunks}
+                  </Link>
+                ),
+              })}
             </span>
           </label>
           {errors.terms ? (
             <p id={`${fieldId("terms")}-error`} className="mt-1 ml-8 text-sm text-danger">
-              {errors.terms.message}
+              {errorText(errors.terms.message)}
             </p>
           ) : null}
         </div>
@@ -540,7 +552,7 @@ export function PaymentStep({
         {pay.isPending ? (
           <>
             <Loader2 aria-hidden size={20} strokeWidth={1.5} className="animate-spin motion-reduce:animate-none" />
-            Procesando tu pago…
+            {t("processing")}
           </>
         ) : (
           payLabel
@@ -548,7 +560,7 @@ export function PaymentStep({
       </button>
       <p className="mt-3 flex items-center justify-center gap-2 text-sm text-foreground-muted">
         <Lock aria-hidden size={16} strokeWidth={1.5} />
-        Pago seguro · Recibirás tu comprobante electrónico por correo
+        {t("secureNote")}
       </p>
       <p className="mt-2 text-center">
         <a
@@ -558,7 +570,7 @@ export function PaymentStep({
           className="pwt-link inline-flex min-h-11 items-center gap-2 text-sm"
         >
           <MessageCircle aria-hidden size={18} strokeWidth={1.5} />
-          ¿Problemas para pagar? Ayuda por WhatsApp
+          {t("payHelp")}
         </a>
       </p>
     </form>

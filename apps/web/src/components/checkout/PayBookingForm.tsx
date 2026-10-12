@@ -3,11 +3,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 
 import { payBookingAction } from "@/app/[locale]/(site)/reserva/[codigo]/actions";
 import type { Currency } from "@/lib/catalog/types";
-import { formatMoney } from "@/lib/format";
+import { useFormat } from "@/hooks/useFormat";
 import { PAYMENT_METHOD_LABEL, type PaymentMethod, type PaymentWidgetHandle } from "@/lib/payments/types";
 import { useUiStore } from "@/stores/ui-store";
 import { buttonClass } from "@/components/ui/button-styles";
@@ -15,7 +16,9 @@ import { ErrorSummary } from "./form-fields";
 import { HoldTimer } from "./HoldTimer";
 import { SandboxPaymentWidget } from "./SandboxPaymentWidget";
 
-const KIND_LABEL: Record<string, string> = { deposit: "el adelanto", full: "el total", balance: "el saldo" };
+const KINDS = ["deposit", "full", "balance"] as const;
+type Kind = (typeof KINDS)[number];
+const isKind = (value: string): value is Kind => (KINDS as readonly string[]).includes(value);
 
 /** Pago (o reintento) desde la página de la reserva. Todo el cobro ocurre en el servidor (BFF). */
 export function PayBookingForm({
@@ -31,6 +34,9 @@ export function PayBookingForm({
   kind: string;
   holdExpiresAt: string | null;
 }) {
+  const t = useTranslations("checkout.payBooking");
+  const tp = useTranslations("checkout.payment");
+  const fmt = useFormat();
   const router = useRouter();
   const announce = useUiStore((s) => s.announce);
   const widgetRef = useRef<PaymentWidgetHandle>(null);
@@ -47,7 +53,7 @@ export function PayBookingForm({
     onSuccess: (res) => {
       if (res.ok) {
         setError(null);
-        announce(res.data.payment === "succeeded" ? "Pago registrado. Actualizamos tu reserva." : "Pago pendiente de confirmación.");
+        announce(res.data.payment === "succeeded" ? t("succeeded") : t("pending"));
         router.refresh();
         return;
       }
@@ -56,7 +62,7 @@ export function PayBookingForm({
       requestAnimationFrame(() => errorRef.current?.focus());
     },
     onError: () => {
-      setError("No pudimos conectar con el sistema de pagos. No se te cobró nada; intenta de nuevo.");
+      setError(t("connectionError"));
       requestAnimationFrame(() => errorRef.current?.focus());
     },
   });
@@ -71,11 +77,11 @@ export function PayBookingForm({
       }}
     >
       <h3 id="pay-now-title" className="font-medium">
-        Pagar {KIND_LABEL[kind] ?? "ahora"}: <span className="tabular">{formatMoney(amountCents, currency)}</span>
+        {t(`kind.${isKind(kind) ? kind : "now"}`)}: <span className="tabular">{fmt.money(amountCents, currency)}</span>
       </h3>
       {error ? (
         <div className="mt-3">
-          <ErrorSummary ref={errorRef} title="No pudimos completar el pago:" errors={[{ path: "pay-booking", message: error }]} />
+          <ErrorSummary ref={errorRef} title={tp("payFailed")} errors={[{ path: "pay-booking", message: error }]} />
         </div>
       ) : null}
       {holdExpiresAt ? (
@@ -84,7 +90,7 @@ export function PayBookingForm({
         </div>
       ) : null}
       <fieldset className="mt-4">
-        <legend className="text-sm font-medium">Método de pago</legend>
+        <legend className="text-sm font-medium">{tp("method")}</legend>
         <div className="mt-2 flex flex-wrap gap-2">
           {(Object.keys(PAYMENT_METHOD_LABEL) as PaymentMethod[]).map((m) => (
             <label
@@ -92,7 +98,7 @@ export function PayBookingForm({
               className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-pill border border-border-strong px-4 text-sm has-[:checked]:border-primary has-[:checked]:font-medium"
             >
               <input type="radio" name="method" value={m} checked={method === m} onChange={() => setMethod(m)} />
-              {PAYMENT_METHOD_LABEL[m]}
+              {tp(`methods.${m}.label`)}
             </label>
           ))}
         </div>
@@ -107,7 +113,7 @@ export function PayBookingForm({
             amountCents,
             currency,
             option: kind === "deposit" ? "deposit" : "full",
-            description: `Reserva ${code}`,
+            description: t("description", { code }),
             providerSessionToken: null,
           }}
         />
@@ -122,10 +128,10 @@ export function PayBookingForm({
         {pay.isPending ? (
           <>
             <Loader2 aria-hidden size={18} strokeWidth={1.5} className="animate-spin motion-reduce:animate-none" />
-            Procesando tu pago…
+            {tp("processing")}
           </>
         ) : (
-          `Pagar ${formatMoney(amountCents, currency)}`
+          tp("payAmount", { amount: fmt.money(amountCents, currency) })
         )}
       </button>
     </form>

@@ -1,7 +1,7 @@
 /*
  * Service worker del voucher sin conexión (HU-B.A2). Peru Wonders Tours.
  *
- * Alcance: /es/reserva/ (solo controla las páginas de reserva).
+ * Alcance: /es/reserva/ o /en/booking/ (una registración por idioma; solo controla las páginas de reserva).
  * Reglas de privacidad:
  * - Solo se guarda la página del voucher que ESTE navegador pudo abrir con su cookie httpOnly
  *   `pwt_bk_<código>`: la respuesta se pide a la red con las cookies del propio navegador y se guarda
@@ -17,7 +17,7 @@
 const PAGES = "pwt-voucher-pages-v1";
 const ASSETS = "pwt-voucher-assets-v1";
 const KNOWN = [PAGES, ASSETS];
-const VOUCHER_RE = /^\/es\/reserva\/([A-Z0-9][A-Z0-9-]{3,39})\/?$/;
+const VOUCHER_RE = /^\/(?:es\/reserva|en\/booking)\/([A-Z0-9][A-Z0-9-]{3,39})\/?$/;
 const MAX_ASSETS = 120;
 const MAX_AGE_MS = 30 * 24 * 3600 * 1000;
 const AFTER_TRIP_MS = 7 * 24 * 3600 * 1000;

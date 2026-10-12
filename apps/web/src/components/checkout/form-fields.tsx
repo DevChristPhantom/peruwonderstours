@@ -1,7 +1,26 @@
 "use client";
 
-import { forwardRef, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from "react";
+import { useTranslations } from "next-intl";
+import { forwardRef, useCallback, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from "react";
 import type { FieldError, FieldErrors } from "react-hook-form";
+
+/**
+ * Traduce un mensaje de validación: los esquemas (checkout, Libro de Reclamaciones) usan claves de
+ * `formErrors` (`clave` o `clave|n`). Un texto que no es clave (p. ej. ya traducido por el servidor)
+ * se muestra tal cual.
+ */
+export function useErrorText(): (message: string | undefined) => string | undefined {
+  const t = useTranslations("formErrors");
+  return useCallback(
+    (message: string | undefined) => {
+      if (!message) return message;
+      const [key, n] = message.split("|");
+      const k = key as Parameters<typeof t>[0];
+      return t.has(k) ? t(k, { n: Number(n ?? 0), count: 0 }) : message;
+    },
+    [t],
+  );
+}
 
 /** Id estable de un campo a partir de su ruta ("lines.0.travelers.1.fullName" → "f-lines-0-travelers-1-fullName"). */
 export function fieldId(path: string): string {
@@ -14,19 +33,21 @@ export const inputClass =
 
 interface FieldShellProps {
   id: string;
-  label: string;
+  label: ReactNode;
   error?: string;
   hint?: ReactNode;
   children: ReactNode;
   optional?: boolean;
 }
 
-export function FieldShell({ id, label, error, hint, children, optional }: FieldShellProps) {
+export function FieldShell({ id, label, error: rawError, hint, children, optional }: FieldShellProps) {
+  const t = useTranslations("formErrors");
+  const error = useErrorText()(rawError);
   return (
     <div>
       <label htmlFor={id} className="block text-sm font-medium text-foreground">
         {label}
-        {optional ? <span className="font-normal text-foreground-muted"> (opcional)</span> : null}
+        {optional ? <span className="font-normal text-foreground-muted"> {t("optional")}</span> : null}
       </label>
       {children}
       {hint && !error ? (
@@ -45,7 +66,7 @@ export function FieldShell({ id, label, error, hint, children, optional }: Field
 
 type TextFieldProps = InputHTMLAttributes<HTMLInputElement> & {
   path: string;
-  label: string;
+  label: ReactNode;
   error?: string;
   hint?: ReactNode;
   optional?: boolean;
@@ -73,7 +94,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function T
 
 type SelectFieldProps = SelectHTMLAttributes<HTMLSelectElement> & {
   path: string;
-  label: string;
+  label: ReactNode;
   error?: string;
   children: ReactNode;
 };
@@ -125,11 +146,13 @@ export const ErrorSummary = forwardRef<
   HTMLDivElement,
   { errors: FlatError[]; labels?: Record<string, string>; title?: string; children?: ReactNode }
 >(function ErrorSummary({ errors, labels, title, children }, ref) {
+    const t = useTranslations("formErrors");
+    const errorText = useErrorText();
     if (!errors.length) return null;
     return (
       <div ref={ref} role="alert" tabIndex={-1} className="mb-6 rounded-md border border-danger bg-danger-soft p-4 text-danger focus:outline-2">
         <p className="font-medium">
-          {title ?? `Revisa ${errors.length === 1 ? "este campo" : `estos ${errors.length} campos`} para continuar:`}
+          {title ?? t("summaryTitle", { count: errors.length })}
         </p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-sm">
           {errors.map((e) => (
@@ -143,7 +166,7 @@ export const ErrorSummary = forwardRef<
                 }}
               >
                 {labels?.[e.path] ? `${labels[e.path]}: ` : ""}
-                {e.message}
+                {errorText(e.message)}
               </a>
             </li>
           ))}

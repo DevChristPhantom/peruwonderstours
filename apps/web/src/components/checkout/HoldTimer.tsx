@@ -1,6 +1,7 @@
 "use client";
 
 import { Clock } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import { useUiStore } from "@/stores/ui-store";
@@ -18,6 +19,7 @@ function mmss(total: number): string {
  * explica qué pasó y cómo seguir.
  */
 export function HoldTimer({ expiresAt, onExpire }: { expiresAt: string; onExpire?: () => void }) {
+  const t = useTranslations("checkout.hold");
   const announce = useUiStore((s) => s.announce);
   const deadline = new Date(expiresAt).getTime();
   const [now, setNow] = useState(() => Date.now());
@@ -34,20 +36,20 @@ export function HoldTimer({ expiresAt, onExpire }: { expiresAt: string; onExpire
     for (const minute of [5, 1]) {
       if (remaining <= minute * 60 && remaining > 0 && !announced.current.has(minute)) {
         announced.current.add(minute);
-        announce(`Quedan ${minute} ${minute === 1 ? "minuto" : "minutos"} para completar el pago.`);
+        announce(t("minutesLeft", { count: minute }));
       }
     }
     if (remaining === 0 && !announced.current.has(0)) {
       announced.current.add(0);
-      announce("Se venció el tiempo para pagar y liberamos tus cupos.");
+      announce(t("expiredShort"));
       onExpire?.();
     }
-  }, [remaining, announce, onExpire]);
+  }, [remaining, announce, onExpire, t]);
 
   if (remaining === 0) {
     return (
       <p className="rounded-md bg-warning-soft p-4 text-sm text-warning">
-        Se venció el tiempo para pagar y liberamos tus cupos. Vuelve a tu carrito para revisar la disponibilidad.
+        {t("expired")}
       </p>
     );
   }
@@ -56,7 +58,7 @@ export function HoldTimer({ expiresAt, onExpire }: { expiresAt: string; onExpire
     <div className="flex flex-wrap items-center gap-3 rounded-md bg-surface-muted px-4 py-3 text-sm">
       <Clock aria-hidden size={18} strokeWidth={1.5} className="text-foreground-muted" />
       <p>
-        Guardamos tus cupos por <span className="tabular font-semibold">{mmss(remaining)}</span> min más.
+        {t.rich("holding", { time: mmss(remaining), strong: (chunks) => <span className="tabular font-semibold">{chunks}</span> })}
       </p>
     </div>
   );

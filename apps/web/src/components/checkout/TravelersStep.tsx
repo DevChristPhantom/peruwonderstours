@@ -2,22 +2,28 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertTriangle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRef, type Ref } from "react";
 import { useForm } from "react-hook-form";
 
+import { useFormat } from "@/hooks/useFormat";
 import { useTravelersText } from "@/hooks/useTravelersText";
 import { travelerCount, type CartLine } from "@/lib/cart/types";
 import { DOC_TYPES, travelersSchema, type ContactValues, type TravelersValues } from "@/lib/checkout/schemas";
-import { formatDate } from "@/lib/format";
 import { buttonClass } from "@/components/ui/button-styles";
-import { ErrorSummary, fieldId, flattenErrors, inputClass, SelectField, TextField } from "./form-fields";
+import { ErrorSummary, fieldId, flattenErrors, inputClass, SelectField, TextField, useErrorText } from "./form-fields";
 
 function emptyTraveler() {
   return { fullName: "", docType: "dni" as const, docNumber: "", nationality: "" };
 }
 
 /** Valores iniciales: un bloque por tour con tantos viajeros como haya elegido. */
-export function buildTravelerDefaults(lines: CartLine[], contact: ContactValues, previous: TravelersValues | null): TravelersValues {
+export function buildTravelerDefaults(
+  lines: CartLine[],
+  contact: ContactValues,
+  previous: TravelersValues | null,
+  peruvianNationality = "Peruana",
+): TravelersValues {
   const contactName = `${contact.firstName} ${contact.lastName}`.trim();
   return {
     useContactForFirst: previous?.useContactForFirst ?? true,
@@ -31,7 +37,7 @@ export function buildTravelerDefaults(lines: CartLine[], contact: ContactValues,
         travelers: Array.from({ length: n }, (_, i) => {
           const base = prev?.travelers[i] ?? emptyTraveler();
           if (i === 0 && (previous?.useContactForFirst ?? true) && !base.fullName) {
-            return { ...base, fullName: contactName, nationality: contact.country === "Perú" ? "Peruana" : base.nationality };
+            return { ...base, fullName: contactName, nationality: contact.country === "Perú" ? peruvianNationality : base.nationality };
           }
           return base;
         }),
@@ -55,6 +61,8 @@ export function TravelersStep({
   onBack: () => void;
   headingRef: Ref<HTMLHeadingElement>;
 }) {
+  const t = useTranslations("checkout.travelers");
+  const fmt = useFormat();
   const travelersText = useTravelersText();
   const summaryRef = useRef<HTMLDivElement>(null);
   const {
@@ -64,6 +72,7 @@ export function TravelersStep({
     getValues,
     formState: { errors, submitCount },
   } = useForm<TravelersValues>({ resolver: zodResolver(travelersSchema), defaultValues, mode: "onBlur" });
+  const errorText = useErrorText();
   const flat = flattenErrors(errors);
   const contactName = `${contact.firstName} ${contact.lastName}`.trim();
   const needsExactDocs = lines.some((l) => l.paymentPolicy.depositPercent >= 100);
@@ -75,16 +84,16 @@ export function TravelersStep({
       onSubmit={(e) => handleSubmit(onSubmit, () => requestAnimationFrame(() => summaryRef.current?.focus()))(e)}
     >
       <h2 id="step-travelers-title" ref={headingRef} tabIndex={-1} className="font-display text-h2 font-medium focus:outline-none">
-        Viajeros
+        {t("title")}
       </h2>
-      <p className="mt-2 mb-6 text-foreground-muted">Datos de cada persona, tal como figuran en su documento.</p>
+      <p className="mt-2 mb-6 text-foreground-muted">{t("intro")}</p>
 
       {submitCount > 0 ? <ErrorSummary ref={summaryRef} errors={flat} /> : null}
 
       {needsExactDocs ? (
         <p className="mb-6 flex gap-3 rounded-md bg-warning-soft p-4 text-sm text-warning">
           <AlertTriangle aria-hidden size={20} strokeWidth={1.5} className="shrink-0" />
-          Los boletos de Machu Picchu y tren se emiten con el nombre y documento exactos. Revísalos bien.
+          {t("exactDocs")}
         </p>
       ) : null}
 
@@ -101,7 +110,7 @@ export function TravelersStep({
             },
           })}
         />
-        <span>Usar mis datos para el viajero 1 ({contactName || "quien reserva"})</span>
+        <span>{t("useContact", { name: contactName || t("booker") })}</span>
       </label>
 
       <div className="space-y-8">
@@ -110,7 +119,7 @@ export function TravelersStep({
             <legend className="px-2 font-medium">
               {line.title}
               <span className="block text-sm font-normal text-foreground-muted">
-                {formatDate(line.date)} · {travelersText(line.travelers)}
+                {fmt.date(line.date)} · {travelersText(line.travelers)}
               </span>
             </legend>
             <input type="hidden" {...register(`lines.${li}.lineId`)} />
@@ -120,26 +129,26 @@ export function TravelersStep({
                 const err = errors.lines?.[li]?.travelers?.[ti];
                 return (
                   <div key={ti} className="grid gap-4 md:grid-cols-2">
-                    <p className="text-sm font-medium text-foreground-muted md:col-span-2">Viajero {ti + 1}</p>
+                    <p className="text-sm font-medium text-foreground-muted md:col-span-2">{t("traveler", { n: ti + 1 })}</p>
                     <div className="md:col-span-2">
                       <TextField
                         path={`${base}.fullName`}
-                        label="Nombres y apellidos"
+                        label={t("fullName")}
                         autoComplete={ti === 0 ? "name" : "off"}
                         error={err?.fullName?.message}
                         {...register(`${base}.fullName`)}
                       />
                     </div>
-                    <SelectField path={`${base}.docType`} label="Tipo de documento" {...register(`${base}.docType`)}>
+                    <SelectField path={`${base}.docType`} label={t("docType")} {...register(`${base}.docType`)}>
                       {DOC_TYPES.map((d) => (
                         <option key={d.value} value={d.value}>
-                          {d.label}
+                          {t(`docTypes.${d.value}`)}
                         </option>
                       ))}
                     </SelectField>
                     <TextField
                       path={`${base}.docNumber`}
-                      label="Número de documento"
+                      label={t("docNumber")}
                       autoComplete="off"
                       error={err?.docNumber?.message}
                       {...register(`${base}.docNumber`)}
@@ -147,7 +156,7 @@ export function TravelersStep({
                     <div className="md:col-span-2">
                       <TextField
                         path={`${base}.nationality`}
-                        label="Nacionalidad"
+                        label={t("nationality")}
                         autoComplete="off"
                         error={err?.nationality?.message}
                         {...register(`${base}.nationality`)}
@@ -162,10 +171,10 @@ export function TravelersStep({
       </div>
 
       <div className="mt-8 grid gap-5">
-        <TextField path="hotel" label="Hotel para el recojo" optional autoComplete="off" {...register("hotel")} />
+        <TextField path="hotel" label={t("hotel")} optional autoComplete="off" {...register("hotel")} />
         <div>
           <label htmlFor={fieldId("notes")} className="block text-sm font-medium">
-            Necesidades especiales o alimentación <span className="font-normal text-foreground-muted">(opcional)</span>
+            {t("notes")} <span className="font-normal text-foreground-muted">{t("optional")}</span>
           </label>
           <textarea
             id={fieldId("notes")}
@@ -177,7 +186,7 @@ export function TravelersStep({
           />
           {errors.notes ? (
             <p id={`${fieldId("notes")}-error`} className="mt-1 text-sm text-danger">
-              {errors.notes.message}
+              {errorText(errors.notes.message)}
             </p>
           ) : null}
         </div>
@@ -185,10 +194,10 @@ export function TravelersStep({
 
       <div className="mt-8 flex flex-col-reverse gap-3 md:flex-row md:items-center">
         <button type="button" className={buttonClass("ghost", "lg")} onClick={onBack}>
-          Volver a tus datos
+          {t("back")}
         </button>
         <button type="submit" className={buttonClass("primary", "lg", "md:ml-auto")}>
-          Continuar al pago
+          {t("next")}
         </button>
       </div>
     </form>

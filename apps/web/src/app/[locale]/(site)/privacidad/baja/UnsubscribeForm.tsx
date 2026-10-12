@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 
@@ -7,31 +8,35 @@ import { buttonClass } from "@/components/ui/button-styles";
 
 import { unsubscribeAction, type UnsubscribeResult } from "./actions";
 
-const LABELS: Record<string, string> = {
-  marketing_email: "Correos con ofertas y novedades",
-  marketing_whatsapp: "Mensajes de WhatsApp con ofertas",
-};
+const PURPOSES = ["marketing_email", "marketing_whatsapp"] as const;
+type Purpose = (typeof PURPOSES)[number];
+const isPurpose = (value: string): value is Purpose => (PURPOSES as readonly string[]).includes(value);
 
 function Submit() {
+  const t = useTranslations("privacy.unsubscribe");
   const { pending } = useFormStatus();
   return (
     <button type="submit" disabled={pending} aria-busy={pending || undefined} className={buttonClass("primary", "lg")}>
-      {pending ? "Procesando…" : "Confirmar la baja"}
+      {pending ? t("processing") : t("submit")}
     </button>
   );
 }
 
 export function UnsubscribeForm({ token, purposes }: { token: string; purposes: { purpose: string; granted: boolean }[] }) {
+  const t = useTranslations("privacy.unsubscribe");
   const [state, action] = useActionState<UnsubscribeResult | null, FormData>(unsubscribeAction, null);
   const active = purposes.filter((p) => p.granted);
+  const label = (purpose: string) => (isPurpose(purpose) ? t(`purposes.${purpose}`) : purpose);
 
   if (state?.ok) {
-    const done = [...state.revoked, ...state.alreadyRevoked].map((p) => LABELS[p] ?? p);
+    const done = [...state.revoked, ...state.alreadyRevoked].map(label);
     return (
       <div role="status" className="rounded-md border border-success bg-success-soft p-4 text-success">
-        <p className="font-semibold">Listo: te dimos de baja.</p>
-        <p className="mt-1 text-sm text-foreground">Ya no recibirás: {done.join(" y ").toLowerCase() || "comunicaciones comerciales"}.</p>
-        <p className="mt-1 text-sm text-foreground">Seguirás recibiendo los correos necesarios de tus reservas (confirmaciones, vouchers y avisos de pago).</p>
+        <p className="font-semibold">{t("doneTitle")}</p>
+        <p className="mt-1 text-sm text-foreground">
+          {t("doneText", { channels: done.join(t("and")).toLowerCase() || t("commercial") })}
+        </p>
+        <p className="mt-1 text-sm text-foreground">{t("transactional")}</p>
       </div>
     );
   }
@@ -39,7 +44,7 @@ export function UnsubscribeForm({ token, purposes }: { token: string; purposes: 
   if (active.length === 0) {
     return (
       <p role="status" className="rounded-md border border-border bg-surface-muted p-4 text-sm">
-        Ya no estás suscrito a comunicaciones comerciales con este correo. No necesitas hacer nada más.
+        {t("nothingActive")}
       </p>
     );
   }
@@ -53,11 +58,11 @@ export function UnsubscribeForm({ token, purposes }: { token: string; purposes: 
         </p>
       ) : null}
       <fieldset className="space-y-2">
-        <legend className="mb-1 font-medium">¿De qué quieres darte de baja?</legend>
+        <legend className="mb-1 font-medium">{t("legend")}</legend>
         {active.map((p) => (
           <label key={p.purpose} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-md border border-border bg-surface px-3">
             <input type="checkbox" name="purposes" value={p.purpose} defaultChecked className="size-5" />
-            {LABELS[p.purpose] ?? p.purpose}
+            {label(p.purpose)}
           </label>
         ))}
       </fieldset>

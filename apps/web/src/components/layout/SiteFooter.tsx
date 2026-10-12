@@ -10,7 +10,7 @@ import { SOCIAL_LINKS } from "@/lib/social";
 import { AndesSkyline } from "./AndesSkyline";
 
 type Href = ComponentProps<typeof Link>["href"];
-type LinkKey = "allTours" | "tourTypes" | "about" | "blog" | "reviews" | "contact" | "myBooking" | "complaintStatus" | "favorites" | "terms" | "payments" | "privacy" | "cookies";
+type LinkKey = "allTours" | "tourTypes" | "about" | "blog" | "reviews" | "contact" | "myBookings" | "myBooking" | "complaintStatus" | "favorites" | "terms" | "payments" | "privacy" | "cookies";
 
 /** Slug por idioma (data/seed/en/_slug-map.json) para enlazar sin el salto 308 entre idiomas. */
 const DESTINATIONS = [
@@ -22,7 +22,7 @@ const DESTINATIONS = [
 ] as const;
 
 const COMPANY: [Href, LinkKey][] = [["/nosotros", "about"], ["/blog", "blog"], ["/testimonios", "reviews"], ["/contactenos", "contact"]];
-const HELP: [Href, LinkKey][] = [["/reserva/acceso", "myBooking"], ["/libro-de-reclamaciones/consulta", "complaintStatus"], ["/favoritos", "favorites"]];
+const HELP: [Href, LinkKey][] = [["/mis-reservas", "myBookings"], ["/reserva/acceso", "myBooking"], ["/libro-de-reclamaciones/consulta", "complaintStatus"], ["/favoritos", "favorites"]];
 const LEGAL: [Href, LinkKey][] = [
   ["/politicas/terminos-y-condiciones", "terms"],
   ["/politicas/condiciones-de-pago", "payments"],

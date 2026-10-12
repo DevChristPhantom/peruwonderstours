@@ -1,0 +1,56 @@
+{
+  "moreInfo": "More information in our <link>Personal data protection policy</link>.",
+  "unsubscribe": {
+    "metaTitle": "Unsubscribe from communications",
+    "title": "Unsubscribe",
+    "intro": "You can stop receiving marketing communications at any time, free of charge and immediately (Peruvian Personal Data Protection Law 29733).",
+    "legend": "What do you want to unsubscribe from?",
+    "purposes": {
+      "marketing_email": "Emails with offers and news",
+      "marketing_whatsapp": "WhatsApp messages with offers"
+    },
+    "and": " and ",
+    "processing": "Processing…",
+    "submit": "Confirm unsubscribe",
+    "doneTitle": "Done: you are unsubscribed.",
+    "doneText": "You will no longer receive: {channels}.",
+    "commercial": "marketing communications",
+    "transactional": "You will keep receiving the emails needed for your bookings (confirmations, vouchers and payment notices).",
+    "nothingActive": "You are no longer subscribed to marketing communications with this email. You don't need to do anything else.",
+    "errors": {
+      "incomplete": "The unsubscribe link is incomplete. Open it directly from our email.",
+      "invalidLink": "The link is not valid. Use the most recent link from our emails.",
+      "noneSelected": "Select at least one channel to unsubscribe from.",
+      "tampered": "The unsubscribe link is not valid or was modified. Use the most recent link from our emails.",
+      "busy": "You made several attempts in a row. Wait a minute and try again.",
+      "unavailable": "We could not process the request right now. Try again in a few minutes or contact us.",
+      "loadFailed": "We could not load your preferences right now. Try again in a few minutes."
+    }
+  },
+  "confirm": {
+    "metaTitle": "Confirm subscription",
+    "title": "Confirm subscription",
+    "purposes": {
+      "marketing_email": "offers and news by email",
+      "marketing_whatsapp": "offers on WhatsApp"
+    },
+    "and": " and ",
+    "processing": "Confirming…",
+    "submit": "Yes, I want to receive them",
+    "doneTitle": "Subscription confirmed.",
+    "nothingPending": "There was nothing pending confirmation.",
+    "doneText": "You will receive {channels}. You can unsubscribe at any time from the link in each message.",
+    "question": "You asked to receive <strong>{channels}</strong>. Confirm it was you:",
+    "ignore": "If you did not ask for it, ignore this message: without your confirmation we will not send you advertising.",
+    "alreadyConfirmed": "Your subscription is already confirmed. You don't need to do anything else.",
+    "nothingToConfirm": "There is no subscription pending confirmation with this link.",
+    "errors": {
+      "incomplete": "The link is incomplete. Open it directly from our email.",
+      "invalidLink": "The link is not valid. Use the most recent link from our email.",
+      "expired": "The link expired (7 days) or is not valid. You can subscribe again on your next booking.",
+      "busy": "You made several attempts in a row. Wait a minute and try again.",
+      "unavailable": "We could not confirm right now. Try again in a few minutes.",
+      "loadFailed": "We could not load the request right now. Try again in a few minutes."
+    }
+  }
+}

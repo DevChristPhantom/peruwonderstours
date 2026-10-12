@@ -1,9 +1,11 @@
 "use client";
 
 import { CalendarPlus } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 
+import { bookingPath } from "@/i18n/paths";
 import { absoluteUrl } from "@/lib/site";
-import { buildIcs, downloadIcs, PICKUP_PENDING } from "@/lib/trip/ics";
+import { buildIcs, downloadIcs } from "@/lib/trip/ics";
 import { useUiStore } from "@/stores/ui-store";
 import { buttonClass } from "@/components/ui/button-styles";
 
@@ -14,6 +16,8 @@ interface VoucherCalendarButtonProps {
 
 /** .ics de la reserva (HU-B.A5/A2): código y tours, sin datos personales. */
 export function VoucherCalendarButton({ code, items }: VoucherCalendarButtonProps) {
+  const t = useTranslations("voucher");
+  const locale = useLocale();
   const announce = useUiStore((s) => s.announce);
   return (
     <button
@@ -23,20 +27,20 @@ export function VoucherCalendarButton({ code, items }: VoucherCalendarButtonProp
         const ics = buildIcs(
           items.map((item) => ({
             uid: `${code}-${item.id}@peruwonderstours.com`,
-            title: `${item.title} · Reserva ${code}`,
+            title: t("ics.title", { title: item.title, code }),
             date: item.date,
             days: 1,
-            description: [`Reserva ${code} · ${item.pax} ${item.pax === 1 ? "viajero" : "viajeros"}.`, PICKUP_PENDING].join("\n"),
-            url: absoluteUrl(`/es/reserva/${code}`),
+            description: [t("ics.description", { code, count: item.pax }), t("ics.pickup")].join("\n"),
+            url: absoluteUrl(bookingPath(locale, code)),
           })),
-          { name: `Reserva ${code} · Peru Wonders Tours` },
+          { name: t("ics.calendarName", { code }) },
         );
-        downloadIcs(ics, `reserva-${code}.ics`);
-        announce("Descargamos el calendario de tu reserva.");
+        downloadIcs(ics, t("ics.fileName", { code }));
+        announce(t("ics.announce"));
       }}
     >
       <CalendarPlus aria-hidden size={18} strokeWidth={1.5} />
-      Añadir al calendario
+      {t("ics.button")}
     </button>
   );
 }

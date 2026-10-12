@@ -1,6 +1,9 @@
 import { z } from "zod";
 
-/** Validación del checkout (checkout.md). Mensajes en español, se muestran en blur. */
+/**
+ * Validación del checkout (checkout.md). Los mensajes son CLAVES de `formErrors` (messages/{es,en}/formErrors.json);
+ * los campos (`form-fields.tsx`) los traducen al idioma de la página. `clave|n` pasa el número `n`.
+ */
 
 export const PHONE_COUNTRIES = [
   { code: "+51", label: "Perú (+51)" },
@@ -31,12 +34,12 @@ export const COUNTRIES = [
 
 export const contactSchema = z
   .object({
-    firstName: z.string().trim().min(1, "Escribe tus nombres."),
-    lastName: z.string().trim().min(1, "Escribe tus apellidos."),
-    email: z.string().trim().email("Revisa el correo; aquí te enviaremos la confirmación."),
+    firstName: z.string().trim().min(1, "firstNameRequired"),
+    lastName: z.string().trim().min(1, "lastNameRequired"),
+    email: z.string().trim().email("emailForConfirmation"),
     phoneCountry: z.string().min(1),
     phone: z.string().trim(),
-    country: z.string().min(1, "Elige tu país de residencia."),
+    country: z.string().min(1, "countryRequired"),
     receipt: z.enum(["boleta", "factura"]),
     ruc: z.string().trim().optional(),
     businessName: z.string().trim().optional(),
@@ -55,15 +58,15 @@ export const contactSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["phone"],
-        message: peru ? "Ingresa un celular de 9 dígitos." : "Ingresa un número de teléfono válido.",
+        message: peru ? "phonePeru" : "phoneInvalid",
       });
     }
     if (v.receipt === "factura") {
       if (!/^(10|15|17|20)\d{9}$/.test(v.ruc ?? "")) {
-        ctx.addIssue({ code: "custom", path: ["ruc"], message: "El RUC tiene 11 dígitos y empieza con 10, 15, 17 o 20." });
+        ctx.addIssue({ code: "custom", path: ["ruc"], message: "rucInvalid" });
       }
       if (!v.businessName) {
-        ctx.addIssue({ code: "custom", path: ["businessName"], message: "Escribe la razón social." });
+        ctx.addIssue({ code: "custom", path: ["businessName"], message: "businessNameRequired" });
       }
     }
   });
@@ -78,10 +81,10 @@ export const DOC_TYPES = [
 
 export const travelerSchema = z
   .object({
-    fullName: z.string().trim().min(3, "Escribe el nombre completo, como figura en el documento."),
+    fullName: z.string().trim().min(3, "travelerFullName"),
     docType: z.enum(["dni", "pasaporte", "ce"]),
     docNumber: z.string().trim(),
-    nationality: z.string().trim().min(2, "Escribe la nacionalidad."),
+    nationality: z.string().trim().min(2, "nationalityRequired"),
   })
   .superRefine((v, ctx) => {
     const ok = v.docType === "dni" ? /^\d{8}$/.test(v.docNumber) : /^[A-Za-z0-9]{5,15}$/.test(v.docNumber);
@@ -89,7 +92,7 @@ export const travelerSchema = z
       ctx.addIssue({
         code: "custom",
         path: ["docNumber"],
-        message: v.docType === "dni" ? "El DNI tiene 8 dígitos." : "Revisa el número de documento.",
+        message: v.docType === "dni" ? "dniInvalid" : "docInvalid",
       });
     }
   });
@@ -98,7 +101,7 @@ export const travelersSchema = z.object({
   useContactForFirst: z.boolean(),
   lines: z.array(z.object({ lineId: z.string(), travelers: z.array(travelerSchema) })),
   hotel: z.string().trim().max(200).optional(),
-  notes: z.string().trim().max(500, "Máximo 500 caracteres.").optional(),
+  notes: z.string().trim().max(500, "maxChars|500").optional(),
 });
 
 export type TravelersValues = z.infer<typeof travelersSchema>;
@@ -107,7 +110,7 @@ export type TravelerValues = z.infer<typeof travelerSchema>;
 export const paymentStepSchema = z.object({
   option: z.enum(["deposit", "full"]),
   method: z.enum(["card", "yape", "pagoefectivo"]),
-  terms: z.boolean().refine((v) => v, "Para pagar, acepta los Términos y condiciones y la Política de cancelación."),
+  terms: z.boolean().refine((v) => v, "termsRequired"),
   /** Solo se exige si la revalidación en la API detectó un cambio de precio. */
   ackPrice: z.boolean(),
 });
