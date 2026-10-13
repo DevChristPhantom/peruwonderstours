@@ -10,5 +10,8 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "turbo": "2.11.7"
   }
 }
