@@ -23,7 +23,8 @@ for (const locale of ["es", "en"]) {
   const html = await response(`/${locale}`);
   assert.ok(html.includes("Peru Wonders Tours"), `${locale}: site brand missing`);
   assert.ok(html.includes("51924278597"), `${locale}: confirmed WhatsApp missing`);
-  assert.ok(html.includes("jorgechaveztourt@gmail.com"), `${locale}: confirmed email missing`);
+  const contact = await response(locale === "es" ? "/es/contactenos" : "/en/contact");
+  assert.ok(contact.includes("mailto:jorgechaveztourt@gmail.com"), `${locale}: confirmed contact email missing`);
 }
 
 const sitemap = await response("/sitemap.xml");
