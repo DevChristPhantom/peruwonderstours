@@ -3,7 +3,8 @@ import { readFile } from "node:fs/promises";
 import { setTimeout as delay } from "node:timers/promises";
 
 // GET-only smoke checks against a local preview, never customer data or payments.
-const origin = new URL(process.env.PWT_SMOKE_ORIGIN ?? "http://127.0.0.1:3100");
+// NextURL normalizes loopback IPs to localhost; use the same host for rewrites.
+const origin = new URL(process.env.PWT_SMOKE_ORIGIN ?? "http://localhost:3100");
 assert.ok(["127.0.0.1", "localhost", "[::1]"].includes(origin.hostname), "Use a local preview server");
 
 async function response(path) {
