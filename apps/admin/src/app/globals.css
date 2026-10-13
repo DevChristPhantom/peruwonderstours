@@ -35,6 +35,27 @@
 }
 
 @layer components {
+  .admin-section, .admin-login-card { box-shadow: var(--pwt-shadow-sm); }
+  .admin-login-card { border-top: 3px solid var(--pwt-primary); }
+  .admin-button {
+    position: relative;
+    transition: transform 140ms cubic-bezier(.25, 1, .5, 1), opacity 140ms ease-out;
+  }
+  .admin-button:focus-visible { outline-offset: 3px; }
+  .admin-button:disabled, .admin-button[aria-disabled="true"] { transform: none; }
+  .admin-nav-link { position: relative; }
+  .admin-nav-link[aria-current="page"] { box-shadow: var(--pwt-shadow-xs); }
+  .admin-table-wrap { overscroll-behavior-x: contain; }
+  .admin-table-wrap:focus-visible { outline-offset: 3px; }
+  @media (pointer: coarse) {
+    .admin-button { min-height: 44px; }
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .admin-button:not(:disabled):not([aria-disabled="true"]):not(.text-danger):hover { transform: translateY(-1px); }
+    .admin-button:not(:disabled):not([aria-disabled="true"]):not(.text-danger):active { transform: scale(.98); }
+    .admin-nav-link svg { transition: transform 140ms cubic-bezier(.25, 1, .5, 1); }
+    .admin-nav-link:hover svg { transform: translateX(2px); }
+  }
   .skip-link {
     position: absolute; left: 8px; top: -60px; z-index: var(--pwt-z-toast);
     background: var(--pwt-primary); color: var(--pwt-on-primary); padding: 10px 14px; border-radius: var(--pwt-radius-sm);
@@ -53,10 +74,12 @@
   .data-table { width: 100%; font-size: var(--pwt-text-sm); }
   .data-table th {
     text-align: left; font-weight: 600; font-size: var(--pwt-text-xs); color: var(--pwt-foreground-muted);
-    text-transform: uppercase; letter-spacing: .04em; padding: 8px 10px; border-bottom: 1px solid var(--pwt-border-strong);
+    text-transform: uppercase; letter-spacing: .04em; padding: 12px 14px; border-bottom: 1px solid var(--pwt-border-strong);
     white-space: nowrap; background: var(--pwt-surface-muted);
   }
-  .data-table td { padding: 8px 10px; border-bottom: 1px solid var(--pwt-border); vertical-align: top; }
+  .data-table td { padding: 12px 14px; border-bottom: 1px solid var(--pwt-border); vertical-align: top; }
+  .data-table tbody tr:last-child td { border-bottom: 0; }
+  .data-table tbody tr:focus-within { background: var(--pwt-surface-muted); }
   .data-table tbody tr:hover { background: var(--pwt-surface-muted); }
   .data-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 

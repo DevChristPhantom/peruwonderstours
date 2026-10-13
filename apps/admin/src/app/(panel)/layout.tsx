@@ -42,26 +42,26 @@ export default async function PanelLayout({ children }: LayoutProps<"/">) {
   );
 
   return (
-    <div className="min-h-dvh lg:grid lg:grid-cols-[232px_minmax(0,1fr)]">
-      <aside className="hidden border-r border-border bg-surface lg:flex lg:min-h-dvh lg:flex-col">
-        <div className="border-b border-border px-4 py-3">
+    <div className="admin-shell min-h-dvh lg:grid lg:grid-cols-[252px_minmax(0,1fr)]">
+      <aside className="hidden border-r border-border bg-surface lg:sticky lg:top-0 lg:flex lg:h-dvh lg:flex-col">
+        <div className="border-b border-border px-5 py-6">
           <Link href="/" className="block text-sm font-semibold text-foreground no-underline">
-            Peru Wonders Tours
-            <span className="block text-xs font-normal text-foreground-muted">Panel de administración</span>
+            peruwonderstours
+            <span className="mt-1 block text-xs font-normal text-foreground-muted">Panel de administración</span>
           </Link>
         </div>
-        <div className="flex-1 overflow-y-auto p-2">{nav}</div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-5">{nav}</div>
       </aside>
 
       <div className="min-w-0">
-        <header className="sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-border bg-surface px-4 py-2">
+        <header className="admin-topbar sticky top-0 z-20 flex items-center justify-between gap-3 border-b border-border bg-surface px-4 py-3 lg:px-7">
           <details className="relative lg:hidden">
             <summary className={buttonClass("outline", "sm", "list-none")}>
               <Menu aria-hidden size={18} /> Menú
             </summary>
-            <div className="absolute left-0 z-30 mt-2 w-64 rounded-md border border-border bg-surface p-2 shadow-lg">{nav}</div>
+            <div className="absolute left-0 z-30 mt-2 max-h-[calc(100dvh-100px)] w-[min(288px,calc(100vw-32px))] overflow-y-auto rounded-lg border border-border bg-surface p-3 shadow-lg">{nav}</div>
           </details>
-          <p className="hidden text-sm font-semibold lg:block">Panel</p>
+          <p className="hidden text-sm font-semibold lg:block">Administración <span className="ml-2 font-normal text-foreground-muted">/ peruwonderstours</span></p>
           <div className="flex items-center gap-2">
             <Link href="/cuenta" className="hidden text-right text-xs leading-tight text-foreground no-underline sm:block">
               <span className="block font-medium">{session.user.fullName}</span>
@@ -74,7 +74,7 @@ export default async function PanelLayout({ children }: LayoutProps<"/">) {
             </form>
           </div>
         </header>
-        <main id="contenido" className="mx-auto w-full max-w-[1400px] px-4 py-5 lg:px-6">
+        <main id="contenido" className="mx-auto w-full max-w-[1400px] px-4 py-6 lg:px-7 lg:py-8">
           {children}
         </main>
       </div>

@@ -5,12 +5,11 @@ export type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "inv
 export type ButtonSize = "md" | "lg" | "xl";
 
 const base =
-  "relative inline-flex items-center justify-center gap-2 rounded-md font-medium select-none " +
-  "transition-[background-color,color,border-color,transform,box-shadow] duration-150 ease-out " +
+  "pwt-button relative inline-flex items-center justify-center gap-2 rounded-md font-medium select-none " +
   "disabled:opacity-50 aria-disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2";
 
 const variants: Record<ButtonVariant, string> = {
-  primary: "bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-px active:translate-y-0",
+  primary: "bg-accent text-on-accent hover:bg-accent-hover shadow-sm",
   secondary: "bg-primary text-on-primary hover:bg-primary-hover",
   outline: "border border-border-strong bg-transparent text-foreground hover:bg-surface-muted",
   inverse: "bg-on-primary text-primary hover:bg-on-primary/90",

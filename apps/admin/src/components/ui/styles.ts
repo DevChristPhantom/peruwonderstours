@@ -8,8 +8,8 @@ export type ButtonSize = "md" | "sm";
 /** Botones del panel (MASTER §7, versión densa). `primary` = CTA terracota: uno por vista. */
 export function buttonClass(variant: ButtonVariant = "outline", size: ButtonSize = "md", extra?: string): string {
   return clsx(
-    "inline-flex cursor-pointer items-center justify-center gap-2 rounded-sm font-medium whitespace-nowrap no-underline",
-    "transition-[background-color,color,border-color] duration-150 disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:opacity-50",
+    "admin-button inline-flex cursor-pointer items-center justify-center gap-2 rounded-sm font-medium whitespace-nowrap no-underline",
+    "disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:opacity-50",
     size === "md" ? "min-h-11 px-4 text-sm" : "min-h-9 px-3 text-sm",
     {
       "bg-accent text-on-accent hover:bg-accent-hover": variant === "primary",

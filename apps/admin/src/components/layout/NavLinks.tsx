@@ -67,20 +67,30 @@ export interface NavItem {
   badge?: number;
 }
 
+const NAV_GROUP: Record<NavKey, string> = {
+  tablero: "Operación", reservas: "Operación", "pagos-manuales": "Operación", reclamos: "Operación", contacto: "Operación",
+  tours: "Catálogo", precios: "Catálogo", salidas: "Catálogo", destinos: "Catálogo", categorias: "Catálogo",
+  blog: "Contenido", testimonios: "Contenido",
+  privacidad: "Administración", auditoria: "Administración", usuarios: "Administración", cuenta: "Administración",
+};
+
 export function NavLinks({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
   return (
     <ul className="space-y-0.5">
-      {items.map((item) => {
+      {items.map((item, index) => {
         const Icon = ICONS[item.key];
         const active = item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(`${item.href}/`);
         return (
           <li key={item.key}>
+            {index === 0 || NAV_GROUP[items[index - 1].key] !== NAV_GROUP[item.key] ? (
+              <p className="px-3 pb-2 pt-5 text-[11px] font-semibold tracking-[0.1em] text-foreground-muted uppercase">{NAV_GROUP[item.key]}</p>
+            ) : null}
             <Link
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={clsx(
-                "flex min-h-10 items-center gap-2.5 rounded-sm px-3 text-sm no-underline transition-colors duration-150",
+                "admin-nav-link flex min-h-11 items-center gap-2.5 rounded-sm px-3 text-sm no-underline",
                 active ? "bg-primary font-medium text-on-primary" : "text-foreground hover:bg-surface-muted",
               )}
             >

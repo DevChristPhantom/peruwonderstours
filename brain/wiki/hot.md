@@ -25,6 +25,10 @@ tags:
 
 ## Recent Changes
 
+- 2026-10-13: UI/UX web/admin con siete skills instaladas y validadas, marca preservada,
+  navegación agrupada, superficies/tablas y microinteracciones accesibles. Ver [[decisions/ADR-0007-ui-ux-y-skills-motion]].
+  Web y login admin responden HTTP 200; la revisión visual automatizada sigue limitada.
+
 - 2026-10-13: optimización progresiva de carga: drawer al primer uso, fuente Mono sin preload,
   GSAP omitido con movimiento reducido, hero opacity/transform y sizes compartido de galería.
   Ver [[decisions/ADR-0006-optimizacion-carga-web]]; medición HTTP compilada en CI, sin afirmar Web Vitals.
@@ -113,4 +117,5 @@ tags:
   - Preguntas al cliente ampliadas a 45 (secciones 7–8).
 - Detalle a revisar: `balanceDueAt` = 00:00 Lima del día −7 → la web dice "vence el 13 nov"
   pero en rigor vence al inicio del 13; aclarar regla con el cliente.
+
 

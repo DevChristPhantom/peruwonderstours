@@ -15,6 +15,8 @@ This catalog is updated by completed knowledge operations.
 
 ## Concepts
 
+- [[decisions/ADR-0007-ui-ux-y-skills-motion]] — diseño preservado, mejoras compartidas y skills instaladas.
+
 - [[decisions/ADR-0006-optimizacion-carga-web]] — carga bajo demanda, movimiento reducido y medición HTTP compilada.
 
 - [[concepts/entrega-octubre-2026]] — cambios y evidencia actual para la entrega de peruwonderstours; pendientes externos y validación restante.
@@ -49,4 +51,5 @@ This catalog is updated by completed knowledge operations.
 ## Questions
 
 - No questions indexed yet.
+
 

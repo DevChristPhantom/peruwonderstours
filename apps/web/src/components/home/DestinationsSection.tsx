@@ -25,7 +25,7 @@ export async function DestinationCard({ destination, featured = false }: { desti
             alt={destination.cardImage.alt}
             fill
             sizes="(min-width: 1440px) 280px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 82vw"
-            className="object-cover transition-[transform,filter] duration-[900ms] ease-out group-hover:scale-105 group-hover:brightness-[1.08]"
+            className="object-cover transition-transform duration-500 ease-out [@media(hover:hover)_and_(pointer:fine)_and_(prefers-reduced-motion:no-preference)]:group-hover:scale-[1.04] motion-reduce:transition-none"
           />
         </div>
       ) : null}

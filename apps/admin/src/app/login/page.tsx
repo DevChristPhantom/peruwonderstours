@@ -41,12 +41,12 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
 
   return (
     <main id="contenido" className="grid min-h-dvh place-items-center bg-background px-4 py-10">
-      <div className="w-full max-w-sm space-y-6">
+      <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <p className="text-xs font-semibold tracking-[0.08em] text-foreground-muted uppercase">Peru Wonders Tours</p>
-          <h1 className="mt-1 text-2xl font-semibold">Panel de administración</h1>
+          <p className="text-sm font-semibold tracking-[0.04em] text-primary">peruwonderstours</p>
+          <h1 className="mt-3 text-2xl font-semibold tracking-tight">Panel de administración</h1>
         </div>
-        <div className="rounded-md border border-border bg-surface p-6 shadow-sm">
+        <div className="admin-login-card rounded-lg border border-border bg-surface p-6 sm:p-8">
           <LoginFlow initial={initial} next={volver} notice={notice} />
         </div>
         <p className="text-center text-xs text-foreground-muted">Acceso exclusivo del personal. Toda actividad queda registrada.</p>

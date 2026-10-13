@@ -27,7 +27,7 @@
   position: absolute;
   inset: 0;
   z-index: -2;
-  animation: heroIn 2.4s var(--ease) both;
+  animation: heroIn 600ms var(--ease) both;
 }
 .bg img {
   object-fit: cover;
@@ -67,7 +67,7 @@
   letter-spacing: 0.01em;
   color: rgba(255, 255, 255, 0.92);
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
-  animation: fadeUp 1s var(--ease) 0.9s both;
+  animation: fadeUp 500ms var(--ease) 200ms both;
 }
 .cue span:first-child,
 .cue span:last-child {
@@ -91,7 +91,7 @@
   right: clamp(20px, 3.4vw, 52px);
   bottom: 120px;
   max-width: 820px;
-  animation: copyIn 0.9s var(--ease) 0.6s both;
+  animation: copyIn 500ms var(--ease) 80ms both;
 }
 .title {
   margin: 0;
