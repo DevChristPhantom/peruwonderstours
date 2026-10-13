@@ -7,7 +7,20 @@ const origin = new URL(process.env.PWT_SMOKE_ORIGIN ?? "http://127.0.0.1:3100");
 assert.ok(["127.0.0.1", "localhost", "[::1]"].includes(origin.hostname), "Use a local preview server");
 
 async function response(path) {
-  const result = await fetch(new URL(path, origin), { signal: AbortSignal.timeout(30_000) });
+  let url = new URL(path, origin);
+  const visited = new Set();
+  let result;
+  for (;;) {
+    assert.ok(!visited.has(url.href), `${path}: redirect loop at ${url.href}`);
+    assert.ok(visited.size < 10, `${path}: too many redirects`);
+    visited.add(url.href);
+    result = await fetch(url, { redirect: "manual", signal: AbortSignal.timeout(30_000) });
+    if (![301, 302, 303, 307, 308].includes(result.status)) break;
+    const location = result.headers.get("location");
+    assert.ok(location, `${path}: redirect without location`);
+    url = new URL(location, url);
+    assert.equal(url.origin, origin.origin, `${path}: redirect left local preview`);
+  }
   assert.equal(result.status, 200, `${path}: expected 200, got ${result.status}`);
   return result.text();
 }
