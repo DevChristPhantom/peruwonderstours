@@ -32,8 +32,8 @@ tags:
   traducidos de la API, motion accesible, validación de fechas del panel y fuentes locales
   Geist/Geist Mono/Fraunces. Se mantienen arquitectura, diseño y agentes originales.
 - Validación: 219 pruebas unitarias API, 32 e2e API, 12 pruebas admin y 3 pruebas web pasaron.
-  Integración PostgreSQL y revisión visual completas siguen pendientes. La compilación de Next
-  está bloqueada por permisos EPERM del entorno Windows; no acreditar producción lista.
+  GitHub aprobó la compilación de API/web/admin y 150 rutas HTTP públicas/legacy (run 38441950356).
+  Integración PostgreSQL y revisión visual completas siguen pendientes; no acreditar producción lista.
 - Hosting y pasarela aún no contratados. La API solo implementa sandbox y lo rechaza en
   producción: se requiere integración real antes de habilitar cobros. No se ha publicado.
 

@@ -23,7 +23,9 @@ updated: 2026-10-13
 - Motion: progreso por transform, zoom solo hover/fine/no-preference, Lenis se destruye al deshabilitar y contadores recuperan el valor final.
 - Fechas del panel: se rechazan días imposibles antes de convertir a ISO.
 - Fuentes originales locales, configuraciones Next ESM, README y ejemplos de entorno.
-- Workflow de calidad preparado: instalación congelada, lint/tipos/pruebas/build; aún no ejecutado en GitHub.
+- Workflow de calidad ejecutado en GitHub: instalación congelada, lint/tipos/pruebas/build y recorrido HTTP local.
+- El listado de tours se renderiza por petición con `connection()` y conserva la caché de datos. Se eliminó el fallback que duplicaba las mismas tarjetas asíncronas; antes bloqueaba el prerender y la respuesta HTTP. Requiere runtime Next, no exportación estática.
+- Se agregó Turborepo a las dependencias de desarrollo: los scripts raíz lo utilizaban sin declararlo.
 
 ## Evidencia ejecutada
 
@@ -31,13 +33,14 @@ updated: 2026-10-13
 - Admin: 12 pruebas aprobadas; tipos y lint aprobados.
 - Web: 3 pruebas de slugs aprobadas; diccionarios es/en con paridad; tipos sin caché incremental aprobados.
 - Lint web: sin errores; un warning previo del selector de idioma.
-- Next build: no completado; errores EPERM al escribir carpetas generadas en este entorno Windows.
+- GitHub Actions: API, web y admin compilados; lint, tipos, 266 pruebas y 150 rutas públicas/legacy aprobados en el commit `a7ec153f432b5aacb648981245389c88c2c65f9d` (run `38441950356`). El recorrido usa catálogo seed; no acredita reservas ni pagos contra datos reales.
+- Next build local: errores EPERM al escribir carpetas generadas en este entorno Windows; la compilación se acreditó en Linux mediante GitHub.
 - Vista en navegador: no verificada; el navegador no alcanzó el servidor local del entorno.
 - Integración con PostgreSQL: no ejecutada. No se modificó ni restauró la base original.
 
 ## Antes de publicar
 
-1. Compilar y revisar en navegador en un entorno sin la limitación local, incluido móvil y movimiento reducido.
+1. Revisar en navegador, incluido móvil y movimiento reducido. Compilación y recorrido HTTP ya aprobados; la revisión visual completa sigue pendiente.
 2. Configurar PostgreSQL, restaurar/importar medios y validar admin con sesión/MFA y datos reales.
 3. Integrar pasarela contratada: production no permite el único proveedor actual sandbox.
 4. Configurar SMTP real y confirmar entrega de enlaces, vouchers, contactos y reclamos.

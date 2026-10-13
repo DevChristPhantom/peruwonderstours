@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/tours">)
 
 /** Listado por petición: filtros compartibles en la URL y datos del catálogo con su caché explícita. */
 export default async function ToursPage({ params }: PageProps<"/[locale]/tours">) {
-  // useSearchParams needs the visitor's URL; defer the explorer rather than prerendering its async slots.
+  // URL filters need request-time rendering; async cards are passed to one explorer tree.
   await connection();
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
@@ -51,13 +51,13 @@ export default async function ToursPage({ params }: PageProps<"/[locale]/tours">
         ]}
       />
       <h1 className="mt-4 mb-8 font-display text-h1 font-medium">{t("title")}</h1>
-        <TourExplorer
-          tours={explorerTours}
-          cards={cards}
-          destinations={destinations.map((d) => ({ value: d.key, label: d.name }))}
-          categories={categories.map((c) => ({ value: c.key, label: c.name }))}
-          suggestions={tours.slice(0, 3).map((tour) => tour.key)}
-        />
+      <TourExplorer
+        tours={explorerTours}
+        cards={cards}
+        destinations={destinations.map((d) => ({ value: d.key, label: d.name }))}
+        categories={categories.map((c) => ({ value: c.key, label: c.name }))}
+        suggestions={tours.slice(0, 3).map((tour) => tour.key)}
+      />
     </div>
   );
 }
