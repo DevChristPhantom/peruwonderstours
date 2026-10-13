@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Suspense } from "react";
 
@@ -17,8 +18,10 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/tours">)
   return pageMetadata({ locale, title: t("metaTitle"), description: t("metaDescription"), paths: alternatesFor("/tours") });
 }
 
-/** Listado estático (SSG); los filtros se aplican en el cliente y se reflejan en la URL. */
+/** Listado por petición: filtros compartibles en la URL y datos del catálogo con su caché explícita. */
 export default async function ToursPage({ params }: PageProps<"/[locale]/tours">) {
+  // useSearchParams needs the visitor's URL; defer the explorer rather than prerendering its async slots.
+  await connection();
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
   const [tours, destinations, categories, t, tc] = await Promise.all([

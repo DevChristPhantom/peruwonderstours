@@ -44,3 +44,9 @@ jobs:
       - run: pnpm --filter @pwt/api build
       - run: pnpm --filter @pwt/web build
       - run: pnpm --filter @pwt/admin build
+      - name: Check public routes and legacy redirects
+        run: |
+          pnpm --filter @pwt/web exec next start --hostname 127.0.0.1 --port 3100 > /tmp/pwt-web.log 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" || true' EXIT
+          node scripts/check-public-routes.mjs
