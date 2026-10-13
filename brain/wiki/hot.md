@@ -25,6 +25,10 @@ tags:
 
 ## Recent Changes
 
+- 2026-10-13: optimización progresiva de carga: drawer al primer uso, fuente Mono sin preload,
+  GSAP omitido con movimiento reducido, hero opacity/transform y sizes compartido de galería.
+  Ver [[decisions/ADR-0006-optimizacion-carga-web]]; medición HTTP compilada en CI, sin afirmar Web Vitals.
+
 - 2026-10-13: dominio confirmado `peruwonderstours.com`, WhatsApp `+51 924 278 597`
   y correo `jorgechaveztourt@gmail.com`. El cliente dará el RUC real el día de entrega;
   ejemplo `20000000000` solo visual y etiquetado, sin sustituir la identidad fiscal real.
@@ -109,3 +113,4 @@ tags:
   - Preguntas al cliente ampliadas a 45 (secciones 7–8).
 - Detalle a revisar: `balanceDueAt` = 00:00 Lima del día −7 → la web dice "vence el 13 nov"
   pero en rigor vence al inicio del 13; aclarar regla con el cliente.
+

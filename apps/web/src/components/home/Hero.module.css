@@ -15,11 +15,11 @@
 @keyframes heroIn {
   from {
     transform: scale(1.08);
-    filter: brightness(0.6);
+    opacity: 0.6;
   }
   to {
     transform: scale(1);
-    filter: brightness(1);
+    opacity: 1;
   }
 }
 

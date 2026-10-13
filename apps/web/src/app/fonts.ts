@@ -10,6 +10,7 @@ const geist = localFont({
 const geistMono = localFont({
   src: "../../../../packages/ui/src/fonts/geist-mono-latin-wght-normal.woff2",
   variable: "--font-geist-mono",
+  preload: false,
   weight: "100 900",
   display: "swap",
 });

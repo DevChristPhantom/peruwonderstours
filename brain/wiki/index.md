@@ -15,6 +15,8 @@ This catalog is updated by completed knowledge operations.
 
 ## Concepts
 
+- [[decisions/ADR-0006-optimizacion-carga-web]] — carga bajo demanda, movimiento reducido y medición HTTP compilada.
+
 - [[concepts/entrega-octubre-2026]] — cambios y evidencia actual para la entrega de peruwonderstours; pendientes externos y validación restante.
 - [[decisions/ADR-0005-continuidad-codex-y-entrega]] — conservación de metodología, motion accesible y fuentes locales.
 - [[decisions/ADR-0001-stack-tecnologico]] — stack y metodología propuestos.
@@ -47,3 +49,4 @@ This catalog is updated by completed knowledge operations.
 ## Questions
 
 - No questions indexed yet.
+

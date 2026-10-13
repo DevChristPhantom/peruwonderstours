@@ -73,3 +73,15 @@ await Promise.all(Array.from({ length: 4 }, async () => {
   }
 }));
 console.log(`PASS: ${checked} public and legacy routes; canonical domain, es/en, WhatsApp and email verified.`);
+
+// Warm production-server HTTP timings, not browser Web Vitals or Internet latency.
+for (const path of ["/es", "/es/tours", "/en", "/en/tours"]) {
+  const samples = [];
+  for (let sample = 0; sample < 5; sample++) {
+    const start = performance.now();
+    await response(path);
+    samples.push(Math.round(performance.now() - start));
+  }
+  const sorted = [...samples].sort((a, b) => a - b);
+  console.log(`HTTP_TIMING ${JSON.stringify({ path, samples_ms: samples, median_ms: sorted[2], max_ms: sorted[4], mode: "production-seed-local-warm" })}`);
+}

@@ -103,73 +103,87 @@ export default function MotionEffects() {
 
   // Reveals por ruta.
   useEffect(() => {
+    const preference = window.matchMedia(REDUCED_MOTION_QUERY);
     let cancelled = false;
+    let generation = 0;
+    let cancelIdle: (() => void) | undefined;
     let revert: (() => void) | undefined;
-    const cancelIdle = onIdle(async () => {
-      const { gsap, ScrollTrigger } = await loadGsap();
-      if (cancelled) return;
-      const mm = gsap.matchMedia();
-      const ctx = gsap.context(() => {
-        mm.add("(prefers-reduced-motion: no-preference)", () => {
-          const base = { ease: "pwt" };
-          const trigger = (el: Element): ScrollTrigger.Vars => ({ trigger: el, start: "top 85%", once: true });
+    const onChange = () => {
+      const current = ++generation;
+      cancelIdle?.();
+      revert?.();
+      revert = undefined;
+      if (cancelled || preference.matches) return;
+      cancelIdle = onIdle(async () => {
+        const { gsap, ScrollTrigger } = await loadGsap();
+        if (cancelled || current !== generation || preference.matches) return;
+        const mm = gsap.matchMedia();
+        const ctx = gsap.context(() => {
+          mm.add("(prefers-reduced-motion: no-preference)", () => {
+            const base = { ease: "pwt" };
+            const trigger = (el: Element): ScrollTrigger.Vars => ({ trigger: el, start: "top 85%", once: true });
 
-          gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
-            gsap.from(el, { ...base, opacity: 0, y: 16, duration: 0.5, scrollTrigger: trigger(el) });
-          });
-
-          gsap.utils.toArray<HTMLElement>("[data-reveal-stagger]").forEach((group) => {
-            const items = Array.from(group.children) as HTMLElement[];
-            if (!items.length) return;
-            gsap.from(items, {
-              ...base,
-              opacity: 0,
-              y: 20,
-              duration: 0.5,
-              stagger: (i: number) => Math.min(i, 5) * (motionTokens.stagger / 1000),
-              scrollTrigger: trigger(group),
+            gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
+              gsap.from(el, { ...base, opacity: 0, y: 16, duration: 0.5, scrollTrigger: trigger(el) });
             });
-          });
 
-          gsap.utils.toArray<HTMLElement>("[data-reveal-clip]").forEach((el) => {
-            gsap.fromTo(
-              el,
-              { clipPath: "inset(8% 8% 8% 8% round 16px)" },
-              { clipPath: "inset(0% 0% 0% 0% round 16px)", duration: 0.6, ease: "pwt", scrollTrigger: trigger(el) },
-            );
-          });
-
-          gsap.utils.toArray<HTMLElement>("[data-count-to]").forEach((el) => {
-            const target = Number(el.dataset.countTo);
-            if (!Number.isFinite(target)) return;
-            const counter = { value: 0 };
-            gsap.to(counter, {
-              value: target,
-              duration: 1.2,
-              ease: "pwt",
-              scrollTrigger: trigger(el),
-              onUpdate: () => {
-                el.textContent = String(Math.round(counter.value));
-              },
-              onStart: () => {
-                el.textContent = "0";
-              },
+            gsap.utils.toArray<HTMLElement>("[data-reveal-stagger]").forEach((group) => {
+              const items = Array.from(group.children) as HTMLElement[];
+              if (!items.length) return;
+              gsap.from(items, {
+                ...base,
+                opacity: 0,
+                y: 20,
+                duration: 0.5,
+                stagger: (i: number) => Math.min(i, 5) * (motionTokens.stagger / 1000),
+                scrollTrigger: trigger(group),
+              });
             });
+
+            gsap.utils.toArray<HTMLElement>("[data-reveal-clip]").forEach((el) => {
+              gsap.fromTo(
+                el,
+                { clipPath: "inset(8% 8% 8% 8% round 16px)" },
+                { clipPath: "inset(0% 0% 0% 0% round 16px)", duration: 0.6, ease: "pwt", scrollTrigger: trigger(el) },
+              );
+            });
+
+            gsap.utils.toArray<HTMLElement>("[data-count-to]").forEach((el) => {
+              const target = Number(el.dataset.countTo);
+              if (!Number.isFinite(target)) return;
+              const counter = { value: 0 };
+              gsap.to(counter, {
+                value: target,
+                duration: 1.2,
+                ease: "pwt",
+                scrollTrigger: trigger(el),
+                onUpdate: () => {
+                  el.textContent = String(Math.round(counter.value));
+                },
+                onStart: () => {
+                  el.textContent = "0";
+                },
+              });
+            });
+            // Text mutations are not tweened DOM properties: restore them when this media query exits.
+            return restoreCounters;
           });
-          // Text mutations are not tweened DOM properties: restore them when this media query exits.
-          return restoreCounters;
-        });
-      }, document.body);
-      ScrollTrigger.refresh();
-      revert = () => {
-        mm.revert();
-        ctx.revert();
-        restoreCounters();
-      };
-    });
+        }, document.body);
+        ScrollTrigger.refresh();
+        revert = () => {
+          mm.revert();
+          ctx.revert();
+          restoreCounters();
+        };
+      });
+    };
+    preference.addEventListener("change", onChange);
+    onChange();
     return () => {
       cancelled = true;
-      cancelIdle();
+      generation++;
+      preference.removeEventListener("change", onChange);
+      cancelIdle?.();
       revert?.();
     };
   }, [pathname]);
