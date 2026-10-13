@@ -15,7 +15,11 @@ async function response(path) {
     assert.ok(!visited.has(url.href), `${path}: redirect loop at ${url.href}`);
     assert.ok(visited.size < 10, `${path}: too many redirects`);
     visited.add(url.href);
-    result = await fetch(url, { redirect: "manual", signal: AbortSignal.timeout(30_000) });
+    try {
+      result = await fetch(url, { redirect: "manual", signal: AbortSignal.timeout(30_000) });
+    } catch (error) {
+      throw new Error(`${path}: request failed at ${url.href}: ${error.message}`, { cause: error });
+    }
     if (![301, 302, 303, 307, 308].includes(result.status)) break;
     const location = result.headers.get("location");
     assert.ok(location, `${path}: redirect without location`);
@@ -23,7 +27,11 @@ async function response(path) {
     assert.equal(url.origin, origin.origin, `${path}: redirect left local preview`);
   }
   assert.equal(result.status, 200, `${path}: expected 200, got ${result.status}`);
-  return result.text();
+  try {
+    return await result.text();
+  } catch (error) {
+    throw new Error(`${path}: response body failed: ${error.message}`, { cause: error });
+  }
 }
 
 let ready = false;
