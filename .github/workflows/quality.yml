@@ -1,0 +1,46 @@
+name: Quality checks
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop, feature/sprint-3-funcional]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      # Generation only: no database is started or migrated in this job.
+      DATABASE_URL: postgresql://preview:preview@localhost:5432/pwt_ci
+      CATALOG_SOURCE: seed
+      API_BASE_URL: https://api.peruwonderstours.com/api/v1
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @pwt/api prisma:generate
+      - run: pnpm --filter @pwt/web messages:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm --filter @pwt/admin test
+      - run: pnpm --filter @pwt/web test
+      - run: pnpm --filter @pwt/api test
+      - run: pnpm --filter @pwt/api test:e2e
+      - run: pnpm --filter @pwt/api build
+      - run: pnpm --filter @pwt/web build
+      - run: pnpm --filter @pwt/admin build

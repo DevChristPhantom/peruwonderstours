@@ -42,7 +42,7 @@ export async function TourCard({
             alt={tour.image.alt}
             fill
             sizes={sizes}
-            className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]"
+            className="object-cover transition-transform duration-(--pwt-duration-slow) ease-out [@media(hover:hover)_and_(pointer:fine)_and_(prefers-reduced-motion:no-preference)]:group-hover:scale-[1.04] motion-reduce:scale-100 motion-reduce:transition-none"
           />
         ) : null}
         {tour.durationDays && tour.durationDays > 1 ? (

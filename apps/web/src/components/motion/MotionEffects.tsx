@@ -28,49 +28,75 @@ function loadGsap() {
       CustomEase.create("pwt", motionTokens.bezier.out.join(","));
       return { gsap, ScrollTrigger };
     },
-  );
+  ).catch((error: unknown) => {
+    // Allow a later route to retry a transient chunk-loading failure.
+    gsapPromise = null;
+    throw error;
+  });
   return gsapPromise;
 }
 
-function onIdle(cb: () => void): () => void {
+function onIdle(cb: () => void | Promise<void>): () => void {
+  const run = () => {
+    // Motion is progressive enhancement; a failed chunk keeps the page usable.
+    void Promise.resolve().then(cb).catch(() => undefined);
+  };
   if ("requestIdleCallback" in window) {
-    const id = window.requestIdleCallback(cb, { timeout: 1200 });
+    const id = window.requestIdleCallback(run, { timeout: 1200 });
     return () => window.cancelIdleCallback(id);
   }
-  const id = setTimeout(cb, 200);
+  const id = setTimeout(run, 200);
   return () => clearTimeout(id);
+}
+
+function restoreCounters() {
+  document.querySelectorAll<HTMLElement>("[data-count-to]").forEach((el) => {
+    el.textContent = el.dataset.countTo ?? el.textContent;
+  });
 }
 
 export default function MotionEffects() {
   const pathname = usePathname();
 
-  // Lenis: una sola instancia para toda la sesión.
+  // Lenis is optional; preference changes restore native scrolling.
   useEffect(() => {
-    if (window.matchMedia(REDUCED_MOTION_QUERY).matches || window.matchMedia("(pointer: coarse)").matches) {
-      return;
-    }
+    const mq = window.matchMedia(REDUCED_MOTION_QUERY);
+    const pointer = window.matchMedia("(pointer: fine)");
     let cancelled = false;
+    let generation = 0;
+    let cancelIdle: (() => void) | undefined;
     let cleanup: (() => void) | undefined;
-    const cancelIdle = onIdle(async () => {
-      const [{ default: Lenis }, { gsap, ScrollTrigger }] = await Promise.all([import("lenis"), loadGsap()]);
-      if (cancelled) return;
-      const lenis = new Lenis({ lerp: 0.1, anchors: true });
-      lenis.on("scroll", ScrollTrigger.update);
-      const tick = (time: number) => lenis.raf(time * 1000);
-      gsap.ticker.add(tick);
-      gsap.ticker.lagSmoothing(0);
-      const mq = window.matchMedia(REDUCED_MOTION_QUERY);
-      const onChange = () => (mq.matches ? lenis.stop() : lenis.start());
-      mq.addEventListener("change", onChange);
-      cleanup = () => {
-        mq.removeEventListener("change", onChange);
-        gsap.ticker.remove(tick);
-        lenis.destroy();
-      };
-    });
+    const onChange = () => {
+      const current = ++generation;
+      cancelIdle?.();
+      cleanup?.();
+      cleanup = undefined;
+      if (cancelled || mq.matches || !pointer.matches) return;
+      cancelIdle = onIdle(async () => {
+        const [{ default: Lenis }, { gsap, ScrollTrigger }] = await Promise.all([import("lenis"), loadGsap()]);
+        // Ignore loads from a previous preference state or an unmounted effect.
+        if (cancelled || current !== generation || mq.matches || !pointer.matches) return;
+        const lenis = new Lenis({ lerp: 0.1, anchors: true });
+        lenis.on("scroll", ScrollTrigger.update);
+        const tick = (time: number) => lenis.raf(time * 1000);
+        gsap.ticker.add(tick);
+        gsap.ticker.lagSmoothing(0);
+        cleanup = () => {
+          gsap.ticker.remove(tick);
+          // stop() marks the root as stopped and can lock scroll; destroy restores native scroll.
+          lenis.destroy();
+        };
+      });
+    };
+    mq.addEventListener("change", onChange);
+    pointer.addEventListener("change", onChange);
+    onChange();
     return () => {
       cancelled = true;
-      cancelIdle();
+      generation++;
+      mq.removeEventListener("change", onChange);
+      pointer.removeEventListener("change", onChange);
+      cancelIdle?.();
       cleanup?.();
     };
   }, []);
@@ -130,15 +156,15 @@ export default function MotionEffects() {
               },
             });
           });
+          // Text mutations are not tweened DOM properties: restore them when this media query exits.
+          return restoreCounters;
         });
-      });
+      }, document.body);
       ScrollTrigger.refresh();
       revert = () => {
         mm.revert();
         ctx.revert();
-        document.querySelectorAll<HTMLElement>("[data-count-to]").forEach((el) => {
-          el.textContent = el.dataset.countTo ?? el.textContent;
-        });
+        restoreCounters();
       };
     });
     return () => {

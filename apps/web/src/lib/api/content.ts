@@ -28,6 +28,7 @@ export interface ApiBlogCard {
   author?: string | null;
   locale?: Locale;
   fallback?: boolean;
+  alternateLocales?: { locale: Locale; slug: string }[];
 }
 
 export interface ApiBlogPost extends ApiBlogCard {
@@ -74,6 +75,7 @@ function toCard(raw: RawBlog): ApiBlogCard {
     author: raw.author ?? null,
     locale: raw.locale,
     fallback: raw.fallback,
+    alternateLocales: raw.alternateLocales,
   };
 }
 

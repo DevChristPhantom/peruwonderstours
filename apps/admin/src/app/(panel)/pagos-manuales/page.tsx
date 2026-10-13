@@ -11,6 +11,7 @@ import { apiData } from "@/lib/api/client";
 import type { ManualPaymentsReport } from "@/lib/api/content-types";
 import type { Money } from "@/lib/api/types";
 import { can, load, requireSession } from "@/lib/auth/guard";
+import { reportDate } from "@/lib/calendar-date";
 import { addDaysIso, formatDate, formatDateTime, formatMoney, todayInLima } from "@/lib/format";
 import { label, PAYMENT_KIND, PAYMENT_METHOD } from "@/lib/labels";
 
@@ -27,7 +28,7 @@ export default async function ManualPaymentsPage({ searchParams }: PageProps<"/p
   const sp = await searchParams;
   const raw = typeof sp.date === "string" ? sp.date : "";
   const today = todayInLima();
-  const date = /^\d{4}-\d{2}-\d{2}$/.test(raw) && raw <= today ? raw : today;
+  const date = reportDate(raw, today);
   const canVoid = can(session, "payments:void");
   const result = await load(() => apiData<ManualPaymentsReport>("/admin/manual-payments", { query: { date } }));
 

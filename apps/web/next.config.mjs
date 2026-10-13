@@ -1,14 +1,15 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import type { NextConfig } from "next";
+import { fileURLToPath } from "node:url";
 import createNextIntlPlugin from "next-intl/plugin";
 
+const configDirectory = path.dirname(fileURLToPath(import.meta.url));
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 // Se lee relativo a este archivo (no al cwd) para que `next dev apps/web` funcione desde cualquier carpeta.
 const legacyRedirects = JSON.parse(
-  readFileSync(path.join(__dirname, "../../data/seed/redirects.json"), "utf8"),
-) as { rules: { from: string; to: string }[] };
+  readFileSync(path.join(configDirectory, "../../data/seed/redirects.json"), "utf8"),
+);
 
 /**
  * Redirecciones 301 del sitio viejo que cambian de ruta en el dominio nuevo (HU-0.2).
@@ -21,7 +22,8 @@ const legacyRedirects = JSON.parse(
  * Las rutas viejas sin equivalente directo (categorías del blog) se redirigen a su índice.
  */
 function buildLegacyRedirects() {
-  const rules: { source: string; destination: string; statusCode: 301 }[] = [];
+  /** @type {{ source: string; destination: string; statusCode: 301 }[]} */
+  const rules = [];
   for (const rule of legacyRedirects.rules) {
     const source = new URL(rule.from).pathname;
     if (source === rule.to) continue;
@@ -37,9 +39,10 @@ function buildLegacyRedirects() {
  * incrustan en el build vía `env` (reemplazo estático de `process.env.PWT_LEGAL_*`). Las páginas de
  * políticas ya no dependen del cwd del proceso ni del disco en tiempo de ejecución.
  */
-function legalDocumentsEnv(): Record<string, string> {
-  const dir = path.join(__dirname, "../../docs/legal");
-  const read = (file: string) => readFileSync(path.join(dir, file), "utf8");
+function legalDocumentsEnv() {
+  const dir = path.join(configDirectory, "../../docs/legal");
+  /** @param {string} file */
+  const read = (file) => readFileSync(path.join(dir, file), "utf8");
   return {
     PWT_LEGAL_TERMINOS: read("terminos-y-condiciones.md"),
     PWT_LEGAL_PRIVACIDAD: read("politica-de-privacidad.md"),
@@ -55,10 +58,11 @@ function legalDocumentsEnv(): Record<string, string> {
 const apiOrigin = new URL(process.env.API_BASE_URL || "http://localhost:3001/api/v1");
 const apiIsLocal = ["localhost", "127.0.0.1", "[::1]"].includes(apiOrigin.hostname);
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   transpilePackages: ["@pwt/ui"],
   // Monorepo pnpm: la raíz incluye data/seed y packages/ui.
-  outputFileTracingRoot: path.join(__dirname, "../.."),
+  outputFileTracingRoot: path.join(configDirectory, "../.."),
   // 404 de URLs sin idioma (app/global-not-found.tsx): el layout raíz vive en app/[locale].
   experimental: { globalNotFound: true },
   // L1: los borradores legales se incrustan en el build (ver src/lib/legal/documents.ts).

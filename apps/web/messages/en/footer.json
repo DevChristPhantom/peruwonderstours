@@ -11,6 +11,7 @@
   "legal": {
     "businessName": "Company name",
     "ruc": "Tax ID (RUC)",
+    "rucExample": "{number} (example; actual tax ID pending)",
     "mincetur": "MINCETUR registration",
     "office": "Office",
     "email": "Email"

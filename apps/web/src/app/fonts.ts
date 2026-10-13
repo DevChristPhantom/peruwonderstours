@@ -1,21 +1,23 @@
-import { Fraunces, Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 
-const geist = Geist({
+const geist = localFont({
+  src: "../../../../packages/ui/src/fonts/geist-latin-wght-normal.woff2",
   variable: "--font-geist",
-  subsets: ["latin", "latin-ext"],
+  weight: "100 900",
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const geistMono = localFont({
+  src: "../../../../packages/ui/src/fonts/geist-mono-latin-wght-normal.woff2",
   variable: "--font-geist-mono",
-  subsets: ["latin", "latin-ext"],
+  weight: "100 900",
   display: "swap",
 });
 
-const fraunces = Fraunces({
+const fraunces = localFont({
+  src: "../../../../packages/ui/src/fonts/fraunces-latin-full-normal.woff2",
   variable: "--font-fraunces",
-  subsets: ["latin", "latin-ext"],
-  axes: ["opsz", "SOFT"],
+  weight: "100 900",
   display: "swap",
 });
 

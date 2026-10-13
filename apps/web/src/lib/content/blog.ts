@@ -11,6 +11,7 @@ import { ApiError } from "@/lib/api/client";
 import { getBlogPost, listBlogPosts, type ApiBlogCard } from "@/lib/api/content";
 import type { LocalePaths } from "@/lib/catalog/types";
 import { env } from "@/lib/env";
+import { blogLocaleSlugs } from "./blog-locale-slugs";
 
 /**
  * Blog (F1) por idioma. Fuente: API `GET /blog` (ISR, tag `content`); si la API no responde o
@@ -93,9 +94,9 @@ function seedList(locale: Locale): BlogCard[] {
 }
 
 function fromApiCard(card: ApiBlogCard, locale: Locale, esCard: ApiBlogCard | undefined): BlogCard {
-  const key = esCard?.slug ?? card.slug;
+  const key = card.alternateLocales?.find((item) => item.locale === "es")?.slug ?? esCard?.slug ?? card.slug;
   const fallback = locale !== "es" && (card.fallback ?? (card.locale !== undefined && card.locale !== locale));
-  const enSlug = locale === "en" && !fallback ? card.slug : (slugMap[key] ?? key);
+  const enSlug = blogLocaleSlugs(card, locale, key, slugMap[key]).en;
   const alternates = { es: blogPostPath("es", key), en: blogPostPath("en", enSlug) };
   return {
     key,

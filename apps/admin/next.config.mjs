@@ -1,5 +1,8 @@
+// @ts-check
 import path from "node:path";
-import type { NextConfig } from "next";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
  * Panel de administración (BFF). Todas las páginas son dinámicas (sesión por cookie) y llevan
@@ -15,7 +18,8 @@ const common = [
   ...(process.env.NODE_ENV === "production" ? [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" }] : []),
 ];
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   transpilePackages: ["@pwt/ui"],
   outputFileTracingRoot: path.join(__dirname, "../.."),
   poweredByHeader: false,

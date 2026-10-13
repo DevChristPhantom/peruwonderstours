@@ -1,6 +1,20 @@
 {
   "title": "Nosotros",
-  "description": "{name}: agencia de viajes con oficina en Puno.",
-  "notice": "Contenido en preparación: la historia, el equipo y los datos de registro de la agencia se publicarán cuando el cliente los confirme.",
-  "body": "{name} organiza tours y paquetes por el sur del Perú desde su oficina en Puno: Lago Titicaca, Cusco y Machu Picchu, Arequipa y el Colca."
+  "description": "Explora el catálogo de destinos, tours y paquetes de {name}. Compara opciones y consulta los detalles de tu viaje por el Perú.",
+  "body": "En {name} puedes explorar destinos, tours y paquetes por el Perú, comparar opciones y preparar tu consulta de viaje. Empieza por los destinos disponibles en nuestro catálogo.",
+  "destinationsTitle": "Destinos para tu próximo viaje",
+  "destinationsDescription": "Descubre los destinos del catálogo y las experiencias disponibles en cada uno.",
+  "tourCount": "{count, plural, =0 {Consulta las opciones disponibles} one {# tour en el catálogo} other {# tours en el catálogo}}",
+  "exploreDestination": "Explorar destino",
+  "planningTitle": "Prepara tu viaje, paso a paso",
+  "planningDescription": "Encuentra opciones, revisa sus diferencias y consulta los detalles que necesitas antes de decidir.",
+  "steps": {
+    "explore": { "title": "Explora", "body": "Busca tours por destino y revisa el itinerario, la duración y la información de cada experiencia.", "link": "Ver tours" },
+    "compare": { "title": "Compara", "body": "Añade las opciones que te interesan al comparador para revisar sus características en una misma página.", "link": "Abrir comparador" },
+    "consult": { "title": "Consulta", "body": "Cuéntanos qué opciones te interesan y qué dudas tienes sobre tu viaje a través del formulario de contacto.", "link": "Enviar una consulta" }
+  },
+  "ctaTitle": "Encuentra tu próxima experiencia",
+  "ctaBody": "Explora las opciones del catálogo o envíanos una consulta para revisar los detalles de tu viaje.",
+  "viewTours": "Explorar tours",
+  "contact": "Contactar"
 }

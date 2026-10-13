@@ -3,7 +3,7 @@ type: meta
 title: Hot Cache
 status: developing
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-13
 tags:
   - meta
   - hot-cache
@@ -13,7 +13,7 @@ tags:
 
 ## Last Updated
 
-2026-10-07 — Fase 0 (setup) completada: cerebro, equipo de subagentes y skills instalados.
+2026-10-13 — Continuidad en Codex sobre el backup del Sprint 3. Ver [[concepts/entrega-octubre-2026]] para la evidencia actual; el historial de abajo conserva las notas anteriores.
 
 ## Key Recent Facts
 
@@ -24,6 +24,18 @@ tags:
 - Equipo: 12 subagentes senior en `.claude/agents/`, dirigidos por `tech-lead-orchestrator`.
 
 ## Recent Changes
+
+- 2026-10-13: dominio confirmado `peruwonderstours.com`, WhatsApp `+51 924 278 597`
+  y correo `jorgechaveztourt@gmail.com`. El cliente dará el RUC real el día de entrega;
+  ejemplo `20000000000` solo visual y etiquetado, sin sustituir la identidad fiscal real.
+- Continuidad: Nosotros bilingüe con destinos del catálogo, sitemap editorial con slugs
+  traducidos de la API, motion accesible, validación de fechas del panel y fuentes locales
+  Geist/Geist Mono/Fraunces. Se mantienen arquitectura, diseño y agentes originales.
+- Validación: 219 pruebas unitarias API, 32 e2e API, 12 pruebas admin y 3 pruebas web pasaron.
+  Integración PostgreSQL y revisión visual completas siguen pendientes. La compilación de Next
+  está bloqueada por permisos EPERM del entorno Windows; no acreditar producción lista.
+- Hosting y pasarela aún no contratados. La API solo implementa sandbox y lo rechaza en
+  producción: se requiere integración real antes de habilitar cobros. No se ha publicado.
 
 - 2026-10-08: benchmark OTA 2026 en [[concepts/benchmark-ota-2026]] (Ola A: 10 HU-B sin terceros; búsqueda web incompleta por límite de sesión, celdas `?` pendientes).
 - 2026-10-07: contenido público extraído a `data/seed/` (41 tours, 0 con precio; ver `_extraction-report.md`).

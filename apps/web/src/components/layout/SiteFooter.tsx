@@ -63,6 +63,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
   const [t, tc, locale] = await Promise.all([getTranslations("footer"), getTranslations("common"), getLocale()]);
   const { legal } = SITE;
   const pending = tc("pending");
+  const rucDisplay = legal.ruc ?? t("legal.rucExample", { number: legal.rucExample });
   const year = new Date().getFullYear();
 
   if (variant === "minimal") {
@@ -70,7 +71,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
       <footer className="border-t border-border bg-surface-muted">
         <div className="pwt-container flex flex-col gap-3 py-6 text-sm text-foreground-muted md:flex-row md:items-center md:justify-between">
           <p>
-            {legal.businessName ?? SITE.name} · RUC: {legal.ruc ?? pending}
+            {legal.businessName ?? SITE.name} · RUC: {rucDisplay}
           </p>
           <ul className="flex flex-wrap gap-x-5 gap-y-2">
             {LEGAL.slice(0, 3).map(([href, key]) => (
@@ -114,7 +115,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
             <p className="mt-3 text-sm">{t("tagline")}</p>
             <ul className="mt-4 space-y-1 text-sm">
               <LegalItem label={t("legal.businessName")} value={legal.businessName} pending={pending} />
-              <LegalItem label={t("legal.ruc")} value={legal.ruc} pending={pending} />
+              <LegalItem label={t("legal.ruc")} value={rucDisplay} pending={pending} />
               <LegalItem label={t("legal.mincetur")} value={legal.minceturRegistry} pending={pending} />
               <LegalItem label={t("legal.office")} value={legal.address} pending={pending} />
             </ul>

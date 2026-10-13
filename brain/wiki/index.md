@@ -3,7 +3,7 @@ type: meta
 title: Wiki Index
 status: evergreen
 created: 2026-10-07
-updated: 2026-10-09
+updated: 2026-10-13
 tags:
   - meta
   - index
@@ -15,6 +15,8 @@ This catalog is updated by completed knowledge operations.
 
 ## Concepts
 
+- [[concepts/entrega-octubre-2026]] — cambios y evidencia actual para la entrega de peruwonderstours; pendientes externos y validación restante.
+- [[decisions/ADR-0005-continuidad-codex-y-entrega]] — conservación de metodología, motion accesible y fuentes locales.
 - [[decisions/ADR-0001-stack-tecnologico]] — stack y metodología propuestos.
 - [[decisions/ADR-0002-sistema-de-diseno]] — paleta peruana, tipografía, movimiento, logo.
 - [[decisions/ADR-0003-pagos-manuales-sin-doble-control]] — pagos manuales al instante, control posterior.

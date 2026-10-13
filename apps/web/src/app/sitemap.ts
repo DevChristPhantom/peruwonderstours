@@ -3,6 +3,7 @@ import type { MetadataRoute } from "next";
 import { routing } from "@/i18n/routing";
 import { getAllTours, getCategories, getDestinations } from "@/lib/catalog";
 import type { LocalePaths } from "@/lib/catalog/types";
+import { getBlogPosts } from "@/lib/content/blog";
 import { alternatesFor, hreflang } from "@/lib/seo/metadata";
 import { absoluteUrl } from "@/lib/site";
 
@@ -16,7 +17,9 @@ type Frequency = "daily" | "weekly" | "monthly";
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // El catálogo en español trae `alternates` con la URL de ambos idiomas.
-  const [tours, destinations, categories] = await Promise.all([getAllTours("es"), getDestinations("es"), getCategories("es")]);
+  const [tours, destinations, categories, posts] = await Promise.all([
+    getAllTours("es"), getDestinations("es"), getCategories("es"), getBlogPosts("es"),
+  ]);
 
   const entries = (paths: LocalePaths, priority: number, changeFrequency: Frequency = "weekly"): MetadataRoute.Sitemap => {
     const languages = Object.fromEntries(Object.entries(hreflang(paths)).map(([lang, path]) => [lang, absoluteUrl(path)]));
@@ -32,6 +35,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...entries(alternatesFor("/"), 1, "daily"),
     ...entries(alternatesFor("/tours"), 0.9, "daily"),
     ...entries(alternatesFor("/destinos"), 0.8),
+    ...entries(alternatesFor("/tipos-de-tours"), 0.7),
+    ...entries(alternatesFor("/blog"), 0.6),
+    ...posts.flatMap((post) => entries(post.alternates, 0.6)),
+    ...entries(alternatesFor("/contactenos"), 0.5, "monthly"),
+    ...entries(alternatesFor("/testimonios"), 0.5),
     ...destinations.flatMap((d) => entries(d.alternates, 0.8)),
     ...categories.flatMap((c) => entries(c.alternates, 0.7)),
     ...tours.flatMap((t) => entries(t.alternates, 0.8)),

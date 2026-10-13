@@ -11,6 +11,7 @@
   "legal": {
     "businessName": "Razón social",
     "ruc": "RUC",
+    "rucExample": "{number} (ejemplo; RUC real pendiente)",
     "mincetur": "Registro MINCETUR",
     "office": "Oficina",
     "email": "Correo"
