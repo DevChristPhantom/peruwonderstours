@@ -3,11 +3,11 @@
 .heading h2 { font-family: var(--pwt-font-display); font-size: clamp(25px, 3vw, 34px); line-height: 1.2; color: var(--pwt-foreground); }
 .heading p { margin-top: 8px; max-width: 64ch; font-size: 14px; line-height: 1.6; color: var(--pwt-foreground-muted); }
 .pause { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; min-height: 44px; padding: 10px 15px; border: 1px solid var(--pwt-border-strong); border-radius: 999px; color: var(--pwt-foreground); background: var(--pwt-surface); flex-shrink: 0; font-size: 13px; }
-.viewport { overflow: hidden; padding-block: 8px 16px; mask-image: linear-gradient(to right, transparent, black 7%, black 93%, transparent); }
+.viewport { position: relative; overflow: hidden; padding-block: 8px 16px; mask-image: linear-gradient(to right, transparent, black 7%, black 93%, transparent); }
 .track { display: flex; width: max-content; animation: official-drift 48s linear infinite; animation-play-state: paused; }
 .track[data-running="true"] { animation-play-state: running; }
 .group { display: flex; flex-shrink: 0; gap: 20px; padding-right: 20px; list-style: none; margin: 0; }
-.card { display: flex; flex-direction: column; width: 240px; min-height: 174px; overflow: hidden; border: 1px solid var(--pwt-border); border-radius: 16px; background: var(--pwt-surface); color: var(--pwt-foreground); box-shadow: var(--pwt-shadow-sm); text-decoration: none; scroll-snap-align: start; }
+.card { position: relative; display: flex; flex-direction: column; width: 240px; min-height: 174px; overflow: hidden; border: 1px solid var(--pwt-border); border-radius: 16px; background: var(--pwt-surface); color: var(--pwt-foreground); box-shadow: var(--pwt-shadow-sm); text-decoration: none; scroll-snap-align: start; }
 .art { display: flex; align-items: center; justify-content: center; position: relative; height: 100px; margin: 8px 8px 0; overflow: hidden; border-radius: 10px; background: linear-gradient(135deg, var(--pwt-surface-muted), var(--pwt-surface)); }
 .image { width: 68px; height: 68px; object-fit: contain; transition: transform 150ms var(--pwt-ease-out); }
 .photo .image { width: 100%; height: 100%; object-fit: cover; }
