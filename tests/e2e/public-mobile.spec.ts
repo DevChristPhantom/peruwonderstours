@@ -13,7 +13,8 @@ test('Mobile navigation, product hierarchy, traveler picker and static resources
     await measured('Open and close mobile menu',async()=>{
       await info.attach('mobile-menu-hit-target.json',{body:JSON.stringify(await page.getByRole('button',{name:'Abrir menú',exact:true}).evaluate(button=>{
         const rect=button.getBoundingClientRect(); const style=getComputedStyle(button);
-        return {rect:rect.toJSON(),pointerEvents:style.pointerEvents,hit:document.elementsFromPoint(rect.x+rect.width/2,rect.y+rect.height/2).slice(0,5).map(element=>({tag:element.tagName,className:element.className}))};
+        const parents=[];for(let element:Element|null=button;element&&parents.length<5;element=element.parentElement){const css=getComputedStyle(element);parents.push({tag:element.tagName,className:element.className,pointerEvents:css.pointerEvents,zIndex:css.zIndex,transform:css.transform,rect:element.getBoundingClientRect().toJSON()});}
+        return {rect:rect.toJSON(),pointerEvents:style.pointerEvents,parents,hit:document.elementsFromPoint(rect.x+rect.width/2,rect.y+rect.height/2).slice(0,5).map(element=>({tag:element.tagName,className:element.className}))};
       })),contentType:'application/json'});
       await page.getByRole('button',{name:'Abrir menú',exact:true}).click();
       await expect(page.getByRole('dialog',{name:'Menú del sitio'})).toBeVisible();
@@ -46,4 +47,3 @@ test('Mobile navigation, product hierarchy, traveler picker and static resources
     await page.screenshot({path:info.outputPath('mobile-complaints.png'),fullPage:true});
   } finally {await info.attach('mobile-action-timings.json',{body:JSON.stringify(samples,null,2),contentType:'application/json'});}
 });
-

@@ -21,7 +21,7 @@ function totp(secret: string) {
 }
 
 test("admin: MFA, navigation, catalog drafts, native banners and logout", async ({ page }, info) => {
-  test.setTimeout(240000);
+  test.setTimeout(360000);
   const metrics: { action: string; milliseconds: number }[] = [];
   async function measured(action: string, work: () => Promise<void>) {
     const start = performance.now(); await test.step(action, work);
@@ -34,6 +34,7 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
   expect(password, "Fresh fixture password is required").toBeTruthy();
   expect(secret, "Fresh fixture TOTP secret is required").toBeTruthy();
   const suffix = `${Date.now()}`;
+  let draftId = "";
   try {
     await measured("Password and MFA login", async () => {
       await page.goto(`${origin}/login`);
@@ -41,7 +42,7 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       await page.getByLabel(/^Correo\s*\*?$/).fill(email!);
       await page.getByLabel(/^Contraseña\s*\*?$/).fill("Incorrect-fixture-password!");
       await page.getByRole("button", { name: "Continuar", exact: true }).click();
-      await expect(page.getByRole("alert")).toContainText("Correo o contraseña incorrectos");
+      await expect(page.getByRole("alert").filter({ hasText: "Correo o contraseña incorrectos" })).toBeVisible();
       await page.getByLabel(/^Contraseña\s*\*?$/).fill(password!);
       await page.getByRole("button", { name: "Continuar", exact: true }).click();
       await expect(page.getByRole("heading", { name: "Verificación en dos pasos" })).toBeVisible();
@@ -91,6 +92,106 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       await expect(page.getByRole("status")).toContainText("Datos generales guardados.");
       await page.reload();
       await expect(page.getByLabel("Duración (horas)", { exact: true })).toHaveValue("5");
+      const detailPath = new URL(page.url()).pathname;
+      draftId = detailPath.split("/").pop()!;
+      await page.goto(`${origin}/tours`);
+      const filters = page.getByRole("form", { name: "Filtros de tours" });
+      await filters.getByLabel("Buscar (código, slug o título)").fill(`E2E-${suffix}`);
+      await filters.getByLabel("Estado", { exact: true }).selectOption("draft");
+      await filters.getByRole("button", { name: "Filtrar", exact: true }).click();
+      await expect(page).toHaveURL(new RegExp(`q=E2E-${suffix}`));
+      const resultLink = page.getByRole("main").locator(`a[href="${detailPath}"]`);
+      await expect(resultLink).toBeVisible();
+      await resultLink.click();
+      await expect(page).toHaveURL(`${origin}${detailPath}`);
+      await expect(page.getByLabel("Duración (horas)", { exact: true })).toHaveValue("5");
+    });
+    await measured("Create, deactivate, reactivate and delete a draft tour rate", async () => {
+      await page.goto(`${origin}/precios?tourId=${draftId}&inactivas=1`);
+      const create = page.locator("form").filter({ has: page.getByRole("button", { name: "Crear tarifa", exact: true }) });
+      const start = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+      const end = new Date(Date.now() + 45 * 86400000).toISOString().slice(0, 10);
+      await create.getByLabel(/^Precio por persona\s*\*?$/).fill("45.67");
+      await create.getByLabel(/^Vigente desde\s*\*?$/).fill(start);
+      await create.getByLabel(/^Vigente hasta\s*\*?$/).fill(end);
+      await create.getByRole("button", { name: "Crear tarifa", exact: true }).click();
+      const row = page.getByRole("region", { name: "Tarifas del tour" }).locator("tbody tr");
+      await expect(row).toHaveCount(1);
+      await expect(row).toContainText(/45[.,]67/);
+      await row.getByRole("button", { name: "Desactivar", exact: true }).click();
+      await expect(row.getByRole("button", { name: "Activar", exact: true })).toBeVisible();
+      await row.getByRole("button", { name: "Activar", exact: true }).click();
+      await expect(row.getByRole("button", { name: "Desactivar", exact: true })).toBeVisible();
+      page.once("dialog", (dialog) => dialog.accept());
+      await row.getByRole("button", { name: "Eliminar", exact: true }).click();
+      await expect(page.getByRole("main").getByText("El tour no tiene tarifas: no se puede reservar en línea.", { exact: true })).toBeVisible();
+    });
+    await measured("Generate a draft departure, adjust capacity, close/reopen and delete", async () => {
+      await page.goto(`${origin}/salidas?tourId=${draftId}`);
+      const create = page.locator("#lote form");
+      const date = new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10);
+      await create.getByLabel(/^Desde\s*\*?$/).fill(date);
+      await create.getByLabel(/^Hasta\s*\*?$/).fill(date);
+      await create.getByRole("button", { name: "Generar salidas", exact: true }).click();
+      const row = page.getByRole("region", { name: "Salidas del tour" }).locator("tbody tr");
+      await expect(row).toHaveCount(1);
+      await row.getByRole("textbox", { name: /^Capacidad del / }).fill("17");
+      const capacitySaved = page.waitForResponse((response) => response.request().method() === "POST" && new URL(response.url()).pathname === "/salidas" && response.ok());
+      await row.getByRole("button", { name: "Guardar", exact: true }).click();
+      await capacitySaved;
+      await expect(row.getByRole("button", { name: "Guardar", exact: true })).toBeEnabled();
+      await page.reload();
+      await expect(row.getByRole("textbox", { name: /^Capacidad del / })).toHaveValue("17");
+      await row.getByRole("button", { name: "Cerrar ventas", exact: true }).click();
+      await expect(row.getByRole("button", { name: "Reabrir", exact: true })).toBeVisible();
+      await row.getByRole("button", { name: "Reabrir", exact: true }).click();
+      await expect(row.getByRole("button", { name: "Cerrar ventas", exact: true })).toBeVisible();
+      page.once("dialog", (dialog) => dialog.accept());
+      await row.getByRole("button", { name: "Eliminar", exact: true }).click();
+      await expect(page.getByText("Sin salidas en el rango.", { exact: true })).toBeVisible();
+    });
+    await measured("Audit filters retain and clear query state", async () => {
+      await page.goto(`${origin}/auditoria`);
+      const filters = page.getByRole("form", { name: "Filtros de auditoría" });
+      await filters.getByLabel("Entidad", { exact: true }).fill("tours");
+      await filters.getByRole("button", { name: "Filtrar", exact: true }).click();
+      await expect(page).toHaveURL(/entityType=tours/);
+      await expect(page.getByRole("form", { name: "Filtros de auditoría" }).getByLabel("Entidad", { exact: true })).toHaveValue("tours");
+      await expect(page.getByRole("main").getByText("No se pudo cargar", { exact: true })).toHaveCount(0);
+      await page.getByRole("link", { name: "Limpiar", exact: true }).click();
+      await expect(page).toHaveURL(`${origin}/auditoria`);
+      await expect(page.getByRole("form", { name: "Filtros de auditoría" }).getByLabel("Entidad", { exact: true })).toHaveValue("");
+    });
+    await measured("Create a private contact fixture and record administrative follow-up", async () => {
+      const webOrigin = process.env.E2E_WEB_BASE_URL ?? "http://localhost:3100";
+      if (!["localhost", "127.0.0.1"].includes(new URL(webOrigin).hostname)) throw new Error("Contact fixture requires isolated localhost web server.");
+      const subject = `Admin follow-up fixture ${suffix}`;
+      const publicPage = await page.context().newPage();
+      try {
+        await publicPage.goto(`${webOrigin}/es/contactenos`);
+        await publicPage.getByLabel("Nombre", { exact: true }).fill("Consumidor Fixture Admin");
+        await publicPage.getByLabel("Correo electrónico", { exact: true }).fill(`admin-contact-${suffix}@peruwonderstours.test`);
+        await publicPage.getByLabel("Asunto", { exact: true }).fill(subject);
+        await publicPage.getByLabel("Mensaje", { exact: true }).fill("Consulta ficticia creada solo para probar el seguimiento administrativo en CI.");
+        await publicPage.getByRole("checkbox", { name: /Acepto el tratamiento/ }).check();
+        await publicPage.getByRole("button", { name: "Enviar mensaje", exact: true }).click();
+        await expect(publicPage.getByRole("status").filter({ hasText: "Recibimos tu mensaje" })).toBeVisible();
+      } finally { await publicPage.close(); }
+      await page.goto(`${origin}/contacto`);
+      await page.getByRole("link", { name: subject, exact: true }).click();
+      await expect(page.getByRole("heading", { level: 1, name: subject })).toBeVisible();
+      await page.getByLabel(/^Nuevo estado\s*\*?$/).selectOption("answered");
+      await page.getByLabel("Nota interna", { exact: true }).fill("Seguimiento ficticio de CI; no se envió ningún correo ni WhatsApp.");
+      await page.getByRole("button", { name: "Guardar", exact: true }).click();
+      await expect(page.locator("main header").getByText("Respondido", { exact: true })).toBeVisible();
+      await page.reload();
+      await expect(page.locator("main header").getByText("Respondido", { exact: true })).toBeVisible();
+      await expect(page.getByLabel("Nota interna", { exact: true })).toHaveValue("Seguimiento ficticio de CI; no se envió ningún correo ni WhatsApp.");
+      await page.getByLabel(/^Nuevo estado\s*\*?$/).selectOption("archived");
+      await page.getByRole("button", { name: "Guardar", exact: true }).click();
+      await expect(page.locator("main header").getByText("Archivado", { exact: true })).toBeVisible();
+      await page.reload();
+      await expect(page.locator("main header").getByText("Archivado", { exact: true })).toBeVisible();
     });
     await measured("Upload, activate, order and deactivate a native banner", async () => {
       await page.goto(`${origin}/banners`);

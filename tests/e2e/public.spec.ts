@@ -171,3 +171,31 @@ test('Header menus, language switch and cart drawer keep keyboard access', async
     await expect(page.locator('html')).toHaveAttribute('lang',/^en(-|$)/);
   });
 });
+
+test('Customer access request and invalid access link give clear feedback', async ({ page }, info) => {
+  await page.goto('/es/mis-reservas');
+  await page.getByRole('link',{name:'Recibir enlace de acceso',exact:true}).click();
+  await expect(page).toHaveURL(/\/es\/cuenta\/acceso/);
+  await page.getByLabel('Correo electrónico',{exact:true}).fill('access-fixture@peruwonderstours.test');
+  await measured(info,'Request customer access link',async()=>{
+    await page.getByRole('button',{name:'Enviarme el enlace',exact:true}).click();
+    await expect(page.getByRole('status').filter({hasText:'Si ese correo tiene reservas'})).toBeVisible();
+  });
+  await page.goto('/es/cuenta/acceso?token=invalid-fixture-token-123456');
+  await page.getByRole('button',{name:'Ver mis reservas',exact:true}).click();
+  await expect(page.getByRole('alert').filter({hasText:'Este enlace no es válido'})).toBeVisible();
+});
+
+test('Testimonial submission stays pending moderation', async ({ page }, info) => {
+  await page.goto('/es/dejar-testimonio');
+  await page.getByLabel('Nombre que se mostrará',{exact:true}).fill('Viajero CI');
+  await page.locator('input[name="authorCountry"]').fill('PE');
+  await page.getByLabel('Correo electrónico (no se publica)',{exact:true}).fill('review-fixture@peruwonderstours.test');
+  await page.getByLabel('Tu testimonio',{exact:true}).fill('Esta opinión ficticia valida el registro aislado y su moderación previa.');
+  await page.getByRole('checkbox',{name:/^Autorizo publicar mi testimonio/}).check();
+  await page.getByRole('checkbox',{name:/^Acepto el tratamiento/}).check();
+  await measured(info,'Submit testimonial fixture',async()=>{
+    await page.getByRole('button',{name:'Enviar testimonio',exact:true}).click();
+    await expect(page.getByRole('status').filter({hasText:'Lo publicaremos después de revisarlo'})).toBeVisible();
+  });
+});

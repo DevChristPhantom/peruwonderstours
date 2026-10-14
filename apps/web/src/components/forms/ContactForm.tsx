@@ -24,7 +24,7 @@ export function ContactForm() {
   return (
     <form action={action} className="space-y-5">
       <input type="hidden" name="locale" value={locale} />
-      <Field id={`${id}-name`} name="name" label={t("name")} required maxLength={120} autoComplete="name" error={err("name")} />
+      <Field id={`${id}-name`} name="name" label={t("name")} required minLength={2} maxLength={120} autoComplete="name" error={err("name")} />
       <Field
         id={`${id}-email`}
         name="email"
@@ -35,9 +35,9 @@ export function ContactForm() {
         autoComplete="email"
         error={err("email", t("invalidEmail"))}
       />
-      <Field id={`${id}-phone`} name="phone" type="tel" label={t("phone")} maxLength={40} autoComplete="tel" />
-      <Field id={`${id}-subject`} name="subject" label={t("subject")} required maxLength={160} error={err("subject")} />
-      <Field id={`${id}-message`} name="message" label={t("message")} hint={t("messageHint")} required maxLength={4000} multiline error={err("message")} />
+      <Field id={`${id}-phone`} name="phone" type="tel" label={t("phone")} minLength={6} maxLength={20} autoComplete="tel" error={err("phone", t("invalidPhone"))} />
+      <Field id={`${id}-subject`} name="subject" label={t("subject")} hint={t("subjectHint")} required minLength={3} maxLength={150} error={err("subject", t("invalidSubject"))} />
+      <Field id={`${id}-message`} name="message" label={t("message")} hint={t("messageHint")} required minLength={10} maxLength={4000} multiline error={err("message", t("invalidMessage"))} />
       <Consent id={`${id}-privacy`} name="privacy" error={invalid.has("privacy")}>
         {t.rich("privacy", {
           link: (chunks) => (

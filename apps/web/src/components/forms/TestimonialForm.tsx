@@ -25,8 +25,8 @@ export function TestimonialForm() {
   return (
     <form action={action} className="space-y-5">
       <input type="hidden" name="locale" value={locale} />
-      <Field id={`${id}-name`} name="authorName" label={t("name")} required maxLength={80} autoComplete="given-name" error={err("authorName")} />
-      <Field id={`${id}-country`} name="authorCountry" label={t("country")} maxLength={80} autoComplete="country-name" />
+      <Field id={`${id}-name`} name="authorName" label={t("name")} required minLength={2} maxLength={80} autoComplete="given-name" error={err("authorName")} />
+      <Field id={`${id}-country`} name="authorCountry" label={t("country")} hint={t("countryHint")} maxLength={2} pattern="[A-Za-z]{2}" autoComplete="country" error={err("authorCountry", t("invalidCountry"))} />
       <Field
         id={`${id}-email`}
         name="email"
@@ -49,7 +49,7 @@ export function TestimonialForm() {
           ))}
         </select>
       </div>
-      <Field id={`${id}-body`} name="body" label={t("body")} required maxLength={2000} multiline error={err("body")} />
+      <Field id={`${id}-body`} name="body" label={t("body")} hint={t("bodyHint")} required minLength={20} maxLength={2000} multiline error={err("body", t("invalidBody"))} />
       <Field id={`${id}-date`} name="travelDate" type="date" label={t("travelDate")} />
       <Consent id={`${id}-publish`} name="publishConsent" error={consentError}>
         {t("publishConsent")}

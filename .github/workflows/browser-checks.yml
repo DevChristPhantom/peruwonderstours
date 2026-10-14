@@ -96,6 +96,50 @@ jobs:
           cat /tmp/pwt-browser-web.log /tmp/pwt-browser-admin.log
           exit 1
       - run: pnpm exec playwright test
+      - name: Print bounded browser measurements
+        if: always()
+        run: |
+          node --input-type=module <<'NODE'
+          import { readdir, readFile } from 'node:fs/promises';
+          import { join } from 'node:path';
+          let printed = 0;
+          async function measurements(directory) {
+            for (const entry of await readdir(directory, { withFileTypes: true }).catch(() => [])) {
+              if (printed >= 60) return;
+              const path = join(directory, entry.name);
+              if (entry.isDirectory()) await measurements(path);
+              else if (/\.json$/.test(entry.name) && /action-timings|navigation-timing|browser-errors|image-load-diagnostics/.test(entry.name)) {
+                const body = JSON.parse(await readFile(path, 'utf8'));
+                printed++;
+                if (entry.name.includes('image-load-diagnostics') && Array.isArray(body)) {
+                  console.log(JSON.stringify({ file: path, images: body.length, broken: body.filter(image => !image.loaded && !image.pending).length, pending: body.filter(image => image.pending).length }));
+                } else {
+                  const bounded = Array.isArray(body) ? body.slice(0, 30).map(value => typeof value === 'string' ? value.slice(0, 500) : value) : body;
+                  console.log(JSON.stringify({ file: path, measurement: bounded }));
+                }
+              }
+            }
+          }
+          await measurements('test-results');
+          const results = await readFile('test-results/results.json', 'utf8').then(JSON.parse).catch(() => null);
+          const allowed = /^(?:user-action-timings|admin-action-timings|mobile-action-timings|payment-action-timings|navigation-timing|browser-errors|image-load-diagnostics|mobile-menu-hit-target)\.json$/;
+          function attachments(node) {
+            if (!node || typeof node !== 'object') return;
+            if (Array.isArray(node.attachments)) for (const attachment of node.attachments) {
+              if (printed >= 60 || !allowed.test(attachment.name) || !attachment.body) continue;
+              let body; try { body = JSON.parse(Buffer.from(attachment.body, 'base64').toString('utf8')); } catch { continue; }
+              printed++;
+              if (attachment.name === 'image-load-diagnostics.json' && Array.isArray(body)) {
+                console.log(JSON.stringify({ attachment: attachment.name, images: body.length, broken: body.filter(image => !image.loaded && !image.pending).length, pending: body.filter(image => image.pending).length }));
+              } else console.log(JSON.stringify({ attachment: attachment.name, measurement: Array.isArray(body) ? body.slice(0, 30) : body }));
+            }
+            for (const [key, value] of Object.entries(node)) if (key !== 'attachments' && value && typeof value === 'object') {
+              if (Array.isArray(value)) value.forEach(attachments); else attachments(value);
+            }
+          }
+          attachments(results);
+          if (results?.stats) console.log(JSON.stringify({ browserResults: results.stats }));
+          NODE
       - name: Include service diagnostics on failure
         if: failure()
         run: |
