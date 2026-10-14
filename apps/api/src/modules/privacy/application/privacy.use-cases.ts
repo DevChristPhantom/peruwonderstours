@@ -35,8 +35,8 @@ export interface ConsentMeta {
 
 /** Textos mostrados en el checkout (su SHA-256 se guarda como prueba del texto exacto). */
 export const CONSENT_TEXTS: Record<MarketingPurpose, string> = {
-  marketing_email: 'Quiero recibir ofertas y novedades de Peru Wonders Tours por correo electrónico.',
-  marketing_whatsapp: 'Quiero recibir ofertas y novedades de Peru Wonders Tours por WhatsApp/SMS.',
+  marketing_email: 'Quiero recibir ofertas y novedades de peruwonderstours por correo electrónico.',
+  marketing_whatsapp: 'Quiero recibir ofertas y novedades de peruwonderstours por WhatsApp/SMS.',
 };
 
 export class InvalidUnsubscribeLinkError extends UnauthorizedError {

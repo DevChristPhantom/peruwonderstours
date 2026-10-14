@@ -33,7 +33,7 @@ describe('OtplibTotpService', () => {
   });
 
   it('URI otpauth compatible con apps autenticadoras', () => {
-    expect(totp.buildUri({ issuer: 'Peru Wonders Tours', label: 'ana@pwt.pe', secret: 'JBSWY3DPEHPK3PXP' })).toContain('secret=JBSWY3DPEHPK3PXP');
+    expect(totp.buildUri({ issuer: 'peruwonderstours', label: 'ana@pwt.pe', secret: 'JBSWY3DPEHPK3PXP' })).toContain('secret=JBSWY3DPEHPK3PXP');
   });
 });
 

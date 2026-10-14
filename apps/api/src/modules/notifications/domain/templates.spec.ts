@@ -119,7 +119,7 @@ describe('Plantillas en inglés y enlaces mágicos (Sprint 3)', () => {
 
   it('voucher, recordatorio y pago recibido en inglés con el enlace de un solo uso', () => {
     const voucher = bookingVoucherEmail(data, BRAND, 'confirmation');
-    expect(voucher.subject).toBe('Booking confirmed PWT-2026-000009 · Peru Wonders Tours');
+    expect(voucher.subject).toBe('Booking confirmed PWT-2026-000009 · peruwonderstours');
     expect(voucher.html).toContain('<html lang="en">');
     expect(voucher.text).toContain('View my booking: https://pwt.test/en/reserva/acceso?token=abc');
     expect(voucher.text).toContain('Tuesday, November 10, 2026');

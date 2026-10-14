@@ -5,7 +5,7 @@
 > personales. Análisis: `brain/wiki/normativa/proteccion-de-datos.md`. La tabla de cookies debe
 > generarse a partir del inventario real del sitio antes de publicar.
 
-# Política de Cookies de Peru Wonders Tours
+# Política de Cookies de peruwonderstours
 
 Última actualización: [POR CONFIRMAR: fecha] · Versión [POR CONFIRMAR: versión]
 

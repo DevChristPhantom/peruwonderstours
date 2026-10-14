@@ -6,7 +6,7 @@
  * y docs/cliente/solicitud-de-informacion.md.
  */
 export const SITE = {
-  name: "Peru Wonders Tours",
+  name: "peruwonderstours",
   url: "https://peruwonderstours.com",
   legal: {
     /** PENDIENTE(cliente): razón social (el sitio viejo muestra datos inconsistentes). */

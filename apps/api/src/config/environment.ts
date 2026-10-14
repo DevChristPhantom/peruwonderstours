@@ -274,7 +274,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @Length(1, 60)
-  MFA_ISSUER = 'Peru Wonders Tours';
+  MFA_ISSUER = 'peruwonderstours';
 
   // --- Correo transaccional ---
   /** file = .eml en MAIL_OUTBOX_DIR (desarrollo); smtp = servidor SMTP; memory = pruebas; disabled = no envía. */
@@ -286,7 +286,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @Length(3, 200)
-  MAIL_FROM = 'Peru Wonders Tours <no-reply@peruwonderstours.com>';
+  MAIL_FROM = 'peruwonderstours <no-reply@peruwonderstours.com>';
 
   @IsOptional()
   @IsString()

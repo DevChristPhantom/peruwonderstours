@@ -119,7 +119,7 @@
     },
     "bookings": {
       "title": "Mis reservas",
-      "description": "Todas tus reservas con Peru Wonders Tours: estado, fechas y voucher.",
+      "description": "Todas tus reservas con peruwonderstours: estado, fechas y voucher.",
       "listLabel": "Tus reservas",
       "logout": "Cerrar sesión",
       "loggingOut": "Cerrando sesión…",
@@ -281,7 +281,7 @@
     "pricesConfirmed": "Precios y cupos confirmados ahora.",
     "dueOnShort": "vence el {date}",
     "header": {
-      "home": "Peru Wonders Tours, inicio",
+      "home": "peruwonderstours, inicio",
       "leaveConfirm": "¿Salir del pago? Tu carrito se guarda.",
       "secure": "Pago seguro"
     },
@@ -414,7 +414,7 @@
     },
     "sandbox": {
       "title": "Modo sandbox: pago simulado, no se realizará ningún cobro",
-      "text": "Aquí se mostrará el formulario seguro del proveedor de pagos para {method}. Tus datos de tarjeta irán directo al proveedor; Peru Wonders Tours no los guarda.",
+      "text": "Aquí se mostrará el formulario seguro del proveedor de pagos para {method}. Tus datos de tarjeta irán directo al proveedor; peruwonderstours no los guarda.",
       "amount": "Monto a enviar:",
       "booking": "Reserva",
       "outcome": "Resultado a simular",
@@ -455,8 +455,8 @@
     "fallbackNotice": "Contenido disponible solo en español por ahora.",
     "viewAllTours": "Ver todos los tours",
     "breadcrumbs": "Ruta de navegación",
-    "logoAlt": "Peru Wonders Tours",
-    "logoHome": "Peru Wonders Tours, ir al inicio",
+    "logoAlt": "peruwonderstours",
+    "logoHome": "peruwonderstours, ir al inicio",
     "pending": "Por confirmar",
     "whatsappUs": "Escríbenos por WhatsApp",
     "skipToContent": "Saltar al contenido principal"
@@ -965,7 +965,7 @@
     "pages": {
       "terms": {
         "title": "Términos y condiciones",
-        "description": "Condiciones de uso del sitio y de contratación de tours y paquetes con Peru Wonders Tours."
+        "description": "Condiciones de uso del sitio y de contratación de tours y paquetes con peruwonderstours."
       },
       "privacy": {
         "title": "Protección de datos personales",
@@ -1246,7 +1246,7 @@
     "ics": {
       "pickup": "Hora y punto de recojo: te los confirmamos por WhatsApp (hora de Lima).",
       "notConfirmed": "Reserva pendiente de pago: este calendario no confirma cupos.",
-      "calendarName": "Mi viaje · Peru Wonders Tours",
+      "calendarName": "Mi viaje · peruwonderstours",
       "fileName": "mi-viaje-peru-wonders-tours.ics",
       "announce": "Descargamos tu calendario de viaje."
     },
@@ -1354,7 +1354,7 @@
       "title": "{title} · Reserva {code}",
       "description": "{count, plural, one {Reserva {code} · # viajero.} other {Reserva {code} · # viajeros.}}",
       "pickup": "Hora y punto de recojo: te los confirmamos por WhatsApp (hora de Lima).",
-      "calendarName": "Reserva {code} · Peru Wonders Tours",
+      "calendarName": "Reserva {code} · peruwonderstours",
       "fileName": "reserva-{code}.ics",
       "announce": "Descargamos el calendario de tu reserva.",
       "button": "Añadir al calendario"

@@ -44,7 +44,7 @@ function setup() {
     refreshIdleTtlSeconds: 12 * 3600,
     refreshAbsoluteTtlSeconds: 72 * 3600,
     lockout: { threshold: 5, baseSeconds: 60, maxSeconds: 3600 },
-    mfaIssuer: 'Peru Wonders Tours',
+    mfaIssuer: 'peruwonderstours',
   });
   const users = new StaffUsersUseCases(store, clock, ids, fakeHasher);
   return { clock, store, auth, users };
@@ -83,7 +83,7 @@ describe('StaffAuthUseCases: login, MFA y bloqueo', () => {
     expect(login.status).toBe('mfa_enrollment_required');
     if (login.status !== 'mfa_enrollment_required') return;
     const enrollment = await ctx.auth.startEnrollment({ enrollmentToken: login.enrollmentToken }, META);
-    expect(enrollment.otpauthUri).toMatch(/^otpauth:\/\/totp\/Peru%20Wonders%20Tours:ana%40pwt\.pe\?/);
+    expect(enrollment.otpauthUri).toMatch(/^otpauth:\/\/totp\/peruwonderstours:ana%40pwt\.pe\?/);
     await expectCode(ctx.auth.confirmEnrollment({ enrollmentToken: login.enrollmentToken, code: '000000' }, META), 'invalid-mfa-code');
     const session = await ctx.auth.confirmEnrollment({ enrollmentToken: login.enrollmentToken, code: await codeAt(enrollment.secret, ctx.clock) }, META);
     expect(session.recoveryCodes).toHaveLength(10);

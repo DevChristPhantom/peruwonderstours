@@ -12,6 +12,7 @@ import { getBlogPost, listBlogPosts, type ApiBlogCard } from "@/lib/api/content"
 import type { LocalePaths } from "@/lib/catalog/types";
 import { env } from "@/lib/env";
 import { blogLocaleSlugs } from "./blog-locale-slugs";
+import { editorialBrand } from "./editorial-brand";
 
 /**
  * Blog (F1) por idioma. Fuente: API `GET /blog` (ISR, tag `content`); si la API no responde o
@@ -104,11 +105,11 @@ function fromApiCard(card: ApiBlogCard, locale: Locale, esCard: ApiBlogCard | un
     path: alternates[locale],
     alternates,
     fallback,
-    title: card.title,
-    excerpt: card.excerpt ?? "",
-    image: card.coverUrl ? { src: card.coverUrl, alt: card.coverAlt ?? card.title } : null,
+    title: editorialBrand(card.title),
+    excerpt: editorialBrand(card.excerpt ?? ""),
+    image: card.coverUrl ? { src: card.coverUrl, alt: editorialBrand(card.coverAlt ?? card.title) } : null,
     publishedAt: card.publishedAt,
-    author: card.author ?? null,
+    author: card.author ? editorialBrand(card.author) : null,
     tags: card.tags,
   };
 }
@@ -148,9 +149,9 @@ export const getBlogPostBySlug = cache((slug: string, locale: Locale): Promise<B
         ...card,
         alternates,
         path: alternates[locale],
-        body: post.body,
-        metaTitle: post.seoTitle ?? post.title,
-        metaDescription: post.seoDescription ?? (post.excerpt ?? "").slice(0, 160),
+        body: editorialBrand(post.body),
+        metaTitle: editorialBrand(post.seoTitle ?? post.title),
+        metaDescription: editorialBrand(post.seoDescription ?? (post.excerpt ?? "")).slice(0, 160),
       };
     },
     () => {

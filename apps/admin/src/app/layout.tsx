@@ -9,8 +9,8 @@ const geist = localFont({ src: "../../../../packages/ui/src/fonts/geist-latin-wg
 const geistMono = localFont({ src: "../../../../packages/ui/src/fonts/geist-mono-latin-wght-normal.woff2", variable: "--font-geist-mono", weight: "100 900", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "Panel · Peru Wonders Tours", template: "%s · Panel PWT" },
-  description: "Panel de administración interno de Peru Wonders Tours.",
+  title: { default: "Panel · peruwonderstours", template: "%s · Panel PWT" },
+  description: "Panel de administración interno de peruwonderstours.",
   robots: { index: false, follow: false, nocache: true, googleBot: { index: false, follow: false } },
   referrer: "strict-origin-when-cross-origin",
   formatDetection: { telephone: false, email: false, address: false },

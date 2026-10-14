@@ -25,6 +25,7 @@ import { useFavoritesCount } from "@/stores/wishlist-store";
 
 import { LanguageLinks } from "./LanguageSwitcher";
 import { LanguageFlag } from "./LanguageFlag";
+import { BrandLogo } from "./BrandLogo";
 import s from "./SiteHeader.module.css";
 
 /* ---------- Constantes de la spec (§4–§5) ---------- */
@@ -374,14 +375,7 @@ export function SiteHeader({ media }: { media: NavMedia }) {
     >
       <div className={s.bar}>
         <Link href="/" className={s.logo} aria-label={tc("logoHome")}>
-          <Image
-            src="/logo.png"
-            alt={tc("logoAlt")}
-            width={120}
-            height={40}
-            className={s.logoImg}
-            preload
-          />
+          <BrandLogo alt={tc("logoAlt")} preload />
         </Link>
 
         <nav

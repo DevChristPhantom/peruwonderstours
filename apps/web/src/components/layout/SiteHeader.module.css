@@ -585,6 +585,7 @@
 @media (max-width: 860px) {
   .bar {
     grid-template-columns: 1fr auto;
+    padding-inline: 16px;
   }
   .nav,
   .dd,

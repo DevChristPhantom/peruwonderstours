@@ -4,13 +4,13 @@
 > (D.S. 016-2024-JUS). Fuentes y análisis: `brain/wiki/normativa/proteccion-de-datos.md`.
 > Los textos entre `[POR CONFIRMAR: ...]` deben completarse con datos del cliente.
 
-# Política de Privacidad de Peru Wonders Tours
+# Política de Privacidad de peruwonderstours
 
 Última actualización: [POR CONFIRMAR: fecha de publicación] · Versión [POR CONFIRMAR: versión]
 
 ## 1. ¿Quién es responsable de tus datos?
 
-[POR CONFIRMAR: razón social], con RUC [POR CONFIRMAR: RUC], nombre comercial Peru Wonders Tours,
+[POR CONFIRMAR: razón social], con RUC [POR CONFIRMAR: RUC], nombre comercial peruwonderstours,
 agencia de viajes y turismo inscrita en el Directorio Nacional de Prestadores de Servicios
 Turísticos Calificados con constancia N.º [POR CONFIRMAR: número], con domicilio en
 [POR CONFIRMAR: dirección completa], Puno, Perú (en adelante, "nosotros").

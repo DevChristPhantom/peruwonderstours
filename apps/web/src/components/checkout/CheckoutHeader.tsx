@@ -1,10 +1,10 @@
 "use client";
 
 import { Lock } from "lucide-react";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 
 export function CheckoutHeader() {
   const t = useTranslations("checkout.header");
@@ -19,7 +19,7 @@ export function CheckoutHeader() {
             if (!window.confirm(t("leaveConfirm"))) e.preventDefault();
           }}
         >
-          <Image src="/logo.png" alt="" width={120} height={40} className="h-9 w-auto" />
+          <BrandLogo />
         </Link>
         <p className="inline-flex items-center gap-2 text-sm text-success">
           <Lock aria-hidden size={16} strokeWidth={1.5} />

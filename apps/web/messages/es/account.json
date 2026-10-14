@@ -29,7 +29,7 @@
   },
   "bookings": {
     "title": "Mis reservas",
-    "description": "Todas tus reservas con Peru Wonders Tours: estado, fechas y voucher.",
+    "description": "Todas tus reservas con peruwonderstours: estado, fechas y voucher.",
     "listLabel": "Tus reservas",
     "logout": "Cerrar sesión",
     "loggingOut": "Cerrando sesión…",

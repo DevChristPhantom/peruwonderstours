@@ -8,6 +8,7 @@ import { SITE, whatsappHref } from "@/lib/site";
 import { SOCIAL_LINKS } from "@/lib/social";
 
 import { AndesSkyline } from "./AndesSkyline";
+import { BrandLogo } from "./BrandLogo";
 
 type Href = ComponentProps<typeof Link>["href"];
 type LinkKey = "allTours" | "tourTypes" | "about" | "blog" | "reviews" | "contact" | "myBookings" | "myBooking" | "complaintStatus" | "favorites" | "terms" | "payments" | "privacy" | "cookies";
@@ -110,7 +111,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
         <div className="pwt-container grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="inline-flex min-h-11 items-center" aria-label={tc("logoHome")}>
-              <Image src="/logo.png" alt={tc("logoAlt")} width={120} height={40} className="h-10 w-auto brightness-0 invert" />
+              <BrandLogo alt={tc("logoAlt")} wide />
             </Link>
             <p className="mt-3 text-sm">{t("tagline")}</p>
             <ul className="mt-4 space-y-1 text-sm">
@@ -160,8 +161,8 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
           </Column>
         </div>
 
-        <div className="pwt-container grid gap-8 border-t border-[color:var(--pwt-hero-line)] py-8 text-sm md:grid-cols-3">
-          <div>
+        <div className={`pwt-container grid gap-8 border-t border-[color:var(--pwt-hero-line)] py-8 text-sm ${SOCIAL_LINKS.length ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
+          {SOCIAL_LINKS.length ? <div>
             <h3 className={headingClass}>{t("follow")}</h3>
             <ul className="flex flex-wrap gap-x-5">
               {SOCIAL_LINKS.map((s) => (
@@ -174,7 +175,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
                 </li>
               ))}
             </ul>
-          </div>
+          </div> : null}
           <div>
             <h3 className={headingClass}>{t("payments")}</h3>
             <p className="flex items-start gap-2">

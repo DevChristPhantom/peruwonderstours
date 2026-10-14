@@ -80,7 +80,7 @@ function layout(params: { title: string; preheader: string; bodyHtml: string; br
 <span style="display:none;max-height:0;overflow:hidden">${escapeHtml(params.preheader)}</span>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f1ea"><tr><td align="center" style="padding:24px 12px">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:8px">
-<tr><td style="background:#7a2e1d;color:#ffffff;padding:20px 24px;border-radius:8px 8px 0 0;font-size:20px;font-weight:bold">Peru Wonders Tours</td></tr>
+<tr><td style="background:#7a2e1d;color:#ffffff;padding:20px 24px;border-radius:8px 8px 0 0;font-size:20px;font-weight:bold">peruwonderstours</td></tr>
 <tr><td style="padding:24px;font-size:15px;line-height:1.55">
 <h1 style="font-size:20px;margin:0 0 16px">${escapeHtml(params.title)}</h1>
 ${params.bodyHtml}
@@ -153,7 +153,7 @@ const B = {
     confirmedIntro: (n: string) => `Hola ${n}, recibimos tu pago y tu reserva está confirmada. Este correo es tu voucher: preséntalo (impreso o en el celular) el día del servicio.`,
     voucherIntro: (n: string) => `Hola ${n}, te reenviamos el voucher de tu reserva. Preséntalo (impreso o en el celular) el día del servicio.`,
     payBefore: 'Recuerda pagar el saldo antes de la fecha indicada para mantener tu reserva.',
-    confirmedSubject: (c: string) => `Reserva confirmada ${c} · Peru Wonders Tours`,
+    confirmedSubject: (c: string) => `Reserva confirmada ${c} · peruwonderstours`,
     voucherSubject: (c: string) => `Voucher de tu reserva ${c}`,
     paymentTitle: (c: string) => `Pago recibido · ${c}`,
     paymentIntro: (n: string, a: string) => `Hola ${n}, registramos tu pago de ${a}.`,
@@ -188,7 +188,7 @@ const B = {
     confirmedIntro: (n: string) => `Hi ${n}, we received your payment and your booking is confirmed. This email is your voucher: show it (printed or on your phone) on the day of the service.`,
     voucherIntro: (n: string) => `Hi ${n}, here is your booking voucher again. Show it (printed or on your phone) on the day of the service.`,
     payBefore: 'Please pay the balance before the date shown to keep your booking.',
-    confirmedSubject: (c: string) => `Booking confirmed ${c} · Peru Wonders Tours`,
+    confirmedSubject: (c: string) => `Booking confirmed ${c} · peruwonderstours`,
     voucherSubject: (c: string) => `Voucher for your booking ${c}`,
     paymentTitle: (c: string) => `Payment received · ${c}`,
     paymentIntro: (n: string, a: string) => `Hi ${n}, we have recorded your payment of ${a}.`,
@@ -360,24 +360,24 @@ export function bookingAccessLinkEmail(d: { code: string; customerName: string; 
 const C = {
   es: {
     loginTitle: 'Tu enlace para entrar a "Mis reservas"',
-    loginIntro: (n: string) => `Hola ${n}, usa este botón para ver tus reservas en Peru Wonders Tours. No necesitas contraseña.`,
+    loginIntro: (n: string) => `Hola ${n}, usa este botón para ver tus reservas en peruwonderstours. No necesitas contraseña.`,
     loginCta: 'Entrar a Mis reservas',
     loginNote: (m: number) => `El enlace es de un solo uso y vence en ${m} minutos. Si no lo pediste, ignora este correo.`,
     ackTitle: 'Recibimos tu mensaje',
     ackIntro: (n: string) => `Hola ${n}, gracias por escribirnos. Te responderemos lo antes posible (normalmente en menos de 24 horas hábiles).`,
     ackSubjectLabel: 'Asunto',
-    ackSubject: 'Recibimos tu mensaje · Peru Wonders Tours',
+    ackSubject: 'Recibimos tu mensaje · peruwonderstours',
     ackNote: 'Este es un acuse automático: no incluye tu mensaje completo por seguridad. Si no nos escribiste, ignora este correo.',
   },
   en: {
     loginTitle: 'Your link to "My bookings"',
-    loginIntro: (n: string) => `Hi ${n}, use this button to see your bookings with Peru Wonders Tours. No password needed.`,
+    loginIntro: (n: string) => `Hi ${n}, use this button to see your bookings with peruwonderstours. No password needed.`,
     loginCta: 'Open My bookings',
     loginNote: (m: number) => `This link can be used once and expires in ${m} minutes. If you did not request it, ignore this email.`,
     ackTitle: 'We received your message',
     ackIntro: (n: string) => `Hi ${n}, thank you for contacting us. We will reply as soon as possible (usually within 24 business hours).`,
     ackSubjectLabel: 'Subject',
-    ackSubject: 'We received your message · Peru Wonders Tours',
+    ackSubject: 'We received your message · peruwonderstours',
     ackNote: 'This is an automatic acknowledgment: it does not include your full message for security reasons. If you did not contact us, ignore this email.',
   },
 } as const;
@@ -388,7 +388,7 @@ export function customerLoginLinkEmail(d: { firstName: string; linkUrl: string; 
   const note = t.loginNote(d.ttlMinutes);
   const html = layout({ title: t.loginTitle, locale: d.locale, preheader: t.loginTitle, brand, bodyHtml: `<p>${escapeHtml(intro)}</p>${button(d.linkUrl, t.loginCta)}<p style="font-size:13px;color:#5f6b76">${escapeHtml(note)}</p>` });
   const text = [t.loginTitle, '', intro, d.linkUrl, '', note, '', textFooter(brand, undefined, d.locale)].join('\n');
-  return { subject: `${t.loginTitle} · Peru Wonders Tours`, html, text };
+  return { subject: `${t.loginTitle} · peruwonderstours`, html, text };
 }
 
 export function contactAcknowledgmentEmail(d: { name: string; subject: string; locale: MailLocale }, brand: BrandInfo): RenderedEmail {
@@ -433,7 +433,7 @@ const PURPOSE_LABEL: Record<string, string> = { marketing_email: 'ofertas y nove
 export function marketingConfirmationEmail(d: { firstName: string; purposes: string[]; confirmUrl: string }, brand: BrandInfo): RenderedEmail {
   const title = 'Confirma tu suscripción';
   const list = d.purposes.map((p) => PURPOSE_LABEL[p] ?? p);
-  const intro = `Hola ${d.firstName}, al reservar se pidió que este correo reciba ${list.join(' y ')} de Peru Wonders Tours.`;
+  const intro = `Hola ${d.firstName}, al reservar se pidió que este correo reciba ${list.join(' y ')} de peruwonderstours.`;
   const how = 'Solo te escribiremos con ofertas si confirmas con el botón. Si no fuiste tú, ignora este mensaje: no recibirás publicidad. El enlace vence en 7 días.';
   const html = layout({
     title,
@@ -444,7 +444,7 @@ export function marketingConfirmationEmail(d: { firstName: string; purposes: str
 <p style="font-size:13px;color:#5f6b76">Puedes darte de baja cuando quieras desde cualquier correo comercial (Ley 29733).</p>`,
   });
   const text = [title, '', intro, how, '', `Confirmar: ${d.confirmUrl}`, '', textFooter(brand)].join('\n');
-  return { subject: 'Confirma tu suscripción a ofertas de Peru Wonders Tours', html, text };
+  return { subject: 'Confirma tu suscripción a ofertas de peruwonderstours', html, text };
 }
 
 // =============================================================================
@@ -550,7 +550,7 @@ ${rows([
 ${d.legalNotices.slice(0, 1).map((n) => `<p style="font-size:12px;color:#5f6b76">${escapeHtml(n)}</p>`).join('')}`,
   });
   const text = [title, '', intro, '', 'Observaciones y acciones adoptadas:', d.responseText, '', `Fecha de la respuesta: ${formatLimaDateTime(d.respondedAt)}`, '', d.legalNotices[0] ?? '', '', textFooter(brand)].join('\n');
-  return { subject: `Respuesta a tu reclamo ${d.code} · Peru Wonders Tours`, html, text };
+  return { subject: `Respuesta a tu reclamo ${d.code} · peruwonderstours`, html, text };
 }
 
 export const SETTLEMENT_ACCEPTANCE_PHRASE = 'ACUERDO ACEPTADO PARA SOLUCIONAR EL RECLAMO';

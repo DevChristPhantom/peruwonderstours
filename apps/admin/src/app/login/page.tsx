@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { connection } from "next/server";
 
 import { formatWait } from "@/lib/api/errors";
@@ -43,7 +44,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
     <main id="contenido" className="grid min-h-dvh place-items-center bg-background px-4 py-10">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <p className="text-sm font-semibold tracking-[0.04em] text-primary">peruwonderstours</p>
+          <div className="relative mx-auto h-20 w-[280px] overflow-hidden rounded-lg bg-white"><Image src="/brand/peruwonderstours-condor.png" alt="peruwonderstours.com" width={2172} height={724} sizes="280px" className="absolute top-1/2 h-auto w-full -translate-y-1/2" preload /></div>
           <h1 className="mt-3 text-2xl font-semibold tracking-tight">Panel de administración</h1>
         </div>
         <div className="admin-login-card rounded-lg border border-border bg-surface p-6 sm:p-8">

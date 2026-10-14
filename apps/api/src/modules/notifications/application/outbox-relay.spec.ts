@@ -26,7 +26,7 @@ function setup() {
   const h = createHarness();
   const cipher = AesGcmPiiCipher.fromBase64(DEVELOPMENT_PII_KEY_BASE64);
   const complaints = new ComplaintUseCases(h.uow, h.clock, h.ids, cipher, {
-    provider: { legalName: 'Peru Wonders Tours E.I.R.L.', ruc: '20000000001', establishmentAddress: 'Jr. Lima 123, Puno', establishmentCode: 'WEB' },
+    provider: { legalName: 'peruwonderstours E.I.R.L.', ruc: '20000000001', establishmentAddress: 'Jr. Lima 123, Puno', establishmentCode: 'WEB' },
     conformityTextVersion: 'c1',
     privacyNoticeVersion: 'p1',
     idempotencyTtlMinutes: 60,
@@ -41,7 +41,7 @@ function setup() {
   });
   const transport = new MemoryMailTransport();
   const composer = new MailComposer({
-    brand: { providerLegalName: 'Peru Wonders Tours E.I.R.L.', providerRuc: '20000000001', contactEmail: 'reservas@pwt.test', contactPhone: '+51 999', publicWebBaseUrl: 'https://pwt.test' },
+    brand: { providerLegalName: 'peruwonderstours E.I.R.L.', providerRuc: '20000000001', contactEmail: 'reservas@pwt.test', contactPhone: '+51 999', publicWebBaseUrl: 'https://pwt.test' },
     cipher,
     unsubscribeUrl: (repos, email) => privacy.unsubscribeUrlIfGranted(repos, email),
     marketingConfirmationUrl: (email, purposes) => privacy.buildConfirmationUrl(email, purposes),
@@ -53,7 +53,7 @@ function setup() {
     batchSize: 10,
     maxAttempts: 3,
     leaseSeconds: 120,
-    from: 'Peru Wonders Tours <no-reply@pwt.test>',
+    from: 'peruwonderstours <no-reply@pwt.test>',
     messageIdDomain: 'pwt.test',
   });
   const reminders = new BalanceReminderJob(h.uow, h.clock, h.ids);

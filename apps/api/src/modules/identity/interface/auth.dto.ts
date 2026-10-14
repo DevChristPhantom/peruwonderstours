@@ -122,7 +122,7 @@ export class SessionTokensResponseDto {
 }
 
 export class MfaEnrollmentDataDto {
-  @ApiProperty({ example: 'otpauth://totp/Peru%20Wonders%20Tours:ana%40example.com?secret=...&issuer=...', description: 'Renderizar como QR en el BFF.' })
+  @ApiProperty({ example: 'otpauth://totp/peruwonderstours:ana%40example.com?secret=...&issuer=...', description: 'Renderizar como QR en el BFF.' })
   otpauthUri: string;
   @ApiProperty({ description: 'Secreto base32 para ingreso manual. No almacenar ni registrar.' }) secret: string;
   @ApiProperty() issuer: string;

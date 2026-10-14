@@ -23,7 +23,7 @@
 
 Última actualización: [POR CONFIRMAR: fecha] · Versión [POR CONFIRMAR: versión]
 
-Proveedor: [POR CONFIRMAR: razón social], RUC [POR CONFIRMAR: RUC], "Peru Wonders Tours",
+Proveedor: [POR CONFIRMAR: razón social], RUC [POR CONFIRMAR: RUC], "peruwonderstours",
 [POR CONFIRMAR: dirección], Puno, Perú. Contacto: [POR CONFIRMAR: correo de reservas] ·
 [POR CONFIRMAR: teléfono/WhatsApp].
 
@@ -69,7 +69,7 @@ Los cambios están sujetos a disponibilidad y a una penalidad de [POR CONFIRMAR:
 las diferencias de tarifa y los costos de reemisión que cobren terceros (trenes, ingresos). Los
 boletos nominativos ya emitidos pueden no admitir cambios.
 
-## 4. Cancelación o cambios por parte de Peru Wonders Tours
+## 4. Cancelación o cambios por parte de peruwonderstours
 
 Si cancelamos un servicio por causas atribuibles a nosotros, o no se alcanza el mínimo de pasajeros
 indicado en la ficha, te ofreceremos a tu elección: (a) el **reembolso total** de lo pagado por ese

@@ -20,7 +20,7 @@
   "pricesConfirmed": "Precios y cupos confirmados ahora.",
   "dueOnShort": "vence el {date}",
   "header": {
-    "home": "Peru Wonders Tours, inicio",
+    "home": "peruwonderstours, inicio",
     "leaveConfirm": "¿Salir del pago? Tu carrito se guarda.",
     "secure": "Pago seguro"
   },
@@ -153,7 +153,7 @@
   },
   "sandbox": {
     "title": "Modo sandbox: pago simulado, no se realizará ningún cobro",
-    "text": "Aquí se mostrará el formulario seguro del proveedor de pagos para {method}. Tus datos de tarjeta irán directo al proveedor; Peru Wonders Tours no los guarda.",
+    "text": "Aquí se mostrará el formulario seguro del proveedor de pagos para {method}. Tus datos de tarjeta irán directo al proveedor; peruwonderstours no los guarda.",
     "amount": "Monto a enviar:",
     "booking": "Reserva",
     "outcome": "Resultado a simular",
