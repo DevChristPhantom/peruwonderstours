@@ -46,7 +46,7 @@ const NONCE_ROUTES = [
 /** Fotos del cliente servidas temporalmente desde su sitio (HU-0.3; ver next.config images). */
 const IMAGE_ORIGINS = "https://www.andeanperutours.com";
 
-function csp(nonce: string | null, dev: boolean): string {
+function csp(nonce: string | null, dev: boolean, heroFrame: boolean): string {
   const scripts = nonce ? `'self' 'nonce-${nonce}' 'strict-dynamic'` : `'self' 'unsafe-inline'`;
   return [
     "default-src 'self'",
@@ -60,7 +60,7 @@ function csp(nonce: string | null, dev: boolean): string {
     // Service worker del voucher offline (/sw-voucher.js) y manifest de la reserva.
     "worker-src 'self'",
     "manifest-src 'self'",
-    "frame-src 'none'",
+    heroFrame ? "frame-src 'self'" : "frame-src 'none'",
     "object-src 'none'",
     "base-uri 'none'",
     "form-action 'self'",
@@ -82,7 +82,7 @@ export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const sensitive = NONCE_ROUTES.some((re) => re.test(pathname));
   const nonce = sensitive ? Buffer.from(crypto.randomUUID()).toString("base64") : null;
-  const policy = csp(nonce, dev);
+  const policy = csp(nonce, dev, /^\/(es|en)\/?$/.test(pathname));
   const cspHeader = reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
 
   const requestHeaders = new Headers(request.headers);

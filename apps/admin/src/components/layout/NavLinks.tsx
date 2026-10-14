@@ -7,6 +7,7 @@ import {
   FolderTree,
   Gauge,
   Inbox,
+  PanelsTopLeft,
   Map,
   MapPin,
   MessageSquareQuote,
@@ -25,6 +26,7 @@ import { usePathname } from "next/navigation";
 
 export type NavKey =
   | "tablero"
+  | "banners"
   | "reservas"
   | "pagos-manuales"
   | "tours"
@@ -43,6 +45,7 @@ export type NavKey =
 
 const ICONS: Record<NavKey, LucideIcon> = {
   tablero: Gauge,
+  banners: PanelsTopLeft,
   reservas: ReceiptText,
   "pagos-manuales": Wallet,
   tours: Map,
@@ -70,7 +73,7 @@ export interface NavItem {
 const NAV_GROUP: Record<NavKey, string> = {
   tablero: "Operación", reservas: "Operación", "pagos-manuales": "Operación", reclamos: "Operación", contacto: "Operación",
   tours: "Catálogo", precios: "Catálogo", salidas: "Catálogo", destinos: "Catálogo", categorias: "Catálogo",
-  blog: "Contenido", testimonios: "Contenido",
+  blog: "Contenido", testimonios: "Contenido", banners: "Contenido",
   privacidad: "Administración", auditoria: "Administración", usuarios: "Administración", cuenta: "Administración",
 };
 

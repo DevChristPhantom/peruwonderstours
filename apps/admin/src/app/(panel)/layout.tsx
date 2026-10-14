@@ -20,6 +20,7 @@ const NAV: (NavItem & { perm?: Permission })[] = [
   { key: "destinos", href: "/destinos", label: "Destinos", perm: "content:read" },
   { key: "categorias", href: "/categorias", label: "Categorías", perm: "content:read" },
   { key: "blog", href: "/blog", label: "Blog", perm: "content:read" },
+  { key: "banners", href: "/banners", label: "Banners de inicio", perm: "tours:read" },
   { key: "testimonios", href: "/testimonios", label: "Testimonios", perm: "content:read" },
   { key: "privacidad", href: "/privacidad", label: "Protección de datos", perm: "privacy:read" },
   { key: "auditoria", href: "/auditoria", label: "Auditoría", perm: "audit:read" },

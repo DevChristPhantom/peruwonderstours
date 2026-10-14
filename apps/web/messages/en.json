@@ -885,7 +885,13 @@
       "title": "Travel Peru with people who know it",
       "lead": "Tours to Lake Titicaca, Machu Picchu, Colca Canyon and the southern coast with local guides, confirmed departures and deposit-based booking.",
       "imageAlt": "Uros floating islands on Lake Titicaca, Puno",
-      "scroll": "Scroll to explore"
+      "scroll": "Scroll to explore",
+      "banners": "Featured destinations",
+      "previousBanner": "Previous banner",
+      "nextBanner": "Next banner",
+      "showBanner": "Show {name}",
+      "playBanner": "Play animation and carousel",
+      "pauseBanner": "Pause animation and carousel"
     },
     "featured": {
       "title": "Featured tours",

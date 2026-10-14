@@ -119,3 +119,5 @@ tags:
   pero en rigor vence al inicio del 13; aclarar regla con el cliente.
 
 
+
+- 2026-10-13: banners HTML originales aislados, carrusel reiniciable, eventos de mouse y gestión admin. Web cinco pruebas, tipos y HTTP 200; API vieja requiere reinicio. Ver [[decisions/ADR-0008-banners-html-motion]].

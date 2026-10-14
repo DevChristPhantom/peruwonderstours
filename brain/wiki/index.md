@@ -53,3 +53,5 @@ This catalog is updated by completed knowledge operations.
 - No questions indexed yet.
 
 
+
+- [[decisions/ADR-0008-banners-html-motion]] — HTML aislado, carrusel reiniciable y administración.
