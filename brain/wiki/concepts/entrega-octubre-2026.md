@@ -27,7 +27,7 @@ updated: 2026-10-13
 - El listado de tours se renderiza por petición con `connection()` y conserva la caché de datos. Se eliminó el fallback que duplicaba las mismas tarjetas asíncronas; antes bloqueaba el prerender y la respuesta HTTP. Requiere runtime Next, no exportación estática.
 - Se agregó Turborepo a las dependencias de desarrollo: los scripts raíz lo utilizaban sin declararlo.
 
-## Evidencia ejecutada
+## Evidencia inicial del 13 de octubre
 
 - API: 219 unitarias y 32 e2e aprobadas; tipos y compilación aprobados.
 - Admin: 12 pruebas aprobadas; tipos y lint aprobados.
@@ -38,9 +38,13 @@ updated: 2026-10-13
 - Vista en navegador: no verificada; el navegador no alcanzó el servidor local del entorno.
 - Integración con PostgreSQL: no ejecutada. No se modificó ni restauró la base original.
 
+## Ampliación del 14 de octubre
+
+Se ejecutó integración funcional en Chromium CI con PostgreSQL efímero, migraciones, catálogo, reservas y personal ficticio con MFA. La base original no se modificó. La cobertura y el resultado vigente están en docs/qa/funcional-2026-10-14.md y [[decisions/ADR-0010-prioridad-comercial-y-pruebas]]. Esta evidencia supera las limitaciones de la revisión inicial, pero no acredita SMTP, pasarela ni rendimiento del hosting real.
+
 ## Antes de publicar
 
-1. Revisar en navegador, incluido móvil y movimiento reducido. Compilación y recorrido HTTP ya aprobados; la revisión visual completa sigue pendiente.
+1. Revisar el resultado de la suite Chromium CI, incluido móvil y movimiento reducido, y realizar aceptación visual final del cliente sobre el contenido aprobado.
 2. Configurar PostgreSQL, restaurar/importar medios y validar admin con sesión/MFA y datos reales.
 3. Integrar pasarela contratada: production no permite el único proveedor actual sandbox.
 4. Configurar SMTP real y confirmar entrega de enlaces, vouchers, contactos y reclamos.

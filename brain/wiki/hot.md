@@ -3,7 +3,7 @@ type: meta
 title: Hot Cache
 status: developing
 created: 2026-10-07
-updated: 2026-10-13
+updated: 2026-10-14
 tags:
   - meta
   - hot-cache
@@ -24,6 +24,9 @@ tags:
 - Equipo: 12 subagentes senior en `.claude/agents/`, dirigidos por `tech-lead-orchestrator`.
 
 ## Recent Changes
+
+- 2026-10-14: prioridad comercial de home corregida; pruebas Chromium CI con PostgreSQL efímero, staff MFA ficticio y pagos sandbox. Ver [[decisions/ADR-0010-prioridad-comercial-y-pruebas]] y docs/qa/funcional-2026-10-14.md para estado y límites actuales. El historial siguiente conserva evidencias anteriores.
+
 
 - 2026-10-13: UI/UX web/admin con siete skills instaladas y validadas, marca preservada,
   navegación agrupada, superficies/tablas y microinteracciones accesibles. Ver [[decisions/ADR-0007-ui-ux-y-skills-motion]].

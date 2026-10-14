@@ -15,6 +15,9 @@ This catalog is updated by completed knowledge operations.
 
 ## Concepts
 
+- [[decisions/ADR-0010-prioridad-comercial-y-pruebas]] — tours antes de recursos legales, pruebas Chromium aisladas y límites de evidencia.
+
+
 - [[decisions/ADR-0007-ui-ux-y-skills-motion]] — diseño preservado, mejoras compartidas y skills instaladas.
 
 - [[decisions/ADR-0006-optimizacion-carga-web]] — carga bajo demanda, movimiento reducido y medición HTTP compilada.
