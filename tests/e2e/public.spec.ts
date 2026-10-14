@@ -34,9 +34,9 @@ test('Home prioritizes products; hero controls and featured tabs work', async ({
   await measured(info, 'Select Machu Picchu banner', async () => { await controls.getByRole('button', { name: 'Mostrar Machu Picchu', exact: true }).click(); await expect(controls.getByRole('button', { name: 'Mostrar Machu Picchu', exact: true })).toHaveAttribute('aria-pressed', 'true'); });
   await measured(info, 'Pause and resume banner', async () => {
     await controls.getByRole('button', { name: 'Pausar animación y carrusel', exact: true }).click();
-    await expect(page.locator('[data-active="false"]').first()).toBeVisible();
+    await expect(page.locator('[data-effect][data-active="false"]').first()).toBeVisible();
     await controls.getByRole('button', { name: 'Reproducir animación y carrusel', exact: true }).click();
-    await expect(page.locator('[data-active="true"]').first()).toBeVisible();
+    await expect(page.locator('[data-effect][data-active="true"]').first()).toBeVisible();
   });
   await controls.getByRole('button', { name: 'Banner anterior', exact: true }).click();
   await expect(controls.getByRole('button', { name: 'Mostrar Lago Titicaca', exact: true })).toHaveAttribute('aria-pressed', 'true');
@@ -74,13 +74,14 @@ test('Favorites persist and comparison actions operate on selected tours', async
   await measured(info, 'Open selected comparison', async () => { await tray.getByRole('link', { name: 'Comparar 2', exact: true }).click(); await expect(page).toHaveURL(/\/es\/comparar/); });
   await expect(page.locator('main h1')).toBeVisible();
   await page.goto('/es/favoritos');
-  await expect(page.getByRole('button', { name: 'Quitar', exact: true }).first()).toBeVisible();
-  await page.getByRole('button', { name: 'Quitar', exact: true }).first().click();
+  const saved = page.getByRole('button', { name: /^Guardar .* en favoritos$/ }).first();
+  await expect(saved).toHaveAttribute('aria-pressed', 'true');
+  await saved.click();
   await expect(page.getByRole('heading', { name: 'Aún no tienes favoritos', exact: true })).toBeVisible();
 });
 
 test('Date, booking, cart edit/remove/undo and checkout validation work', async ({ page }, info) => {
-  await page.goto(tourPath); const booking = page.locator('#reservar');
+  await page.goto(tourPath); const booking = page.locator('#reservar-panel');
   await expect(booking.getByRole('button', { name: 'Agregar al carrito', exact: true })).toBeVisible();
   await booking.getByRole('button', { name: 'Agregar al carrito', exact: true }).click();
   await expect(booking.getByRole('alert')).toContainText('Elige una fecha');
@@ -144,6 +145,7 @@ test('Complaint form validates, records a fixture sheet and offers print', async
   await page.getByLabel('Correo electrónico',{exact:true}).fill('complaint-fixture@peruwonderstours.test');
   await page.getByLabel('Confirma tu correo',{exact:true}).fill('complaint-fixture@peruwonderstours.test');
   await page.getByLabel('Descripción del servicio o producto',{exact:true}).fill('Servicio ficticio para comprobar el formulario');
+  await page.getByLabel('Monto reclamado',{exact:true}).fill('0');
   await page.getByLabel('Detalle',{exact:true}).fill('Registro de prueba en base efímera; sin transacciones ni datos de clientes.');
   await page.getByLabel('Pedido',{exact:true}).fill('Verificar el registro y la constancia de esta hoja ficticia.');
   await page.getByRole('checkbox',{name:/^Declaro que los datos/}).check();
@@ -151,4 +153,21 @@ test('Complaint form validates, records a fixture sheet and offers print', async
   await page.getByRole('button',{name:'Imprimir o guardar como PDF',exact:true}).click();
   await expect(page.locator('html')).toHaveAttribute('data-print-requested','true');
   await page.screenshot({path:info.outputPath('complaint-receipt.png'),fullPage:true});
+});
+
+test('Header menus, language switch and cart drawer keep keyboard access', async ({ page }, info) => {
+  await page.goto('/es');
+  const menu=page.getByRole('button',{name:'Descubre',exact:true});
+  await measured(info,'Open header discovery menu',async()=>{await menu.hover();await expect(menu).toHaveAttribute('aria-expanded','true');});
+  await page.keyboard.press('Escape');await expect(menu).toHaveAttribute('aria-expanded','false');
+  const cart=page.getByRole('button',{name:'Carrito vacío',exact:true});
+  await measured(info,'Open cart drawer',async()=>{await cart.click();await expect(page.getByRole('dialog',{name:'Tu carrito',exact:true})).toBeVisible();});
+  await page.getByRole('button',{name:'Cerrar carrito',exact:true}).click();
+  await expect(page.getByRole('dialog',{name:'Tu carrito',exact:true})).toBeHidden();await expect(cart).toBeFocused();
+  await measured(info,'Change language',async()=>{
+    await page.getByRole('button',{name:/^Idioma:/}).click();
+    await page.getByRole('link',{name:'English',exact:true}).click();
+    await expect(page).toHaveURL(/\/en\/?$/);
+    await expect(page.locator('html')).toHaveAttribute('lang',/^en(-|$)/);
+  });
 });

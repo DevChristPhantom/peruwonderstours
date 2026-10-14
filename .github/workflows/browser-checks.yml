@@ -98,7 +98,25 @@ jobs:
       - run: pnpm exec playwright test
       - name: Include service diagnostics on failure
         if: failure()
-        run: cat /tmp/pwt-browser-api.log /tmp/pwt-browser-web.log /tmp/pwt-browser-admin.log || true
+        run: |
+          cat /tmp/pwt-browser-api.log /tmp/pwt-browser-web.log /tmp/pwt-browser-admin.log || true
+          node --input-type=module <<'NODE'
+          import { readdir, readFile } from 'node:fs/promises';
+          import { join } from 'node:path';
+          let printed = 0;
+          async function inspect(directory) {
+            for (const entry of await readdir(directory, { withFileTypes: true }).catch(() => [])) {
+              if (printed >= 12) return;
+              const path = join(directory, entry.name);
+              if (entry.isDirectory()) await inspect(path);
+              else if (entry.name === 'error-context.md') {
+                printed++;
+                console.log(`Browser failure context: ${path}\n${(await readFile(path, 'utf8')).slice(0, 8000)}`);
+              }
+            }
+          }
+          await inspect('test-results');
+          NODE
       - uses: actions/upload-artifact@v4
         if: always()
         with:

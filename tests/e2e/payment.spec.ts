@@ -12,7 +12,8 @@ test("checkout completes an approved sandbox payment without a real provider", a
   }
   try {
     await page.goto(`${origin}/es/tours/tour-islas-de-los-uros-y-taquile-full-day`);
-    const booking = page.locator("#reservar");
+    const booking = page.locator("#reservar-panel");
+    await expect(booking).toBeVisible();
     await booking.locator('button[data-date]:not([aria-disabled="true"])').first().click();
     await booking.getByRole("button", { name: "Agregar al carrito", exact: true }).click();
     await expect(booking.getByRole("button", { name: "Agregado", exact: true })).toBeVisible();

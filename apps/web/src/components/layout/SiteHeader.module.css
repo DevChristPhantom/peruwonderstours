@@ -355,6 +355,8 @@
 
 /* ---------- Acciones ---------- */
 .actions {
+  position: relative;
+  z-index: 1;
   justify-self: end;
   display: flex;
   align-items: center;
@@ -588,6 +590,8 @@
   }
   .menuButton {
     display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
   }
   .logoImg {
     height: 32px;

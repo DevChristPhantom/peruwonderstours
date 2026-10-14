@@ -11,6 +11,10 @@ test('Mobile navigation, product hierarchy, traveler picker and static resources
     const positions=await page.evaluate(()=>['destinos-title','paquetes-title','enlaces-oficiales'].map(id=>document.getElementById(id)!.getBoundingClientRect().top+scrollY));
     expect(positions[0]).toBeLessThan(positions[2]);expect(positions[1]).toBeLessThan(positions[2]);
     await measured('Open and close mobile menu',async()=>{
+      await info.attach('mobile-menu-hit-target.json',{body:JSON.stringify(await page.getByRole('button',{name:'Abrir menú',exact:true}).evaluate(button=>{
+        const rect=button.getBoundingClientRect(); const style=getComputedStyle(button);
+        return {rect:rect.toJSON(),pointerEvents:style.pointerEvents,hit:document.elementsFromPoint(rect.x+rect.width/2,rect.y+rect.height/2).slice(0,5).map(element=>({tag:element.tagName,className:element.className}))};
+      })),contentType:'application/json'});
       await page.getByRole('button',{name:'Abrir menú',exact:true}).click();
       await expect(page.getByRole('dialog',{name:'Menú del sitio'})).toBeVisible();
       await page.getByRole('button',{name:'Cerrar menú',exact:true}).click();
@@ -23,6 +27,14 @@ test('Mobile navigation, product hierarchy, traveler picker and static resources
     await picker.getByRole('button',{name:'Quitar un adulto',exact:true}).click();
     await picker.getByRole('button',{name:'Listo',exact:true}).click();
     await expect(picker).toBeHidden();
+    const destinations=page.getByRole('list',{name:'Destinos del Perú'});
+    await destinations.scrollIntoViewIfNeeded();
+    await measured('Move destination rail',async()=>{
+      await page.getByRole('button',{name:'Más destinos',exact:true}).click();
+      await expect.poll(()=>destinations.evaluate(element=>element.scrollLeft)).toBeGreaterThan(10);
+      await page.getByRole('button',{name:'Destinos anteriores',exact:true}).click();
+      await expect.poll(()=>destinations.evaluate(element=>element.scrollLeft)).toBeLessThan(5);
+    });
     const resources=page.getByRole('navigation',{name:'Enlaces oficiales',exact:true});await resources.scrollIntoViewIfNeeded();
     await expect(resources.getByRole('button',{name:'Pausar carrusel',exact:true})).toBeHidden();
     await expect(resources.getByRole('link')).toHaveCount(6);
@@ -34,3 +46,4 @@ test('Mobile navigation, product hierarchy, traveler picker and static resources
     await page.screenshot({path:info.outputPath('mobile-complaints.png'),fullPage:true});
   } finally {await info.attach('mobile-action-timings.json',{body:JSON.stringify(samples,null,2),contentType:'application/json'});}
 });
+

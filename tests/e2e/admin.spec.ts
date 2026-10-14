@@ -37,11 +37,12 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
   try {
     await measured("Password and MFA login", async () => {
       await page.goto(`${origin}/login`);
-      await page.getByLabel("Correo", { exact: true }).fill(email!);
-      await page.getByLabel("Contraseña", { exact: true }).fill("Incorrect-fixture-password!");
+      await expect(page.getByRole("heading", { name: "Iniciar sesión", exact: true })).toBeVisible();
+      await page.getByLabel(/^Correo\s*\*?$/).fill(email!);
+      await page.getByLabel(/^Contraseña\s*\*?$/).fill("Incorrect-fixture-password!");
       await page.getByRole("button", { name: "Continuar", exact: true }).click();
       await expect(page.getByRole("alert")).toContainText("Correo o contraseña incorrectos");
-      await page.getByLabel("Contraseña", { exact: true }).fill(password!);
+      await page.getByLabel(/^Contraseña\s*\*?$/).fill(password!);
       await page.getByRole("button", { name: "Continuar", exact: true }).click();
       await expect(page.getByRole("heading", { name: "Verificación en dos pasos" })).toBeVisible();
       await page.getByRole("button", { name: "No tengo mi teléfono: usar código de recuperación" }).click();
@@ -63,8 +64,8 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
     for (const route of ["categorias", "destinos"]) await measured(`Create, edit and delete isolated ${route}`, async () => {
       await page.goto(`${origin}/${route}/nuevo`);
       const title = `E2E ${route} ${suffix}`;
-      await page.getByLabel("Nombre", { exact: true }).fill(title);
-      await page.getByLabel("Slug (URL en español)", { exact: true }).fill(`e2e-${route}-${suffix}`);
+      await page.getByLabel(/^Nombre\s*\*?$/).fill(title);
+      await page.getByLabel(/^Slug \(URL en español\)\s*\*?$/).fill(`e2e-${route}-${suffix}`);
       await page.getByRole("button", { name: "Crear", exact: true }).click();
       await expect(page).toHaveURL(new RegExp(`/${route}/[0-9a-f-]{36}$`));
       await expect(page.getByRole("heading", { level: 1, name: title })).toBeVisible();
@@ -80,8 +81,8 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
     });
     await measured("Create and edit a tour draft", async () => {
       await page.goto(`${origin}/tours/nuevo`);
-      await page.getByLabel("Código", { exact: true }).fill(`E2E-${suffix}`);
-      await page.getByLabel("Slug (URL en español)", { exact: true }).fill(`e2e-tour-${suffix}`);
+      await page.getByLabel(/^Código\s*\*?$/).fill(`E2E-${suffix}`);
+      await page.getByLabel(/^Slug \(URL en español\)\s*\*?$/).fill(`e2e-tour-${suffix}`);
       await page.getByLabel("Duración (horas)", { exact: true }).fill("4");
       await page.getByRole("button", { name: "Crear borrador" }).click();
       await expect(page).toHaveURL(/\/tours\/[0-9a-f-]{36}$/);
