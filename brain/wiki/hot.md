@@ -25,6 +25,9 @@ tags:
 
 ## Recent Changes
 
+- 2026-10-14: retirado nombre repetido en controles del banner; título de escena y motion preservados. Lint/tipos locales aprobados, ver [[decisions/ADR-0011-banner-sin-titulo-repetido]].
+
+
 - 2026-10-14: prioridad comercial de home corregida; pruebas Chromium CI con PostgreSQL efímero, staff MFA ficticio y pagos sandbox. Ver [[decisions/ADR-0010-prioridad-comercial-y-pruebas]] y docs/qa/funcional-2026-10-14.md para estado y límites actuales. El historial siguiente conserva evidencias anteriores.
 
 

@@ -51,7 +51,6 @@ export function HeroMotion({ scenes, fallback }: { scenes: HeroBannerScene[]; fa
   return <div ref={root} className={s.motionRoot}>
     <NativeHeroScene key={`${scene?.id ?? "fallback"}:${visit}`} scene={scene} image={poster} alt={scene?.title ?? fallback?.alt ?? ""} active={running} />
     {scene && (scenes.length > 1 || motionAllowed) ? <div className={s.controls} onFocus={() => setFocused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }} role="group" aria-label={t("banners")}>
-      <span className={s.sceneName} aria-live={paused ? "polite" : "off"}>{scene?.title}</span>
       {scenes.length > 1 ? <>
         <button type="button" onClick={() => select(index - 1)} aria-label={t("previousBanner")}><ChevronLeft aria-hidden size={18} /></button>
         {scenes.map((item, position) => <button key={item.id} type="button" onClick={() => select(position)} aria-label={t("showBanner", { name: item.title })} aria-pressed={position === index % scenes.length}><span className={s.dot} /></button>)}
