@@ -46,7 +46,7 @@ const NONCE_ROUTES = [
 /** Fotos del cliente servidas temporalmente desde su sitio (HU-0.3; ver next.config images). */
 const IMAGE_ORIGINS = "https://www.andeanperutours.com";
 
-function csp(nonce: string | null, dev: boolean, heroFrame: boolean): string {
+function csp(nonce: string | null, dev: boolean): string {
   const scripts = nonce ? `'self' 'nonce-${nonce}' 'strict-dynamic'` : `'self' 'unsafe-inline'`;
   return [
     "default-src 'self'",
@@ -60,7 +60,7 @@ function csp(nonce: string | null, dev: boolean, heroFrame: boolean): string {
     // Service worker del voucher offline (/sw-voucher.js) y manifest de la reserva.
     "worker-src 'self'",
     "manifest-src 'self'",
-    heroFrame ? "frame-src 'self'" : "frame-src 'none'",
+    "frame-src 'none'",
     "object-src 'none'",
     "base-uri 'none'",
     "form-action 'self'",
@@ -77,17 +77,12 @@ function isLocalizable(pathname: string): boolean {
 }
 
 export function proxy(request: NextRequest) {
-  // Isolated banner routes supply their own sandbox/CSP. Page-level DENY and
-  // frame-ancestors 'none' would override those headers and block the hero.
-  if (request.nextUrl.pathname.startsWith("/api/hero-banners/")) {
-    return NextResponse.next();
-  }
   const dev = process.env.NODE_ENV !== "production";
   const reportOnly = process.env.CSP_REPORT_ONLY === "true";
   const pathname = request.nextUrl.pathname;
   const sensitive = NONCE_ROUTES.some((re) => re.test(pathname));
   const nonce = sensitive ? Buffer.from(crypto.randomUUID()).toString("base64") : null;
-  const policy = csp(nonce, dev, /^\/(es|en)\/?$/.test(pathname));
+  const policy = csp(nonce, dev);
   const cspHeader = reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
 
   const requestHeaders = new Headers(request.headers);

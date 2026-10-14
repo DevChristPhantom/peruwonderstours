@@ -172,3 +172,6 @@
 @media (max-width: 650px) { .nativeHeading { top: 18%; } .nativeHeading h2 { font-size: clamp(38px, 9vw, 64px); } }
 @media (prefers-reduced-motion: reduce) { .nativeHeading h2 > span { animation: none !important; } .clouds { display: none; } }
 .nativeScene[data-effect="none"] .nativeHeading h2 > span { animation: none; }
+.nativeScene[data-active="true"] .nativePhoto { animation: native-photo-in 600ms ease-out both; }
+@keyframes native-photo-in { from { opacity: .35; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .nativeScene .nativePhoto { animation: none !important; } }

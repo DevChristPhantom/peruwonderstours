@@ -63,7 +63,6 @@ const nextConfig = {
   transpilePackages: ["@pwt/ui"],
   // Monorepo pnpm: la raíz incluye data/seed y packages/ui.
   outputFileTracingRoot: path.join(configDirectory, "../.."),
-  outputFileTracingIncludes: { "/api/hero-banners/*": ["./src/content/hero-motion/*.html"] },
   // 404 de URLs sin idioma (app/global-not-found.tsx): el layout raíz vive en app/[locale].
   experimental: { globalNotFound: true },
   // L1: los borradores legales se incrustan en el build (ver src/lib/legal/documents.ts).

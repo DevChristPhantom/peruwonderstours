@@ -1,10 +1,10 @@
 import "server-only";
 import { env } from "@/lib/env";
 
-export interface HeroBannerScene { id: string; title: string; poster: string | null; effect: "none" | "water" | "clouds"; titleEmbedded?: boolean; document: string }
+export interface HeroBannerScene { id: string; title: string; poster: string | null; effect: "none" | "water" | "clouds"; titleEmbedded?: boolean }
 export const BUILTIN_HERO_BANNERS: HeroBannerScene[] = [
-  { id: "builtin-titicaca", title: "Lago Titicaca", effect: "water", poster: "/hero-motion/titicaca-0.webp", document: "/api/hero-banners/builtin-titicaca/document" },
-  { id: "builtin-machu-picchu", title: "Machu Picchu", effect: "clouds", titleEmbedded: true, poster: "/hero-motion/machu-picchu-0.webp", document: "/api/hero-banners/builtin-machu-picchu/document" },
+  { id: "builtin-titicaca", title: "Lago Titicaca", effect: "water", poster: "/hero-motion/titicaca-0.webp" },
+  { id: "builtin-machu-picchu", title: "Machu Picchu", effect: "clouds", titleEmbedded: true, poster: "/hero-motion/machu-picchu-0.webp" },
 ];
 
 /** Seed builds work offline; API-managed banners refresh independently of the catalog. */
@@ -19,7 +19,6 @@ export async function getHeroBanners(): Promise<HeroBannerScene[]> {
       id: record.id, title: record.title, titleEmbedded: record.titleEmbedded === true,
       effect: record.effect === "water" || record.effect === "clouds" ? record.effect : "none",
       poster: record.hasPoster ? `/api/hero-banners/${record.id}/poster` : null,
-      document: `/api/hero-banners/${record.id}/document`,
     }));
   } catch { return BUILTIN_HERO_BANNERS; }
 }

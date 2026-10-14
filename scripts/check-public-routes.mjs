@@ -41,17 +41,15 @@ for (let attempt = 0; attempt < 30; attempt++) {
 }
 assert.ok(ready, "Preview server did not become ready");
 
-// Assert final HTTP headers: the page proxy must not overwrite the frame policy.
+// Native banners expose images; uploaded scripts are never served by the web.
 for (const id of ["builtin-titicaca", "builtin-machu-picchu"]) {
-  const banner = await fetch(`${origin.origin}/api/hero-banners/${id}/document`);
-  assert.equal(banner.status, 200, `${id}: document unavailable`);
-  assert.equal(banner.headers.get("x-frame-options"), "SAMEORIGIN", `${id}: frame blocked`);
-  const policy = banner.headers.get("content-security-policy") ?? "";
-  assert.ok(policy.includes("frame-ancestors 'self'"), `${id}: ancestors blocked`);
-  assert.ok(policy.includes("sandbox allow-scripts"), `${id}: sandbox missing`);
-  assert.ok(policy.includes("connect-src 'none'"), `${id}: network isolation missing`);
-  assert.ok(!policy.includes("allow-same-origin"), `${id}: opaque isolation missing`);
-  assert.ok((await banner.text()).includes("pointermove"), `${id}: mouse effects missing`);
+  const document = await fetch(new URL(`/api/hero-banners/${id}/document`, origin));
+  assert.equal(document.status, 404, `${id}: executable document exposed`);
+}
+for (const image of ["titicaca-0.webp", "machu-picchu-0.webp"]) {
+  const result = await fetch(new URL(`/hero-motion/${image}`, origin));
+  assert.equal(result.status, 200, `${image}: image unavailable`);
+  assert.ok(result.headers.get("content-type")?.startsWith("image/"));
 }
 
 for (const locale of ["es", "en"]) {
