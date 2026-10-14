@@ -24,7 +24,9 @@ import { securityHeaders } from "@/lib/security-headers";
  *    Refresh terminal (`refresh-token-reused`, `session-revoked`…) → borra la cookie y va al login.
  */
 
-const PUBLIC_PATHS = [/^\/login(\/|$)/, /^\/auth\//];
+// El optimizador de Next lee el logo público sin la cookie de la página.
+// Permitir solo este archivo; el resto del panel conserva su autenticación.
+const PUBLIC_PATHS = [/^\/login(\/|$)/, /^\/auth\//, /^\/brand\/peruwonderstours-dorado\.png$/];
 
 /** Origen de los medios subidos (en desarrollo es http://localhost:3001, que `https:` no cubre). */
 function mediaOrigin(): string {

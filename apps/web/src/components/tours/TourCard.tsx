@@ -1,9 +1,10 @@
 import { CalendarDays, MapPin, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import type { TourSummary } from "@/lib/catalog/types";
+import { INTL_LOCALE, type Locale } from "@/i18n/routing";
 import { durationText } from "@/lib/i18n/units";
 import { CompareToggle } from "@/components/compare/CompareToggle";
 import { FavoriteButton } from "@/components/wishlist/FavoriteButton";
@@ -27,7 +28,7 @@ export async function TourCard({
   sizes = "(min-width: 1024px) 400px, (min-width: 768px) 50vw, 100vw",
   showCompare = true,
 }: TourCardProps) {
-  const [t, tu, tc] = await Promise.all([getTranslations("tourCard"), getTranslations("units"), getTranslations("common")]);
+  const [t, tu, tc, locale] = await Promise.all([getTranslations("tourCard"), getTranslations("units"), getTranslations("common"), getLocale()]);
   const Heading = headingLevel;
   const places = tour.destinationNames.length ? tour.destinationNames.join(", ") : tc("severalDestinations");
   return (
@@ -77,7 +78,7 @@ export async function TourCard({
         </ul>
         <p className="line-clamp-2 text-sm text-foreground-muted">{tour.excerpt}</p>
         {tour.fallback ? (
-          <p lang="en-US" className="text-xs text-foreground-muted italic">
+          <p lang={INTL_LOCALE[locale as Locale]} className="text-xs text-foreground-muted italic">
             {tc("fallbackNotice")}
           </p>
         ) : null}

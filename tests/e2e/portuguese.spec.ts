@@ -29,7 +29,8 @@ test('Portuguese selector, search and untranslated catalog fallback remain consi
   const catalog = await response.json();
   expect(catalog.data).toMatchObject({ locale: 'es', fallback: true });
   await page.goto(`/pt/tours/${slug}`);
-  await expect(page.getByText('Conteúdo disponível apenas em espanhol no momento.', { exact: true })).toBeVisible();
+  const tourHeader = page.locator('main header').filter({ has: page.locator('h1') });
+  await expect(tourHeader.getByText('Conteúdo disponível apenas em espanhol no momento.', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Adicionar ao carrinho', exact: true })).toBeVisible();
   await info.attach('portuguese-catalog-locale.json', { body: JSON.stringify({ requestedLocale: 'pt', servedLocale: catalog.data.locale, fallback: catalog.data.fallback }), contentType: 'application/json' });
 
@@ -47,7 +48,7 @@ test('Portuguese selector, search and untranslated catalog fallback remain consi
   await translatedCard.click();
   await expect(page).toHaveURL(new RegExp(`/pt/tours/${publishedSlug}$`));
   await expect(page.locator('main h1')).toHaveText(publishedTitle);
-  await expect(page.getByText('Conteúdo disponível apenas em espanhol no momento.', { exact: true })).toHaveCount(0);
+  await expect(tourHeader.getByText('Conteúdo disponível apenas em espanhol no momento.', { exact: true })).toHaveCount(0);
   await expect(page.locator('main')).not.toContainText('Arequipa y Colca 04 días / 03 noches');
   await expect(page.locator('main')).not.toContainText('Día 1: Llegada a Arequipa');
   await expect(page.locator('main')).toContainText('Conteúdo sintético para testar a página em português.');
@@ -55,7 +56,7 @@ test('Portuguese selector, search and untranslated catalog fallback remain consi
 
 test('Portuguese departure selection, cart and checkout retain Brazilian form labels', async ({ page }) => {
   await page.goto(`/pt/tours/${slug}`);
-  const booking = page.locator('#reservar');
+  const booking = page.locator('#reservar-panel');
   const date = booking.locator('button[data-date]:not([aria-disabled="true"])').first();
   await expect(date).toBeVisible();
   await date.click();

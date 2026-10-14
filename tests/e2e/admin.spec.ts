@@ -37,7 +37,14 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
   let draftId = "";
   try {
     await measured("Password and MFA login", async () => {
+      const logoResponse = await page.request.get(`${origin}/brand/peruwonderstours-dorado.png`, { maxRedirects: 0 });
+      expect(logoResponse.status()).toBe(200);
+      expect(logoResponse.headers()["content-type"]).toContain("image/png");
+      const protectedResponse = await page.request.get(`${origin}/reservas`, { maxRedirects: 0 });
+      expect(protectedResponse.status()).toBe(303);
+      expect(protectedResponse.headers().location).toContain("/login");
       await page.goto(`${origin}/login`);
+      await expect.poll(() => page.getByRole("img", { name: "peruwonderstours.com", exact: true }).evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
       await expect(page.getByRole("heading", { name: "Iniciar sesión", exact: true })).toBeVisible();
       await page.getByLabel(/^Correo\s*\*?$/).fill(email!);
       await page.getByLabel(/^Contraseña\s*\*?$/).fill("Incorrect-fixture-password!");
@@ -60,6 +67,7 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       await page.getByRole("button", { name: "Ingresar", exact: true }).click();
       await expect(page).toHaveURL(`${origin}/`);
       await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible();
+      await expect.poll(() => page.locator("aside").getByRole("img", { name: "peruwonderstours.com", exact: true }).evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
     });
     const links = await page.locator("aside nav a").evaluateAll((nodes) => nodes.map((node) => ({ path: node.getAttribute("href")!, label: node.textContent!.trim() })));
     expect(links.length).toBeGreaterThanOrEqual(16);
