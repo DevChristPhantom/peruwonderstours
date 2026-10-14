@@ -56,6 +56,9 @@ for (const locale of ["es", "en"]) {
   const html = await response(`/${locale}`);
   assert.ok(html.includes("nativeScene"), `${locale}: native hero missing`);
   assert.ok(!html.includes("<iframe"), `${locale}: legacy hero frame still rendered`);
+  const productPosition = html.indexOf('id="paquetes-title"');
+  const resourcesPosition = html.indexOf('id="enlaces-oficiales"');
+  assert.ok(productPosition >= 0 && resourcesPosition > productPosition, `${locale}: resources precede products`);
   assert.ok(html.includes("enlaces-oficiales"), `${locale}: official resources missing`);
   assert.ok(html.includes("/icons/whatsapp.svg"), `${locale}: floating WhatsApp symbol missing`);
   assert.ok(html.includes("complaints-book.webp"), `${locale}: complaints notice missing`);

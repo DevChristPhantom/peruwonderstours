@@ -125,3 +125,5 @@ tags:
 - 2026-10-13: cliente aprueba sustituir iframes por banners nativos. Imágenes + título + efectos de agua/nubes, entrada reiniciable, admin con selector y titleEmbedded. Revisión independiente detectó y corrigió duplicado Machu, none no estático, geografía inferida y will-change permanente. Validación visual/FPS sigue pendiente.
 
 - 2026-10-14: tarjetas de recursos oficiales con carrusel transform y bordes difuminados, pausa y acceso teclado; WhatsApp con símbolo y Libro con aviso INDECOPI Anexo III. Formularios preservados. Ver [[decisions/ADR-0009-recursos-oficiales-y-reclamaciones]].
+
+- 2026-10-14: venta priorizada en home; recursos/aviso movidos tras CTA. Suite de navegador Chromium con PostgreSQL y MFA ficticios en CI para usuario/admin, capturas y tiempos por acción. Ejecución pendiente hasta disponer de resultados. Ver [[decisions/ADR-0010-prioridad-comercial-y-pruebas]].

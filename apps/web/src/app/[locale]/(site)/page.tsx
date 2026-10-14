@@ -68,12 +68,12 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <div className="pwt-container">
         <SearchBar options={searchOptions} />
       </div>
-      <TrustStrip locale={locale} />
       <DestinationsSection destinations={destinations} locale={locale} />
       <FeaturedTours groups={groups} totalTours={allTours.length} locale={locale} />
       <WhyUsSection tourCount={allTours.length} destinationCount={destinations.length} />
       <TestimonialsSection testimonials={testimonials} locale={locale} />
       <FinalCta />
+      <TrustStrip locale={locale} />
     </>
   );
 }
