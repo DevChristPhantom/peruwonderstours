@@ -31,8 +31,6 @@
 
   body {
     margin: 0;
-    /* Keep offscreen carousel artwork inside the page without a new scroll container. */
-    overflow-x: clip;
     background: var(--pwt-background);
     color: var(--pwt-foreground);
     font-family: var(--pwt-font-sans);

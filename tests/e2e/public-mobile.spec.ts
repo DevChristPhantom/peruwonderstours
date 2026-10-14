@@ -10,6 +10,7 @@ test('Mobile navigation, product hierarchy, traveler picker and static resources
     const viewportWidth=page.viewportSize()!.width;
     await info.attach('mobile-overflow.json',{body:JSON.stringify(await page.evaluate(()=>({clientWidth:document.documentElement.clientWidth,innerWidth,scrollWidth:document.documentElement.scrollWidth,offenders:Array.from(document.body.querySelectorAll('*')).map(element=>({tag:element.tagName,className:element.className,rect:element.getBoundingClientRect().toJSON()})).filter(element=>element.rect.right>document.documentElement.clientWidth+1 && element.rect.width>0).slice(0,25)}))),contentType:'application/json'});
     expect(await page.locator('header').evaluate(element=>element.getBoundingClientRect().width)).toBeLessThanOrEqual(viewportWidth+1);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewportWidth+1);
     const positions=await page.evaluate(()=>['destinos-title','paquetes-title','enlaces-oficiales'].map(id=>document.getElementById(id)!.getBoundingClientRect().top+scrollY));
     expect(positions[0]).toBeLessThan(positions[2]);expect(positions[1]).toBeLessThan(positions[2]);
     await measured('Open and close mobile menu',async()=>{

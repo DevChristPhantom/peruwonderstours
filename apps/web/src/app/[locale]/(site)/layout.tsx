@@ -17,7 +17,7 @@ export default async function SiteLayout({ children, params }: LayoutProps<"/[lo
   return (
     <>
       <SiteHeader media={media} />
-      <main id="contenido" tabIndex={-1} className="focus:outline-none">
+      <main id="contenido" tabIndex={-1} className="min-w-0 overflow-x-clip focus:outline-none">
         {children}
       </main>
       <SiteFooter />

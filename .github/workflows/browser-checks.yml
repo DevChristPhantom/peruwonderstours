@@ -122,7 +122,7 @@ jobs:
           }
           await measurements('test-results');
           const results = await readFile('test-results/results.json', 'utf8').then(JSON.parse).catch(() => null);
-          const allowed = /^(?:user-action-timings|admin-action-timings|admin-finance-action-timings|mobile-action-timings|sandbox-payment-action-timings|catalog-control-timings|navigation-timing|browser-errors|image-load-diagnostics|mobile-menu-hit-target|mobile-overflow)\.json$/;
+          const allowed = /^(?:user-action-timings|admin-action-timings|admin-finance-action-timings|admin-user-action-timings|mobile-action-timings|sandbox-payment-action-timings|catalog-control-timings|navigation-timing|browser-errors|image-load-diagnostics|mobile-menu-hit-target|mobile-overflow)\.json$/;
           function attachments(node) {
             if (!node || typeof node !== 'object') return;
             if (Array.isArray(node.attachments)) for (const attachment of node.attachments) {

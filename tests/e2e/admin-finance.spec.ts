@@ -32,7 +32,7 @@ test("admin finance: record and void own simulated payment, then cancel own book
   let code = "";
   const reference = `CI-ONLY-${suffix}`;
   try {
-    await measured("Create own pending sandbox reservation through public checkout", async () => {
+    await measured("Create own unpaid reservation with a terminal rejected sandbox attempt", async () => {
       await page.goto(`${web}/es/tours/tour-islas-de-los-uros-y-taquile-full-day`);
       const booking = page.locator("#reservar-panel");
       await booking.locator('button[data-date]:not([aria-disabled="true"])').first().click();
@@ -55,9 +55,13 @@ test("admin finance: record and void own simulated payment, then cancel own book
       }
       await page.getByRole("button", { name: "Continuar al pago", exact: true }).click();
       await expect(page.getByText("Modo sandbox: pago simulado, no se realizará ningún cobro", { exact: true })).toBeVisible();
-      await page.getByRole("radio", { name: "Pendiente (CIP)", exact: true }).check();
+      // A pending online collection correctly prevents simultaneous manual payments.
+      // Use a terminal rejected attempt; never disable that financial safety guard.
+      await page.getByRole("radio", { name: "Rechazado", exact: true }).check();
       await page.locator('input[name="terms"]').check();
       await page.locator("#f-submit").click();
+      await expect(page.getByRole("alert").filter({ hasText: "Tu banco rechazó el pago" })).toBeVisible();
+      await page.getByRole("link", { name: "Ver mi reserva", exact: true }).click();
       await expect(page).toHaveURL(/\/es\/reserva\/PWT-\d{4}-\d{6}/);
       code = new URL(page.url()).pathname.split("/").pop()!;
       expect(code).toMatch(/^PWT-\d{4}-\d{6}$/);
@@ -88,14 +92,14 @@ test("admin finance: record and void own simulated payment, then cancel own book
       await form.getByLabel(/^Medio\s*\*?$/).selectOption("cash");
       await form.getByLabel(/^N.º de operación o recibo\s*\*?$/).fill(reference);
       await form.getByRole("button", { name: "Registrar pago", exact: true }).click();
-      await expect(page.getByRole("region", { name: "Pagos", exact: true }).getByText(reference, { exact: true })).toBeVisible();
+      await expect(page.getByRole("region", { name: "Pagos", exact: true }).getByText(`cash:${reference}`, { exact: true })).toBeVisible();
       await page.reload();
       expect(await cents()).toBe(100);
     });
     await measured("Void only own manual record and verify counter-entry and zero paid", async () => {
       await page.goto(`${admin}/pagos-manuales`);
       const table = page.getByRole("region", { name: "Detalle de pagos manuales" });
-      const row = table.locator("tbody tr").filter({ has: page.getByText(reference, { exact: true }) }).filter({ hasNotText: "Contra-asiento" });
+      const row = table.locator("tbody tr").filter({ has: page.getByText(`cash:${reference}`, { exact: true }) }).filter({ hasNotText: "Contra-asiento" });
       await expect(row).toHaveCount(1);
       await row.locator("summary").click();
       await row.getByLabel(/^Motivo de la anulación/).fill("Corrección ficticia de CI, no existe dinero real.");
@@ -125,5 +129,6 @@ test("admin finance: record and void own simulated payment, then cancel own book
     await info.attach("admin-finance-action-timings.json", { body: JSON.stringify(metrics, null, 2), contentType: "application/json" });
   }
 });
+
 
 
