@@ -53,6 +53,9 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       await page.getByRole("button", { name: "No tengo mi teléfono: usar código de recuperación" }).click();
       await expect(page.getByLabel("Código de recuperación")).toBeVisible();
       await page.getByRole("button", { name: "Usar el código de la app" }).click();
+      // Separate CI logins share one staff fixture; respect the real TOTP anti-replay guard.
+      const previousStep = Math.floor(Date.now() / 30000);
+      await expect.poll(() => Math.floor(Date.now() / 30000), { timeout: 35000, intervals: [250] }).toBeGreaterThan(previousStep);
       await page.getByLabel("Código de 6 dígitos").fill(totp(secret!));
       await page.getByRole("button", { name: "Ingresar", exact: true }).click();
       await expect(page).toHaveURL(`${origin}/`);
@@ -64,7 +67,7 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       await page.locator(`aside nav a[href="${item.path}"]`).click();
       await expect(page).toHaveURL(new URL(item.path, origin).href);
       await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible();
-      await expect(page.getByRole("main").getByText("No se pudo cargar", { exact: true })).toHaveCount(0);
+      await expect(page.getByRole("main").getByText(/No se pudo cargar/)).toHaveCount(0);
     });
     for (const route of ["categorias", "destinos"]) await measured(`Create, edit and delete isolated ${route}`, async () => {
       await page.goto(`${origin}/${route}/nuevo`);
@@ -101,7 +104,7 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       await page.goto(`${origin}/tours`);
       const filters = page.getByRole("form", { name: "Filtros de tours" });
       await filters.getByLabel("Buscar (código, slug o título)").fill(`E2E-${suffix}`);
-      await filters.getByLabel("Estado", { exact: true }).selectOption("draft");
+      await filters.locator('select[name="status"]').selectOption("draft");
       await filters.getByRole("button", { name: "Filtrar", exact: true }).click();
       await expect(page).toHaveURL(new RegExp(`q=E2E-${suffix}`));
       const resultLink = page.getByRole("main").locator(`a[href="${detailPath}"]`);
@@ -161,7 +164,7 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       await filters.getByRole("button", { name: "Filtrar", exact: true }).click();
       await expect(page).toHaveURL(/entityType=tours/);
       await expect(page.getByRole("form", { name: "Filtros de auditoría" }).getByLabel("Entidad", { exact: true })).toHaveValue("tours");
-      await expect(page.getByRole("main").getByText("No se pudo cargar", { exact: true })).toHaveCount(0);
+      await expect(page.getByRole("main").getByText(/No se pudo cargar/)).toHaveCount(0);
       await page.getByRole("link", { name: "Limpiar", exact: true }).click();
       await expect(page).toHaveURL(`${origin}/auditoria`);
       await expect(page.getByRole("form", { name: "Filtros de auditoría" }).getByLabel("Entidad", { exact: true })).toHaveValue("");
