@@ -25,6 +25,9 @@ tags:
 
 ## Recent Changes
 
+- 2026-10-14: retirado fondo blanco del logo en web y login admin por petición del cliente; PNG transparente intacto.
+
+
 - 2026-10-14: marca definitiva peruwonderstours.com y logo PNG del cóndor proporcionado por el cliente; marca unificada, redes/reseñas heredadas archivadas y tipos/lint/pruebas focalizadas aprobadas. Ver [[decisions/ADR-0013-marca-y-logo-del-cliente]].
 
 

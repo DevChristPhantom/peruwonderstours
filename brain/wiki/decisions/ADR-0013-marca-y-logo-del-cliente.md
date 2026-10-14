@@ -8,7 +8,7 @@ updated: 2026-10-14
 
 # ADR-0013 — Marca definitiva y logo del cóndor
 
-El cliente confirma que Andean Peru Tours es el sitio de origen del rediseño y que la marca/dominio nueva es peruwonderstours.com. Proporciona el PNG del cóndor; se utiliza ese archivo exacto, transparente, sin recolorear ni alterar proporciones, en header/footer/checkout y login admin. El componente compartido presenta sus márgenes transparentes en un marco claro. SVG provisionales descartados. Copias web/admin conservan SHA256 322655dac896eeacb52f32bc80a1f76c7f6ea9eeb7f636c0da042785ed27f367.
+El cliente confirma que Andean Peru Tours es el sitio de origen del rediseño y que la marca/dominio nueva es peruwonderstours.com. Proporciona el PNG del cóndor; se utiliza ese archivo exacto, transparente, sin recolorear ni alterar proporciones, en header/footer/checkout y login admin. El componente compartido presenta sus márgenes transparentes sin fondo; se retiró el marco blanco por petición explícita del cliente. SVG provisionales descartados. Copias web/admin conservan SHA256 322655dac896eeacb52f32bc80a1f76c7f6ea9eeb7f636c0da042785ed27f367.
 
 Se unifica el nombre peruwonderstours en SITE, diccionarios es/en, SEO/metadata, admin, calendarios y plantillas de correo/MFA. Dominio canonical ya configurado como https://peruwonderstours.com. Contacto confirmado: jorgechaveztourt@gmail.com y +51 924278597; no se inventan buzones del dominio, razón social ni RUC.
 
