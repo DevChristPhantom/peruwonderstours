@@ -1,4 +1,4 @@
-.frame { position: relative; display: inline-block; flex-shrink: 0; width: 195px; height: 44px; overflow: hidden; }
-.image { position: absolute; left: 0; top: 50%; width: 100%; height: auto; transform: translateY(-50%); }
-.wide { width: 220px; height: 48px; }
+.frame { display: inline-block; flex-shrink: 0; width: 186px; }
+.image { display: block; width: 100%; height: auto; }
+.wide { width: 220px; }
 @media (max-width: 860px) { .frame:not(.wide) { width: 146px; } }

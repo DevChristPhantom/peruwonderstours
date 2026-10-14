@@ -25,6 +25,9 @@ tags:
 
 ## Recent Changes
 
+- 2026-10-14: logo dorado diseñado por el cliente sustituye al anterior, transparente y completo sin recortes en web/admin; tipos/lint aprobados. Ver ADR-0013.
+
+
 - 2026-10-14: retirado fondo blanco del logo en web y login admin por petición del cliente; PNG transparente intacto.
 
 
