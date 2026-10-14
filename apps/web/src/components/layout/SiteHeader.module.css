@@ -585,6 +585,7 @@
     grid-template-columns: 1fr auto;
   }
   .nav,
+  .dd,
   .lang,
   .cta {
     display: none;
