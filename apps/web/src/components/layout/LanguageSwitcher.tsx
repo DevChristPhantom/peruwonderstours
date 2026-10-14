@@ -8,6 +8,7 @@ import { useEffect, type MouseEvent } from "react";
 import { getPathname, usePathname } from "@/i18n/navigation";
 import { INTL_LOCALE, routing, type Locale } from "@/i18n/routing";
 import { useUiStore } from "@/stores/ui-store";
+import { LanguageFlag } from "./LanguageFlag";
 
 /**
  * Ruta equivalente de la página actual en otro idioma (W1). Las páginas con slugs traducidos fijan las
@@ -59,7 +60,7 @@ export function LanguageLinks({ className, itemClassName, onNavigate }: { classN
               if (l !== locale) keepSearch(e);
             }}
           >
-            {t(`name.${l}`)}
+            <span className="inline-flex items-center gap-3"><LanguageFlag locale={l} /><span>{t(`name.${l}`)}</span></span>
             {l === locale ? <Check aria-hidden size={16} strokeWidth={1.5} /> : null}
           </a>
         </li>

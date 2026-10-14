@@ -25,6 +25,9 @@ tags:
 
 ## Recent Changes
 
+- 2026-10-14: selector de idioma con SVG locales de Perú/Reino Unido y nombres, conservando rutas equivalentes, búsqueda y etiquetas accesibles; ver [[decisions/ADR-0012-idiomas-con-banderas]].
+
+
 - 2026-10-14: retirado nombre repetido en controles del banner; título de escena y motion preservados. Lint/tipos locales aprobados, ver [[decisions/ADR-0011-banner-sin-titulo-repetido]].
 
 

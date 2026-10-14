@@ -24,6 +24,7 @@ import { useUiStore } from "@/stores/ui-store";
 import { useFavoritesCount } from "@/stores/wishlist-store";
 
 import { LanguageLinks } from "./LanguageSwitcher";
+import { LanguageFlag } from "./LanguageFlag";
 import s from "./SiteHeader.module.css";
 
 /* ---------- Constantes de la spec (§4–§5) ---------- */
@@ -502,7 +503,8 @@ export function SiteHeader({ media }: { media: NavMedia }) {
               aria-label={t("languageButton", { language: t(`languageName.${locale}`) })}
               onClick={() => setLangOpen((v) => !v)}
             >
-              {locale.toUpperCase()}
+              <LanguageFlag locale={locale} />
+              <span className={s.languageLabel}>{t(`languageName.${locale}`)}</span>
               <Chevron />
             </button>
             {langOpen ? (
