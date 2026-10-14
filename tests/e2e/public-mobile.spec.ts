@@ -57,6 +57,8 @@ test('Mobile navigation, product hierarchy, traveler picker and static resources
       await date.tap();
       await booking.getByRole('button',{name:'Agregar al carrito',exact:true}).tap();
       await expect(booking.getByRole('button',{name:'Agregado',exact:true})).toBeVisible();
+      const notices=page.getByRole('region',{name:'Notificaciones',exact:true});
+      expect(await notices.evaluate(element=>element.getBoundingClientRect().width)).toBeLessThanOrEqual(viewportWidth+1);
     });
     await page.goto('/es/carrito');
     await expect(page.getByRole('link',{name:'Continuar con la reserva',exact:true}).first()).toBeVisible();

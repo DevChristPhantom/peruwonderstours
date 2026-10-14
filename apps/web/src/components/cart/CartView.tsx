@@ -306,7 +306,7 @@ export function CartView() {
       </div>
 
       {/* Barra inferior móvil con total y CTA. */}
-      <div className="fixed inset-x-0 bottom-0 z-10 border-t border-border bg-surface px-4 py-3 shadow-sticky lg:hidden" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
+      <div className="fixed inset-x-0 bottom-0 z-10 max-w-[100vw] border-t border-border bg-surface px-4 py-3 shadow-sticky lg:hidden" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
         <div className="flex items-center justify-between gap-4">
           <div className="text-sm">
             <p className="text-foreground-muted">{payToday ? t("payTodayFrom") : t("total")}</p>

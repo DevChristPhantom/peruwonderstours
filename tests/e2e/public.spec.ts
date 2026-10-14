@@ -115,6 +115,11 @@ test('Official resource controls, WhatsApp destination and complaint access work
   const resources = page.getByRole('navigation', { name: 'Enlaces oficiales', exact: true }); await resources.scrollIntoViewIfNeeded();
   await measured(info, 'Pause official resources', async () => { await resources.getByRole('button', { name: 'Pausar carrusel', exact: true }).click(); await expect(resources.locator('[data-running]')).toHaveAttribute('data-running', 'false'); });
   await resources.getByRole('button', { name: 'Reanudar carrusel', exact: true }).click();
+  await resources.getByRole('button', { name: 'Pausar carrusel', exact: true }).click();
+  await expect.poll(()=>resources.locator('img').evaluateAll(images=>images.filter(image=>{
+    const rect=image.getBoundingClientRect();return rect.right>0&&rect.left<document.documentElement.clientWidth;
+  }).every(image=>(image as HTMLImageElement).complete&&(image as HTMLImageElement).naturalWidth>0))).toBe(true);
+  await resources.screenshot({path:info.outputPath('official-resources-loaded.png')});
   const wa = page.locator('a[href="https://wa.me/51924278597"]').filter({ has: page.locator('img[src="/icons/whatsapp.svg"]') });
   await expect(wa).toHaveAttribute('target', '_blank'); await expect(wa).toHaveAccessibleName(/WhatsApp/);
   await page.goto('/es/libro-de-reclamaciones'); await expect(page.locator('main h1')).toContainText('Libro de Reclamaciones');
