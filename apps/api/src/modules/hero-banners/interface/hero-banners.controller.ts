@@ -1,20 +1,24 @@
 import { Body, Controller, Get, Header, HttpCode, Inject, Param, Patch, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { IsBoolean, IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
+import { IsBoolean, IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 import type { Response } from 'express';
 import { StaffAuth } from '../../identity/interface/staff-auth.guard.js';
 import { ValidationError } from '../../../shared/domain/domain-error.js';
-import { HERO_BANNER_MAX_BYTES, HeroBannersService } from '../application/hero-banners.service.js';
+import { HERO_BANNER_EFFECTS, HERO_BANNER_MAX_BYTES, HeroBannersService, type HeroBannerEffect } from '../application/hero-banners.service.js';
 
 export const HERO_DOCUMENT_CSP = "sandbox allow-scripts; default-src 'none'; img-src data: blob:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'";
 export class UploadHeroBannerDto {
   @IsString() @MinLength(1) @MaxLength(120) title!: string;
+  @IsOptional() @IsIn(HERO_BANNER_EFFECTS) effect?: HeroBannerEffect;
+  @IsOptional() @IsIn(['true', 'false']) titleEmbedded?: string;
 }
 export class PatchHeroBannerDto {
   @IsInt() @Min(1) revision!: number;
   @IsOptional() @IsString() @MinLength(1) @MaxLength(120) title?: string;
   @IsOptional() @IsBoolean() enabled?: boolean;
   @IsOptional() @IsInt() @Min(0) @Max(999) sortOrder?: number;
+  @IsOptional() @IsIn(HERO_BANNER_EFFECTS) effect?: HeroBannerEffect;
+  @IsOptional() @IsBoolean() titleEmbedded?: boolean;
 }
 interface HtmlFile { buffer: Buffer; originalname: string }
 
@@ -52,10 +56,10 @@ export class HeroBannersAdminController {
   @Post()
   @HttpCode(201)
   @StaffAuth('media:upload', 'tours:write')
-  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: HERO_BANNER_MAX_BYTES, files: 1, fields: 1, parts: 2 } }))
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: HERO_BANNER_MAX_BYTES, files: 1, fields: 3, parts: 4 } }))
   async upload(@UploadedFile() file: HtmlFile | undefined, @Body() body: UploadHeroBannerDto) {
-    if (!file?.buffer) throw new ValidationError('file-required', 'Adjunta el archivo HTML en el campo file.');
-    return { data: await this.banners.upload(file.buffer, file.originalname, body.title) };
+    if (!file?.buffer) throw new ValidationError('file-required', 'Adjunta la imagen o el archivo HTML en el campo file.');
+    return { data: await this.banners.upload(file.buffer, file.originalname, body.title, body.effect, body.titleEmbedded === undefined ? undefined : body.titleEmbedded === 'true') };
   }
   @Patch(':id')
   @StaffAuth('tours:write')

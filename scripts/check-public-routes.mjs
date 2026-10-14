@@ -41,8 +41,23 @@ for (let attempt = 0; attempt < 30; attempt++) {
 }
 assert.ok(ready, "Preview server did not become ready");
 
+// Assert final HTTP headers: the page proxy must not overwrite the frame policy.
+for (const id of ["builtin-titicaca", "builtin-machu-picchu"]) {
+  const banner = await fetch(`${origin.origin}/api/hero-banners/${id}/document`);
+  assert.equal(banner.status, 200, `${id}: document unavailable`);
+  assert.equal(banner.headers.get("x-frame-options"), "SAMEORIGIN", `${id}: frame blocked`);
+  const policy = banner.headers.get("content-security-policy") ?? "";
+  assert.ok(policy.includes("frame-ancestors 'self'"), `${id}: ancestors blocked`);
+  assert.ok(policy.includes("sandbox allow-scripts"), `${id}: sandbox missing`);
+  assert.ok(policy.includes("connect-src 'none'"), `${id}: network isolation missing`);
+  assert.ok(!policy.includes("allow-same-origin"), `${id}: opaque isolation missing`);
+  assert.ok((await banner.text()).includes("pointermove"), `${id}: mouse effects missing`);
+}
+
 for (const locale of ["es", "en"]) {
   const html = await response(`/${locale}`);
+  assert.ok(html.includes("nativeScene"), `${locale}: native hero missing`);
+  assert.ok(!html.includes("<iframe"), `${locale}: legacy hero frame still rendered`);
   assert.ok(html.includes("Peru Wonders Tours"), `${locale}: site brand missing`);
   assert.ok(html.includes("51924278597"), `${locale}: confirmed WhatsApp missing`);
   const contact = await response(locale === "es" ? "/es/contactenos" : "/en/contact");

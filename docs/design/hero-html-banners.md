@@ -1,15 +1,13 @@
-# Banners HTML de peruwonderstours
+# Banners nativos de peruwonderstours
 
-La portada incluye Lago Titicaca y Machu Picchu. Los documentos se ejecutan dentro de un iframe aislado: conservan sus scripts, estilos, letras y eventos del mouse. Al volver a una escena se crea un documento nuevo y se repite la entrada.
+La portada renderiza las imágenes directamente, sin iframe ni ejecutar HTML subido. Los efectos React/CSS/canvas incluyen parallax opuesto al mouse, entrada del título, ondas y destellos sobre agua y tres capas de nubes. Son recreaciones nativas, no ejecución idéntica de los scripts originales.
 
-Solo se monta el banner visible. Se desmonta cuando el usuario pausa, cambia de pestaña o sale del hero; movimiento reducido y pantallas táctiles usan una imagen estática. La selección manual detiene el avance automático, pero deja funcionando los efectos del banner elegido. El botón pausa/play vuelve a habilitar el avance.
+Cada cambio o selección reinicia la escena. Solo existe una escena activa; el RAF se inicia con eventos del mouse y termina al asentarse el movimiento y agotarse las ondas. Máximo 32 ondas, DPR limitado a 1.5, sin actualizaciones React por pointermove. Cancelación y limpieza al pausar, salir del hero o cambiar pestaña. Touch y movimiento reducido conservan imagen y texto estáticos; efecto none también es estático.
 
-En el panel, abrir /banners: subir HTML completo UTF-8 (.html o .htm, máximo 16 MB), poner título, guardar y activar. Se puede ajustar el orden y desactivar. Archivos autocontenidos con imágenes embebidas funcionan; scripts, fuentes o imágenes externos no se habilitan. No ejecutar código del documento en el admin.
+Admin /banners: imagen PNG/JPEG/WebP/AVIF hasta 16 MB, título, efecto none/water/clouds, orden y activación. La opción 'La imagen ya contiene el título' evita duplicar el texto integrado en la foto. Archivos HTML anteriores se pueden importar para extraer la primera imagen compatible; sus scripts no se ejecutan en la portada.
 
-Almacenamiento privado: MEDIA_LOCAL_DIR/.hero-banners. Incluirlo en los respaldos. La implementación usa un único proceso escritor; para varias instancias hace falta almacenamiento compartido y coordinación. Las copias iniciales locales no se incluyen en Git ni en el paquete de código. Las dos escenas incluidas en web permiten probar sin API.
+Machu Picchu conserva el nombre integrado en la foto; no se duplica visualmente. Las imágenes iniciales WebP son sin pérdidas y se verificaron píxel a píxel: 3.75 MB en total frente a 6.80 MB PNG. Poster y administración requieren API actualizada. Escenas incluidas funcionan sin API.
 
-Las imágenes incluidas se separaron del HTML y se convirtieron a WebP sin pérdidas: comparación RGBA confirma igualdad píxel a píxel. Pasaron de 6.80 MB a 3.75 MB. No se cambió el código visual de los efectos.
+Almacenamiento privado: MEDIA_LOCAL_DIR/.hero-banners. Respaldarlo. Manifest atómico y revisión optimista; un único proceso escritor. Para múltiples instancias hace falta coordinación y almacenamiento compartido.
 
-Verificación local: cinco pruebas web, compilación TypeScript API y tipos web, ESLint de HeroMotion y política de documentos. HTTP portada 200 y documento Titicaca 200 (5200 bytes, 82 ms, entorno dev; no representa FPS ni Web Vitals). Revisión independiente de capas/puntero. No se acredita inspección visual automatizada.
-
-La API actualmente iniciada en 3001 usa código anterior (GET hero-banners devuelve 404): reiniciar la API con el código compilado para probar gestión admin. La portada funciona con las escenas incluidas mientras tanto.
+Verificaciones: tipos web/API/admin, lint y pruebas de almacenamiento/validación. CI comprueba compilaciones, pruebas, rutas y que la portada nativa no renderice iframe. No se acredita validación visual multi-viewport ni FPS desde el navegador.

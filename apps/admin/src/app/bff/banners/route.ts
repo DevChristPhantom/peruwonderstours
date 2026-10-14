@@ -4,7 +4,7 @@ import { toUserError, type UserError } from "@/lib/api/errors";
 import { assertSameOrigin, can } from "@/lib/auth/guard";
 import { getSession } from "@/lib/session/server";
 import type { Permission } from "@/lib/auth/permissions";
-import { BANNER_MAX_BYTES, type HeroBanner } from "@/components/banners/types";
+import { BANNER_MAX_BYTES, BANNER_EFFECTS, validBannerFile, type BannerEffect, type HeroBanner } from "@/components/banners/types";
 
 export const dynamic = "force-dynamic";
 const noStore = { "Cache-Control": "no-store" };
@@ -50,7 +50,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   const denied = await authorize(true, "media:upload", "tours:write"); if (denied) return denied;
   const contentType = request.headers.get("content-type") ?? "";
-  if (!contentType.startsWith("multipart/form-data;")) return fail(400, { code: "invalid-file", message: "Adjunta un archivo HTML." });
+  if (!contentType.startsWith("multipart/form-data;")) return fail(400, { code: "invalid-file", message: "Adjunta una imagen para el banner." });
   let form: FormData;
   try {
     const bytes = await bounded(request, BANNER_MAX_BYTES + 64 * 1024);
@@ -60,11 +60,17 @@ export async function POST(request: NextRequest) {
   }
   const file = form.get("file");
   const title = form.get("title");
-  if (!(file instanceof File) || !/\.html?$/i.test(file.name) || file.size === 0 || file.size > BANNER_MAX_BYTES) return fail(400, { code: "invalid-file", message: "Selecciona un archivo .html o .htm de hasta 16 MB." });
+  const effect = form.get("effect") ?? "none";
+  const titleEmbedded = form.get("titleEmbedded") ?? "false";
+  if (!(file instanceof File) || !validBannerFile(file)) return fail(400, { code: "invalid-file", message: "Selecciona PNG, JPEG, WebP, AVIF o HTML de hasta 16 MB." });
+  if (typeof effect !== "string" || !BANNER_EFFECTS.includes(effect as BannerEffect)) return fail(400, { code: "invalid-effect", message: "Selecciona un efecto disponible." });
+  if (titleEmbedded !== "true" && titleEmbedded !== "false") return fail(400, { code: "invalid-title-embedded", message: "Indica si la imagen ya contiene el título." });
   if (typeof title !== "string" || !title.trim() || title.trim().length > 120) return fail(400, { code: "invalid-title", message: "Escribe un título de 1 a 120 caracteres." });
   const outgoing = new FormData();
   outgoing.set("file", file, file.name.replace(/[^\w.-]/g, "_").slice(0, 120));
   outgoing.set("title", title.trim());
+  outgoing.set("effect", effect);
+  outgoing.set("titleEmbedded", titleEmbedded);
   return forward(() => api<{ data: HeroBanner }>("/admin/hero-banners", { method: "POST", form: outgoing }), 201);
 }
 export async function PATCH(request: NextRequest) {
@@ -75,6 +81,8 @@ export async function PATCH(request: NextRequest) {
   try { value = JSON.parse(new TextDecoder().decode(await bounded(request, 4096))); }
   catch { return fail(400, { code: "bad-request", message: "No se pudo leer el cambio solicitado." }); }
   if (!value || typeof value !== "object" || Array.isArray(value) || !Number.isSafeInteger(value.revision)) return fail(400, { code: "bad-request", message: "Recarga la lista antes de guardar." });
-  const body = { title: value.title, enabled: value.enabled, sortOrder: value.sortOrder, revision: value.revision };
+  if (value.effect !== undefined && (typeof value.effect !== "string" || !BANNER_EFFECTS.includes(value.effect as BannerEffect))) return fail(400, { code: "invalid-effect", message: "Selecciona un efecto disponible." });
+  if (value.titleEmbedded !== undefined && typeof value.titleEmbedded !== "boolean") return fail(400, { code: "invalid-title-embedded", message: "Indica si la imagen ya contiene el título." });
+  const body = { title: value.title, enabled: value.enabled, sortOrder: value.sortOrder, revision: value.revision, effect: value.effect, titleEmbedded: value.titleEmbedded };
   return forward(() => api<{ data: HeroBanner }>(`/admin/hero-banners/${id}`, { method: "PATCH", body }));
 }

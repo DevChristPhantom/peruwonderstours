@@ -1,6 +1,6 @@
 "use client";
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
-import Image from "next/image";
+import { NativeHeroScene } from "./NativeHeroScene";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { CatalogImage } from "@/lib/catalog/types";
@@ -26,7 +26,6 @@ export function HeroMotion({ scenes, fallback }: { scenes: HeroBannerScene[]; fa
   const [visible, setVisible] = useState(true);
   const [pageVisible, setPageVisible] = useState(true);
   const [focused, setFocused] = useState(false);
-  const [loaded, setLoaded] = useState<string | null>(null);
   const scene = scenes[index % Math.max(1, scenes.length)];
   const running = motionAllowed && !paused && visible && pageVisible;
   useEffect(() => {
@@ -45,16 +44,12 @@ export function HeroMotion({ scenes, fallback }: { scenes: HeroBannerScene[]; fa
   const select = (next: number) => {
     setIndex((next + scenes.length) % scenes.length);
     setVisit((previous) => previous + 1);
-    setLoaded(null);
     setPaused(false);
     setManual(true);
   };
   const poster = scene?.poster ?? fallback?.src;
   return <div ref={root} className={s.motionRoot}>
-    <div className={s.bg}>
-      {poster ? <Image key={poster} src={poster} alt={scene?.title ?? fallback?.alt ?? ""} fill preload sizes="100vw" quality={75} /> : null}
-      {running && scene ? <iframe key={`${scene.id}:${visit}`} src={scene.document} title={scene.title} sandbox="allow-scripts" tabIndex={-1} aria-hidden="true" referrerPolicy="no-referrer" className={`${s.motionFrame} ${loaded === scene.id ? s.frameReady : ""}`} onLoad={() => setLoaded(scene.id)} /> : null}
-    </div>
+    <NativeHeroScene key={`${scene?.id ?? "fallback"}:${visit}`} scene={scene} image={poster} alt={scene?.title ?? fallback?.alt ?? ""} active={running} />
     {scene && (scenes.length > 1 || motionAllowed) ? <div className={s.controls} onFocus={() => setFocused(true)} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false); }} role="group" aria-label={t("banners")}>
       <span className={s.sceneName} aria-live={paused ? "polite" : "off"}>{scene?.title}</span>
       {scenes.length > 1 ? <>

@@ -77,6 +77,11 @@ function isLocalizable(pathname: string): boolean {
 }
 
 export function proxy(request: NextRequest) {
+  // Isolated banner routes supply their own sandbox/CSP. Page-level DENY and
+  // frame-ancestors 'none' would override those headers and block the hero.
+  if (request.nextUrl.pathname.startsWith("/api/hero-banners/")) {
+    return NextResponse.next();
+  }
   const dev = process.env.NODE_ENV !== "production";
   const reportOnly = process.env.CSP_REPORT_ONLY === "true";
   const pathname = request.nextUrl.pathname;

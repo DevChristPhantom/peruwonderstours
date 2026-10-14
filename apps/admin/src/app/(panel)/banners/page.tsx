@@ -12,7 +12,7 @@ export default async function BannersPage() {
   const permitted = can(session, "tours:read");
   const result = permitted ? await load(() => apiData<HeroBanner[]>("/admin/hero-banners")) : null;
   return <>
-    <PageHeader title="Banners de inicio" description="Gestiona los archivos HTML animados que aparecen en la portada." />
+    <PageHeader title="Banners de inicio" description="Gestiona las imágenes y sus efectos de movimiento en la portada." />
     {!permitted ? <ErrorPanel error={{ status: 403, code: "insufficient-permissions", message: "No tienes permiso para consultar los banners." }} />
       : result && !result.ok ? <ErrorPanel error={result.error} />
       : <BannerManager initial={result?.ok ? result.data : []} canUpload={can(session, "media:upload", "tours:write")} canEdit={can(session, "tours:write")} />}

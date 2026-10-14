@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { HeroBannersService, HERO_BANNER_MAX_BYTES } from './hero-banners.service.js';
@@ -71,5 +71,38 @@ describe('private hero banner repository', () => {
     expect(response).toContain(different);
     expect(response).toContain(script);
     expect(await readFile(join(directory, '.hero-banners', `${record.id}.html`))).toEqual(original);
+  });
+  it('uploads raster banners with a native effect and no executable document', async () => {
+    const png = Buffer.from('89504e470d0a1a0a', 'hex');
+    const record = await service.upload(png, 'hero.png', 'Landscape', 'water');
+    expect(record).toMatchObject({ effect: 'water', sourceType: 'image', hasPoster: true, enabled: false });
+    await service.patch(record.id, { enabled: true, effect: 'clouds', revision: 1 });
+    expect(await service.poster(record.id)).toEqual({ buffer: png, mime: 'image/png' });
+    await expect(service.document(record.id)).rejects.toMatchObject({ code: 'hero-banner-document-not-found' });
+    await expect(readFile(join(directory, '.hero-banners', `${record.id}.html`))).rejects.toMatchObject({ code: 'ENOENT' });
+    expect((await service.list(true))[0]?.effect).toBe('clouds');
+  });
+  it('rejects fake raster content and invalid upload or edit effects', async () => {
+    await expect(service.upload(html, 'fake.png', 'Fake')).rejects.toMatchObject({ kind: 'validation' });
+    await expect(service.upload(html, 'ok.html', 'Okay', 'explode')).rejects.toMatchObject({ code: 'invalid-banner-effect' });
+    const record = await service.upload(html, 'ok.html', 'Okay');
+    await expect(service.patch(record.id, { revision: 1, effect: 'explode' as 'none' })).rejects.toMatchObject({ code: 'invalid-banner-effect' });
+    expect((await service.list())[0]?.revision).toBe(1);
+  });
+  it('normalizes existing manifests without effect fields using destination defaults', async () => {
+    const records = await Promise.all(['Lago Titicaca', 'Machu Picchu', 'Coast'].map((title) => service.upload(html, 'legacy.html', title)));
+    const legacy = records.map(({ effect: _effect, ...record }) => record);
+    await writeFile(join(directory, '.hero-banners', 'manifest.json'), JSON.stringify(legacy));
+    expect((await service.list()).map((record) => record.effect)).toEqual(['water', 'clouds', 'none']);
+  });
+  it('validates titleEmbedded and defaults legacy Machu titles without affecting new uploads', async () => {
+    await expect(service.upload(html, 'a.html', 'A', undefined, 'true')).rejects.toMatchObject({ code: 'invalid-banner-title-embedded' });
+    const record = await service.upload(html, 'a.html', 'Machu Picchu', undefined, true);
+    expect(record.titleEmbedded).toBe(true);
+    await expect(service.patch(record.id, { revision: 1, titleEmbedded: 'false' as unknown as boolean })).rejects.toMatchObject({ code: 'invalid-banner-title-embedded' });
+    expect((await service.patch(record.id, { revision: 1, titleEmbedded: false })).titleEmbedded).toBe(false);
+    const { sourceType: _sourceType, titleEmbedded: _titleEmbedded, ...legacy } = record;
+    await writeFile(join(directory, '.hero-banners', 'manifest.json'), JSON.stringify([legacy]));
+    expect((await service.list())[0]?.titleEmbedded).toBe(true);
   });
 });
