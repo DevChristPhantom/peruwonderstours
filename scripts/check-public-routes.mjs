@@ -52,7 +52,7 @@ for (const image of ["titicaca-0.webp", "machu-picchu-0.webp"]) {
   assert.ok(result.headers.get("content-type")?.startsWith("image/"));
 }
 
-for (const locale of ["es", "en"]) {
+for (const locale of ["es", "en", "pt"]) {
   const html = await response(`/${locale}`);
   assert.ok(html.includes("nativeScene"), `${locale}: native hero missing`);
   assert.ok(!html.includes("<iframe"), `${locale}: legacy hero frame still rendered`);
@@ -62,14 +62,16 @@ for (const locale of ["es", "en"]) {
   assert.ok(html.includes("enlaces-oficiales"), `${locale}: official resources missing`);
   assert.ok(html.includes("/icons/whatsapp.svg"), `${locale}: floating WhatsApp symbol missing`);
   assert.ok(html.includes("complaints-book.webp"), `${locale}: complaints notice missing`);
-  assert.ok(html.includes("Peru Wonders Tours"), `${locale}: site brand missing`);
+  assert.ok(html.includes("peruwonderstours"), `${locale}: site brand missing`);
   assert.ok(html.includes("51924278597"), `${locale}: confirmed WhatsApp missing`);
-  const contact = await response(locale === "es" ? "/es/contactenos" : "/en/contact");
+  assert.ok(html.includes("peruwonderstours-dorado.png"), `${locale}: owner logo missing`);
+  const contacts = { es: "/es/contactenos", en: "/en/contact", pt: "/pt/contato" };
+  const contact = await response(contacts[locale]);
   assert.ok(contact.includes("mailto:jorgechaveztourt@gmail.com"), `${locale}: confirmed contact email missing`);
 }
 
 const sitemap = await response("/sitemap.xml");
-for (const asset of ["/icons/whatsapp.svg", "/icons/rune/receipt.svg", "/official/complaints-book.webp"]) {
+for (const asset of ["/icons/whatsapp.svg", "/icons/rune/receipt.svg", "/official/complaints-book.webp", "/brand/peruwonderstours-dorado.png"]) {
   const image = await fetch(new URL(asset, origin));
   assert.equal(image.status, 200, `${asset}: visual asset unavailable`);
   assert.ok(image.headers.get("content-type")?.startsWith("image/"), `${asset}: unexpected content type`);
@@ -81,7 +83,8 @@ assert.equal(new Set(urls.map((url) => url.href)).size, urls.length, "Duplicate 
 const paths = new Set(urls.map((url) => url.pathname));
 paths.add("/es/tours?destino=cuzco");
 paths.add("/en/tours?adultos=2");
-for (const path of ["/es/nosotros", "/en/about", "/es/contactenos", "/en/contact", "/es/blog", "/en/blog", "/es/testimonios", "/en/reviews"]) {
+paths.add("/pt/tours?adultos=2");
+for (const path of ["/es/nosotros", "/en/about", "/es/contactenos", "/en/contact", "/es/blog", "/en/blog", "/es/testimonios", "/en/reviews", "/pt/sobre-nos", "/pt/contato", "/pt/blog", "/pt/avaliacoes"]) {
   assert.ok(paths.has(path), `Sitemap missing ${path}`);
 }
 
@@ -96,10 +99,10 @@ await Promise.all(Array.from({ length: 4 }, async () => {
     checked++;
   }
 }));
-console.log(`PASS: ${checked} public and legacy routes; canonical domain, es/en, WhatsApp and email verified.`);
+console.log(`PASS: ${checked} public and legacy routes; canonical domain, es/en/pt, WhatsApp and email verified.`);
 
 // Warm production-server HTTP timings, not browser Web Vitals or Internet latency.
-for (const path of ["/es", "/es/tours", "/en", "/en/tours"]) {
+for (const path of ["/es", "/es/tours", "/en", "/en/tours", "/pt", "/pt/tours"]) {
   const samples = [];
   for (let sample = 0; sample < 5; sample++) {
     const start = performance.now();
