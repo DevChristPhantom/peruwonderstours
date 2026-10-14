@@ -133,7 +133,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
           <Column id="footer-tours" title={t("columns.tours")}>
             {DESTINATIONS.map(({ key, ...slugs }) => (
               <li key={key}>
-                <Link href={{ pathname: "/destinos/[slug]", params: { slug: slugs[locale] } }} className={linkClass}>
+                <Link href={{ pathname: "/destinos/[slug]", params: { slug: slugs[locale === "pt" ? "es" : locale] } }} className={linkClass}>
                   {t(`destinations.${key}`)}
                 </Link>
               </li>

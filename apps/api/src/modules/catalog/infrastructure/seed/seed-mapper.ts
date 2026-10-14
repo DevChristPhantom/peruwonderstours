@@ -104,7 +104,7 @@ export function mapSeedTour(seed: SeedTour, ids: { destinations: Map<string, str
 }
 
 /** Contenido traducible de un tour de la semilla en un idioma (la traducción `en` trae su propio slug). */
-export function mapTourTranslation(seed: SeedTour, locale: 'es' | 'en', translationStatus: string | null): TourTranslation {
+export function mapTourTranslation(seed: SeedTour, locale: 'es' | 'en' | 'pt', translationStatus: string | null): TourTranslation {
   return {
     locale,
     slug: seed.slug,

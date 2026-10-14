@@ -47,9 +47,9 @@ export function formatMoney(m: MoneyView): string {
   return `${negative ? '-' : ''}${m.currency === 'PEN' ? 'S/' : 'US$'} ${units}.${cents}`;
 }
 
-export type MailLocale = 'es' | 'en';
+export type MailLocale = 'es' | 'en' | 'pt';
 
-const INTL: Record<MailLocale, string> = { es: 'es-PE', en: 'en-US' };
+const INTL: Record<MailLocale, string> = { es: 'es-PE', en: 'en-US', pt: 'pt-BR' };
 
 export function formatLimaDateTime(date: Date, locale: MailLocale = 'es'): string {
   const text = new Intl.DateTimeFormat(INTL[locale], { timeZone: LIMA, day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(date);
@@ -66,6 +66,7 @@ export function formatCalendarDate(date: string, locale: MailLocale = 'es'): str
 }
 
 const FOOTER: Record<MailLocale, { support: string; complaints: string; privacy: string }> = {
+  pt: { support: 'Atendimento', complaints: 'Livro de Reclamações', privacy: 'Política de privacidade' },
   es: { support: 'Atención', complaints: 'Libro de Reclamaciones', privacy: 'Política de privacidad' },
   en: { support: 'Customer care', complaints: 'Complaints Book (Libro de Reclamaciones)', privacy: 'Privacy policy' },
 };
@@ -75,7 +76,7 @@ function layout(params: { title: string; preheader: string; bodyHtml: string; br
   const locale = params.locale ?? 'es';
   const f = FOOTER[locale];
   return `<!doctype html>
-<html lang="${locale}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(params.title)}</title></head>
+<html lang="${locale === 'pt' ? 'pt-BR' : locale}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(params.title)}</title></head>
 <body style="margin:0;padding:0;background:#f4f1ea;font-family:Arial,Helvetica,sans-serif;color:#1f2933">
 <span style="display:none;max-height:0;overflow:hidden">${escapeHtml(params.preheader)}</span>
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f1ea"><tr><td align="center" style="padding:24px 12px">
@@ -88,8 +89,8 @@ ${params.bodyHtml}
 <tr><td style="padding:16px 24px;border-top:1px solid #e5e0d5;font-size:12px;color:#5f6b76;line-height:1.5">
 ${escapeHtml(brand.providerLegalName)} · RUC ${escapeHtml(brand.providerRuc)}<br>
 ${f.support}: <a href="mailto:${escapeHtml(brand.contactEmail)}" style="color:#7a2e1d">${escapeHtml(brand.contactEmail)}</a> · ${escapeHtml(brand.contactPhone)}<br>
-<a href="${escapeHtml(brand.publicWebBaseUrl)}/es/libro-de-reclamaciones" style="color:#7a2e1d">${f.complaints}</a> ·
-<a href="${escapeHtml(brand.publicWebBaseUrl)}/es/politicas/proteccion-de-datos-personales" style="color:#7a2e1d">${f.privacy}</a>
+<a href="${escapeHtml(brand.publicWebBaseUrl)}/${locale}/${locale === 'pt' ? 'livro-de-reclamacoes' : 'libro-de-reclamaciones'}" style="color:#7a2e1d">${f.complaints}</a> ·
+<a href="${escapeHtml(brand.publicWebBaseUrl)}/${locale}/politicas/${locale === 'pt' ? 'protecao-de-dados-pessoais' : 'proteccion-de-datos-personales'}" style="color:#7a2e1d">${f.privacy}</a>
 ${params.footerExtraHtml ?? ''}
 </td></tr></table></td></tr></table></body></html>`;
 }
@@ -100,8 +101,8 @@ function textFooter(brand: BrandInfo, extra?: string, locale: MailLocale = 'es')
     '--',
     `${brand.providerLegalName} · RUC ${brand.providerRuc}`,
     `${f.support}: ${brand.contactEmail} · ${brand.contactPhone}`,
-    `${f.complaints}: ${brand.publicWebBaseUrl}/es/libro-de-reclamaciones`,
-    `${f.privacy}: ${brand.publicWebBaseUrl}/es/politicas/proteccion-de-datos-personales`,
+    `${f.complaints}: ${brand.publicWebBaseUrl}/${locale}/${locale === 'pt' ? 'livro-de-reclamacoes' : 'libro-de-reclamaciones'}`,
+    `${f.privacy}: ${brand.publicWebBaseUrl}/${locale}/politicas/${locale === 'pt' ? 'protecao-de-dados-pessoais' : 'proteccion-de-datos-personales'}`,
     ...(extra ? [extra] : []),
   ].join('\n');
 }
@@ -143,6 +144,32 @@ export interface BookingMailData {
 }
 
 const B = {
+  pt: {
+    service: 'Serviço', date: 'Data', pax: 'Viajantes', subtotal: 'Subtotal', code: 'Código da reserva', total: 'Total', paid: 'Pago',
+    balance: 'Saldo pendente', noBalance: 'Sem saldo pendente', balanceDue: 'Vencimento do saldo', view: 'Ver minha reserva', payBalance: 'Pagar o saldo',
+    voucher: 'VOUCHER', unsubscribeQ: 'Não quer receber ofertas?', unsubscribe: 'Cancelar comunicações comerciais',
+    linkNote: (h: number) => `O botão é um link pessoal de uso único válido por ${h} horas: não o encaminhe. Se expirar, solicite outro no site com o código da reserva e seu e-mail.`,
+    confirmedTitle: (c: string) => `Reserva confirmada ${c}`, voucherTitle: (c: string) => `Seu voucher da reserva ${c}`,
+    confirmedIntro: (n: string) => `Olá ${n}, recebemos seu pagamento e sua reserva está confirmada. Este e-mail é seu voucher: apresente-o impresso ou no celular no dia do serviço.`,
+    voucherIntro: (n: string) => `Olá ${n}, enviamos novamente o voucher da sua reserva. Apresente-o impresso ou no celular no dia do serviço.`,
+    payBefore: 'Pague o saldo antes da data indicada para manter sua reserva.',
+    confirmedSubject: (c: string) => `Reserva confirmada ${c} · peruwonderstours`, voucherSubject: (c: string) => `Voucher da sua reserva ${c}`,
+    paymentTitle: (c: string) => `Pagamento recebido · ${c}`, paymentIntro: (n: string, a: string) => `Olá ${n}, registramos seu pagamento de ${a}.`,
+    fullyPaid: 'Sua reserva está totalmente paga. Esperamos você!', paymentSubject: (c: string) => `Pagamento recebido · reserva ${c}`,
+    reminderTitle: (c: string) => `Lembrete: saldo da sua reserva ${c}`,
+    reminderIntro: (n: string, a: string, due: string, urgent: boolean) => `Olá ${n}, o saldo da sua reserva (${a}) vence em ${due}${urgent ? '. Faltam menos de 2 dias!' : '.'}`,
+    reminderDueFallback: 'a data indicada na sua reserva', reminderNote: 'Se já pagou, desconsidere esta mensagem. Você também pode pagar em dinheiro ou por transferência combinando conosco.',
+    reminderSubject: (c: string) => `Lembrete de saldo · reserva ${c}`,
+    cancelledTitle: (c: string) => `Reserva cancelada ${c}`, cancelledIntro: (n: string, c: string) => `Olá ${n}, sua reserva ${c} foi cancelada.`,
+    refundYes: (a: string) => `Conforme nossa política de cancelamento, você tem direito a um reembolso de ${a}. Entraremos em contato para combinar a devolução pelo mesmo meio de pagamento.`,
+    refundNo: 'Conforme nossa política de cancelamento, este cancelamento não gera reembolso.', refund: 'Reembolso',
+    cancelledNote: 'Se não solicitou o cancelamento ou não concorda, responda a este e-mail ou registre sua reclamação em nosso Livro de Reclamações.',
+    cancelledSubject: (c: string) => `Cancelamento da sua reserva ${c}`,
+    accessTitle: (c: string) => `Acesso à sua reserva ${c}`, accessIntro: (n: string) => `Olá ${n}, recebemos uma solicitação para consultar sua reserva. Use este botão para abri-la:`,
+    accessNote: (m: number) => `O link é de uso único e expira em ${m} minutos. Se não foi você, ignore este e-mail: ninguém pode consultar sua reserva sem este link.`,
+    accessCta: 'Abrir minha reserva', accessSubject: (c: string) => `Seu link de acesso à reserva ${c}`,
+  },
+
   es: {
     service: 'Servicio', date: 'Fecha', pax: 'Pax', subtotal: 'Subtotal', code: 'Código de reserva', total: 'Total', paid: 'Pagado',
     balance: 'Saldo pendiente', noBalance: 'Sin saldo pendiente', balanceDue: 'Vence el saldo', view: 'Ver mi reserva', payBalance: 'Pagar el saldo',
@@ -358,6 +385,13 @@ export function bookingAccessLinkEmail(d: { code: string; customerName: string; 
 // Cuenta de cliente sin contraseña (F6) y contacto (F3)
 // =============================================================================
 const C = {
+  pt: {
+    loginTitle: 'Seu link para Minhas reservas', loginIntro: (n: string) => `Olá ${n}, use este botão para consultar suas reservas com a peruwonderstours. Não precisa de senha.`,
+    loginCta: 'Abrir Minhas reservas', loginNote: (m: number) => `Este link é de uso único e expira em ${m} minutos. Se não solicitou, ignore este e-mail.`,
+    ackTitle: 'Recebemos sua mensagem', ackIntro: (n: string) => `Olá ${n}, obrigado por entrar em contato. Responderemos o mais breve possível, normalmente em até 24 horas úteis.`,
+    ackSubjectLabel: 'Assunto', ackSubject: 'Recebemos sua mensagem · peruwonderstours', ackNote: 'Esta é uma confirmação automática: por segurança, não inclui sua mensagem completa. Se não entrou em contato, ignore este e-mail.',
+  },
+
   es: {
     loginTitle: 'Tu enlace para entrar a "Mis reservas"',
     loginIntro: (n: string) => `Hola ${n}, usa este botón para ver tus reservas en peruwonderstours. No necesitas contraseña.`,
@@ -410,7 +444,7 @@ export function contactAgencyEmail(
     ['Correo', d.email],
     ['Teléfono', d.phone],
     ['Tour de interés', d.tourSlug],
-    ['Idioma', d.locale === 'en' ? 'Inglés' : 'Español'],
+    ['Idioma', d.locale === 'pt' ? 'Português (Brasil)' : d.locale === 'en' ? 'Inglés' : 'Español'],
     ['Recibido', formatLimaDateTime(d.receivedAt)],
     ['Referencia', d.id],
   ];
@@ -430,7 +464,15 @@ export function contactAgencyEmail(
 // =============================================================================
 const PURPOSE_LABEL: Record<string, string> = { marketing_email: 'ofertas y novedades por correo electrónico', marketing_whatsapp: 'ofertas y novedades por WhatsApp/SMS' };
 
-export function marketingConfirmationEmail(d: { firstName: string; purposes: string[]; confirmUrl: string }, brand: BrandInfo): RenderedEmail {
+export function marketingConfirmationEmail(d: { firstName: string; purposes: string[]; confirmUrl: string; locale?: MailLocale }, brand: BrandInfo): RenderedEmail {
+  if (d.locale === 'pt') {
+    const title = 'Confirme sua inscrição';
+    const list = d.purposes.map((p) => ({ marketing_email: 'ofertas e novidades por e-mail', marketing_whatsapp: 'ofertas e novidades por WhatsApp/SMS' })[p] ?? p);
+    const intro = `Olá ${d.firstName}, ao reservar, foi solicitado que este e-mail receba ${list.join(' e ')} da peruwonderstours.`;
+    const how = 'Só enviaremos ofertas se você confirmar pelo botão. Se não foi você, ignore esta mensagem: não receberá publicidade. O link expira em 7 dias.';
+    const html = layout({ title, locale: 'pt', preheader: intro, brand, bodyHtml: `<p>${escapeHtml(intro)}</p><p>${escapeHtml(how)}</p>${button(d.confirmUrl, 'Sim, quero receber ofertas')}<p>Você pode cancelar a inscrição quando quiser pelo link de qualquer e-mail comercial (Lei peruana 29733).</p>` });
+    return { subject: 'Confirme sua inscrição nas ofertas da peruwonderstours', html, text: [title, intro, how, d.confirmUrl, textFooter(brand, undefined, 'pt')].join('\n') };
+  }
   const title = 'Confirma tu suscripción';
   const list = d.purposes.map((p) => PURPOSE_LABEL[p] ?? p);
   const intro = `Hola ${d.firstName}, al reservar se pidió que este correo reciba ${list.join(' y ')} de peruwonderstours.`;
@@ -572,12 +614,12 @@ export function complaintSettlementOfferEmail(d: ComplaintMailData & { offerText
 /** F7: enlace mágico para consultar la hoja de reclamación (es / en). */
 export function complaintAccessLinkEmail(d: { code: string; consumerName: string; linkUrl: string; ttlMinutes: number; locale: MailLocale }, brand: BrandInfo): RenderedEmail {
   const es = d.locale !== 'en';
-  const title = es ? `Consulta de tu hoja de reclamación ${d.code}` : `Check your complaint ${d.code}`;
-  const intro = es
+  const title = d.locale === 'pt' ? `Consulta da sua reclamação ${d.code}` : es ? `Consulta de tu hoja de reclamación ${d.code}` : `Check your complaint ${d.code}`;
+  const intro = d.locale === 'pt' ? `Olá ${d.consumerName}, use este botão para consultar o andamento e a resposta da sua reclamação:` : es
     ? `Hola ${d.consumerName}, usa este botón para consultar el estado y la respuesta de tu reclamo:`
     : `Hi ${d.consumerName}, use this button to check the status and answer of your complaint:`;
-  const cta = es ? 'Consultar mi reclamo' : 'Check my complaint';
-  const note = es
+  const cta = d.locale === 'pt' ? 'Consultar minha reclamação' : es ? 'Consultar mi reclamo' : 'Check my complaint';
+  const note = d.locale === 'pt' ? `O link é de uso único e expira em ${d.ttlMinutes} minutos. Se não solicitou, ignore este e-mail.` : es
     ? `El enlace es de un solo uso y vence en ${d.ttlMinutes} minutos. Si no lo pediste, ignora este correo.`
     : `This link can be used once and expires in ${d.ttlMinutes} minutes. If you did not request it, ignore this email.`;
   const html = layout({ title, locale: d.locale, preheader: title, brand, bodyHtml: `<p>${escapeHtml(intro)}</p>${button(d.linkUrl, cta)}<p style="font-size:13px;color:#5f6b76">${escapeHtml(note)}</p>` });

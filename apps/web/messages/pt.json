@@ -1,0 +1,1374 @@
+{
+  "about": {
+    "title": "Sobre nós",
+    "description": "Explore o catálogo de destinos, passeios e pacotes da {name}. Compare opções e confira os detalhes da sua viagem pelo Peru.",
+    "body": "Na {name}, você pode explorar destinos, passeios e pacotes pelo Peru, comparar opções e preparar sua consulta sobre a viagem. Comece pelos destinos disponíveis no nosso catálogo.",
+    "destinationsTitle": "Destinos para sua próxima viagem",
+    "destinationsDescription": "Descubra os destinos do catálogo e as experiências disponíveis em cada um.",
+    "tourCount": "{count, plural, =0 {Consulte as opções disponíveis} one {# passeio no catálogo} other {# passeios no catálogo}}",
+    "exploreDestination": "Explorar destino",
+    "planningTitle": "Planeje sua viagem, passo a passo",
+    "planningDescription": "Encontre opções, compare as diferenças e consulte as informações necessárias antes de decidir.",
+    "steps": {
+      "explore": {
+        "title": "Explore",
+        "body": "Busque passeios por destino e confira o roteiro, a duração e as informações de cada experiência.",
+        "link": "Ver passeios"
+      },
+      "compare": {
+        "title": "Compare",
+        "body": "Adicione as opções que interessam a você ao comparador para conferir suas características na mesma página.",
+        "link": "Abrir comparador"
+      },
+      "consult": {
+        "title": "Tire suas dúvidas",
+        "body": "Conte quais opções interessam a você e tire suas dúvidas sobre a viagem pelo formulário de contato.",
+        "link": "Enviar uma consulta"
+      }
+    },
+    "ctaTitle": "Encontre sua próxima experiência",
+    "ctaBody": "Explore as opções do catálogo ou envie uma consulta para conferir os detalhes da sua viagem.",
+    "viewTours": "Explorar passeios",
+    "contact": "Entrar em contato"
+  },
+  "access": {
+    "codeLabel": "Código",
+    "emailLabel": "E-mail",
+    "emailHint": "O mesmo e-mail informado no cadastro.",
+    "submit": "Enviar link de acesso",
+    "sending": "Enviando…",
+    "sent": "Se os dados coincidirem, em alguns minutos você receberá um e-mail com um link de acesso. O link só pode ser usado uma vez e expira em 30 minutos. Confira também a pasta de spam.",
+    "invalid": "Confira o código e o e-mail.",
+    "busy": "Você fez várias tentativas seguidas. Aguarde um minuto e tente novamente.",
+    "unavailable": "Não foi possível enviar o link agora. Tente novamente em alguns minutos ou fale conosco pelo WhatsApp.",
+    "expired": "Este link já foi usado ou expirou. Solicite um novo abaixo.",
+    "linkNotFound": "Este link não é válido. Solicite um novo abaixo.",
+    "opening": "Abrindo…",
+    "privacy": "Para sua segurança, nunca mostramos os dados de uma reserva ou reclamação sem verificar seu e-mail.",
+    "booking": {
+      "title": "Acessar minha reserva",
+      "description": "Receba um link seguro por e-mail para consultar sua reserva, seu voucher e pagar o saldo.",
+      "intro": "Informe o código da reserva e o e-mail usado ao reservar. Enviaremos um link seguro para acessá-la.",
+      "codePlaceholder": "PWT-2026-000123",
+      "tokenTitle": "Abra sua reserva",
+      "tokenText": "Clique no botão para acessar sua reserva neste navegador. O link só pode ser usado uma vez.",
+      "open": "Abrir minha reserva"
+    },
+    "complaint": {
+      "title": "Consultar minha reclamação",
+      "description": "Consulte o andamento e a resposta da sua Folha de Reclamação por meio de um link seguro enviado ao seu e-mail.",
+      "intro": "Informe o código da sua Folha de Reclamação e o e-mail cadastrado. Enviaremos um link seguro para consultá-la.",
+      "codePlaceholder": "LR-2026-000123",
+      "tokenTitle": "Consulte sua Folha de Reclamação",
+      "tokenText": "Clique no botão para consultar sua Folha de Reclamação neste navegador. O link só pode ser usado uma vez.",
+      "open": "Ver minha reclamação",
+      "notFound": "Não foi possível abrir esta folha neste navegador. Solicite um novo link informando seu código e e-mail.",
+      "sheet": "Folha de Reclamação {code}",
+      "sheetNumber": "N.º da folha",
+      "status": "Situação",
+      "submittedAt": "Enviada em",
+      "responseDueAt": "Prazo máximo de resposta",
+      "kind": "Tipo",
+      "detail": "Descrição",
+      "request": "Solicitação do consumidor",
+      "answer": "Resposta do fornecedor",
+      "answeredAt": "Respondida em {date}",
+      "noAnswer": "Ainda não há resposta. Responderemos pelo meio escolhido dentro do prazo legal.",
+      "types": {
+        "reclamo": "Reclamação",
+        "queja": "Queixa"
+      },
+      "statuses": {
+        "received": "Recebida",
+        "in_review": "Em análise",
+        "answered": "Respondida",
+        "closed": "Encerrada",
+        "settled": "Resolvida"
+      },
+      "newRequest": "Consultar outra folha"
+    }
+  },
+  "account": {
+    "states": {
+      "idle": "",
+      "sent": "Se houver reservas vinculadas a esse e-mail, em alguns minutos você receberá um link de acesso. O link só pode ser usado uma vez. Confira também a pasta de spam.",
+      "invalid": "Confira o e-mail.",
+      "busy": "Você fez várias tentativas seguidas. Aguarde um minuto e tente novamente.",
+      "unavailable": "Não foi possível concluir a solicitação agora. Tente novamente em alguns minutos ou fale conosco pelo WhatsApp.",
+      "expired": "Este link já foi usado ou expirou. Solicite um novo abaixo.",
+      "linkNotFound": "Este link não é válido. Solicite um novo abaixo."
+    },
+    "access": {
+      "title": "Acessar minhas reservas",
+      "description": "Receba um link seguro por e-mail para consultar todas as suas reservas, sem senha.",
+      "intro": "Informe o e-mail usado ao reservar. Enviaremos um link seguro para consultar todas as suas reservas, sem senha.",
+      "emailLabel": "E-mail",
+      "emailHint": "O mesmo e-mail usado ao reservar.",
+      "submit": "Enviar link de acesso",
+      "sending": "Enviando…",
+      "tokenTitle": "Acesse suas reservas",
+      "tokenText": "Clique no botão para acessar suas reservas neste navegador. O link só pode ser usado uma vez.",
+      "open": "Ver minhas reservas",
+      "opening": "Entrando…",
+      "privacy": "Para sua segurança, nunca mostramos suas reservas sem verificar seu e-mail.",
+      "byCode": "Quer consultar apenas uma reserva?",
+      "byCodeLink": "Acesse com o código da reserva",
+      "alreadyIn": "Você já tem uma sessão aberta neste navegador.",
+      "goToBookings": "Ir para minhas reservas",
+      "loggedOut": "Você encerrou a sessão neste navegador."
+    },
+    "bookings": {
+      "title": "Minhas reservas",
+      "description": "Todas as suas reservas com a peruwonderstours: situação, datas e voucher.",
+      "listLabel": "Suas reservas",
+      "logout": "Sair",
+      "loggingOut": "Saindo…",
+      "signIn": "Receber link de acesso",
+      "problems": {
+        "signedOut": "Para consultar suas reservas, enviaremos um link seguro ao seu e-mail. Você não precisa de senha.",
+        "expired": "Sua sessão expirou. Solicite um novo link para entrar novamente.",
+        "unavailable": "Não foi possível carregar suas reservas agora. Tente novamente em alguns minutos."
+      },
+      "openError": "Não foi possível abrir essa reserva. Tente novamente ou fale conosco pelo WhatsApp.",
+      "empty": "Você ainda não tem reservas vinculadas a este e-mail.",
+      "browseTours": "Ver passeios",
+      "travelDate": "viagem em {date}",
+      "open": "Abrir",
+      "openLabel": "Abrir a reserva {code}",
+      "opening": "Abrindo…"
+    }
+  },
+  "blog": {
+    "title": "Blog de viagens",
+    "description": "Guias e dicas para viajar pelo Peru: Machu Picchu, Cusco, Lago Titicaca, trens, ingressos e informações úteis.",
+    "empty": "Em breve, publicaremos novos guias de viagem.",
+    "readMore": "Ler artigo",
+    "readMoreLabel": "Ler artigo: {title}",
+    "publishedOn": "Publicado em {date}",
+    "backToBlog": "Voltar ao blog",
+    "related": "Passeios para esta viagem",
+    "cta": "Podemos ajudar a planejar sua viagem?",
+    "ctaText": "Fale conosco pelo WhatsApp e montaremos com você o roteiro ideal.",
+    "ctaButton": "Planejar pelo WhatsApp",
+    "ctaMessage": "Olá, li o blog de vocês e quero planejar uma viagem pelo Peru."
+  },
+  "booking": {
+    "title": "Reserve este passeio",
+    "fromBlock": "A partir de <amount></amount> por adulto",
+    "onRequestHelp": "Informe a data e o número de viajantes para receber o preço.",
+    "chooseDate": "Data de saída",
+    "dateHelp": "Escolha uma data disponível no calendário.",
+    "chooseDateError": "Escolha uma data de saída.",
+    "minDateError": "A próxima data disponível é {date}.",
+    "notEnoughSeats": "{count, plural, =0 {Não há vagas disponíveis nessa data.} one {Resta apenas # vaga nessa data.} other {Restam apenas # vagas nessa data.}}",
+    "minPax": "Este passeio sai com no mínimo {count, plural, one {# viajante} other {# viajantes}}.",
+    "totalFor": "Total para {travelers}",
+    "fullPolicy": "Este passeio deve ser pago integralmente no momento da reserva.",
+    "closeDeparture": "As saídas com menos de {days} dias de antecedência devem ser pagas integralmente.",
+    "depositToday": "Hoje você paga {percent}% (<amount></amount>).",
+    "depositTodayNoAmount": "Hoje você paga {percent}% de entrada.",
+    "balanceUntil": "O saldo deve ser pago até {date}.",
+    "balanceBefore": "O saldo deve ser pago até {days} dias antes da saída.",
+    "inCart": "Já está no seu carrinho para {date}",
+    "viewCart": "Ver carrinho",
+    "addToCart": "Adicionar ao carrinho",
+    "added": "Adicionado",
+    "bookNow": "Reservar agora",
+    "toastAdded": "Passeio adicionado ao carrinho.",
+    "toastUpdated": "Atualizamos o passeio no seu carrinho.",
+    "announceAdded": "{title} adicionado ao carrinho. {count, plural, one {Você tem # passeio no carrinho.} other {Você tem # passeios no carrinho.}}",
+    "announceUpdated": "{title} atualizado no carrinho. {count, plural, one {Você tem # passeio no carrinho.} other {Você tem # passeios no carrinho.}}",
+    "trust": "Pagamento seguro. Sua vaga é reservada após a confirmação do pagamento.",
+    "questions": "Dúvidas? Fale conosco pelo WhatsApp",
+    "seeDates": "Ver datas",
+    "floating": "Reservar",
+    "floatingLabel": "Reservar: escolher data e viajantes"
+  },
+  "calendar": {
+    "prevMonth": "Mês anterior",
+    "nextMonth": "Próximo mês",
+    "loading": "Carregando saídas…",
+    "error": "Não foi possível carregar as saídas. Tente novamente ou fale conosco pelo WhatsApp.",
+    "legend": "Legenda do calendário",
+    "seats": "{count, plural, one {# vaga disponível} other {# vagas disponíveis}}",
+    "notEnough": "vagas insuficientes para {count, plural, one {# viajante} other {# viajantes}}",
+    "from": "a partir de {price}",
+    "selected": "selecionada",
+    "noMark": "Sem indicação: nenhuma saída programada",
+    "state": {
+      "available": "Disponível",
+      "few": "Últimas vagas",
+      "soldOut": "Esgotado",
+      "closed": "Fechado",
+      "none": "Sem saída",
+      "past": "Data passada"
+    },
+    "chosen": "Data escolhida: {date}",
+    "chosenSeats": "{count, plural, one {# vaga disponível} other {# vagas disponíveis}}",
+    "startTime": "início às {time}",
+    "fallbackError": "Não foi possível carregar o calendário de saídas. Escolha uma data e confirmaremos com você.",
+    "fallbackNoCalendar": "Este passeio tem saídas sob solicitação: escolha a data e confirmaremos a disponibilidade."
+  },
+  "cart": {
+    "title": "Seu carrinho",
+    "drawerTitle": "Seu carrinho",
+    "closeDrawer": "Fechar carrinho",
+    "emptyTitle": "Seu carrinho está vazio",
+    "emptyDrawerText": "Explore passeios em Puno, Cusco e Arequipa.",
+    "browseTours": "Ver passeios",
+    "listLabel": "Passeios no seu carrinho",
+    "subtotal": "Subtotal",
+    "onRequest": "Sob consulta",
+    "allUnpriced": "Enviaremos o preço destes passeios antes de cobrar.",
+    "someUnpriced": "{count, plural, one {# passeio está com preço sob consulta.} other {# passeios estão com preço sob consulta.}}",
+    "viewCart": "Ver carrinho",
+    "continue": "Continuar com a reserva",
+    "continueShort": "Continuar",
+    "date": "Data",
+    "saveChanges": "Salvar alterações",
+    "cancel": "Cancelar",
+    "priceToFollow": "Enviaremos o preço",
+    "fullPaymentRequired": "Pagamento integral obrigatório: {reason}",
+    "thirdPartyTickets": "inclui ingressos de terceiros",
+    "minTwoTravelers": "Este passeio sai com no mínimo 2 viajantes; para 1 viajante, confirmaremos o suplemento.",
+    "edit": "Editar",
+    "remove": "Remover",
+    "removeLabel": "Remover {title} do carrinho",
+    "removedAnnounce": "Você removeu {title}. Total atualizado: {total}.",
+    "removedToast": "Você removeu {title}",
+    "undo": "Desfazer",
+    "loading": "Carregando seu carrinho…",
+    "tourCount": "{count, plural, one {# passeio} other {# passeios}}",
+    "viewTrip": "Ver minha viagem dia a dia",
+    "keepExploring": "Continuar explorando",
+    "whatsappHelp": "Ajuda pelo WhatsApp",
+    "blockedHelp": "Há passeios com datas sobrepostas: altere uma data ou confirme que está correto.",
+    "payOptionsHint": "Na próxima etapa, você pode pagar 50 % ou o valor total.",
+    "trustLine": "Pagamento seguro · Comprovante eletrônico SUNAT · Livro de Reclamações",
+    "payTodayFrom": "Hoje você paga a partir de",
+    "payToday": "Hoje você paga",
+    "total": "Total",
+    "reviewDates": "Conferir datas",
+    "summary": "Resumo",
+    "yourOrder": "Seu pedido",
+    "totalTaxes": "Total (impostos incluídos)",
+    "balanceDue": "Saldo pendente",
+    "firstDue": "o primeiro vence em {date}",
+    "summaryAllUnpriced": "Preço sob consulta: enviaremos o valor exato antes de cobrar.",
+    "summarySomeUnpriced": "{count, plural, one {# passeio com preço sob consulta: não será cobrado hoje.} other {# passeios com preço sob consulta: não serão cobrados hoje.}}",
+    "whatsappStep": "carrinho",
+    "metaDescription": "Confira seus passeios antes de reservar."
+  },
+  "checkout": {
+    "stepsLabel": "Etapas do pagamento",
+    "stepOf": "Etapa {step} de {total}",
+    "steps": {
+      "contact": "Seus dados",
+      "travelers": "Viajantes",
+      "payment": "Pagamento"
+    },
+    "stepDone": "(concluído)",
+    "stepAnnounce": "Etapa {step} de {total}: {label}.",
+    "loading": "Carregando pagamento…",
+    "emptyTitle": "Não há passeios para pagar",
+    "emptyText": "Seu carrinho está vazio. Escolha um passeio para continuar.",
+    "beforePaying": "Antes de pagar",
+    "sandboxBanner": "Ambiente de testes (sandbox): os pagamentos são simulados; as reservas e vagas são registradas no sistema de testes.",
+    "pageTitle": "Pagamento da sua reserva",
+    "viewSummary": "Ver resumo · {total}",
+    "summaryLabel": "Resumo do pedido",
+    "editCart": "Editar carrinho",
+    "pricesConfirmed": "Preços e vagas confirmados agora.",
+    "dueOnShort": "vence em {date}",
+    "header": {
+      "home": "peruwonderstours, início",
+      "leaveConfirm": "Sair do pagamento? Seu carrinho será salvo.",
+      "secure": "Pagamento seguro"
+    },
+    "contact": {
+      "title": "Seus dados",
+      "intro": "Dados da pessoa responsável pela reserva. Enviaremos a confirmação para você.",
+      "haveBookings": "Já fez uma reserva antes?",
+      "myBookingsLink": "Ver minhas reservas",
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "emailShort": "E-mail",
+      "phoneShort": "Celular",
+      "countryShort": "País",
+      "businessName": "Razão social",
+      "email": "E-mail",
+      "phoneCountry": "Código do país",
+      "phone": "Celular (WhatsApp)",
+      "country": "País de residência",
+      "otherCountry": "Outro país",
+      "receipt": "Comprovante fiscal",
+      "boleta": "Boleta (comprovante para pessoa física)",
+      "factura": "Factura (comprovante para empresa)",
+      "dataUseTitle": "Como usamos seus dados",
+      "dataUseText": "Usamos os dados deste formulário e dos viajantes somente para gerenciar sua reserva, emitir seu comprovante e entrar em contato sobre a viagem (execução do contrato). Mais informações sobre o responsável pelo tratamento, destinatários, prazos e seus direitos na <link>Política de privacidade</link>.",
+      "marketingTitle": "Novidades e ofertas",
+      "marketingHint": "(opcional; você pode cancelar a inscrição quando quiser)",
+      "marketingEmail": "Quero receber ofertas e novidades por e-mail.",
+      "marketingWhatsapp": "Quero receber ofertas e novidades pelo WhatsApp.",
+      "next": "Continuar para viajantes"
+    },
+    "travelers": {
+      "peruvian": "Peruana",
+      "title": "Viajantes",
+      "intro": "Dados de cada pessoa, exatamente como constam no documento.",
+      "exactDocs": "Os ingressos de Machu Picchu e as passagens de trem são emitidos com o nome e o documento exatos. Confira com atenção.",
+      "useContact": "Usar meus dados para o viajante 1 ({name})",
+      "booker": "responsável pela reserva",
+      "traveler": "Viajante {n}",
+      "fullName": "Nome completo",
+      "docType": "Tipo de documento",
+      "docTypes": {
+        "dni": "DNI",
+        "pasaporte": "Passaporte",
+        "ce": "Carnê de estrangeiro (Peru)"
+      },
+      "docNumber": "Número do documento",
+      "nationality": "Nacionalidade",
+      "hotel": "Hotel para o traslado de saída",
+      "notes": "Necessidades especiais ou alimentação",
+      "optional": "(opcional)",
+      "back": "Voltar para seus dados",
+      "next": "Continuar para pagamento"
+    },
+    "payment": {
+      "announceBlocked": "Há passeios no seu carrinho que não podem ser reservados. Confira os avisos.",
+      "announcePriceChanged": "O preço do seu pedido mudou. Confira o novo total antes de pagar.",
+      "announceConfirmed": "Preços e vagas confirmados. Total {total}.",
+      "connectionError": "Não foi possível conectar ao sistema de reservas. Nenhum valor foi cobrado; tente novamente.",
+      "requestDescription": "{count, plural, one {Reserva · # passeio} other {Reserva · # passeios}}",
+      "ackPriceRequired": "Confirme que aceita o novo preço para continuar.",
+      "title": "Pagamento",
+      "confirming": "Confirmando preços e vagas em tempo real…",
+      "prepareFailed": "Não foi possível preparar seu pagamento",
+      "retry": "Tentar novamente",
+      "backToCart": "Voltar ao carrinho",
+      "payAmount": "Pagar {amount}",
+      "pay": "Pagar",
+      "intro": "Confira o valor, escolha como pagar e confirme.",
+      "payFailed": "Não foi possível concluir o pagamento:",
+      "whatsappHelp": "Ajuda pelo WhatsApp",
+      "bookingKept": "Sua reserva <mono>{code}</mono> continua salva enquanto o prazo de pagamento estiver vigente.",
+      "viewBooking": "Ver minha reserva",
+      "fixCart": "Antes de pagar, corrija seu carrinho:",
+      "priceChangedTitle": "O preço mudou desde que você adicionou estes passeios:",
+      "onRequest": "sob consulta",
+      "ackPrice": "Entendo e aceito o novo total de {total}.",
+      "howMuch": "Quanto você quer pagar hoje?",
+      "depositOption": "Pagar {percent} % agora",
+      "depositHelp": "Reserve suas vagas hoje e pague o restante antes da viagem.",
+      "fullOption": "Pagar 100 % agora",
+      "fullHelp": "Sem saldo pendente. Você recebe um único comprovante.",
+      "lockedOption": "Sua reserva {code} já está salva: conclua o pagamento de {amount}.",
+      "fullOnlyReason": "Este pedido exige pagamento integral: {reason}",
+      "fullOnly": "Este pedido exige pagamento integral: inclui ingressos de terceiros ou saídas em menos de 7 dias.",
+      "bookingTotal": "Total da reserva",
+      "deposit": "Entrada",
+      "payment": "Pagamento",
+      "cardFee": "Taxa de pagamento com cartão ({percent} %)",
+      "payToday": "Hoje você paga",
+      "balance": "Saldo pendente",
+      "dueOn": "Vence em {date}.",
+      "howToPayBalance": "Como pagar o saldo: na página da sua reserva, usando o link que enviaremos por e-mail e WhatsApp.",
+      "method": "Forma de pagamento",
+      "methods": {
+        "card": {
+          "label": "Cartão",
+          "note": "Visa, Mastercard, Amex, Diners"
+        },
+        "yape": {
+          "label": "Yape",
+          "note": "Pagamento pelo celular"
+        },
+        "pagoefectivo": {
+          "label": "PagoEfectivo",
+          "note": "Internet banking ou agentes (código CIP de 24 h)"
+        }
+      },
+      "cardFeeNote": "Taxa de {percent} % sobre o valor a pagar",
+      "contact": "Contato:",
+      "edit": "Editar",
+      "travelers": "Viajantes:",
+      "tourCount": "{count, plural, one {# passeio} other {# passeios}}",
+      "cancellationTitle": "Política de cancelamento (resumo)",
+      "cancellation1": "Cancelamentos com pelo menos 20 dias úteis de antecedência: serão descontados os custos dos serviços já emitidos.",
+      "cancellation2": "Passagens de trem, ingressos para Machu Picchu e sobrevoos não são reembolsáveis após a emissão.",
+      "cancellation3": "Cancelamentos com pouca antecedência ou serviços não utilizados: sem reembolso.",
+      "fullPolicy": "Ver política completa",
+      "holdNote": "Ao confirmar, guardamos suas vagas por 15 minutos enquanto o pagamento é processado.",
+      "terms": "Aceito os <terms>Termos e condições</terms> e a <payments>Política de pagamentos e cancelamento</payments> e declaro ter lido a <privacy>Política de privacidade</privacy>.",
+      "processing": "Processando seu pagamento…",
+      "secureNote": "Pagamento seguro · Você receberá seu comprovante eletrônico por e-mail",
+      "payHelp": "Problemas para pagar? Ajuda pelo WhatsApp",
+      "whatsappStep": "pagamento"
+    },
+    "hold": {
+      "minutesLeft": "{count, plural, one {Resta # minuto para concluir o pagamento.} other {Restam # minutos para concluir o pagamento.}}",
+      "expiredShort": "O prazo para pagar expirou e suas vagas foram liberadas.",
+      "expired": "O prazo para pagar expirou e suas vagas foram liberadas. Volte ao carrinho para conferir a disponibilidade.",
+      "holding": "Guardamos suas vagas por mais <strong>{time}</strong> min."
+    },
+    "sandbox": {
+      "title": "Modo sandbox: pagamento simulado, nenhuma cobrança será realizada",
+      "text": "Aqui será exibido o formulário seguro do provedor de pagamentos para {method}. Os dados do seu cartão irão diretamente ao provedor; a peruwonderstours não os armazena.",
+      "amount": "Valor a enviar:",
+      "booking": "Reserva",
+      "outcome": "Resultado a simular",
+      "approved": "Aprovado",
+      "rejected": "Recusado",
+      "pending": "Pendente (CIP)"
+    },
+    "payBooking": {
+      "succeeded": "Pagamento registrado. Atualizamos sua reserva.",
+      "pending": "Pagamento aguardando confirmação.",
+      "connectionError": "Não foi possível conectar ao sistema de pagamentos. Nenhum valor foi cobrado; tente novamente.",
+      "kind": {
+        "deposit": "Pagar a entrada",
+        "full": "Pagar o total",
+        "balance": "Pagar o saldo",
+        "now": "Pagar agora"
+      },
+      "description": "Reserva {code}"
+    },
+    "metaTitle": "Pagamento",
+    "metaDescription": "Conclua sua reserva em 3 etapas."
+  },
+  "collection": {
+    "destinationEyebrow": "Destino",
+    "destinationTitle": "Passeios em {name}",
+    "destinationDescription": "Passeios e excursões em {name} com guias locais, saídas confirmadas e reserva com entrada.",
+    "categoryEyebrow": "Tipo de passeio",
+    "categoryDescription": "{name}: passeios pelo Peru com guias locais e reserva com entrada.",
+    "available": "{count, plural, =0 {Nenhum passeio disponível no momento} one {# passeio disponível} other {# passeios disponíveis}}",
+    "filterByDuration": "Filtrar por duração e data",
+    "empty": "Ainda não há passeios publicados aqui."
+  },
+  "common": {
+    "home": "Início",
+    "tours": "Passeios",
+    "destinations": "Destinos",
+    "severalDestinations": "Vários destinos",
+    "fallbackNotice": "Conteúdo disponível apenas em espanhol no momento.",
+    "viewAllTours": "Ver todos os passeios",
+    "breadcrumbs": "Caminho de navegação",
+    "logoAlt": "peruwonderstours",
+    "logoHome": "peruwonderstours, ir para o início",
+    "pending": "A confirmar",
+    "whatsappUs": "Fale conosco pelo WhatsApp",
+    "skipToContent": "Pular para o conteúdo principal"
+  },
+  "compare": {
+    "toggle": "Comparar",
+    "toggleLabel": "Comparar {title}",
+    "addedAnnounce": "{title} adicionado ao comparador ({count} de {max}).",
+    "addedToast": "{count, plural, one {# passeio no comparador} other {# passeios no comparador}} (máximo {max}).",
+    "removedAnnounce": "{title} removido do comparador.",
+    "full": "Você pode comparar até {max} passeios de uma vez.",
+    "fullAnnounce": "{title} não foi adicionado: o comparador já tem {max} passeios.",
+    "compareNow": "Comparar agora",
+    "trayLabel": "Comparador de passeios",
+    "trayTitle": "Comparar passeios ({count} de {max})",
+    "removeLabel": "Remover {title} do comparador",
+    "clear": "Limpar",
+    "clearedAnnounce": "Comparador vazio.",
+    "compareCount": "Comparar {count}",
+    "chooseTwo": "Escolha pelo menos 2 passeios para comparar.",
+    "remove": "Remover",
+    "removeFromTable": "Remover {title} da comparação"
+  },
+  "comparePage": {
+    "title": "Comparar passeios",
+    "description": "Compare até 3 passeios lado a lado: duração, destinos, dificuldade, o que está incluído e preço inicial.",
+    "missing": "{count, plural, one {Um passeio desta comparação não está mais disponível.} other {# passeios desta comparação não estão mais disponíveis.}}",
+    "emptyTitle": "Escolha 2 ou 3 passeios para comparar",
+    "emptyText": "Marque “Comparar” nos cartões dos passeios que interessam a você.",
+    "viewTours": "Ver passeios",
+    "addAnother": "Adicione pelo menos mais um passeio para comparar.",
+    "tableLabel": "Tabela comparativa; role horizontalmente para ver todos os passeios",
+    "caption": "Comparação de {titles}",
+    "actions": "Ações",
+    "seeDates": "Ver datas",
+    "more": "e mais {count}",
+    "pending": "A confirmar",
+    "footnote": "Altitude, esforço, política de cancelamento e saídas serão adicionados à comparação quando estiverem publicados para cada passeio.",
+    "rows": {
+      "price": "Preço a partir de",
+      "duration": "Duração",
+      "destinations": "Destinos",
+      "difficulty": "Dificuldade",
+      "minPax": "Mínimo de viajantes",
+      "includes": "Inclui",
+      "notIncludes": "Não inclui"
+    }
+  },
+  "complaints": {
+    "notice": {
+      "label": "Livro de Reclamações",
+      "text": "De acordo com o Código de Proteção e Defesa do Consumidor do Peru, a {name} disponibiliza um Livro de Reclamações virtual."
+    },
+    "page": {
+      "title": "Livro de Reclamações",
+      "description": "Livro de Reclamações virtual da {name} (Lei peruana 29571). Registre sua reclamação ou queixa sem criar uma conta.",
+      "intro": "De acordo com o Código de Proteção e Defesa do Consumidor do Peru, a {name} disponibiliza este Livro de Reclamações virtual. Você não precisa de uma conta nem de uma reserva para usá-lo. Se precisar de ajuda para preencher, fale conosco pelo WhatsApp {whatsapp}.",
+      "spanishForm": "Os rótulos oficiais e a folha de reclamação são mantidos em espanhol, com orientações em português."
+    },
+    "form": {
+      "help": {
+        "sheet": "Folha de reclamação",
+        "sheetNumber": "N.º da folha",
+        "date": "Data",
+        "provider": "Fornecedor (razão social) / RUC",
+        "establishment": "Endereço do estabelecimento / código",
+        "section1": "Identificação do consumidor reclamante",
+        "section2": "Identificação do bem contratado",
+        "section3": "Descrição da reclamação e solicitação do consumidor",
+        "fullName": "Nome completo",
+        "docType": "Tipo de documento",
+        "docNumber": "Número do documento",
+        "address": "Endereço",
+        "phone": "Telefone",
+        "email": "E-mail",
+        "emailConfirm": "Confirme seu e-mail",
+        "isMinor": "Sou menor de idade (serão solicitados os dados do meu pai, mãe ou representante).",
+        "guardian": "Pai, mãe ou representante",
+        "guardianFullName": "Nome completo do representante",
+        "guardianAddress": "Endereço do representante",
+        "guardianPhone": "Telefone do representante",
+        "guardianEmail": "E-mail do representante",
+        "goodType": "Bem contratado",
+        "service": "Serviço",
+        "product": "Produto",
+        "claimedAmount": "Valor reclamado",
+        "claimedAmountOptional": "Valor reclamado (opcional)",
+        "currency": "Moeda",
+        "goodDescription": "Descrição do serviço ou produto",
+        "bookingCode": "Código da reserva (opcional)",
+        "declaredType": "Tipo",
+        "reclamo": "Reclamação",
+        "queja": "Queixa",
+        "unknown": "Não tenho certeza",
+        "detail": "Descrição",
+        "consumerRequest": "Solicitação",
+        "responseChannel": "Como você quer receber a resposta?",
+        "channelEmail": "Por e-mail",
+        "channelLetter": "Por carta no meu endereço"
+      },
+      "summary": {
+        "fullName": "Nome completo",
+        "docNumber": "Documento",
+        "address": "Endereço",
+        "phone": "Telefone",
+        "email": "E-mail",
+        "emailConfirm": "Confirmar e-mail",
+        "guardianFullName": "Representante",
+        "guardianAddress": "Endereço do representante",
+        "guardianPhone": "Telefone do representante",
+        "guardianEmail": "E-mail do representante",
+        "claimedAmount": "Valor reclamado",
+        "goodDescription": "Descrição",
+        "bookingCode": "Código da reserva",
+        "declaredType": "Tipo",
+        "detail": "Descrição detalhada",
+        "consumerRequest": "Solicitação",
+        "conformityAccepted": "Concordância"
+      },
+      "hints": {
+        "phone": "Celular do Peru ou com código do país (+56…).",
+        "emailConfirm": "Enviaremos a cópia da folha e a resposta para este endereço.",
+        "claimedAmount": "Pode ser 0 se você não estiver reclamando um valor.",
+        "goodDescription": "Por exemplo: passeio, data e número de viajantes.",
+        "bookingCode": "Se você tiver um, no formato PWT-2026-000123. Não é obrigatório.",
+        "detail": "Conte o que aconteceu, quando e com quem.",
+        "consumerRequest": "Qual solução você espera?"
+      },
+      "docTypes": {
+        "dni": "DNI",
+        "ce": "Carnê de estrangeiro (Peru)",
+        "passport": "Passaporte",
+        "other": "Outro documento"
+      },
+      "pending": "a confirmar",
+      "autoNumber": "Atribuído automaticamente ao enviar",
+      "announceRegistered": "Registramos sua folha {code}.",
+      "connectionError": "Não foi possível registrar sua folha. Confira sua conexão e tente novamente.",
+      "serverErrorTitle": "Não foi possível registrar sua folha:",
+      "currencyPEN": "Soles (S/)",
+      "currencyUSD": "Dólares (USD)",
+      "unknownNote": "Se você não tiver certeza, analisaremos e processaremos como reclamação.",
+      "definitions": {
+        "reclamo": "Reclamação: insatisfação relacionada aos produtos ou serviços.",
+        "queja": "Queixa: insatisfação não relacionada aos produtos ou serviços; ou mal-estar ou descontentamento com o atendimento ao público."
+      },
+      "conformity": "Declaro que os dados informados nesta folha são verdadeiros e que concordo com seu conteúdo. Esta declaração substitui minha assinatura.",
+      "legends": {
+        "first": "O registro da reclamação não impede o recurso a outros meios de solução de controvérsias nem é requisito prévio para apresentar uma denúncia ao INDECOPI.",
+        "second": "O fornecedor deve responder à reclamação ou queixa em um prazo máximo de quinze (15) dias úteis, que não pode ser prorrogado."
+      },
+      "privacy": "Usaremos estes dados apenas para tratar sua reclamação ou queixa e responder, conforme exige o Código de Proteção e Defesa do Consumidor do Peru, e os conservaremos por pelo menos 2 anos. Registramos a data, a hora e o IP do envio. Mais informações na <link>Política de privacidade</link>.",
+      "sending": "Enviando…",
+      "submit": "Enviar folha de reclamação"
+    },
+    "receipt": {
+      "registered": "Registramos sua folha de reclamação",
+      "copySent": "Enviaremos uma cópia para {email}. Salve ou imprima este comprovante; responderemos até <strong>{date}</strong>.",
+      "print": "Imprimir ou salvar como PDF"
+    }
+  },
+  "contact": {
+    "title": "Fale conosco",
+    "description": "Entre em contato para solicitar um orçamento de viagem pelo Peru ou tirar suas dúvidas. Respondemos por e-mail ou WhatsApp.",
+    "intro": "Conte qual viagem você tem em mente e responderemos o mais breve possível. Se preferir, fale conosco pelo WhatsApp.",
+    "whatsapp": "WhatsApp: {number}",
+    "office": "Escritório: {address}",
+    "hours": "Atendimento: de segunda a sábado, das 09:00 às 19:00 (horário do Peru)",
+    "formTitle": "Envie uma mensagem",
+    "name": "Nome",
+    "email": "E-mail",
+    "phone": "Telefone (opcional)",
+    "subject": "Assunto",
+    "subjectHint": "Entre 3 e 150 caracteres.",
+    "invalidSubject": "Escreva um assunto com 3 a 150 caracteres.",
+    "invalidMessage": "Escreva uma mensagem com 10 a 4000 caracteres.",
+    "invalidPhone": "Informe um telefone com 6 a 20 caracteres, com números e código do país.",
+    "message": "Mensagem",
+    "messageHint": "Datas aproximadas, número de viajantes e passeios que interessam a você.",
+    "privacy": "Aceito o tratamento dos meus dados para responder a esta consulta, conforme a <link>Política de proteção de dados pessoais</link>.",
+    "submit": "Enviar mensagem",
+    "sending": "Enviando…",
+    "success": "Obrigado! Recebemos sua mensagem e responderemos em breve.",
+    "invalid": "Confira os campos indicados.",
+    "busy": "Você fez várias tentativas seguidas. Aguarde um minuto e tente novamente.",
+    "unavailable": "Não foi possível enviar sua mensagem agora. Tente novamente ou fale conosco pelo WhatsApp.",
+    "required": "Este campo é obrigatório.",
+    "invalidEmail": "Informe um e-mail válido.",
+    "privacyRequired": "Você precisa aceitar a política de dados pessoais para enviar a mensagem."
+  },
+  "destinationsPage": {
+    "title": "Destinos no Peru",
+    "description": "Conheça Puno e o Lago Titicaca, Cusco e Machu Picchu, Arequipa e o Colca, Ica-Paracas e Lima em passeios com guias locais."
+  },
+  "explorer": {
+    "metaTitle": "Passeios no Peru",
+    "metaDescription": "Busque e filtre passeios em Puno, Cusco, Arequipa, Ica e Lima por destino, tipo, duração e data de saída.",
+    "itemListName": "Passeios no Peru",
+    "title": "Passeios no Peru",
+    "filtersButton": "{count, plural, =0 {Filtros} other {Filtros (#)}}",
+    "formLabel": "Filtrar passeios",
+    "search": "Buscar",
+    "placeholder": "Ex.: Colca 2 dias em maio para 2 adultos",
+    "searchHelp": "Escreva o que procura e transformaremos sua busca em filtros.",
+    "destination": "Destino",
+    "allDestinations": "Todos os destinos",
+    "category": "Tipo de passeio",
+    "allCategories": "Todos os tipos",
+    "duration": "Duração",
+    "anyDuration": "Qualquer duração",
+    "date": "Data de saída",
+    "month": "Mês da viagem",
+    "anyMonth": "Qualquer mês",
+    "travelersLabel": "Adultos",
+    "notSpecified": "Não especificado",
+    "travelers": "{count, plural, one {# adulto} other {# adultos}}",
+    "children": "{count, plural, one {# criança} other {# crianças}}",
+    "clear": "Limpar filtros",
+    "results": "{count, plural, =0 {Nenhum passeio corresponde a estes filtros} one {# passeio encontrado} other {# passeios encontrados}}",
+    "applied": "Filtros aplicados",
+    "removeChip": "Remover filtro: {label}",
+    "chips": {
+      "destination": "Destino: {value}",
+      "category": "Tipo: {value}",
+      "duration": "Duração: {value}",
+      "date": "Data: {value}",
+      "month": "Mês: {value}",
+      "text": "Texto: {value}",
+      "travelersChildren": "{adults, plural, one {# adulto} other {# adultos}} e {children, plural, one {# criança} other {# crianças}}"
+    },
+    "understood": {
+      "destination": "destino {value}",
+      "category": "tipo {value}",
+      "month": "mês de {value}",
+      "duration": "duração {value}"
+    },
+    "understoodAnnounce": "Entendemos: {list}. Filtros atualizados.",
+    "searchedDate": "Saída em {date}",
+    "searchedMonth": "Saídas em {month}",
+    "searchedNoDate": "Nenhuma data escolhida",
+    "availabilityLoading": "Consultando disponibilidade…",
+    "availabilityError": "Não foi possível consultar a disponibilidade; confirmaremos no momento da reserva.",
+    "availabilityNote": "A disponibilidade é confirmada ao escolher a data de cada passeio.",
+    "emptyTitle": "Não encontramos passeios com esses filtros",
+    "emptyText": "Tente remover algum filtro ou fale conosco pelo WhatsApp para ajudarmos a montar sua viagem.",
+    "suggestions": "Passeios que podem interessar a você"
+  },
+  "favorites": {
+    "button": {
+      "label": "Salvar {title} nos favoritos",
+      "inline": "Salvar",
+      "removeTitle": "Remover dos favoritos",
+      "saved": "Passeio salvo nos favoritos.",
+      "view": "Ver favoritos",
+      "noStorage": "Seu navegador não permite salvar favoritos neste dispositivo.",
+      "announceAdded": "{title} salvo nos favoritos. {count, plural, one {Você tem # passeio salvo.} other {Você tem # passeios salvos.}}",
+      "announceRemoved": "{title} removido dos favoritos."
+    },
+    "title": "Meus favoritos",
+    "metaDescription": "Os passeios que você salvou neste navegador. Compartilhe com quem vai viajar com você.",
+    "intro": "Salve os passeios que interessam a você usando o coração e compare com calma.",
+    "savedCount": "{count, plural, one {# passeio salvo} other {# passeios salvos}} neste dispositivo.",
+    "loading": "Carregando favoritos…",
+    "noStorage": "Seu navegador não permite salvar favoritos (modo privado ou armazenamento bloqueado).",
+    "share": "Compartilhar lista",
+    "shareLink": "Copiar link da lista",
+    "shareTitle": "Meus passeios favoritos no Peru",
+    "shareText": "Veja os passeios que salvei para minha viagem ao Peru:",
+    "shared": "Lista compartilhada.",
+    "copiedAnnounce": "Link copiado para a área de transferência.",
+    "copiedToast": "Link copiado. Cole onde quiser compartilhar.",
+    "copyFailed": "Não foi possível copiar o link. Copie pela barra de endereços.",
+    "remove": "Remover",
+    "removed": "{title} removido dos favoritos.",
+    "emptyTitle": "Você ainda não tem favoritos",
+    "emptyText": "Toque no coração de qualquer passeio para salvá-lo aqui.",
+    "viewTours": "Explorar passeios",
+    "sharedTitle": "Lista de passeios compartilhada",
+    "sharedText": "{count, plural, one {Compartilharam # passeio com você.} other {Compartilharam # passeios com você.}}",
+    "saveAll": "Salvar todos nos meus favoritos",
+    "savedMany": "Passeios salvos nos seus favoritos.",
+    "announceSavedMany": "{count, plural, =0 {Não havia novos passeios para salvar.} one {# passeio foi salvo nos favoritos.} other {# passeios foram salvos nos favoritos.}}",
+    "viewMine": "Ver meus favoritos",
+    "unavailable": "Indisponível",
+    "unavailableText": "Este passeio não está mais publicado.",
+    "unknownTour": "Passeio indisponível"
+  },
+  "filters": {
+    "duration": {
+      "1": "1 dia",
+      "2-3": "2 a 3 dias",
+      "4-6": "4 a 6 dias",
+      "7+": "7 dias ou mais"
+    }
+  },
+  "footer": {
+    "title": "Rodapé",
+    "tagline": "Agência de viagens com escritório em Puno. Passeios pelo Lago Titicaca, Cusco, Machu Picchu, Arequipa e a costa sul do Peru.",
+    "short": {
+      "terms": "Termos",
+      "payments": "Pagamentos",
+      "privacy": "Privacidade"
+    },
+    "complaintsBook": "Livro de Reclamações",
+    "complaintsBookHint": "Registre sua reclamação ou queixa on-line",
+    "legal": {
+      "businessName": "Razão social",
+      "ruc": "RUC",
+      "rucExample": "{number} (exemplo; RUC real pendente)",
+      "mincetur": "Registro MINCETUR",
+      "office": "Escritório",
+      "email": "E-mail"
+    },
+    "columns": {
+      "tours": "Passeios",
+      "company": "Empresa",
+      "help": "Ajuda",
+      "legal": "Informações legais"
+    },
+    "destinations": {
+      "puno": "Puno e Lago Titicaca",
+      "cusco": "Cusco e Machu Picchu",
+      "arequipa": "Arequipa e Colca",
+      "ica": "Ica e Paracas",
+      "lima": "Lima"
+    },
+    "links": {
+      "allTours": "Todos os passeios",
+      "tourTypes": "Tipos de passeios",
+      "about": "Sobre nós",
+      "blog": "Blog de viagens",
+      "reviews": "Depoimentos",
+      "contact": "Fale conosco",
+      "myBookings": "Minhas reservas",
+      "myBooking": "Acessar minha reserva",
+      "complaintStatus": "Consultar minha reclamação",
+      "favorites": "Meus favoritos",
+      "terms": "Termos e condições",
+      "payments": "Condições de pagamento",
+      "privacy": "Proteção de dados pessoais",
+      "cookies": "Política de cookies"
+    },
+    "hours": "De segunda a sábado, das 09:00 às 19:00 (horário do Peru)",
+    "whatsapp": "WhatsApp {number}",
+    "follow": "Siga-nos",
+    "social": {
+      "facebook": "{name} no Facebook",
+      "tripadvisor": "{name} no TripAdvisor"
+    },
+    "payments": "Formas de pagamento",
+    "paymentsText": "Cartões Visa e Mastercard e transferência bancária.",
+    "esnna": "A {name} repudia a exploração sexual de crianças e adolescentes. Se souber de algum caso, denuncie à Linha 100 do Peru.",
+    "copyright": "© {year} {name}. Todos os direitos reservados.",
+    "whatsappHelp": "Vamos planejar sua viagem?"
+  },
+  "formErrors": {
+    "firstNameRequired": "Informe seu nome.",
+    "lastNameRequired": "Informe seu sobrenome.",
+    "emailForConfirmation": "Confira o e-mail; enviaremos a confirmação para este endereço.",
+    "countryRequired": "Escolha seu país de residência.",
+    "phonePeru": "Informe um número de celular com 9 dígitos.",
+    "phoneInvalid": "Informe um número de telefone válido.",
+    "rucInvalid": "O RUC tem 11 dígitos e começa com 10, 15, 17 ou 20.",
+    "businessNameRequired": "Informe a razão social.",
+    "travelerFullName": "Informe o nome completo, exatamente como consta no documento.",
+    "nationalityRequired": "Informe a nacionalidade.",
+    "dniInvalid": "O DNI tem 8 dígitos.",
+    "docInvalid": "Confira o número do documento.",
+    "maxChars": "Máximo de {n} caracteres.",
+    "termsRequired": "Para pagar, aceite os Termos e condições e a Política de cancelamento.",
+    "ceInvalid": "O carnê de estrangeiro tem de 9 a 12 letras ou números.",
+    "passportInvalid": "O passaporte tem de 5 a 20 letras ou números.",
+    "otherDocInvalid": "O documento tem de 3 a 20 letras ou números.",
+    "phoneIntl": "Informe um telefone válido, com código do país se não for do Peru (+56…).",
+    "emailInvalid": "Confira o e-mail.",
+    "fullNameRequired": "Informe seu nome completo.",
+    "docNumberRequired": "Informe o número do seu documento.",
+    "addressRequired": "Informe seu endereço (logradouro, distrito e cidade).",
+    "goodDescriptionRequired": "Descreva o serviço ou produto (por exemplo, o passeio e a data).",
+    "bookingCodeFormat": "O código da reserva tem o formato PWT-2026-000123 (opcional).",
+    "declaredTypeRequired": "Escolha entre reclamação e queixa.",
+    "detailRequired": "Conte o que aconteceu (mínimo de 10 caracteres).",
+    "consumerRequestRequired": "Informe o que você solicita (mínimo de 5 caracteres).",
+    "conformityRequired": "Marque a declaração de concordância: ela substitui sua assinatura.",
+    "emailMismatch": "Os e-mails não coincidem.",
+    "guardianFullNameRequired": "Informe o nome do pai, da mãe ou do representante.",
+    "guardianAddressRequired": "Informe o endereço do representante.",
+    "guardianPhoneRequired": "Informe o telefone do representante.",
+    "guardianEmailRequired": "Informe o e-mail do representante.",
+    "amountFormat": "Informe o valor com até 2 casas decimais (ex.: 450.00).",
+    "amountRequired": "Informe o valor reclamado (pode ser 0 se não houver valor).",
+    "optional": "(opcional)",
+    "summaryTitle": "{count, plural, one {Confira este campo para continuar:} other {Confira estes # campos para continuar:}}"
+  },
+  "gallery": {
+    "enlarge": "Ampliar foto {n} de {total}",
+    "counter": "{n} / {total}",
+    "previous": "Foto anterior",
+    "next": "Próxima foto",
+    "viewAll": "Ver as {total} fotos",
+    "dialog": "Galeria de fotos: {title}",
+    "close": "Fechar galeria"
+  },
+  "header": {
+    "mainNav": "Navegação principal",
+    "mobileNav": "Menu do site",
+    "panels": {
+      "descubre": "Descubra",
+      "viajes": "Viagens",
+      "destinos": "Destinos"
+    },
+    "about": "Sobre nós",
+    "contact": "Fale conosco",
+    "myBookings": "Minhas reservas",
+    "book": "Reservar",
+    "openMenu": "Abrir menu",
+    "closeMenu": "Fechar menu",
+    "language": "Idioma",
+    "languageButton": "Idioma: {language}. Alterar idioma",
+    "languageName": {
+      "es": "Español",
+      "en": "English",
+      "pt": "Português"
+    },
+    "favoritesLabel": "{count, plural, =0 {Favoritos} one {Favoritos, # passeio salvo} other {Favoritos, # passeios salvos}}",
+    "cartLabel": "{count, plural, =0 {Carrinho vazio} one {Carrinho, # passeio} other {Carrinho, # passeios}}",
+    "whatsappMessage": "Olá, gostaria de informações sobre os passeios de vocês no Peru."
+  },
+  "home": {
+    "metaTitle": "Passeios em Puno, Lago Titicaca, Cusco e Machu Picchu",
+    "hero": {
+      "title": "Viaje pelo Peru com quem conhece o país",
+      "lead": "Passeios ao Lago Titicaca, Machu Picchu, Colca e costa sul com guias locais, saídas confirmadas e reserva com entrada.",
+      "imageAlt": "Ilhas flutuantes dos Uros no Lago Titicaca, Puno",
+      "scroll": "Role para descobrir",
+      "banners": "Destinos do banner principal",
+      "previousBanner": "Banner anterior",
+      "nextBanner": "Próximo banner",
+      "showBanner": "Mostrar {name}",
+      "playBanner": "Reproduzir animação e carrossel",
+      "pauseBanner": "Pausar animação e carrossel"
+    },
+    "featured": {
+      "title": "Passeios em destaque",
+      "viewAll": "Ver os {count} passeios",
+      "tabsLabel": "Filtrar passeios em destaque",
+      "oneDayLink": "Ver passeios de um dia",
+      "groups": {
+        "all": "Todos",
+        "altiplano": "Altiplano e Titicaca",
+        "machuPicchu": "Machu Picchu",
+        "multi": "Vários destinos"
+      },
+      "emptyFeatured": "Em breve, publicaremos nossos passeios em destaque.",
+      "emptyGroup": "Ainda não há passeios neste grupo."
+    },
+    "destinations": {
+      "title": "Destinos",
+      "viewAll": "Ver todos os destinos",
+      "railLabel": "Destinos do Peru",
+      "previous": "Destinos anteriores",
+      "next": "Mais destinos",
+      "tourCount": "{count, plural, =0 {Em breve} one {# passeio} other {# passeios}}"
+    },
+    "whyUs": {
+      "title": "Por que viajar conosco?",
+      "toursPublished": "Passeios publicados",
+      "destinations": "Destinos",
+      "reasons": {
+        "office": {
+          "title": "Escritório em Puno",
+          "text": "Somos operadores locais: atendemos você antes, durante e depois da viagem."
+        },
+        "guides": {
+          "title": "Guias locais",
+          "text": "Guias que vivem em cada destino e compartilham sua história e cultura."
+        },
+        "deposit": {
+          "title": "Reserva com entrada",
+          "text": "Garanta sua vaga com uma entrada e pague o saldo antes da saída."
+        },
+        "whatsapp": {
+          "title": "Atendimento pelo WhatsApp",
+          "text": "Tiramos suas dúvidas na hora, em espanhol ou inglês."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Pronto para sua próxima viagem?",
+      "text": "Conte o que você quer conhecer e montaremos com você o roteiro ideal.",
+      "whatsapp": "Planejar pelo WhatsApp",
+      "whatsappMessage": "Olá, {name}, quero planejar uma viagem pelo Peru.",
+      "packages": "Ver pacotes"
+    }
+  },
+  "language": {
+    "name": {
+      "es": "Español",
+      "en": "English",
+      "pt": "Português"
+    }
+  },
+  "legal": {
+    "draftLabel": "Aviso de versão preliminar",
+    "draft": "VERSÃO PRELIMINAR: este documento está em análise jurídica e pode mudar antes da publicação definitiva.",
+    "draftWithVersion": "VERSÃO PRELIMINAR (versão {version}): este documento está em análise jurídica e pode mudar antes da publicação definitiva.",
+    "spanishOnly": "Este documento está disponível apenas em espanhol.",
+    "pages": {
+      "terms": {
+        "title": "Termos e condições",
+        "description": "Condições de uso do site e de contratação de passeios e pacotes com a peruwonderstours."
+      },
+      "privacy": {
+        "title": "Proteção de dados pessoais",
+        "description": "Como tratamos seus dados pessoais conforme a Lei peruana n.º 29733 e como exercer seus direitos ARCO."
+      },
+      "payments": {
+        "title": "Condições de pagamento",
+        "description": "Entradas, saldos, formas de pagamento, alterações, cancelamentos e reembolsos das suas reservas."
+      },
+      "cookies": {
+        "title": "Política de cookies",
+        "description": "Quais cookies este site usa, para que servem e como você pode gerenciá-los."
+      }
+    }
+  },
+  "nav": {
+    "media": {
+      "heroAlt": "Vista do Lago Titicaca em Puno",
+      "heroAltFallback": "Ilhas flutuantes dos Uros no Lago Titicaca",
+      "discover": {
+        "titicaca": {
+          "title": "Lago Titicaca",
+          "description": "Uros, Taquile e Amantaní no lago navegável mais alto do mundo."
+        },
+        "machuPicchu": {
+          "title": "Machu Picchu",
+          "description": "A cidadela inca, em um dia ou como parte de um circuito por Cusco."
+        },
+        "colca": {
+          "title": "Cânion do Colca",
+          "description": "Condores, vilarejos tradicionais e trilhas saindo de Arequipa."
+        },
+        "paracas": {
+          "title": "Paracas e Ica",
+          "description": "Ilhas Ballestas, reserva de Paracas e o oásis de Huacachina."
+        }
+      },
+      "journeys": {
+        "group": "Passeios em grupo",
+        "private": "Passeios privativos"
+      }
+    }
+  },
+  "notFound": {
+    "eyebrow": "Erro 404",
+    "title": "Não encontramos esta página",
+    "body": "O link pode ter mudado ou o passeio pode não estar mais publicado. Ajudamos você a continuar explorando.",
+    "home": "Ir para o início",
+    "tours": "Ver passeios",
+    "contact": "Fale conosco"
+  },
+  "price": {
+    "from": "A partir de <amount></amount> por adulto",
+    "fromShort": "A partir de <amount></amount>",
+    "onRequest": "Preço sob consulta",
+    "toQuote": "Solicitar orçamento",
+    "fullPayment": "Pagamento integral na reserva",
+    "depositAmount": "Reserve com {percent}% ({amount})",
+    "depositPercent": "Reserve com {percent}% de entrada"
+  },
+  "privacy": {
+    "moreInfo": "Mais informações na nossa <link>Política de proteção de dados pessoais</link>.",
+    "unsubscribe": {
+      "metaTitle": "Cancelar o recebimento de comunicações",
+      "title": "Cancelar inscrição",
+      "intro": "Você pode deixar de receber comunicações comerciais quando quiser, gratuitamente e de imediato (Lei peruana 29733 de Proteção de Dados Pessoais).",
+      "legend": "Quais comunicações você quer deixar de receber?",
+      "purposes": {
+        "marketing_email": "E-mails com ofertas e novidades",
+        "marketing_whatsapp": "Mensagens de WhatsApp com ofertas"
+      },
+      "and": " e ",
+      "processing": "Processando…",
+      "submit": "Confirmar cancelamento",
+      "doneTitle": "Pronto: sua inscrição foi cancelada.",
+      "doneText": "Você não receberá mais: {channels}.",
+      "commercial": "comunicações comerciais",
+      "transactional": "Você continuará recebendo os e-mails necessários sobre suas reservas (confirmações, vouchers e avisos de pagamento).",
+      "nothingActive": "Este e-mail já não está inscrito para receber comunicações comerciais. Você não precisa fazer mais nada.",
+      "errors": {
+        "incomplete": "O link de cancelamento está incompleto. Abra-o diretamente no nosso e-mail.",
+        "invalidLink": "O link não é válido. Use o link mais recente dos nossos e-mails.",
+        "noneSelected": "Selecione pelo menos um canal para cancelar a inscrição.",
+        "tampered": "O link de cancelamento não é válido ou foi alterado. Use o link mais recente dos nossos e-mails.",
+        "busy": "Você fez várias tentativas seguidas. Aguarde um minuto e tente novamente.",
+        "unavailable": "Não foi possível processar o cancelamento agora. Tente novamente em alguns minutos ou fale conosco.",
+        "loadFailed": "Não foi possível carregar suas preferências agora. Tente novamente em alguns minutos."
+      }
+    },
+    "confirm": {
+      "metaTitle": "Confirmar inscrição",
+      "title": "Confirmar inscrição",
+      "purposes": {
+        "marketing_email": "ofertas e novidades por e-mail",
+        "marketing_whatsapp": "ofertas pelo WhatsApp"
+      },
+      "and": " e ",
+      "processing": "Confirmando…",
+      "submit": "Sim, quero receber",
+      "doneTitle": "Inscrição confirmada.",
+      "nothingPending": "Não havia nenhuma confirmação pendente.",
+      "doneText": "Você receberá {channels}. Pode cancelar a inscrição quando quiser pelo link de cada mensagem.",
+      "question": "Você pediu para receber <strong>{channels}</strong>. Confirme que foi você:",
+      "ignore": "Se você não fez essa solicitação, ignore esta mensagem: sem sua confirmação, não enviaremos publicidade.",
+      "alreadyConfirmed": "Sua inscrição já está confirmada. Você não precisa fazer mais nada.",
+      "nothingToConfirm": "Não há nenhuma inscrição pendente de confirmação com este link.",
+      "errors": {
+        "incomplete": "O link está incompleto. Abra-o diretamente no nosso e-mail.",
+        "invalidLink": "O link não é válido. Use o link mais recente do nosso e-mail.",
+        "expired": "O link expirou (7 dias) ou não é válido. Você pode se inscrever novamente na sua próxima reserva.",
+        "busy": "Você fez várias tentativas seguidas. Aguarde um minuto e tente novamente.",
+        "unavailable": "Não foi possível confirmar agora. Tente novamente em alguns minutos.",
+        "loadFailed": "Não foi possível carregar a solicitação agora. Tente novamente em alguns minutos."
+      }
+    }
+  },
+  "reviews": {
+    "title": "Depoimentos de viajantes",
+    "description": "Opiniões de viajantes que conheceram o Peru conosco, incluindo avaliações publicadas no TripAdvisor.",
+    "empty": "Ainda não há depoimentos publicados.",
+    "leaveCta": "Deixe seu depoimento",
+    "leave": {
+      "title": "Deixe seu depoimento",
+      "description": "Conte como foi sua viagem conosco. Publicamos os depoimentos após a revisão.",
+      "intro": "Sua opinião ajuda outros viajantes. Revisamos cada depoimento antes de publicá-lo e mostramos apenas seu nome e país; nunca seu e-mail.",
+      "name": "Nome que será exibido",
+      "country": "País (opcional)",
+      "countryHint": "Código de duas letras: PE (Peru), US (Estados Unidos), ES (Espanha).",
+      "invalidCountry": "Digite o código de duas letras do país, por exemplo, PE.",
+      "bodyHint": "Conte sua experiência usando entre 20 e 2000 caracteres.",
+      "invalidBody": "O depoimento deve ter entre 20 e 2000 caracteres.",
+      "email": "E-mail (não será publicado)",
+      "rating": "Avaliação",
+      "ratingOption": "{count, plural, one {# estrela} other {# estrelas}}",
+      "body": "Seu depoimento",
+      "travelDate": "Data da viagem (opcional)",
+      "publishConsent": "Autorizo a publicação do meu depoimento com meu nome e país neste site.",
+      "privacy": "Aceito o tratamento dos meus dados conforme a <link>Política de proteção de dados pessoais</link>.",
+      "submit": "Enviar depoimento",
+      "sending": "Enviando…",
+      "success": "Obrigado pelo seu depoimento! Vamos publicá-lo após a revisão.",
+      "invalid": "Confira os campos destacados.",
+      "busy": "Você fez várias tentativas seguidas. Aguarde um minuto e tente novamente.",
+      "unavailable": "Não foi possível enviar seu depoimento agora. Tente novamente em alguns minutos.",
+      "required": "Este campo é obrigatório.",
+      "invalidEmail": "Digite um e-mail válido.",
+      "consentRequired": "Precisamos das duas autorizações para publicar seu depoimento."
+    }
+  },
+  "search": {
+    "hints": {
+      "destination": "Destino · {count, plural, =0 {em breve} one {# passeio} other {# passeios}}",
+      "category": "Tipo de passeio · {count, plural, =0 {em breve} one {# passeio} other {# passeios}}",
+      "tour": "Passeio · {places}",
+      "severalDestinations": "Vários destinos"
+    }
+  },
+  "searchBar": {
+    "formLabel": "Buscar passeios",
+    "where": "Para onde?",
+    "placeholder": "Destino, passeio ou atividade",
+    "when": "Quando?",
+    "dateHint": "Opcional",
+    "travelers": "Viajantes",
+    "chooseTravelers": "Selecionar viajantes",
+    "done": "Pronto",
+    "submit": "Buscar",
+    "quickLinks": "Buscas populares",
+    "quick": {
+      "uros": "Uros e Taquile",
+      "machuPicchu": "Machu Picchu",
+      "colca": "Cânion do Colca",
+      "packages": "Pacotes"
+    },
+    "popular": "Destinos populares",
+    "noResults": "Não encontramos resultados para “{query}”."
+  },
+  "site": {
+    "tagline": "Passeios em Puno, Cusco e todo o Peru",
+    "description": "Agência de viagens com escritório em Puno: passeios ao Lago Titicaca, Machu Picchu, Colca e pacotes pelo Peru com guias locais, reserva com entrada e atendimento pelo WhatsApp."
+  },
+  "testimonials": {
+    "homeTitle": "O que dizem nossos viajantes",
+    "viewAll": "Ver todos os depoimentos",
+    "leaveCta": "Viajou conosco? Deixe seu depoimento",
+    "rating": "Avaliação: {rating} de 5",
+    "viaTripadvisor": "via TripAdvisor"
+  },
+  "toast": {
+    "region": "Notificações",
+    "close": "Fechar notificação"
+  },
+  "tour": {
+    "minPax": "Mínimo de {count, plural, one {# viajante} other {# viajantes}}",
+    "difficulty": "Dificuldade: {value}",
+    "depositBadge": "Reserve com {percent}% de entrada",
+    "fullPaymentBadge": "Pagamento integral na reserva",
+    "sectionsNav": "Seções do passeio",
+    "sections": {
+      "summary": "Resumo",
+      "itinerary": "Roteiro",
+      "includes": "O que está incluído",
+      "beforeTravel": "Antes de viajar",
+      "policies": "Políticas",
+      "faq": "Perguntas frequentes"
+    },
+    "day": "Dia {day}",
+    "notIncludes": "Não inclui",
+    "recommendations": "Recomendações",
+    "important": "Importante",
+    "altitude": {
+      "puno": "Puno fica a 3.800 m de altitude: vá com calma nas primeiras horas, hidrate-se e evite refeições pesadas para prevenir o mal de altitude (soroche).",
+      "cusco": "Cusco fica a 3.400 m de altitude: descanse no dia da chegada, hidrate-se e consulte seu médico se tiver alguma condição cardíaca ou respiratória."
+    },
+    "policiesTitle": "Políticas de reserva e cancelamento",
+    "policiesText": "Confira os prazos de pagamento, alterações e reembolsos nas nossas <link>condições de pagamento</link>.",
+    "faqTitle": "Perguntas frequentes",
+    "bookingAside": "Reserva",
+    "related": "Passeios relacionados"
+  },
+  "tourCard": {
+    "package": "Pacote · {duration}",
+    "minPax": "Mín. de {count, plural, one {# viajante} other {# viajantes}}"
+  },
+  "tourTypes": {
+    "title": "Tipos de passeios",
+    "description": "Passeios de um dia, pacotes, visitas a Machu Picchu, rotas pelo altiplano e muito mais: escolha o tipo de viagem que procura.",
+    "count": "{count, plural, =0 {Em breve} one {# passeio} other {# passeios}}"
+  },
+  "travelersPicker": {
+    "legend": "Viajantes",
+    "adults": "Adultos",
+    "adultsHint": "A partir de 12 anos",
+    "adultUnit": "adulto",
+    "children": "Crianças",
+    "childrenHint": "De 3 a 11 anos",
+    "childUnit": "criança",
+    "infants": "Bebês",
+    "infantsHint": "Menores de 3 anos",
+    "infantsFreeHint": "Menores de 3 anos · gratuito",
+    "infantUnit": "bebê",
+    "add": "Adicionar {unit}",
+    "remove": "Remover {unit}",
+    "value": "{label}: {value}"
+  },
+  "trip": {
+    "metaDescription": "Seu carrinho em um roteiro dia a dia, com avisos sobre datas e aclimatação.",
+    "loading": "Carregando sua viagem…",
+    "title": "Minha viagem",
+    "empty": "Ao adicionar passeios ao carrinho, você verá aqui seu roteiro dia a dia, com avisos sobre datas que coincidem e aclimatação à altitude.",
+    "range": "De {from} a {to} · {days, plural, one {# dia} other {# dias}} · {tours, plural, one {# passeio} other {# passeios}}",
+    "download": "Baixar calendário (.ics)",
+    "backToCart": "Voltar ao carrinho",
+    "sameDay": "{titles} acontecem no mesmo dia e na mesma cidade. Vamos confirmar se os horários não coincidem.",
+    "planLabel": "Roteiro dia a dia",
+    "day": "Dia {n}",
+    "dayRange": "Dias {from} a {to}",
+    "freeDays": "{count, plural, one {Dia livre ou de deslocamento} other {Dias livres ou de deslocamento}}",
+    "overlapping": "Datas sobrepostas",
+    "tourDay": "Dia {n} de {total}",
+    "tourEnd": "fim do passeio",
+    "severalDestinations": "Vários destinos",
+    "tooLong": "Sua viagem dura mais de 4 meses; mostramos até {date}.",
+    "helpLabel": "Ajuda para sua viagem",
+    "pickupTitle": "Horários e embarque",
+    "pickupText": "Os horários de embarque são confirmados na reserva, no horário de Lima. O calendário os incluirá quando estiverem confirmados.",
+    "whatsapp": "Dúvidas sobre seu roteiro? Fale conosco pelo WhatsApp",
+    "altitude": {
+      "title": "Aclimatação à altitude",
+      "text": "Puno, Cusco e o Colca ficam acima de 3.400 m. Chegar um dia antes, hidratar-se e comer refeições leves ajuda a reduzir o mal de altitude (soroche).",
+      "where": "{region} ({meters} m de altitude)",
+      "starts": "{date}: {title} começa em {where}.",
+      "from": "Você vem de {region}, a {meters} m: a diferença de altitude é grande.",
+      "demanding": "É um passeio exigente devido à altitude: recomendamos chegar pelo menos um dia antes e descansar.",
+      "easy": "Se chegar no mesmo dia, recomendamos descansar algumas horas e se movimentar com calma.",
+      "notBlocking": "(Recomendação; não impede sua reserva.)"
+    },
+    "ics": {
+      "pickup": "Horário e local de embarque: confirmaremos pelo WhatsApp (horário de Lima).",
+      "notConfirmed": "Reserva com pagamento pendente: este calendário não confirma vagas.",
+      "calendarName": "Minha viagem · peruwonderstours",
+      "fileName": "minha-viagem-peruwonderstours.ics",
+      "announce": "Seu calendário de viagem foi baixado."
+    },
+    "conflict": {
+      "title": "Estes passeios têm datas sobrepostas",
+      "item": "{title} ({date}{days, plural, =1 {} other {, # dias}})",
+      "and": " e ",
+      "overlapOn": " coincidem em {dates}.",
+      "help": "Altere a data de um deles ou confirme que está correto (por exemplo, se forem grupos diferentes).",
+      "change": "Alterar datas",
+      "confirmed": "Você confirmou as datas. Agora pode continuar com a reserva.",
+      "confirm": "As datas estão corretas"
+    }
+  },
+  "trust": {
+    "label": "Confiança e links oficiais",
+    "badges": "Selos e registros",
+    "officialLinks": "Links oficiais",
+    "externalHint": "(abre em outra aba)",
+    "links": {
+      "machu-picchu-tickets": "Ingressos oficiais para Machu Picchu",
+      "mincetur-directory": "Consulte as agências no diretório do MINCETUR",
+      "peru-travel": "Peru.travel",
+      "iperu": "iPerú: assistência ao turista",
+      "sernanp-visit": "Áreas naturais protegidas (SERNANP)",
+      "esnna-info": "Prevenção da exploração sexual de crianças e adolescentes no turismo"
+    },
+    "description": "Informações úteis para viajar: ingressos, orientação ao turista, áreas naturais e turismo responsável.",
+    "pause": "Pausar carrossel",
+    "play": "Retomar carrossel"
+  },
+  "units": {
+    "adults": "{count, plural, one {# adulto} other {# adultos}}",
+    "children": "{count, plural, one {# criança} other {# crianças}}",
+    "infants": "{count, plural, one {# bebê} other {# bebês}}",
+    "travelers": "{count, plural, one {# viajante} other {# viajantes}}",
+    "noTravelers": "Sem viajantes",
+    "duration": "{days} dias / {nights, plural, one {# noite} other {# noites}}",
+    "durationOneDay": "1 dia",
+    "durationUnknown": "Duração a confirmar"
+  },
+  "voucher": {
+    "metaTitle": "Sua reserva",
+    "status": {
+      "pending": "Pendente",
+      "held": "Pagamento pendente",
+      "confirmed": "Confirmada · saldo pendente",
+      "partially_paid": "Confirmada · saldo pendente",
+      "paid": "Paga",
+      "completed": "Concluída",
+      "cancelled": "Cancelada",
+      "refunded": "Reembolsada"
+    },
+    "headline": {
+      "paid": "Sua reserva está paga!",
+      "confirmed": "Sua reserva está confirmada!",
+      "pending": "Sua reserva está com pagamento pendente",
+      "other": "Status da sua reserva"
+    },
+    "travelers": "{count, plural, one {# viajante} other {# viajantes}}",
+    "sandbox": "Ambiente de testes: os pagamentos desta reserva são simulados; nenhum valor real foi cobrado.",
+    "keepCode": "Guarde este código; vamos solicitá-lo para qualquer consulta.",
+    "qrLabel": "Código QR da reserva {code}",
+    "voucherTitle": "Meu voucher",
+    "voucherHint": "Mostre-o ao guia no início do passeio. O QR contém apenas o código da reserva.",
+    "pickup": "Horário e local de embarque: confirmaremos pelo WhatsApp.",
+    "updatedAt": "Atualizado em {date} (horário de Lima).",
+    "payStatus": "Status do pagamento",
+    "paid": "Valor pago",
+    "balance": "Saldo pendente",
+    "dueOn": "vence em {date}",
+    "refunded": "Reembolsado",
+    "total": "Total da reserva",
+    "holdUntil": "Guardamos suas vagas até {date} (horário de Lima). Se não houver pagamento antes, elas serão liberadas.",
+    "yourTours": "Seus passeios",
+    "nextSteps": "Próximos passos",
+    "step1": "Confira seu e-mail: seu voucher estará lá.",
+    "step2": "Enviaremos uma mensagem pelo WhatsApp antes do passeio para combinar o embarque.",
+    "step3": "Leve seu DNI ou passaporte original (obrigatório para Machu Picchu).",
+    "step4": "Se for a Puno, chegue um dia antes para se aclimatar à altitude.",
+    "needChange": "Precisa alterar alguma coisa?",
+    "whatsapp": "Fale conosco pelo WhatsApp {number}",
+    "complaintsBook": "Livro de Reclamações",
+    "keepExploring": "Continuar explorando passeios",
+    "offline": "Sem conexão: você está vendo a cópia salva, atualizada em {date} (horário de Lima).",
+    "changes": {
+      "title": "Sua reserva mudou desde a última visita:",
+      "status": "Status: agora \"{now}\" (antes \"{before}\").",
+      "added": "{title} foi adicionado.",
+      "date": "A data de {title} mudou.",
+      "pax": "O número de viajantes de {title} mudou.",
+      "removed": "{title} foi removido."
+    },
+    "saved": "Disponível sem conexão neste dispositivo.",
+    "savedAt": "Disponível sem conexão neste dispositivo · salvo em {date}.",
+    "saving": "Salvando seu voucher neste dispositivo…",
+    "saveError": "Não foi possível salvar o voucher. Confira sua conexão e tente novamente.",
+    "unsupported": "Este navegador não permite salvar páginas para uso sem conexão. Faça uma captura de tela do QR.",
+    "save": "Salvar neste dispositivo",
+    "refresh": "Atualizar cópia",
+    "install": "Adicionar à tela inicial",
+    "forget": "Remover deste dispositivo",
+    "ios": "No iPhone: toque em Compartilhar e depois em “Adicionar à Tela de Início” para abrir seu voucher como um aplicativo.",
+    "ics": {
+      "title": "{title} · Reserva {code}",
+      "description": "{count, plural, one {Reserva {code} · # viajante.} other {Reserva {code} · # viajantes.}}",
+      "pickup": "Horário e local de embarque: confirmaremos pelo WhatsApp (horário de Lima).",
+      "calendarName": "Reserva {code} · peruwonderstours",
+      "fileName": "reserva-{code}.ics",
+      "announce": "O calendário da sua reserva foi baixado.",
+      "button": "Adicionar ao calendário"
+    }
+  },
+  "whatsapp": {
+    "tourHelp": "Olá, tenho uma dúvida sobre este passeio: {tour}",
+    "cartHelp": "Olá, preciso de ajuda com meu carrinho:",
+    "cartHelpStep": "Olá, preciso de ajuda com minha reserva (etapa: {step}):",
+    "bookingHelp": "Olá, preciso de ajuda com minha reserva {code}:",
+    "bookingHelpStep": "Olá, preciso de ajuda com minha reserva {code} (etapa: {step}):",
+    "bookingQuestion": "Olá, tenho uma dúvida sobre minha reserva {code}.",
+    "more": "{count, plural, one {e mais # passeio} other {e mais # passeios}}"
+  }
+}

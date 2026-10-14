@@ -64,6 +64,12 @@ const TEXT = {
     unavailable: (wa: string) =>
       `We could not register your complaint right now. Try again in a few minutes; if it persists, message us on WhatsApp at ${wa} or visit our office, where we keep the backup paper Complaints Book.`,
   },
+  pt: {
+    checkFields: "Confira os campos indicados.",
+    checkField: "Confira este campo.",
+    unavailable: (wa: string) =>
+      `Não foi possível registrar sua folha de reclamação agora. Tente novamente em alguns minutos; se o problema persistir, fale conosco pelo WhatsApp ${wa} ou visite nosso escritório, onde mantemos o Livro de Reclamações de contingência.`,
+  },
 } as const;
 
 /**
@@ -149,7 +155,7 @@ export async function submitComplaintAction(raw: unknown): Promise<ComplaintActi
         return {
           ok: false,
           message: text.checkFields,
-          // Los mensajes por campo de la API vienen en español: en inglés se usa uno genérico.
+          // Los mensajes por campo de la API vienen en español: otros idiomas usan uno localizado.
           fieldErrors: apiFields.map((f) => ({
             path: FIELD_MAP[f.field] ?? "fullName",
             message: (locale === "es" ? f.messages[0] : undefined) ?? text.checkField,

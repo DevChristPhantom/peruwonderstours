@@ -136,7 +136,7 @@ export class TourFieldsDto {
   @IsIn(DIFFICULTIES)
   difficulty?: (typeof DIFFICULTIES)[number] | null;
 
-  @ApiPropertyOptional({ type: [String], example: ['es', 'en'] })
+  @ApiPropertyOptional({ type: [String], example: ['es', 'en', 'pt'] })
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(10)

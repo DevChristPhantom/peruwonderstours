@@ -2,7 +2,7 @@ import { Field } from "@/components/forms/Field";
 import type { BlogTranslation } from "@/lib/api/content-types";
 
 /** Campos de una traducción del artículo (es o en). Sin hooks: sirve en Server Components. */
-export function BlogTranslationFields({ t, locale }: { t?: BlogTranslation; locale: "es" | "en" }) {
+export function BlogTranslationFields({ t, locale }: { t?: BlogTranslation; locale: "es" | "en" | "pt" }) {
   return (
     <>
       <div className="grid gap-3 md:grid-cols-2">

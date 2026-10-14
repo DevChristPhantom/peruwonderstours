@@ -5,7 +5,7 @@
  */
 import type { Money, TranslationStatus } from "./types";
 
-export type ContentLocale = "es" | "en";
+export type ContentLocale = "es" | "en" | "pt";
 
 /* ---------------------------------------------------------------- Destinos y categorías */
 export type TaxonomyKind = "destination" | "category";

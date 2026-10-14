@@ -221,7 +221,7 @@ export class PrismaCatalogRepository implements CatalogRepository {
                  t.search_vector @@ websearch_to_tsquery(c.cfg, ${text}) AS hit,
                  word_similarity(lower(immutable_unaccent(${text})), t.search_text) AS sim
             FROM tour_translations t
-           CROSS JOIN LATERAL (SELECT (CASE WHEN t.locale = 'en' THEN 'en_unaccent' ELSE 'es_unaccent' END)::regconfig AS cfg) c
+           CROSS JOIN LATERAL (SELECT (CASE WHEN t.locale = 'pt' THEN 'pt_unaccent' WHEN t.locale = 'en' THEN 'en_unaccent' ELSE 'es_unaccent' END)::regconfig AS cfg) c
            WHERE t.locale::text = ANY(${locales}::text[])
         ) s
        WHERE hit OR sim >= 0.3

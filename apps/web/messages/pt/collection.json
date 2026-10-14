@@ -1,0 +1,10 @@
+{
+  "destinationEyebrow": "Destino",
+  "destinationTitle": "Passeios em {name}",
+  "destinationDescription": "Passeios e excursões em {name} com guias locais, saídas confirmadas e reserva com entrada.",
+  "categoryEyebrow": "Tipo de passeio",
+  "categoryDescription": "{name}: passeios pelo Peru com guias locais e reserva com entrada.",
+  "available": "{count, plural, =0 {Nenhum passeio disponível no momento} one {# passeio disponível} other {# passeios disponíveis}}",
+  "filterByDuration": "Filtrar por duração e data",
+  "empty": "Ainda não há passeios publicados aqui."
+}

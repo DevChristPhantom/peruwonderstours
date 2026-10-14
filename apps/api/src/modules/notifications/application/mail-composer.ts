@@ -1,3 +1,4 @@
+import { localizedWebPath } from '../../../shared/domain/locale-path.js';
 import type { PiiCipher } from '../../../shared/application/pii-cipher.js';
 import type { TransactionalRepositories } from '../../../shared/application/unit-of-work.js';
 import type { ClaimedOutboxEvent } from '../../../shared/domain/outbox.js';
@@ -53,9 +54,9 @@ export interface ComposerContext {
   brand: BrandInfo;
   cipher: PiiCipher;
   /** URL de baja de marketing si el titular tiene `marketing_email` otorgado; null si no. */
-  unsubscribeUrl(repos: TransactionalRepositories, email: string): Promise<string | null>;
+  unsubscribeUrl(repos: TransactionalRepositories, email: string, locale?: MailLocale): Promise<string | null>;
   /** Enlace firmado del doble opt-in (H-05). */
-  marketingConfirmationUrl(email: string, purposes: MarketingPurpose[]): string;
+  marketingConfirmationUrl(email: string, purposes: MarketingPurpose[], locale?: MailLocale): string;
   /**
    * Emite un enlace mágico de un solo uso AL ENVIAR (F0/F6/F7): guarda solo el hash en
    * `access_tokens` dentro de la transacción del armado y devuelve el token en claro.
@@ -67,7 +68,7 @@ export interface ComposerContext {
 }
 
 function asLocale(value: unknown, fallback: MailLocale = 'es'): MailLocale {
-  return value === 'en' || value === 'es' ? value : fallback;
+  return value === 'en' || value === 'es' || value === 'pt' ? value : fallback;
 }
 
 /**
@@ -113,6 +114,9 @@ export class MailComposer {
     const raw = Array.isArray(event.payload['purposes']) ? (event.payload['purposes'] as unknown[]) : [];
     const purposes = raw.filter((p): p is MarketingPurpose => (MARKETING_PURPOSES as readonly unknown[]).includes(p));
     if (purposes.length === 0) return { kind: 'skip', reason: 'sin finalidades' };
+    // The request has its own language; an existing customer's preference may differ.
+    // Older queued events without locale retain their historical preference fallback.
+    const locale = asLocale(event.payload['locale'], customer.preferredLocale);
     return {
       kind: 'send',
       plan: {
@@ -120,7 +124,7 @@ export class MailComposer {
           {
             template: 'marketing-confirmation',
             to: [customer.email],
-            ...marketingConfirmationEmail({ firstName: customer.firstName, purposes, confirmUrl: this.ctx.marketingConfirmationUrl(customer.email, purposes) }, this.ctx.brand),
+            ...marketingConfirmationEmail({ firstName: customer.firstName, purposes, locale, confirmUrl: this.ctx.marketingConfirmationUrl(customer.email, purposes, locale) }, this.ctx.brand),
           },
         ],
       },
@@ -129,7 +133,7 @@ export class MailComposer {
 
   /** URL de la web con el token del enlace en la query (nunca el accessToken de una sesión). */
   private linkUrl(locale: MailLocale, path: string, token: string): string {
-    return `${this.ctx.brand.publicWebBaseUrl}/${locale}/${path}?token=${encodeURIComponent(token)}`;
+    return `${this.ctx.brand.publicWebBaseUrl}${localizedWebPath(locale, path)}?token=${encodeURIComponent(token)}`;
   }
 
   private async bookingAccessLink(repos: TransactionalRepositories, event: ClaimedOutboxEvent): Promise<ComposeResult> {
@@ -209,7 +213,7 @@ export class MailComposer {
       balanceDueAt: s.balanceDueAt,
       manageUrl: `${base}/${s.locale}/reserva`,
       linkTtlHours: this.ctx.links.emailTtlHours,
-      unsubscribeUrl: await this.ctx.unsubscribeUrl(repos, customer.email),
+      unsubscribeUrl: await this.ctx.unsubscribeUrl(repos, customer.email, s.locale),
       locale: s.locale,
     };
     // F0: los botones "Ver mi reserva"/"Pagar el saldo" llevan un enlace mágico de un solo uso generado

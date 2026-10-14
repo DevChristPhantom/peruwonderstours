@@ -1,0 +1,28 @@
+{
+  "minPax": "Mínimo de {count, plural, one {# viajante} other {# viajantes}}",
+  "difficulty": "Dificuldade: {value}",
+  "depositBadge": "Reserve com {percent}% de entrada",
+  "fullPaymentBadge": "Pagamento integral na reserva",
+  "sectionsNav": "Seções do passeio",
+  "sections": {
+    "summary": "Resumo",
+    "itinerary": "Roteiro",
+    "includes": "O que está incluído",
+    "beforeTravel": "Antes de viajar",
+    "policies": "Políticas",
+    "faq": "Perguntas frequentes"
+  },
+  "day": "Dia {day}",
+  "notIncludes": "Não inclui",
+  "recommendations": "Recomendações",
+  "important": "Importante",
+  "altitude": {
+    "puno": "Puno fica a 3.800 m de altitude: vá com calma nas primeiras horas, hidrate-se e evite refeições pesadas para prevenir o mal de altitude (soroche).",
+    "cusco": "Cusco fica a 3.400 m de altitude: descanse no dia da chegada, hidrate-se e consulte seu médico se tiver alguma condição cardíaca ou respiratória."
+  },
+  "policiesTitle": "Políticas de reserva e cancelamento",
+  "policiesText": "Confira os prazos de pagamento, alterações e reembolsos nas nossas <link>condições de pagamento</link>.",
+  "faqTitle": "Perguntas frequentes",
+  "bookingAside": "Reserva",
+  "related": "Passeios relacionados"
+}

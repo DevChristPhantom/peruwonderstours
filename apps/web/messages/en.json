@@ -878,7 +878,8 @@
     "languageButton": "Language: {language}. Change language",
     "languageName": {
       "es": "Español",
-      "en": "English"
+      "en": "English",
+      "pt": "Português"
     },
     "favoritesLabel": "{count, plural, =0 {Favorites} one {Favorites, # saved tour} other {Favorites, # saved tours}}",
     "cartLabel": "{count, plural, =0 {Cart is empty} one {Cart, # tour} other {Cart, # tours}}",
@@ -954,7 +955,8 @@
   "language": {
     "name": {
       "es": "Español",
-      "en": "English"
+      "en": "English",
+      "pt": "Português"
     }
   },
   "legal": {

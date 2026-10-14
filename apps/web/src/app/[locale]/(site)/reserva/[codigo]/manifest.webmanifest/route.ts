@@ -22,8 +22,12 @@ export async function GET(_req: Request, ctx: RouteContext<"/[locale]/reserva/[c
   const manifest = {
     id: path,
     name: `Voucher ${code} · ${SITE.name}`,
-    short_name: locale === "es" ? "Mi voucher" : "My voucher",
-    description: locale === "es" ? `Tu voucher de ${SITE.name}, disponible sin conexión.` : `Your ${SITE.name} voucher, available offline.`,
+    short_name: { es: "Mi voucher", en: "My voucher", pt: "Meu voucher" }[locale],
+    description: {
+      es: `Tu voucher de ${SITE.name}, disponible sin conexión.`,
+      en: `Your ${SITE.name} voucher, available offline.`,
+      pt: `Seu voucher da ${SITE.name}, disponível off-line.`,
+    }[locale],
     lang: INTL_LOCALE[locale],
     dir: "ltr",
     start_url: path,

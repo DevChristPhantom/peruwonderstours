@@ -30,6 +30,7 @@ datasource db {
 enum Locale {
   es
   en
+  pt
 
   @@map("locale")
 }

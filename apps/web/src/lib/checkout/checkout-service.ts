@@ -81,7 +81,7 @@ async function addLine(
   const err = (code: string, detail?: string) => toUserError(code, detail, locale).message;
   const issue = (message: string): { cart: null; issue: QuoteIssue } => ({ cart: null, issue: { lineId: line.id, message: `${line.title}: ${message}`, blocking: true } });
 
-  const tour = await getBookableTour(line.tourSlug, currency);
+  const tour = await getBookableTour(line.tourSlug, currency, locale);
   if (!tour) return issue(err("tour-not-found"));
   if (!tour.bookable) return issue(err("rate-not-available"));
 
@@ -142,7 +142,7 @@ function quoteFromCart(cart: ApiCart, input: PrepareInput, extraIssues: QuoteIss
       .filter((i) => i.type !== "price_changed" || i.blocking)
       .map((i) => {
         const line = lines.find((l) => l.lineId === byItem.get(i.itemId));
-        return { lineId: line?.lineId ?? null, message: cartIssueMessage(i.type, i.code, line?.title ?? "Tour", locale), blocking: i.blocking };
+        return { lineId: line?.lineId ?? null, message: cartIssueMessage(i.type, i.code, line?.title ?? (locale === "pt" ? "Passeio" : "Tour"), locale), blocking: i.blocking };
       }),
   ];
   const priceChanged = lines.some((l) => l.priceChanged);
@@ -223,7 +223,7 @@ export async function prepareQuote(input: PrepareInput, locale: Locale = "es"): 
   const issues: QuoteIssue[] = [];
   if (!cart) {
     await clearAttempt();
-    const created = await createCart(currency);
+    const created = await createCart(currency, locale);
     token = created.token;
     cart = created.cart;
     for (const line of input.lines) {

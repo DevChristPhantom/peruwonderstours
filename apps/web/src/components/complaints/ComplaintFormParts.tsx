@@ -4,23 +4,25 @@ import { useLocale, useTranslations } from "next-intl";
 import { useCallback, type ReactNode, type TextareaHTMLAttributes } from "react";
 
 import { COMPLAINT_LABELS, type ComplaintLabelKey } from "@/lib/complaints/schema";
+import { INTL_LOCALE, type Locale } from "@/i18n/routing";
 import { fieldId, inputClass, useErrorText } from "@/components/checkout/form-fields";
 
 /**
  * Piezas del formulario del Libro de Reclamaciones. Los rótulos legales (Anexo I) van en español en
- * todos los idiomas; en `/en` se agrega debajo una ayuda en inglés marcada con `lang="en"`.
+ * todos los idiomas; fuera de `/es` se agrega debajo una ayuda en el idioma del visitante.
  */
 
-/** Ayuda en inglés (solo fuera de `/es`) para un texto legal que se mantiene en español. */
+/** Ayuda localizada (solo fuera de `/es`) para un texto legal que se mantiene en español. */
 export function EnglishHelp({ children, block = true }: { children: ReactNode; block?: boolean }) {
+  const locale = useLocale() as Locale;
   return (
-    <span lang="en" className={`${block ? "block" : ""} text-xs font-normal text-foreground-muted`}>
+    <span lang={INTL_LOCALE[locale]} className={`${block ? "block" : ""} text-xs font-normal text-foreground-muted`}>
       {children}
     </span>
   );
 }
 
-/** Rótulo legal en español + ayuda en inglés en `/en`. */
+/** Rótulo legal en español + ayuda en el idioma del visitante en `/en` y `/pt`. */
 export function useLegalLabel(): (key: ComplaintLabelKey) => ReactNode {
   const locale = useLocale();
   const t = useTranslations("complaints.form.help");

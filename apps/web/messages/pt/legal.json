@@ -1,0 +1,12 @@
+{
+  "draftLabel": "Aviso de versão preliminar",
+  "draft": "VERSÃO PRELIMINAR: este documento está em análise jurídica e pode mudar antes da publicação definitiva.",
+  "draftWithVersion": "VERSÃO PRELIMINAR (versão {version}): este documento está em análise jurídica e pode mudar antes da publicação definitiva.",
+  "spanishOnly": "Este documento está disponível apenas em espanhol.",
+  "pages": {
+    "terms": { "title": "Termos e condições", "description": "Condições de uso do site e de contratação de passeios e pacotes com a peruwonderstours." },
+    "privacy": { "title": "Proteção de dados pessoais", "description": "Como tratamos seus dados pessoais conforme a Lei peruana n.º 29733 e como exercer seus direitos ARCO." },
+    "payments": { "title": "Condições de pagamento", "description": "Entradas, saldos, formas de pagamento, alterações, cancelamentos e reembolsos das suas reservas." },
+    "cookies": { "title": "Política de cookies", "description": "Quais cookies este site usa, para que servem e como você pode gerenciá-los." }
+  }
+}

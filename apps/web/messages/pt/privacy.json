@@ -1,0 +1,56 @@
+{
+  "moreInfo": "Mais informações na nossa <link>Política de proteção de dados pessoais</link>.",
+  "unsubscribe": {
+    "metaTitle": "Cancelar o recebimento de comunicações",
+    "title": "Cancelar inscrição",
+    "intro": "Você pode deixar de receber comunicações comerciais quando quiser, gratuitamente e de imediato (Lei peruana 29733 de Proteção de Dados Pessoais).",
+    "legend": "Quais comunicações você quer deixar de receber?",
+    "purposes": {
+      "marketing_email": "E-mails com ofertas e novidades",
+      "marketing_whatsapp": "Mensagens de WhatsApp com ofertas"
+    },
+    "and": " e ",
+    "processing": "Processando…",
+    "submit": "Confirmar cancelamento",
+    "doneTitle": "Pronto: sua inscrição foi cancelada.",
+    "doneText": "Você não receberá mais: {channels}.",
+    "commercial": "comunicações comerciais",
+    "transactional": "Você continuará recebendo os e-mails necessários sobre suas reservas (confirmações, vouchers e avisos de pagamento).",
+    "nothingActive": "Este e-mail já não está inscrito para receber comunicações comerciais. Você não precisa fazer mais nada.",
+    "errors": {
+      "incomplete": "O link de cancelamento está incompleto. Abra-o diretamente no nosso e-mail.",
+      "invalidLink": "O link não é válido. Use o link mais recente dos nossos e-mails.",
+      "noneSelected": "Selecione pelo menos um canal para cancelar a inscrição.",
+      "tampered": "O link de cancelamento não é válido ou foi alterado. Use o link mais recente dos nossos e-mails.",
+      "busy": "Você fez várias tentativas seguidas. Aguarde um minuto e tente novamente.",
+      "unavailable": "Não foi possível processar o cancelamento agora. Tente novamente em alguns minutos ou fale conosco.",
+      "loadFailed": "Não foi possível carregar suas preferências agora. Tente novamente em alguns minutos."
+    }
+  },
+  "confirm": {
+    "metaTitle": "Confirmar inscrição",
+    "title": "Confirmar inscrição",
+    "purposes": {
+      "marketing_email": "ofertas e novidades por e-mail",
+      "marketing_whatsapp": "ofertas pelo WhatsApp"
+    },
+    "and": " e ",
+    "processing": "Confirmando…",
+    "submit": "Sim, quero receber",
+    "doneTitle": "Inscrição confirmada.",
+    "nothingPending": "Não havia nenhuma confirmação pendente.",
+    "doneText": "Você receberá {channels}. Pode cancelar a inscrição quando quiser pelo link de cada mensagem.",
+    "question": "Você pediu para receber <strong>{channels}</strong>. Confirme que foi você:",
+    "ignore": "Se você não fez essa solicitação, ignore esta mensagem: sem sua confirmação, não enviaremos publicidade.",
+    "alreadyConfirmed": "Sua inscrição já está confirmada. Você não precisa fazer mais nada.",
+    "nothingToConfirm": "Não há nenhuma inscrição pendente de confirmação com este link.",
+    "errors": {
+      "incomplete": "O link está incompleto. Abra-o diretamente no nosso e-mail.",
+      "invalidLink": "O link não é válido. Use o link mais recente do nosso e-mail.",
+      "expired": "O link expirou (7 dias) ou não é válido. Você pode se inscrever novamente na sua próxima reserva.",
+      "busy": "Você fez várias tentativas seguidas. Aguarde um minuto e tente novamente.",
+      "unavailable": "Não foi possível confirmar agora. Tente novamente em alguns minutos.",
+      "loadFailed": "Não foi possível carregar a solicitação agora. Tente novamente em alguns minutos."
+    }
+  }
+}

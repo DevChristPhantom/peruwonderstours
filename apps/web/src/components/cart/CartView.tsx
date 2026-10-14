@@ -234,7 +234,7 @@ export function CartView() {
         <ul className="mt-6 flex flex-wrap justify-center gap-4 text-sm">
           {EMPTY_DESTINATIONS.map((d) => (
             <li key={d.label}>
-              <Link className="pwt-link" href={{ pathname: "/destinos/[slug]", params: { slug: d.slug[locale] } }}>
+              <Link className="pwt-link" href={{ pathname: "/destinos/[slug]", params: { slug: d.slug[locale === "pt" ? "es" : locale] } }}>
                 {d.label}
               </Link>
             </li>

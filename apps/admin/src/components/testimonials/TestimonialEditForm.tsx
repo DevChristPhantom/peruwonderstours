@@ -42,6 +42,7 @@ export function TestimonialEditForm({ t }: { t: Testimonial }) {
             <select id={id("locale")} name="locale" defaultValue={t.locale} className="field-input">
               <option value="es">Español</option>
               <option value="en">Inglés</option>
+              <option value="pt">Português (Brasil)</option>
             </select>
           </div>
         </div>

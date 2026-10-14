@@ -41,7 +41,8 @@ export default async function BlogPostPage({ params, searchParams }: PageProps<"
   const canWrite = can(session, "content:write") && !archived;
   const es = post.translations.find((t) => t.locale === "es");
   const en = post.translations.find((t) => t.locale === "en");
-  const tab = sp.pestana === "es" || sp.pestana === "en" ? sp.pestana : "general";
+  const pt = post.translations.find((t) => t.locale === "pt");
+  const tab = sp.pestana === "es" || sp.pestana === "en" || sp.pestana === "pt" ? sp.pestana : "general";
   const st = BLOG_STATUS[post.status] ?? { label: post.status, tone: "neutral" as const };
   const base = `/blog/${post.id}`;
 
@@ -60,6 +61,8 @@ export default async function BlogPostPage({ params, searchParams }: PageProps<"
         tabs={[
           { key: "general", href: base, label: "General" },
           { key: "es", href: `${base}?pestana=es`, label: "Español" },
+          { key: "pt", href: `${base}?pestana=pt`, label: <>Português (Brasil) <TranslationStatusBadge status={pt ? pt.translationStatus : undefined} /></> },
+
           {
             key: "en",
             href: `${base}?pestana=en`,
@@ -93,7 +96,7 @@ export default async function BlogPostPage({ params, searchParams }: PageProps<"
           </ActionForm>
         </Section>
       ) : (
-        <Section title={tab === "es" ? "Texto en español" : "Texto en inglés"} description={tab === "es" ? "Idioma canónico: obligatorio para publicar." : "Opcional."}>
+        <Section title={tab === "es" ? "Texto en español" : tab === "pt" ? "Texto en portugués (Brasil)" : "Texto en inglés"} description={tab === "es" ? "Idioma canónico: obligatorio para publicar." : "Opcional."}>
           <BlogTranslationPanel post={post} locale={tab} canWrite={canWrite} />
         </Section>
       )}

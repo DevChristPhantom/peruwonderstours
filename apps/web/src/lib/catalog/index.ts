@@ -187,7 +187,7 @@ export const getNavMedia = cache(async (locale: Locale): Promise<NavMedia> => {
       {
         key: "privados",
         title: t("journeys.private"),
-        href: toursSearchPath(locale, { q: locale === "es" ? "privado" : "private" }),
+        href: toursSearchPath(locale, { q: locale === "en" ? "private" : "privado" }),
         image: img("tour-privado-puerta-interdimensional-de-aramu-muru", ""),
       },
     ],

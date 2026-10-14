@@ -11,7 +11,7 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }], ['json', { outputFile: 'test-results/results.json' }]],
   use: { trace: 'retain-on-failure', screenshot: 'only-on-failure', actionTimeout: 20_000, navigationTimeout: 30_000 },
   projects: [
-    { name: 'public-desktop', testMatch: ['public.spec.ts', 'public-controls.spec.ts', 'payment.spec.ts'], use: { ...devices['Desktop Chrome'], baseURL: process.env.E2E_WEB_BASE_URL ?? 'http://localhost:3100' } },
+    { name: 'public-desktop', testMatch: ['public.spec.ts', 'public-controls.spec.ts', 'payment.spec.ts', 'portuguese.spec.ts'], use: { ...devices['Desktop Chrome'], baseURL: process.env.E2E_WEB_BASE_URL ?? 'http://localhost:3100' } },
     { name: 'public-mobile', testMatch: 'public-mobile.spec.ts', use: { ...devices['iPhone 13'], browserName: 'chromium', baseURL: process.env.E2E_WEB_BASE_URL ?? 'http://localhost:3100' } },
     { name: 'admin', testMatch: ['admin.spec.ts', 'admin-finance.spec.ts', 'admin-users.spec.ts'], use: { ...devices['Desktop Chrome'] } },
   ],

@@ -25,6 +25,12 @@ tags:
 
 ## Recent Changes
 
+- 2026-10-14: avatar del personal, nombre y rol estilizados en topbaradmin, sin cambios a logout/sesión; tipos/lint aprobados. Ver [[decisions/ADR-0015-avatar-del-administrador]].
+
+
+- 2026-10-14: tercer idioma pt-BR con 1098 claves, banderaBR, rutas, legales, reservas/correos y editoresPT. Catálogo sin traducción muestraESconaviso; migracionesPTpreparadas, no aplicadas aBDcliente. Ver [[decisions/ADR-0014-portugues-brasil]].
+
+
 - 2026-10-14: logo dorado diseñado por el cliente sustituye al anterior, transparente y completo sin recortes en web/admin; tipos/lint aprobados. Ver ADR-0013.
 
 

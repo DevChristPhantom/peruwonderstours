@@ -64,7 +64,7 @@ function paged<T>(q: { page: number; pageSize: number }, result: { total: number
 }
 
 function locale(value: string): Locale {
-  if (value !== 'es' && value !== 'en') throw new BadRequestException('Idioma no soportado (es | en).');
+  if (value !== 'es' && value !== 'en' && value !== 'pt') throw new BadRequestException('Idioma no soportado (es | en | pt).');
   return value;
 }
 
@@ -149,7 +149,7 @@ export class ToursAdminController {
 
   @Put(':id/translations/:locale')
   @StaffAuth('tours:write')
-  @ApiParam({ name: 'locale', enum: ['es', 'en'] })
+  @ApiParam({ name: 'locale', enum: ['es', 'en', 'pt'] })
   @ApiOperation({ summary: 'Crea o reemplaza una traducción. Cambiar el slug de un tour publicado crea un 301 automático.' })
   async upsertTranslation(
     @CurrentStaff() actor: StaffActor,

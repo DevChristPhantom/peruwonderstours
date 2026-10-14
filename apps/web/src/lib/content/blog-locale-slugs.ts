@@ -1,14 +1,14 @@
 interface BlogSlugSource {
   slug: string;
-  locale?: "es" | "en";
+  locale?: "es" | "en" | "pt";
   fallback?: boolean;
-  alternateLocales?: { locale: "es" | "en"; slug: string }[];
+  alternateLocales?: { locale: "es" | "en" | "pt"; slug: string }[];
 }
 
 /** Published API translations take precedence over the legacy seed's slug map. */
 export function blogLocaleSlugs(
   card: BlogSlugSource,
-  locale: "es" | "en",
+  locale: "es" | "en" | "pt",
   spanishSlug?: string,
   legacyEnglishSlug?: string,
 ) {
@@ -16,5 +16,7 @@ export function blogLocaleSlugs(
   const fallback = card.fallback ?? (card.locale !== undefined && card.locale !== locale);
   const en = card.alternateLocales?.find((item) => item.locale === "en")?.slug
     ?? (locale === "en" && !fallback ? card.slug : legacyEnglishSlug ?? es);
-  return { es, en };
+  const pt = card.alternateLocales?.find((item) => item.locale === "pt")?.slug
+    ?? (locale === "pt" && !fallback ? card.slug : es);
+  return { es, en, pt };
 }

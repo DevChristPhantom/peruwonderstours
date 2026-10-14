@@ -43,6 +43,8 @@ export const placeInputSchema = z.object({
     lastName: z.string().trim().min(1).max(100),
     email: z.email().max(254),
     country: z.string().min(1).max(60),
+    marketingEmail: z.boolean().default(false),
+    marketingWhatsapp: z.boolean().default(false),
   }),
   notes: z.string().max(2000).optional(),
   acceptTerms: z.literal(true),

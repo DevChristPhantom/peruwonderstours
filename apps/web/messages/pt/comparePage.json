@@ -1,0 +1,17 @@
+{
+  "title": "Comparar passeios",
+  "description": "Compare até 3 passeios lado a lado: duração, destinos, dificuldade, o que está incluído e preço inicial.",
+  "missing": "{count, plural, one {Um passeio desta comparação não está mais disponível.} other {# passeios desta comparação não estão mais disponíveis.}}",
+  "emptyTitle": "Escolha 2 ou 3 passeios para comparar",
+  "emptyText": "Marque “Comparar” nos cartões dos passeios que interessam a você.",
+  "viewTours": "Ver passeios",
+  "addAnother": "Adicione pelo menos mais um passeio para comparar.",
+  "tableLabel": "Tabela comparativa; role horizontalmente para ver todos os passeios",
+  "caption": "Comparação de {titles}",
+  "actions": "Ações",
+  "seeDates": "Ver datas",
+  "more": "e mais {count}",
+  "pending": "A confirmar",
+  "footnote": "Altitude, esforço, política de cancelamento e saídas serão adicionados à comparação quando estiverem publicados para cada passeio.",
+  "rows": { "price": "Preço a partir de", "duration": "Duração", "destinations": "Destinos", "difficulty": "Dificuldade", "minPax": "Mínimo de viajantes", "includes": "Inclui", "notIncludes": "Não inclui" }
+}

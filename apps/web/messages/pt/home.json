@@ -1,0 +1,50 @@
+{
+  "metaTitle": "Passeios em Puno, Lago Titicaca, Cusco e Machu Picchu",
+  "hero": {
+    "title": "Viaje pelo Peru com quem conhece o país",
+    "lead": "Passeios ao Lago Titicaca, Machu Picchu, Colca e costa sul com guias locais, saídas confirmadas e reserva com entrada.",
+    "imageAlt": "Ilhas flutuantes dos Uros no Lago Titicaca, Puno",
+    "scroll": "Role para descobrir",
+    "banners": "Destinos do banner principal",
+    "previousBanner": "Banner anterior",
+    "nextBanner": "Próximo banner",
+    "showBanner": "Mostrar {name}",
+    "playBanner": "Reproduzir animação e carrossel",
+    "pauseBanner": "Pausar animação e carrossel"
+  },
+  "featured": {
+    "title": "Passeios em destaque",
+    "viewAll": "Ver os {count} passeios",
+    "tabsLabel": "Filtrar passeios em destaque",
+    "oneDayLink": "Ver passeios de um dia",
+    "groups": { "all": "Todos", "altiplano": "Altiplano e Titicaca", "machuPicchu": "Machu Picchu", "multi": "Vários destinos" },
+    "emptyFeatured": "Em breve, publicaremos nossos passeios em destaque.",
+    "emptyGroup": "Ainda não há passeios neste grupo."
+  },
+  "destinations": {
+    "title": "Destinos",
+    "viewAll": "Ver todos os destinos",
+    "railLabel": "Destinos do Peru",
+    "previous": "Destinos anteriores",
+    "next": "Mais destinos",
+    "tourCount": "{count, plural, =0 {Em breve} one {# passeio} other {# passeios}}"
+  },
+  "whyUs": {
+    "title": "Por que viajar conosco?",
+    "toursPublished": "Passeios publicados",
+    "destinations": "Destinos",
+    "reasons": {
+      "office": { "title": "Escritório em Puno", "text": "Somos operadores locais: atendemos você antes, durante e depois da viagem." },
+      "guides": { "title": "Guias locais", "text": "Guias que vivem em cada destino e compartilham sua história e cultura." },
+      "deposit": { "title": "Reserva com entrada", "text": "Garanta sua vaga com uma entrada e pague o saldo antes da saída." },
+      "whatsapp": { "title": "Atendimento pelo WhatsApp", "text": "Tiramos suas dúvidas na hora, em espanhol ou inglês." }
+    }
+  },
+  "finalCta": {
+    "title": "Pronto para sua próxima viagem?",
+    "text": "Conte o que você quer conhecer e montaremos com você o roteiro ideal.",
+    "whatsapp": "Planejar pelo WhatsApp",
+    "whatsappMessage": "Olá, {name}, quero planejar uma viagem pelo Peru.",
+    "packages": "Ver pacotes"
+  }
+}

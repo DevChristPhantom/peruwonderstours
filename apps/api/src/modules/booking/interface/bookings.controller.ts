@@ -107,10 +107,10 @@ export class CheckoutDto {
   @MaxLength(2000)
   customerNotes?: string;
 
-  @ApiPropertyOptional({ enum: ['es', 'en'], description: 'Idioma de la reserva y de sus correos (por defecto el del carrito).' })
+  @ApiPropertyOptional({ enum: ['es', 'en', 'pt'], description: 'Idioma de la reserva y de sus correos (por defecto el del carrito).' })
   @IsOptional()
-  @IsIn(['es', 'en'])
-  locale?: 'es' | 'en';
+  @IsIn(['es', 'en', 'pt'])
+  locale?: 'es' | 'en' | 'pt';
 
   @ApiPropertyOptional({ description: 'Total que el cliente vio (céntimos). Si cambió => 409 total-changed.' })
   @IsOptional()

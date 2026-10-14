@@ -1,0 +1,5 @@
+{
+  "title": "Tipos de passeios",
+  "description": "Passeios de um dia, pacotes, visitas a Machu Picchu, rotas pelo altiplano e muito mais: escolha o tipo de viagem que procura.",
+  "count": "{count, plural, =0 {Em breve} one {# passeio} other {# passeios}}"
+}

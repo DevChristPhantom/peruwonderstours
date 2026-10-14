@@ -6,7 +6,7 @@ type Row = {
   purpose: string;
   subjectId: string;
   tokenHash: string;
-  locale: 'es' | 'en';
+  locale: 'es' | 'en' | 'pt';
   expiresAt: Date;
   consumedAt: Date | null;
   revokedAt: Date | null;

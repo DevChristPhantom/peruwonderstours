@@ -30,7 +30,8 @@ const handleI18nRouting = createIntlMiddleware(routing);
 
 /** Rutas sensibles (externas, en ambos idiomas) que se renderizan por petición con nonce. */
 const NONCE_ROUTES = [
-  /^\/(es|en)\/checkout(\/|$)/,
+  /^\/(es|en|pt)\/checkout(\/|$)/,
+  /^\/pt\/(reserva|livro-de-reclamacoes|privacidade|comparar|conta|minhas-reservas|contato|deixar-avaliacao)(\/|$)/,
   /^\/es\/reserva\//,
   /^\/en\/booking\//,
   /^\/es\/libro-de-reclamaciones(\/|$)/,

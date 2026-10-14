@@ -9,7 +9,7 @@ type Href = Parameters<typeof localePath>[1];
 
 /** Rutas de una página estática en ambos idiomas, a partir de su ruta interna. */
 export function alternatesFor(href: Href): LocalePaths {
-  return { es: localePath("es", href), en: localePath("en", href) };
+  return { es: localePath("es", href), en: localePath("en", href), pt: localePath("pt", href) };
 }
 
 /**

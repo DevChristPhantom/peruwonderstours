@@ -7,7 +7,7 @@ type CustomerRow = {
   firstName: string;
   lastName: string;
   country: string | null;
-  preferredLocale: 'es' | 'en';
+  preferredLocale: 'es' | 'en' | 'pt';
   createdAt: Date;
 };
 

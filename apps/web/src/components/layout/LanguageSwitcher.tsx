@@ -70,12 +70,12 @@ export function LanguageLinks({ className, itemClassName, onNavigate }: { classN
 }
 
 /** Fija las rutas equivalentes de esta página en cada idioma (tour, destino, categoría, post). */
-export function LocaleAlternates({ value }: { value: { es: string; en: string } }) {
+export function LocaleAlternates({ value }: { value: { es: string; en: string; pt: string } }) {
   const set = useUiStore((s) => s.setLocaleAlternates);
-  const { es, en } = value;
+  const { es, en, pt } = value;
   useEffect(() => {
-    set({ es, en });
+    set({ es, en, pt });
     return () => set(null);
-  }, [es, en, set]);
+  }, [es, en, pt, set]);
   return null;
 }

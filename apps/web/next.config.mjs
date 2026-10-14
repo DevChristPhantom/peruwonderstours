@@ -48,6 +48,10 @@ function legalDocumentsEnv() {
     PWT_LEGAL_PRIVACIDAD: read("politica-de-privacidad.md"),
     PWT_LEGAL_CANCELACION: read("politica-de-cancelacion-y-reembolso.md"),
     PWT_LEGAL_COOKIES: read("politica-de-cookies.md"),
+    PWT_LEGAL_PT_TERMINOS: read("pt/terminos-y-condiciones.md"),
+    PWT_LEGAL_PT_PRIVACIDAD: read("pt/politica-de-privacidad.md"),
+    PWT_LEGAL_PT_CANCELACION: read("pt/politica-de-cancelacion-y-reembolso.md"),
+    PWT_LEGAL_PT_COOKIES: read("pt/politica-de-cookies.md"),
   };
 }
 

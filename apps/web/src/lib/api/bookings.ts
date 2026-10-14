@@ -1,5 +1,7 @@
 import "server-only";
 
+import type { Locale } from "@/i18n/routing";
+
 import { ApiError, apiRequest } from "./client";
 import type { ApiCurrency, ApiMoney } from "./carts";
 
@@ -79,7 +81,9 @@ export interface CheckoutInput {
   customerNotes?: string;
   expectedTotalAmount?: number;
   /** Idioma de la reserva y de sus correos de confirmación. */
-  locale?: "es" | "en";
+  locale?: Locale;
+  marketingEmailOptIn?: boolean;
+  marketingWhatsappOptIn?: boolean;
 }
 
 export interface CheckoutResult {
@@ -104,6 +108,8 @@ export async function checkout(input: CheckoutInput): Promise<CheckoutResult> {
       customerNotes: input.customerNotes || undefined,
       expectedTotalAmount: input.expectedTotalAmount,
       locale: input.locale,
+      marketingEmailOptIn: input.marketingEmailOptIn ?? false,
+      marketingWhatsappOptIn: input.marketingWhatsappOptIn ?? false,
     },
   });
   if (!res) throw new ApiError(404, "booking-not-found", null);

@@ -1,3 +1,4 @@
+import { localizedWebPath } from '../../../shared/domain/locale-path.js';
 import { createHash } from 'node:crypto';
 import { auditIp } from '../../../shared/application/audit.js';
 import type { PiiCipher } from '../../../shared/application/pii-cipher.js';
@@ -73,15 +74,15 @@ export class PrivacyUseCases {
     );
   }
 
-  buildUnsubscribeUrl(email: string): string {
-    return `${this.settings.publicWebBaseUrl}/es/privacidad/baja?token=${encodeURIComponent(this.buildUnsubscribeToken(email))}`;
+  buildUnsubscribeUrl(email: string, locale: Locale = 'es'): string {
+    return `${this.settings.publicWebBaseUrl}${localizedWebPath(locale, 'privacidad/baja')}?token=${encodeURIComponent(this.buildUnsubscribeToken(email))}`;
   }
 
   /** Para los correos: enlace de baja solo si hoy hay algún consentimiento de marketing vigente. */
-  async unsubscribeUrlIfGranted(repos: TransactionalRepositories, email: string): Promise<string | null> {
+  async unsubscribeUrlIfGranted(repos: TransactionalRepositories, email: string, locale: Locale = 'es'): Promise<string | null> {
     const hash = this.subjectHash(email);
     for (const purpose of MARKETING_PURPOSES) {
-      if ((await repos.consents.latestBySubject(hash, purpose))?.granted) return this.buildUnsubscribeUrl(email);
+      if ((await repos.consents.latestBySubject(hash, purpose))?.granted) return this.buildUnsubscribeUrl(email, locale);
     }
     return null;
   }
@@ -205,19 +206,19 @@ export class PrivacyUseCases {
           aggregateType: 'customer',
           aggregateId: params.customerId,
           eventType: MAIL_EVENTS.privacyMarketingConfirmation,
-          payload: { customerId: params.customerId, purposes: toConfirm },
+          payload: { customerId: params.customerId, purposes: toConfirm, locale: params.locale },
           now: params.now,
         }),
       );
     }
   }
 
-  buildConfirmationUrl(email: string, purposes: readonly MarketingPurpose[]): string {
+  buildConfirmationUrl(email: string, purposes: readonly MarketingPurpose[], locale: Locale = 'es'): string {
     const token = signConfirmationToken(
       { subjectHash: Buffer.from(this.subjectHash(email)).toString('hex'), purposes: [...purposes], issuedAt: Math.floor(this.clock.now().getTime() / 1000) },
       this.settings.marketingLinkSecret,
     );
-    return `${this.settings.publicWebBaseUrl}/es/privacidad/confirmar?token=${encodeURIComponent(token)}`;
+    return `${this.settings.publicWebBaseUrl}${localizedWebPath(locale, 'privacidad/confirmar')}?token=${encodeURIComponent(token)}`;
   }
 
   private confirmationClaims(token: string) {

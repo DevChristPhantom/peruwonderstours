@@ -55,7 +55,7 @@ export default async function ContactMessagePage({ params }: PageProps<"/contact
                 ["Nombre", m.name],
                 ["Correo", <a key="mail" href={`mailto:${m.email}?subject=${replySubject}`}>{m.email}</a>],
                 ["Teléfono", m.phone ? <a key="tel" href={`tel:${m.phone.replace(/[^\d+]/g, "")}`}>{m.phone}</a> : "No indicó"],
-                ["Idioma", m.locale === "en" ? "Inglés" : "Español"],
+                ["Idioma", m.locale === "pt" ? "Português (Brasil)" : m.locale === "en" ? "Inglés" : "Español"],
                 ["Tour de interés", m.tourSlug ?? "—"],
                 ["Aviso de privacidad aceptado", m.privacyNoticeVersion ?? "—"],
               ]}

@@ -1,3 +1,4 @@
+DROP TEXT SEARCH CONFIGURATION IF EXISTS pt_unaccent;
 -- Reverso de 00_extensions.sql (solo tras revertir constraints.sql e init).
 DROP TEXT SEARCH CONFIGURATION IF EXISTS en_unaccent;
 DROP TEXT SEARCH CONFIGURATION IF EXISTS es_unaccent;

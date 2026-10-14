@@ -110,14 +110,14 @@ export function itemListJsonLd(name: string, tours: TourSummary[]): JsonLdObject
   };
 }
 
-export function blogPostingJsonLd(post: { title: string; excerpt: string; path: string; image: string | null; publishedAt: string | null; author: string | null }, locale: Locale): JsonLdObject {
+export function blogPostingJsonLd(post: { title: string; excerpt: string; path: string; image: string | null; publishedAt: string | null; author: string | null; fallback?: boolean }, locale: Locale): JsonLdObject {
   return {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
     description: post.excerpt,
     url: absoluteUrl(post.path),
-    inLanguage: locale,
+    inLanguage: post.fallback ? "es" : locale,
     ...(post.image ? { image: [post.image] } : {}),
     ...(post.publishedAt ? { datePublished: post.publishedAt } : {}),
     author: { "@type": post.author ? "Person" : "Organization", name: post.author ?? SITE.name },

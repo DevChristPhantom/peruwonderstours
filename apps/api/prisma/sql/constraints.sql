@@ -69,7 +69,7 @@ ALTER TABLE blog_post_translations
 CREATE OR REPLACE FUNCTION tour_translations_search_refresh()
 RETURNS trigger LANGUAGE plpgsql AS $$
 DECLARE
-  cfg regconfig := CASE NEW.locale WHEN 'en' THEN 'en_unaccent'::regconfig
+  cfg regconfig := CASE NEW.locale WHEN 'pt' THEN 'pt_unaccent'::regconfig WHEN 'en' THEN 'en_unaccent'::regconfig
                                    ELSE 'es_unaccent'::regconfig END;
 BEGIN
   NEW.search_text := lower(immutable_unaccent(NEW.title || ' ' || NEW.summary));

@@ -2,6 +2,9 @@ import { COMPLAINT_LEGAL_NOTICES } from '../../complaints/domain/complaint.js';
 import { signUnsubscribeToken, verifyUnsubscribeToken } from '../../privacy/domain/consent.js';
 import {
   balanceReminderEmail,
+  complaintAccessLinkEmail,
+  contactAcknowledgmentEmail,
+  marketingConfirmationEmail,
   bookingAccessLinkEmail,
   bookingVoucherEmail,
   contactAgencyEmail,
@@ -136,5 +139,42 @@ describe('Plantillas en inglés y enlaces mágicos (Sprint 3)', () => {
     const agency = contactAgencyEmail({ id: 'm1', name: '<Leo>', email: 'leo@x.com', phone: null, subject: 'Hola', message: 'Linea 1\nLinea 2', tourSlug: null, locale: 'en', receivedAt: new Date('2026-10-09T15:00:00Z') }, BRAND);
     expect(agency.html).toContain('&lt;Leo&gt;');
     expect(agency.html).toContain('Linea 1<br>Linea 2');
+  });
+});
+
+describe('Correios transacionais em Português Brasil', () => {
+  const data: BookingMailData = {
+    code: 'PWT-2026-000010', customerName: 'João <Silva>', status: 'paid', paymentOption: 'full',
+    items: [{ title: 'Vale Sagrado', travelDate: '2026-11-10', paxCount: 2, subtotal: { amount: 20000n, currency: 'PEN' } }],
+    total: { amount: 20000n, currency: 'PEN' }, paid: { amount: 20000n, currency: 'PEN' }, balance: { amount: 0n, currency: 'PEN' },
+    balanceDueAt: null, manageUrl: 'https://pwt.test/pt/reserva/acesso?token=abc', locale: 'pt',
+  };
+  it('renders voucher, money, dates, safety and legal links explicitly in Portuguese', () => {
+    const mail = bookingVoucherEmail(data, BRAND, 'confirmation');
+    expect(mail.html).toContain('<html lang="pt-BR">');
+    expect(mail.html).toContain('João &lt;Silva&gt;');
+    expect(mail.text).toContain('Ver minha reserva: https://pwt.test/pt/reserva/acesso?token=abc');
+    expect(mail.text).toContain('novembro');
+    expect(mail.text).toContain('S/ 200.00');
+    expect(mail.html).toContain('/pt/livro-de-reclamacoes');
+    expect(mail.html).toContain('/pt/politicas/protecao-de-dados-pessoais');
+    expect(mail.text).not.toContain('/es/');
+    expect(paymentReceivedEmail({ ...data, payment: data.paid }, BRAND).subject).toContain('Pagamento recebido');
+    expect(bookingCancelledEmail({ ...data, refundDue: data.paid, reason: null }, BRAND).text).toContain('política de cancelamento');
+  });
+  it('renders personal access, complaint access, contact and marketing without Spanish fallback', () => {
+    const access = bookingAccessLinkEmail({ code: data.code, customerName: 'João', linkUrl: data.manageUrl, ttlMinutes: 30, locale: 'pt' }, BRAND);
+    expect(access.text).toContain('uso único e expira em 30 minutos');
+    const customer = customerLoginLinkEmail({ firstName: 'João', linkUrl: 'https://pwt.test/pt/conta/acesso?token=t', ttlMinutes: 30, locale: 'pt' }, BRAND);
+    expect(customer.text).toContain('Minhas reservas');
+    const complaint = complaintAccessLinkEmail({ code: 'LR-2026-000010', consumerName: 'João', linkUrl: 'https://pwt.test/pt/livro-de-reclamacoes/consulta?token=t', ttlMinutes: 30, locale: 'pt' }, BRAND);
+    expect(complaint.html).toContain('Consultar minha reclamação');
+    expect(complaint.text).toContain('/pt/livro-de-reclamacoes/consulta?token=t');
+    expect(complaint.text).not.toContain('/pt/libro-de-reclamaciones');
+    expect(complaint.subject).toContain('sua reclamação');
+    expect(contactAcknowledgmentEmail({ name: 'João', subject: 'Passeio', locale: 'pt' }, BRAND).subject).toContain('Recebemos sua mensagem');
+    const marketing = marketingConfirmationEmail({ firstName: 'João', purposes: ['marketing_email'], confirmUrl: 'https://pwt.test/pt/privacidade/confirmar?token=t', locale: 'pt' }, BRAND);
+    expect(marketing.html).toContain('Só enviaremos ofertas se você confirmar');
+    expect(marketing.text).toContain('/pt/privacidade/confirmar?token=t');
   });
 });

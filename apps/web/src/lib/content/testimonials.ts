@@ -3,7 +3,7 @@ import "server-only";
 
 import { cache } from "react";
 
-import type { Locale } from "@/i18n/routing";
+import { INTL_LOCALE, type Locale } from "@/i18n/routing";
 import { listTestimonialsSafe } from "@/lib/api/content";
 import { env } from "@/lib/env";
 
@@ -38,7 +38,7 @@ export const getTestimonials = cache(async (locale: Locale): Promise<PublicTesti
     body: t.body,
     rating: t.rating,
     date: t.travelDate,
-    lang: t.locale === "en" ? "en" : "es-PE",
+    lang: INTL_LOCALE[t.locale],
     source: "web",
     sourceUrl: null,
     tourTitle: t.tourTitle,

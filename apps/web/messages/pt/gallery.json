@@ -1,0 +1,9 @@
+{
+  "enlarge": "Ampliar foto {n} de {total}",
+  "counter": "{n} / {total}",
+  "previous": "Foto anterior",
+  "next": "Próxima foto",
+  "viewAll": "Ver as {total} fotos",
+  "dialog": "Galeria de fotos: {title}",
+  "close": "Fechar galeria"
+}

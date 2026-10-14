@@ -150,7 +150,10 @@ export function PaymentStep({
         option: effectiveOption,
         method: values.method,
         simulate: confirmation.simulate,
-        contact: { firstName: contact.firstName, lastName: contact.lastName, email: contact.email, country: contact.country },
+        contact: {
+          firstName: contact.firstName, lastName: contact.lastName, email: contact.email, country: contact.country,
+          marketingEmail: contact.marketingEmail, marketingWhatsapp: contact.marketingWhatsapp,
+        },
         notes: buildNotes(lines, travelers),
         acceptTerms: values.terms,
         // La casilla final incluye el acuse de lectura de la Política de privacidad (informativo, no consentimiento).

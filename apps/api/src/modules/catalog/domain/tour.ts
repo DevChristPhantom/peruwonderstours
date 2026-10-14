@@ -1,7 +1,7 @@
 import { pickTranslation } from '../../../shared/domain/i18n.js';
 import { addDays, type CalendarDate } from '../../../shared/domain/calendar-date.js';
 
-export const LOCALES = ['es', 'en'] as const;
+export const LOCALES = ['es', 'en', 'pt'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export const TOUR_TYPES = ['tour', 'package', 'transfer'] as const;

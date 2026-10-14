@@ -1,5 +1,7 @@
 import "server-only";
 
+import type { Locale } from "@/i18n/routing";
+
 import { apiJson, apiRequest } from "./client";
 
 /**
@@ -78,10 +80,10 @@ export interface AddItemInput {
 
 const tokenHeader = (token: string) => ({ "x-cart-token": token });
 
-export async function createCart(currency: ApiCurrency): Promise<{ token: string; cart: ApiCart }> {
+export async function createCart(currency: ApiCurrency, locale: Locale = "es"): Promise<{ token: string; cart: ApiCart }> {
   const res = await apiJson<{ data: { token: string; cart: ApiCart } }>("/carts", {
     method: "POST",
-    body: { currency, locale: "es" },
+    body: { currency, locale },
   });
   return res.data;
 }
@@ -117,9 +119,9 @@ export interface ApiBookableTour {
   maxPax: number | null;
 }
 
-export async function getBookableTour(slug: string, currency: ApiCurrency): Promise<ApiBookableTour | null> {
+export async function getBookableTour(slug: string, currency: ApiCurrency, locale: Locale = "es"): Promise<ApiBookableTour | null> {
   const res = await apiRequest<{ data: ApiBookableTour }>(
-    `/tours/${encodeURIComponent(slug)}?locale=es&currency=${currency}`,
+    `/tours/${encodeURIComponent(slug)}?locale=${locale}&currency=${currency}`,
     { nullOn404: true, next: { revalidate: 60, tags: ["catalog"] } },
   );
   return res?.body.data ?? null;

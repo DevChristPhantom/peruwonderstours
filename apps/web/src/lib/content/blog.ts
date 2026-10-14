@@ -63,7 +63,7 @@ const slugMap = (slugMapJson as unknown as { blog: Record<string, string> }).blo
 const AUTHOR = null;
 
 function seedAlternates(key: string): LocalePaths {
-  return { es: blogPostPath("es", key), en: blogPostPath("en", slugMap[key] ?? enByKey.get(key)?.slug ?? key) };
+  return { es: blogPostPath("es", key), en: blogPostPath("en", slugMap[key] ?? enByKey.get(key)?.slug ?? key), pt: blogPostPath("pt", key) };
 }
 
 function seedPost(p: SeedPost, locale: Locale): BlogPost {
@@ -97,8 +97,9 @@ function seedList(locale: Locale): BlogCard[] {
 function fromApiCard(card: ApiBlogCard, locale: Locale, esCard: ApiBlogCard | undefined): BlogCard {
   const key = card.alternateLocales?.find((item) => item.locale === "es")?.slug ?? esCard?.slug ?? card.slug;
   const fallback = locale !== "es" && (card.fallback ?? (card.locale !== undefined && card.locale !== locale));
-  const enSlug = blogLocaleSlugs(card, locale, key, slugMap[key]).en;
-  const alternates = { es: blogPostPath("es", key), en: blogPostPath("en", enSlug) };
+  const slugs = blogLocaleSlugs(card, locale, key, slugMap[key]);
+  const enSlug = slugs.en;
+  const alternates = { es: blogPostPath("es", key), en: blogPostPath("en", enSlug), pt: blogPostPath("pt", slugs.pt) };
   return {
     key,
     slug: alternates[locale].split("/").pop()!,
@@ -144,7 +145,8 @@ export const getBlogPostBySlug = cache((slug: string, locale: Locale): Promise<B
       const esSlug = post.alternateLocales?.find((a) => a.locale === "es")?.slug ?? (locale === "es" ? post.slug : undefined);
       const card = fromApiCard(post, locale, esSlug ? { ...post, slug: esSlug } : undefined);
       const enSlug = post.alternateLocales?.find((a) => a.locale === "en")?.slug;
-      const alternates = enSlug && !card.fallback ? { ...card.alternates, en: blogPostPath("en", enSlug) } : card.alternates;
+      const ptSlug = post.alternateLocales?.find((a) => a.locale === "pt")?.slug;
+      const alternates = { ...card.alternates, ...(enSlug ? { en: blogPostPath("en", enSlug) } : {}), ...(ptSlug ? { pt: blogPostPath("pt", ptSlug) } : {}) };
       return {
         ...card,
         alternates,

@@ -15,6 +15,9 @@ This catalog is updated by completed knowledge operations.
 
 ## Concepts
 
+- [[decisions/ADR-0014-portugues-brasil]] — tercer idioma pt-BR, fallback editorial explícito y migraciones aditivas.
+
+
 - [[decisions/ADR-0010-prioridad-comercial-y-pruebas]] — tours antes de recursos legales, pruebas Chromium aisladas y límites de evidencia.
 
 

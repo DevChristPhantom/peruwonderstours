@@ -73,6 +73,7 @@ jobs:
         run: |
           pnpm --filter @pwt/api db:seed -- --publish --demo-pricing
           node scripts/e2e/seed-staff.mjs
+          node scripts/e2e/seed-catalog.mjs
       - name: Start fixture API
         run: |
           (cd apps/api && NODE_ENV=test PORT=3001 node dist/main.js) > /tmp/pwt-browser-api.log 2>&1 &
