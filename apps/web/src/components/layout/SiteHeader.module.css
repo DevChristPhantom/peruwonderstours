@@ -17,6 +17,7 @@
   top: 0;
   left: 0;
   right: 0;
+  max-width: 100vw;
   z-index: var(--pwt-z-header);
   color: var(--text);
   font-family: var(--pwt-font-sans);

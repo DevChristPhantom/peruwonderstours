@@ -13,7 +13,7 @@ async function measured(info: TestInfo, action: string, work: () => Promise<void
 async function navigationMetric(page: Page, info: TestInfo) {
   const metric = await page.evaluate(() => {
     const n = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    return n ? { ttfb_ms: n.responseStart - n.requestStart, dom_ms: n.domContentLoadedEventEnd - n.startTime, load_ms: n.loadEventEnd - n.startTime } : null;
+    return n ? { ttfb_ms: n.responseStart - n.requestStart, dom_ms: n.domContentLoadedEventEnd - n.startTime, load_ms: n.loadEventEnd > 0 ? n.loadEventEnd - n.startTime : null } : null;
   });
   await info.attach('navigation-timing.json', { body: JSON.stringify({ environment: 'isolated-ci-localhost-chromium', metric }), contentType: 'application/json' });
 }
@@ -198,4 +198,17 @@ test('Testimonial submission stays pending moderation', async ({ page }, info) =
     await page.getByRole('button',{name:'Enviar testimonio',exact:true}).click();
     await expect(page.getByRole('status').filter({hasText:'Lo publicaremos después de revisarlo'})).toBeVisible();
   });
+});
+
+test('Tour photo gallery supports next, previous, Escape and focus restoration', async ({ page }, info) => {
+  await page.goto(tourPath);
+  const opener=page.getByRole('button',{name:/^Ampliar foto 1 de /});
+  await measured(info,'Open tour photo gallery',async()=>{await opener.click();await expect(page.getByRole('dialog',{name:/^Galería de fotos:/})).toBeVisible();});
+  const gallery=page.getByRole('dialog',{name:/^Galería de fotos:/});
+  await gallery.getByRole('button',{name:'Foto siguiente',exact:true}).click();
+  await expect(gallery.locator('p[aria-live]')).toContainText(/^2 \/ /);
+  await gallery.getByRole('button',{name:'Foto anterior',exact:true}).click();
+  await expect(gallery.locator('p[aria-live]')).toContainText(/^1 \/ /);
+  await page.keyboard.press('Escape');
+  await expect(gallery).toBeHidden();await expect(opener).toBeFocused();
 });

@@ -43,6 +43,10 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       await page.getByLabel(/^Contraseña\s*\*?$/).fill("Incorrect-fixture-password!");
       await page.getByRole("button", { name: "Continuar", exact: true }).click();
       await expect(page.getByRole("alert").filter({ hasText: "Correo o contraseña incorrectos" })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Continuar", exact: true })).toBeEnabled();
+      // React resets uncontrolled action inputs after the resolved failure result.
+      // Enter the complete credentials again, as a user would after that reset.
+      await page.getByLabel(/^Correo\s*\*?$/).fill(email!);
       await page.getByLabel(/^Contraseña\s*\*?$/).fill(password!);
       await page.getByRole("button", { name: "Continuar", exact: true }).click();
       await expect(page.getByRole("heading", { name: "Verificación en dos pasos" })).toBeVisible();
