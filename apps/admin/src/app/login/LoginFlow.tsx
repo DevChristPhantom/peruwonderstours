@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, KeyRound, ShieldCheck } from "lucide-react";
+import { ArrowRight, Copy, Eye, EyeOff, KeyRound, LockKeyhole, Mail, ShieldCheck, Smartphone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 
@@ -21,7 +21,7 @@ function StepHeading({ children, step }: { children: React.ReactNode; step: stri
   // Al cambiar de paso, el foco va al título (lectores de pantalla anuncian el nuevo paso).
   useEffect(() => ref.current?.focus(), [step]);
   return (
-    <h2 ref={ref} tabIndex={-1} className="text-lg font-semibold outline-none">
+    <h2 ref={ref} tabIndex={-1} className="auth-step-heading outline-none">
       {children}
     </h2>
   );
@@ -39,6 +39,7 @@ function CancelButton() {
 
 function PasswordStep({ onStep, next }: { onStep: (s: LoginStep) => void; next: string }) {
   const [state, action] = useActionState<State, FormData>(loginAction, null);
+  const [showPassword, setShowPassword] = useState(false);
   useEffect(() => {
     if (state?.ok) onStep(state.data);
   }, [state, onStep]);
@@ -46,16 +47,22 @@ function PasswordStep({ onStep, next }: { onStep: (s: LoginStep) => void; next: 
   return (
     <form action={action} className="space-y-4">
       <StepHeading step="password">Iniciar sesión</StepHeading>
+      <p className="auth-step-description text-sm text-foreground-muted">Tu equipo, tus viajes y cada detalle, en un solo lugar.</p>
       {state && !state.ok ? <ErrorSummary error={state.error} /> : null}
       <input type="hidden" name="next" value={next} />
-      <Field label="Correo" name="email" error={fields?.email} required>
+      <Field label={<span className="inline-flex items-center gap-2"><Mail aria-hidden size={16} /> Correo</span>} name="email" error={fields?.email} required>
         <input type="email" autoComplete="username" className="field-input" maxLength={254} autoFocus />
       </Field>
-      <Field label="Contraseña" name="password" error={fields?.password} required>
-        <input type="password" autoComplete="current-password" className="field-input" maxLength={128} />
-      </Field>
+      <div className="relative">
+        <Field label={<span className="inline-flex items-center gap-2"><LockKeyhole aria-hidden size={16} /> Contraseña</span>} name="password" error={fields?.password} required>
+          <input type={showPassword ? "text" : "password"} autoComplete="current-password" className="field-input pr-14" maxLength={128} />
+        </Field>
+        <button type="button" aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"} aria-pressed={showPassword} onClick={() => setShowPassword(value => !value)} className="auth-password-toggle">
+          {showPassword ? <EyeOff aria-hidden size={19} /> : <Eye aria-hidden size={19} />}
+        </button>
+      </div>
       <SubmitButton variant="primary" className="w-full" pendingLabel="Verificando…">
-        Continuar
+        Continuar <ArrowRight aria-hidden size={18} />
       </SubmitButton>
     </form>
   );
@@ -69,6 +76,7 @@ function MfaStep({ email, next }: { email: string; next: string }) {
     <div className="space-y-4">
       <form action={action} className="space-y-4">
         <StepHeading step="mfa">Verificación en dos pasos</StepHeading>
+        <div className="auth-verification-note"><Smartphone aria-hidden size={22} /><p>Confirma que eres tú con el código de tu app autenticadora.</p></div>
         <p className="text-sm text-foreground-muted">
           Cuenta: <strong className="text-foreground">{email}</strong>
         </p>
@@ -80,7 +88,7 @@ function MfaStep({ email, next }: { email: string; next: string }) {
           </Field>
         ) : (
           <Field label="Código de 6 dígitos" name="code" hint="Ábrelo en tu app autenticadora (Google Authenticator, Microsoft Authenticator, 1Password…)." error={fields?.code} required>
-            <input key="totp" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6} className="field-input font-mono tracking-[0.3em]" autoFocus />
+            <input key="totp" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="\d{6}" maxLength={6} className="auth-code-input field-input font-mono tracking-[0.3em]" autoFocus />
           </Field>
         )}
         <SubmitButton variant="primary" className="w-full" pendingLabel="Verificando…">
@@ -111,6 +119,7 @@ function EnrollStep({ step, next, onStep }: { step: Extract<LoginStep, { step: "
   return (
     <div className="space-y-4">
       <StepHeading step="enroll">Activa la verificación en dos pasos</StepHeading>
+      <div className="auth-verification-note"><ShieldCheck aria-hidden size={22} /><p>Una capa adicional de protección para tu cuenta y las reservas.</p></div>
       <p className="text-sm text-foreground-muted">
         Es obligatoria para el panel. Cuenta: <strong className="text-foreground">{step.email}</strong>
       </p>

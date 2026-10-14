@@ -25,6 +25,8 @@ tags:
 
 ## Recent Changes
 
+- 2026-10-14: rediseño login/MFA y dirección Puno confirmada; ver [[decisions/ADR-0017-acceso-visual-personal]].
+
 - 2026-10-14: avatar del personal, nombre y rol estilizados en topbaradmin, sin cambios a logout/sesión; tipos/lint aprobados. Ver [[decisions/ADR-0015-avatar-del-administrador]].
 
 

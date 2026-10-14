@@ -48,6 +48,10 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       await expect(page.getByRole("heading", { name: "Iniciar sesión", exact: true })).toBeVisible();
       await page.getByLabel(/^Correo\s*\*?$/).fill(email!);
       await page.getByLabel(/^Contraseña\s*\*?$/).fill("Incorrect-fixture-password!");
+      await page.getByRole("button", { name: "Mostrar contraseña", exact: true }).click();
+      await expect(page.getByLabel(/^Contraseña\s*\*?$/)).toHaveAttribute("type", "text");
+      await page.getByRole("button", { name: "Ocultar contraseña", exact: true }).click();
+      await expect(page.getByLabel(/^Contraseña\s*\*?$/)).toHaveAttribute("type", "password");
       await page.getByRole("button", { name: "Continuar", exact: true }).click();
       await expect(page.getByRole("alert").filter({ hasText: "Correo o contraseña incorrectos" })).toBeVisible();
       await expect(page.getByRole("button", { name: "Continuar", exact: true })).toBeEnabled();

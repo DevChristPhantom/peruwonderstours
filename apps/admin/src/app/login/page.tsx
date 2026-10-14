@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { connection } from "next/server";
+import { CalendarCheck2, MapPinned, MapPin, ShieldCheck, WalletCards } from "lucide-react";
 
 import { formatWait } from "@/lib/api/errors";
 import { readChallenge } from "@/lib/session/server";
@@ -41,17 +42,35 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
       : base;
 
   return (
-    <main id="contenido" className="grid min-h-dvh place-items-center bg-background px-4 py-10">
-      <div className="w-full max-w-md space-y-6">
-        <div className="text-center">
-          <div className="mx-auto w-[280px]"><Image src="/brand/peruwonderstours-dorado.png" alt="peruwonderstours.com" width={2171} height={724} sizes="280px" className="block h-auto w-full" preload /></div>
-          <h1 className="mt-3 text-2xl font-semibold tracking-tight">Panel de administración</h1>
+    <main id="contenido" className="auth-shell">
+      <section className="auth-scene" aria-labelledby="auth-scene-title">
+        <Image src="/brand/admin-machu-picchu.webp" alt="" width={1774} height={887} sizes="(min-width: 1024px) 58vw, 1px" className="auth-photo" />
+        <div className="auth-scene-content">
+          <span className="auth-eyebrow">PERUWONDERSTOURS · EQUIPO</span>
+          <div className="auth-introduction">
+            <p className="auth-location">Machu Picchu · Perú</p>
+            <h1 id="auth-scene-title" className="auth-scene-title">Panel de<br />administración</h1>
+            <p className="auth-lead">Cada gran viaje empieza con un equipo que cuida los detalles.</p>
+          </div>
+          <ul className="auth-features">
+            <li><span className="auth-feature-icon"><CalendarCheck2 aria-hidden size={20} strokeWidth={1.6} /></span><div><strong>Reservas y viajeros</strong><p>Organiza cada etapa de la experiencia.</p></div></li>
+            <li><span className="auth-feature-icon"><MapPinned aria-hidden size={20} strokeWidth={1.6} /></span><div><strong>Tours y destinos</strong><p>Mantén tu catálogo siempre al día.</p></div></li>
+            <li><span className="auth-feature-icon"><WalletCards aria-hidden size={20} strokeWidth={1.6} /></span><div><strong>Pagos y operaciones</strong><p>Consulta los movimientos de tu agencia.</p></div></li>
+            <li><span className="auth-feature-icon"><ShieldCheck aria-hidden size={20} strokeWidth={1.6} /></span><div><strong>Acceso protegido</strong><p>Verificación en dos pasos para tu equipo.</p></div></li>
+          </ul>
+          <div className="auth-office"><MapPin aria-hidden size={17} strokeWidth={1.6} /><div><strong>Oficina en Puno</strong><span>Calle N 500, Puno · Perú</span></div></div>
         </div>
-        <div className="admin-login-card rounded-lg border border-border bg-surface p-6 sm:p-8">
-          <LoginFlow initial={initial} next={volver} notice={notice} />
+      </section>
+      <section className="auth-access" aria-label="Acceso del personal">
+        <div className="auth-access-inner">
+          <div className="auth-brand"><Image src="/brand/peruwonderstours-dorado.png" alt="peruwonderstours.com" width={2171} height={724} sizes="260px" className="auth-logo" preload /></div>
+          <h1 className="auth-mobile-title">Panel de administración</h1>
+          <div className="auth-card">
+            <LoginFlow initial={initial} next={volver} notice={notice} />
+          </div>
+          <p className="auth-security"><ShieldCheck aria-hidden size={15} strokeWidth={1.7} /><span>Acceso exclusivo del personal.<br />Toda actividad queda registrada.</span></p>
         </div>
-        <p className="text-center text-xs text-foreground-muted">Acceso exclusivo del personal. Toda actividad queda registrada.</p>
-      </div>
+      </section>
     </main>
   );
 }

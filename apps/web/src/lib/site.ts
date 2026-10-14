@@ -17,8 +17,8 @@ export const SITE = {
     rucExample: "20000000000",
     /** PENDIENTE(cliente): n.º de registro de agencia MINCETUR/GERCETUR. */
     minceturRegistry: null as string | null,
-    /** PENDIENTE(cliente): dirección de la oficina de Puno. El sitio viejo muestra "Calle N 500", que parece un placeholder. */
-    address: null as string | null,
+    /** Dirección confirmada por el propietario el 2026-10-14. */
+    address: "Calle N 500, Puno" as string | null,
     /** Correo de contacto confirmado por el cliente; el dominio de la web es independiente. */
     email: "jorgechaveztourt@gmail.com" as string | null,
   },
