@@ -62,11 +62,11 @@ test("admin users: create own staff fixture, update, unlock, revoke sessions, re
     });
     const own = () => page.getByRole("article", { name: fullName, exact: true });
     await measured("Update only newly created user role and verify persistence", async () => {
-      await own().getByLabel("Rol", { exact: true }).selectOption("operator");
+      await own().locator('select[name="role"]').selectOption("operator");
       await own().getByRole("button", { name: "Guardar", exact: true }).click();
       await expect(own().getByRole("status").filter({ hasText: "Usuario actualizado." })).toBeVisible();
       await page.reload();
-      await expect(own().getByLabel("Rol", { exact: true })).toHaveValue("operator");
+      await expect(own().locator('select[name="role"]')).toHaveValue("operator");
     });
     await measured("Record own user failed login and unlock through admin", async () => {
       const isolated = await browser.newContext();
@@ -104,11 +104,11 @@ test("admin users: create own staff fixture, update, unlock, revoke sessions, re
       await expect(own().getByRole("status")).toHaveCount(0);
     });
     await measured("Disable own staff fixture and verify persisted status", async () => {
-      await own().getByLabel("Estado", { exact: true }).selectOption("disabled");
+      await own().locator('select[name="status"]').selectOption("disabled");
       await own().getByRole("button", { name: "Guardar", exact: true }).click();
       await expect(own().getByRole("status").filter({ hasText: "Usuario actualizado." })).toBeVisible();
       await page.reload();
-      await expect(own().getByLabel("Estado", { exact: true })).toHaveValue("disabled");
+      await expect(own().locator('select[name="status"]')).toHaveValue("disabled");
       await expect(own().locator("span").filter({ hasText: /^Deshabilitado$/ })).toBeVisible();
       await expect(page.getByRole("article", { name: "Browser CI Administrator" })).toContainText("MFA activo");
     });
@@ -116,4 +116,5 @@ test("admin users: create own staff fixture, update, unlock, revoke sessions, re
     await info.attach("admin-user-action-timings.json", { body: JSON.stringify(metrics, null, 2), contentType: "application/json" });
   }
 });
+
 

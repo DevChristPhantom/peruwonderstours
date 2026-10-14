@@ -62,6 +62,14 @@ for (const outcome of ["approved", "pending", "rejected"] as const) test(`checko
       const recordedPaid = Number((await paid.innerText()).replace(/[^0-9]/g, ""));
       if (outcome === "approved") expect(recordedPaid, "Approved payment records a positive amount").toBeGreaterThan(0);
       else expect(recordedPaid, "Pending payment does not record paid money").toBe(0);
+      if (outcome === "approved") {
+        const downloadReady = page.waitForEvent('download');
+        await page.getByRole('button', { name: 'Añadir al calendario', exact: true }).click();
+        const download = await downloadReady;
+        expect(download.suggestedFilename()).toMatch(/^reserva-PWT-\d{4}-\d{6}\.ics$/);
+        expect(await download.failure()).toBeNull();
+        await download.saveAs(info.outputPath('reservation.ics'));
+      }
       await expect(page.getByText("No pudimos completar el pago:", { exact: true })).toHaveCount(0);
       await page.screenshot({ path: info.outputPath("sandbox-reservation.png"), fullPage: true });
     });

@@ -8,7 +8,7 @@ test('Mobile navigation, product hierarchy, traveler picker and static resources
   try {
     await measured('Mobile home', async()=>{await page.goto('/es');await expect(page.locator('#hero-title')).toBeVisible();});
     const viewportWidth=page.viewportSize()!.width;
-    await info.attach('mobile-overflow.json',{body:JSON.stringify(await page.evaluate(()=>({clientWidth:document.documentElement.clientWidth,innerWidth,scrollWidth:document.documentElement.scrollWidth,offenders:Array.from(document.body.querySelectorAll('*')).map(element=>({tag:element.tagName,className:element.className,rect:element.getBoundingClientRect().toJSON()})).filter(element=>element.rect.right>document.documentElement.clientWidth+1 && element.rect.width>0).slice(0,25)}))),contentType:'application/json'});
+    await info.attach('mobile-overflow.json',{body:JSON.stringify(await page.evaluate(()=>({clientWidth:document.documentElement.clientWidth,innerWidth,scrollWidth:document.documentElement.scrollWidth,viewportMeta:document.querySelector('meta[name=viewport]')?.getAttribute('content'),containers:[document.documentElement,document.body,document.querySelector('main'),document.querySelector('[aria-label="Destinos del Perú"]')].filter(Boolean).map(element=>{const style=getComputedStyle(element!);return{tag:element!.tagName,className:element!.className,overflowX:style.overflowX,overflowY:style.overflowY,width:element!.getBoundingClientRect().width,clientWidth:element!.clientWidth,scrollWidth:element!.scrollWidth};}),offenders:Array.from(document.body.querySelectorAll('*')).map(element=>({tag:element.tagName,className:element.className,rect:element.getBoundingClientRect().toJSON()})).filter(element=>element.rect.right>document.documentElement.clientWidth+1 && element.rect.width>0).slice(0,25)}))),contentType:'application/json'});
     expect(await page.locator('header').evaluate(element=>element.getBoundingClientRect().width)).toBeLessThanOrEqual(viewportWidth+1);
     expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewportWidth+1);
     const positions=await page.evaluate(()=>['destinos-title','paquetes-title','enlaces-oficiales'].map(id=>document.getElementById(id)!.getBoundingClientRect().top+scrollY));
@@ -48,5 +48,18 @@ test('Mobile navigation, product hierarchy, traveler picker and static resources
     await expect(page.locator('main h1')).toContainText('Libro de Reclamaciones');
     expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewportWidth+1);
     await page.screenshot({path:info.outputPath('mobile-complaints.png'),fullPage:true});
+    await page.goto('/es/tours/tour-islas-de-los-uros-y-taquile-full-day');
+    await measured('Open mobile booking and add tour',async()=>{
+      await page.locator('a[href="#reservar"]').click();
+      await expect(page).toHaveURL(/#reservar$/);
+      const booking=page.locator('#reservar');
+      const date=booking.locator('button[data-date]:not([aria-disabled="true"])').first();
+      await date.click();
+      await booking.getByRole('button',{name:'Agregar al carrito',exact:true}).click();
+      await expect(booking.getByRole('button',{name:'Agregado',exact:true})).toBeVisible();
+    });
+    await page.goto('/es/carrito');
+    await expect(page.getByRole('link',{name:'Continuar con la reserva',exact:true}).first()).toBeVisible();
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewportWidth+1);
   } finally {await info.attach('mobile-action-timings.json',{body:JSON.stringify(samples,null,2),contentType:'application/json'});}
 });

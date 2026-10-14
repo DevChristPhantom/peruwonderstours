@@ -83,18 +83,21 @@ test("admin finance: record and void own simulated payment, then cancel own book
     });
     const paid = () => page.locator("#resumen dt").filter({ hasText: /^Pagado$/ }).locator("..").locator("dd");
     const cents = async () => Number((await paid().innerText()).replace(/[^0-9]/g, ""));
-    await measured("Record one simulated sol and verify persisted payment and balance", async () => {
+    await measured("Record required simulated balance and verify persisted payment", async () => {
       await page.goto(`${admin}/reservas/${code}`);
       await expect(page.locator("main header")).toContainText(`finance-${suffix}@peruwonderstours.test`);
       expect(await cents()).toBe(0);
       const form = page.locator("#registrar-pago form");
-      await form.getByLabel(/^Monto \((PEN|USD)\)\s*\*?$/).fill("1.00");
+      const payableAmount = await form.getByLabel(/^Monto \((PEN|USD)\)\s*\*?$/).inputValue();
+      expect(payableAmount).toMatch(/^\d+\.\d{2}$/);
+      const expectedCents = Number(payableAmount.replace(".", ""));
+      expect(expectedCents).toBeGreaterThan(0);
       await form.getByLabel(/^Medio\s*\*?$/).selectOption("cash");
       await form.getByLabel(/^N.º de operación o recibo\s*\*?$/).fill(reference);
       await form.getByRole("button", { name: "Registrar pago", exact: true }).click();
       await expect(page.getByRole("region", { name: "Pagos", exact: true }).getByText(`cash:${reference}`, { exact: true })).toBeVisible();
       await page.reload();
-      expect(await cents()).toBe(100);
+      expect(await cents()).toBe(expectedCents);
     });
     await measured("Void only own manual record and verify counter-entry and zero paid", async () => {
       await page.goto(`${admin}/pagos-manuales`);
@@ -129,6 +132,7 @@ test("admin finance: record and void own simulated payment, then cancel own book
     await info.attach("admin-finance-action-timings.json", { body: JSON.stringify(metrics, null, 2), contentType: "application/json" });
   }
 });
+
 
 
 
