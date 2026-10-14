@@ -55,3 +55,5 @@ This catalog is updated by completed knowledge operations.
 
 
 - [[decisions/ADR-0008-banners-html-motion]] — HTML aislado, carrusel reiniciable y administración.
+
+- [[decisions/ADR-0009-recursos-oficiales-y-reclamaciones]] — recursos visuales, WhatsApp y Libro de Reclamaciones.

@@ -1,0 +1,8 @@
+.button { position: fixed; right: 24px; bottom: 24px; z-index: 40; display: inline-flex; align-items: center; justify-content: center; width: 60px; height: 60px; border: 1px solid var(--pwt-border-strong); border-radius: 50%; background: #fff; box-shadow: 0 6px 24px rgb(0 28 22 / .18); text-decoration: none; transition: transform 150ms var(--pwt-ease-out); }
+.button:focus-visible { outline: 3px solid var(--pwt-primary); outline-offset: 4px; }
+.icon { width: 34px; height: 34px; }
+.label { position: absolute; right: 72px; padding: 10px 14px; border-radius: 10px; background: var(--pwt-surface); color: var(--pwt-foreground); border: 1px solid var(--pwt-border); box-shadow: var(--pwt-shadow-sm); white-space: nowrap; font-size: 13px; opacity: 0; transform: translateX(4px); pointer-events: none; transition: opacity 150ms ease-out, transform 150ms var(--pwt-ease-out); }
+.button:focus-visible .label { opacity: 1; transform: none; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) { .button:hover { transform: translateY(-2px); } .button:hover .label { opacity: 1; transform: none; } }
+@media (max-width: 767px) { .button { right: 16px; bottom: calc(108px + env(safe-area-inset-bottom)); width: 54px; height: 54px; } .label { display: none; } }
+@media (prefers-reduced-motion: reduce) { .button, .label { transition: none; } }

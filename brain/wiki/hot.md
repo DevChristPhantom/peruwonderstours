@@ -123,3 +123,5 @@ tags:
 - 2026-10-13: banners HTML originales aislados, carrusel reiniciable, eventos de mouse y gestión admin. Web cinco pruebas, tipos y HTTP 200; API vieja requiere reinicio. Ver [[decisions/ADR-0008-banners-html-motion]].
 
 - 2026-10-13: cliente aprueba sustituir iframes por banners nativos. Imágenes + título + efectos de agua/nubes, entrada reiniciable, admin con selector y titleEmbedded. Revisión independiente detectó y corrigió duplicado Machu, none no estático, geografía inferida y will-change permanente. Validación visual/FPS sigue pendiente.
+
+- 2026-10-14: tarjetas de recursos oficiales con carrusel transform y bordes difuminados, pausa y acceso teclado; WhatsApp con símbolo y Libro con aviso INDECOPI Anexo III. Formularios preservados. Ver [[decisions/ADR-0009-recursos-oficiales-y-reclamaciones]].

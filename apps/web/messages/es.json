@@ -805,7 +805,8 @@
     "payments": "Medios de pago",
     "paymentsText": "Tarjetas Visa y Mastercard, y transferencia bancaria.",
     "esnna": "{name} rechaza la explotación sexual de niñas, niños y adolescentes. Si conoces algún caso, denúncialo a la Línea 100.",
-    "copyright": "© {year} {name}. Todos los derechos reservados."
+    "copyright": "© {year} {name}. Todos los derechos reservados.",
+    "whatsappHelp": "¿Planeamos tu viaje?"
   },
   "formErrors": {
     "firstNameRequired": "Escribe tus nombres.",
@@ -1264,7 +1265,10 @@
       "iperu": "iPerú: asistencia al turista",
       "sernanp-visit": "Áreas naturales protegidas (SERNANP)",
       "esnna-info": "Prevención de la ESNNA en turismo"
-    }
+    },
+    "description": "Información útil para viajar: entradas, orientación al turista, áreas naturales y turismo responsable.",
+    "pause": "Pausar carrusel",
+    "play": "Reanudar carrusel"
   },
   "units": {
     "adults": "{count, plural, one {# adulto} other {# adultos}}",

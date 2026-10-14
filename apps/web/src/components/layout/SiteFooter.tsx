@@ -185,10 +185,9 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
           <div>
             <Link
               href="/libro-de-reclamaciones"
-              className="inline-flex min-h-11 items-center gap-3 rounded-md border-2 border-[color:var(--pwt-terracota-600)] bg-white/5 px-4 py-2 text-white hover:bg-hero-hover"
+              className="flex min-h-11 w-full flex-wrap items-center gap-3 rounded-lg border border-[color:var(--pwt-hero-line)] bg-white/5 px-4 py-4 text-white hover:bg-hero-hover"
             >
-              {/* PENDIENTE(cumplimiento): ícono oficial del Libro de Reclamaciones. */}
-              <BookOpenText aria-hidden size={24} strokeWidth={1.5} />
+              <Image src="/official/complaints-book.webp" alt="" width={686} height={386} className="h-auto w-[120px] shrink-0 rounded-sm" />
               <span>
                 <span className="block font-medium">{t("complaintsBook")}</span>
                 <span className="block text-xs text-hero-muted">{t("complaintsBookHint")}</span>

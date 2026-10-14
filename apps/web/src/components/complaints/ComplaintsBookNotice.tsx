@@ -1,4 +1,5 @@
-import { BookOpenText } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
@@ -14,14 +15,14 @@ export async function ComplaintsBookNotice() {
     <aside aria-label={t("label")} className="pwt-container">
       <Link
         href="/libro-de-reclamaciones"
-        className="flex min-h-11 items-center gap-3 rounded-md border border-border-strong bg-surface px-4 py-3 text-sm hover:bg-surface-muted"
+        className="group grid items-center gap-5 rounded-xl border border-border-strong bg-surface p-5 text-sm shadow-sm hover:bg-surface-muted sm:grid-cols-[220px_1fr_auto] sm:p-6"
       >
-        {/* PENDIENTE(cumplimiento): ícono oficial del Libro de Reclamaciones. */}
-        <BookOpenText aria-hidden size={24} strokeWidth={1.5} className="shrink-0" />
+        <Image src="/official/complaints-book.webp" width={686} height={386} alt="" className="h-auto w-full max-w-[220px] rounded-sm" />
         <span>
-          <strong className="font-medium">{t("label")}</strong>
-          <span className="text-foreground-muted"> · {t("text", { name: SITE.name })}</span>
+          <strong className="block font-display text-2xl font-medium text-foreground">{t("label")}</strong>
+          <span className="mt-2 block leading-relaxed text-foreground-muted">{t("text", { name: SITE.name })}</span>
         </span>
+        <span className="flex size-11 items-center justify-center rounded-pill bg-primary text-on-primary"><ArrowUpRight aria-hidden size={20} /></span>
       </Link>
     </aside>
   );

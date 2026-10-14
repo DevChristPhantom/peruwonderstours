@@ -1,0 +1,28 @@
+.sheet > form > div:first-child {
+  border-top: 3px solid var(--pwt-primary);
+  padding: 1.5rem;
+  box-shadow: var(--pwt-shadow-xs);
+}
+.sheet fieldset {
+  background: var(--pwt-surface);
+  padding: 1.25rem;
+  box-shadow: var(--pwt-shadow-xs);
+}
+.sheet legend {
+  max-width: 100%;
+  padding: .5rem .75rem;
+  border: 1px solid var(--pwt-border);
+  border-radius: var(--pwt-radius-sm);
+  background: var(--pwt-surface);
+  color: var(--pwt-primary);
+  font-size: .9375rem;
+  line-height: 1.5;
+}
+.sheet textarea { min-height: 9rem; }
+@media (min-width: 640px) {
+  .sheet fieldset { padding: 1.75rem; }
+  .sheet > form > div:first-child { padding: 1.75rem; }
+}
+@media print {
+  .sheet fieldset, .sheet > form > div:first-child { box-shadow: none; }
+}

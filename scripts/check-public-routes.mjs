@@ -56,6 +56,9 @@ for (const locale of ["es", "en"]) {
   const html = await response(`/${locale}`);
   assert.ok(html.includes("nativeScene"), `${locale}: native hero missing`);
   assert.ok(!html.includes("<iframe"), `${locale}: legacy hero frame still rendered`);
+  assert.ok(html.includes("enlaces-oficiales"), `${locale}: official resources missing`);
+  assert.ok(html.includes("/icons/whatsapp.svg"), `${locale}: floating WhatsApp symbol missing`);
+  assert.ok(html.includes("complaints-book.webp"), `${locale}: complaints notice missing`);
   assert.ok(html.includes("Peru Wonders Tours"), `${locale}: site brand missing`);
   assert.ok(html.includes("51924278597"), `${locale}: confirmed WhatsApp missing`);
   const contact = await response(locale === "es" ? "/es/contactenos" : "/en/contact");
@@ -63,6 +66,11 @@ for (const locale of ["es", "en"]) {
 }
 
 const sitemap = await response("/sitemap.xml");
+for (const asset of ["/icons/whatsapp.svg", "/icons/rune/receipt.svg", "/official/complaints-book.webp"]) {
+  const image = await fetch(new URL(asset, origin));
+  assert.equal(image.status, 200, `${asset}: visual asset unavailable`);
+  assert.ok(image.headers.get("content-type")?.startsWith("image/"), `${asset}: unexpected content type`);
+}
 const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => new URL(match[1]));
 assert.ok(urls.length > 100, "Sitemap is missing catalog pages");
 assert.ok(urls.every((url) => url.hostname === "peruwonderstours.com"), "Wrong canonical domain");

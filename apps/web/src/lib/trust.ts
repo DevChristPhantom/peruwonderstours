@@ -12,7 +12,7 @@ import { BADGE_SWITCHES } from "@/lib/site";
  *   constancia: mostrar un sello sin tenerlo es publicidad engañosa. Al encenderlo se muestra con un
  *   placeholder neutro con su nombre (nunca un logo recreado ni una imagen enlazada de un sitio del Estado).
  * - Los enlaces oficiales informativos (boletos de Machu Picchu, directorio MINCETUR, peru.travel, iPerú,
- *   SERNANP y ESNNA) se muestran como enlaces de texto.
+ *   SERNANP y ESNNA) se muestran como recursos visuales con fotos ilustrativas e iconos Rune.
  */
 
 interface RawBadge {

@@ -10,5 +10,8 @@
     "iperu": "iPerú: asistencia al turista",
     "sernanp-visit": "Áreas naturales protegidas (SERNANP)",
     "esnna-info": "Prevención de la ESNNA en turismo"
-  }
+  },
+  "description": "Información útil para viajar: entradas, orientación al turista, áreas naturales y turismo responsable.",
+  "pause": "Pausar carrusel",
+  "play": "Reanudar carrusel"
 }

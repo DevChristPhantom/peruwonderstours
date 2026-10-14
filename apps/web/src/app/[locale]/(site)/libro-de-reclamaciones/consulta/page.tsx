@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { ArrowLeft, BookOpenCheck } from "lucide-react";
+import Link from "next/link";
 
 import { AccessExchangeForm, AccessRequestForm } from "@/components/access/AccessForms";
 import { ComplaintStatusCard } from "@/components/complaints/ComplaintStatusCard";
@@ -11,6 +13,7 @@ import { exchangeAccessLinkAction, requestAccessLinkAction } from "@/lib/access/
 import { getComplaintStatus, type ComplaintStatusView } from "@/lib/api/complaints";
 import { COMPLAINT_CODE_RE, readComplaintToken } from "@/lib/checkout/session";
 import { alternatesFor, pageMetadata } from "@/lib/seo/metadata";
+import { buttonClass } from "@/components/ui/button-styles";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/libro-de-reclamaciones/consulta">): Promise<Metadata> {
   const locale = (await params).locale as Locale;
@@ -61,7 +64,7 @@ export default async function ComplaintStatusPage({ params, searchParams }: Page
   ]);
 
   return (
-    <div className="pwt-container-narrow pt-8 pb-20">
+    <div className="pwt-container-narrow pt-8 pb-20 sm:pt-10">
       <Breadcrumbs
         items={[
           { name: tc("home"), path: localePath(locale, "/") },
@@ -69,7 +72,18 @@ export default async function ComplaintStatusPage({ params, searchParams }: Page
           { name: t("title"), path: localePath(locale, "/libro-de-reclamaciones/consulta") },
         ]}
       />
-      <h1 className="mt-4 font-display text-h1 font-medium">{t("title")}</h1>
+      <header className="mt-6 rounded-xl border border-border bg-surface p-5 sm:p-8">
+        <div className="flex items-start gap-4">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-md bg-primary text-on-primary sm:size-14"><BookOpenCheck aria-hidden size={26} strokeWidth={1.5} /></span>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold tracking-[0.08em] text-primary uppercase">{tl("title")}</p>
+            <h1 className="mt-2 font-display text-h2 font-medium leading-tight sm:text-h1">{t("title")}</h1>
+          </div>
+        </div>
+        <Link href={localePath(locale, "/libro-de-reclamaciones")} className={buttonClass("outline", "md", "mt-5 max-w-full whitespace-normal text-left")}>
+          <ArrowLeft aria-hidden size={17} className="shrink-0" /> {tl("title")}
+        </Link>
+      </header>
 
       {sheet ? <ComplaintStatusCard sheet={sheet} locale={locale} /> : null}
       {code && !sheet ? (
@@ -79,7 +93,7 @@ export default async function ComplaintStatusPage({ params, searchParams }: Page
       ) : null}
 
       {token && !sheet ? (
-        <section aria-labelledby="consulta-token" className="mt-8 rounded-lg border border-border bg-surface p-6">
+        <section aria-labelledby="consulta-token" className="mt-8 rounded-xl border border-border border-t-primary bg-surface p-5 shadow-sm sm:p-8">
           <h2 id="consulta-token" className="text-h3 font-medium">
             {t("tokenTitle")}
           </h2>
@@ -88,7 +102,7 @@ export default async function ComplaintStatusPage({ params, searchParams }: Page
         </section>
       ) : null}
 
-      <section aria-labelledby="consulta-pedir" className="mt-10">
+      <section aria-labelledby="consulta-pedir" className="mt-8 rounded-xl border border-border bg-surface p-5 shadow-sm sm:p-8">
         <h2 id="consulta-pedir" className={sheet || token ? "text-h4 font-medium" : "sr-only"}>
           {sheet ? t("newRequest") : ta("submit")}
         </h2>

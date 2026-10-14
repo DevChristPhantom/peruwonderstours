@@ -3,6 +3,7 @@ import { setRequestLocale } from "next-intl/server";
 import { CompareTray } from "@/components/compare/CompareTray";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { FloatingWhatsApp } from "@/components/layout/FloatingWhatsApp";
 import type { Locale } from "@/i18n/routing";
 import { getNavMedia } from "@/lib/catalog";
 
@@ -21,6 +22,7 @@ export default async function SiteLayout({ children, params }: LayoutProps<"/[lo
       </main>
       <SiteFooter />
       <CompareTray />
+      <FloatingWhatsApp />
     </>
   );
 }
