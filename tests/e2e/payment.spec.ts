@@ -11,7 +11,16 @@ for (const outcome of ["approved", "pending", "rejected"] as const) test(`checko
     timings.push({ action, milliseconds: Math.round(performance.now() - start) });
   }
   try {
-    await page.goto(`${origin}/es/tours/tour-islas-de-los-uros-y-taquile-full-day`);
+    await measured("Search Puno and open tour", async () => {
+      await page.goto(`${origin}/es`);
+      const search = page.getByRole("search", { name: "Buscar tours", exact: true });
+      await search.getByRole("combobox").fill("Puno");
+      await page.getByRole("option", { name: /Puno/i }).first().click();
+      await search.getByRole("button", { name: "Buscar", exact: true }).click();
+      await expect(page).toHaveURL(/\/es\/tours\?/);
+      await page.locator('main a[href="/es/tours/tour-islas-de-los-uros-y-taquile-full-day"]').first().click();
+      await expect(page).toHaveURL(/\/es\/tours\/tour-islas-de-los-uros-y-taquile-full-day$/);
+    });
     const booking = page.locator("#reservar-panel");
     await expect(booking).toBeVisible();
     await booking.locator('button[data-date]:not([aria-disabled="true"])').first().click();

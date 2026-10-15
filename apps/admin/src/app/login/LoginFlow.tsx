@@ -50,11 +50,11 @@ function PasswordStep({ onStep, next }: { onStep: (s: LoginStep) => void; next: 
       <p className="auth-step-description text-sm text-foreground-muted">Tu equipo, tus viajes y cada detalle, en un solo lugar.</p>
       {state && !state.ok ? <ErrorSummary error={state.error} /> : null}
       <input type="hidden" name="next" value={next} />
-      <Field label={<span className="inline-flex items-center gap-2"><Mail aria-hidden size={16} /> Correo</span>} name="email" error={fields?.email} required>
+      <Field label={<span className="inline-flex items-center gap-2"><Mail aria-hidden size={16} />{"Correo"}</span>} name="email" error={fields?.email} required>
         <input type="email" autoComplete="username" className="field-input" maxLength={254} autoFocus />
       </Field>
       <div className="relative">
-        <Field label={<span className="inline-flex items-center gap-2"><LockKeyhole aria-hidden size={16} /> Contraseña</span>} name="password" error={fields?.password} required>
+        <Field label={<span className="inline-flex items-center gap-2"><LockKeyhole aria-hidden size={16} />{"Contraseña"}</span>} name="password" error={fields?.password} required>
           <input type={showPassword ? "text" : "password"} autoComplete="current-password" className="field-input pr-14" maxLength={128} />
         </Field>
         <button type="button" aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"} aria-pressed={showPassword} onClick={() => setShowPassword(value => !value)} className="auth-password-toggle">
