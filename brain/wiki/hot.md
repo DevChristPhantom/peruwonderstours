@@ -25,6 +25,8 @@ tags:
 
 ## Recent Changes
 
+- 2026-10-15: manual de uso v0.1 en docs/manual/manual-de-uso.md; actualizar con cambios del sistema. Ver [[decisions/ADR-0021-manual-de-uso]].
+
 - 2026-10-15: diario de historias/leyendas/cultura con filtros, propuestas moderadas y dos lecturas iniciales ES/EN/PT; ver [[decisions/ADR-0020-diario-viajeros]].
 
 - 2026-10-15: SEO técnico, datos de agencia confirmados, tarjetas sociales y noindex rastreable; ver [[decisions/ADR-0019-seo-tecnico]].
