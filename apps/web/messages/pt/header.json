@@ -1,7 +1,11 @@
 {
   "mainNav": "Navegação principal",
   "mobileNav": "Menu do site",
-  "panels": { "descubre": "Descubra", "viajes": "Viagens", "destinos": "Destinos" },
+  "panels": {
+    "descubre": "Descubra",
+    "viajes": "Viagens",
+    "destinos": "Destinos"
+  },
   "about": "Sobre nós",
   "contact": "Fale conosco",
   "myBookings": "Minhas reservas",
@@ -10,8 +14,13 @@
   "closeMenu": "Fechar menu",
   "language": "Idioma",
   "languageButton": "Idioma: {language}. Alterar idioma",
-  "languageName": { "es": "Español", "en": "English", "pt": "Português" },
+  "languageName": {
+    "es": "Español",
+    "en": "English",
+    "pt": "Português"
+  },
   "favoritesLabel": "{count, plural, =0 {Favoritos} one {Favoritos, # passeio salvo} other {Favoritos, # passeios salvos}}",
   "cartLabel": "{count, plural, =0 {Carrinho vazio} one {Carrinho, # passeio} other {Carrinho, # passeios}}",
-  "whatsappMessage": "Olá, gostaria de informações sobre os passeios de vocês no Peru."
+  "whatsappMessage": "Olá, gostaria de informações sobre os passeios de vocês no Peru.",
+  "stories": "Histórias"
 }

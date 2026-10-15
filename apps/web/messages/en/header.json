@@ -21,5 +21,6 @@
   },
   "favoritesLabel": "{count, plural, =0 {Favorites} one {Favorites, # saved tour} other {Favorites, # saved tours}}",
   "cartLabel": "{count, plural, =0 {Cart is empty} one {Cart, # tour} other {Cart, # tours}}",
-  "whatsappMessage": "Hi, I'd like information about your tours in Peru."
+  "whatsappMessage": "Hi, I'd like information about your tours in Peru.",
+  "stories": "Stories"
 }

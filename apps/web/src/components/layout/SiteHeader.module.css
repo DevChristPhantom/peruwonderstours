@@ -418,7 +418,7 @@
   color: var(--text);
 }
 .languageLabel { white-space: nowrap; }
-@media (min-width: 861px) and (max-width: 1100px) { .languageLabel { display: none; } }
+@media (min-width: 1101px) and (max-width: 1100px) { .languageLabel { display: none; } }
 .langButton[aria-expanded="true"] .chevron {
   transform: rotate(180deg);
 }
@@ -515,7 +515,7 @@
   transform: translateY(-3px) rotate(-45deg);
 }
 
-/* ---------- Hoja móvil (≤ 860 px) ---------- */
+/* ---------- Hoja móvil (≤ 1100 px) ---------- */
 .sheet {
   position: absolute;
   top: 68px;
@@ -582,7 +582,7 @@
   background: var(--line);
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1100px) {
   .bar {
     grid-template-columns: 1fr auto;
     padding-inline: 16px;
@@ -603,7 +603,7 @@
   }
 }
 
-@media (min-width: 861px) {
+@media (min-width: 1101px) {
   .sheet {
     display: none;
   }

@@ -40,7 +40,7 @@ const PAD = 20;
 const EDGE = 12;
 const CLOSE_DELAY = 140;
 const LINK_CLOSE_DELAY = 60;
-const MOBILE_QUERY = "(max-width: 860px)";
+const MOBILE_QUERY = "(max-width: 1100px)";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -420,6 +420,7 @@ export function SiteHeader({ media }: { media: NavMedia }) {
                 {t("about")}
               </Link>
             </li>
+            <li><Link href="/blog" className={s.trigger} onPointerEnter={(e) => { if (e.pointerType === "mouse") scheduleClose(LINK_CLOSE_DELAY); }} onFocus={() => close()}>{t("stories")}</Link></li>
           </ul>
 
           {/* Un solo contenedor con tres paneles (spec §4). */}
@@ -573,6 +574,7 @@ export function SiteHeader({ media }: { media: NavMedia }) {
             <li>
               <Link href="/nosotros">{t("about")}</Link>
             </li>
+            <li><Link href="/blog">{t("stories")}</Link></li>
             <li>
               <Link href="/tours">{tc("viewAllTours")}</Link>
             </li>
