@@ -1,202 +1,454 @@
-# Manual de uso — peruwonderstours.com
+# Manual paso a paso de peruwonderstours
 
-Versión 0.1 · 15 de octubre de 2026 · Documento en elaboración
+**Para la persona que atenderá la agencia y actualizará la página.**
 
-Este manual describe la versión de trabajo. Las direcciones locales sirven solo mientras los programas de prueba están abiertos. No se ha publicado todavía el sitio definitivo. Las funciones pendientes se identifican expresamente.
+Versión 0.2 · 15 de octubre de 2026
 
-## Índice
+Este manual está pensado para una persona que no tiene conocimientos de programación. No necesitas instalar programas ni escribir comandos para seguir los pasos de uso habitual.
 
-1. Inicio rápido y acceso
-2. Seguridad y autenticador
-3. Recorrido del viajero
-4. Secciones del administrador
-5. Tours, precios y salidas
-6. Banners y movimiento
-7. Historias, leyendas y guías
-8. Reservas y pagos
-9. Contacto, testimonios y reclamos
-10. Idiomas y SEO
-11. Rutina de operación
-12. Problemas frecuentes
-13. Pendientes y control de versiones
+**Antes de comenzar:** todavía estamos probando la página. Los pagos son de demostración y hay funciones pendientes. No uses esta versión para cobrar dinero real ni para emitir boletos o facturas.
 
-## 1. Inicio rápido y acceso
+## Cómo leer este manual
 
-### Probar la web en este equipo
+- Cuando diga **haz clic**, presiona una vez el botón izquierdo del mouse.
+- Cuando diga **doble clic**, presiona dos veces seguidas el botón izquierdo.
+- Los nombres en **negrita** son botones, casillas o secciones que debes buscar en la pantalla.
+- Una casilla con **asterisco (*)** es obligatoria: debes completarla para continuar.
+- **Guardar** conserva los cambios. **Publicar** hace que un contenido pueda aparecer a los visitantes. No significan lo mismo.
+- Un **borrador** es un contenido que puedes preparar sin mostrarlo todavía a los visitantes.
+- Las direcciones que comienzan con `localhost` o `127.0.0.1` funcionan solamente en el equipo de pruebas y mientras el programa esté abierto.
 
-1. Abre el Explorador de Windows y entra en `C:\Users\ingjo\Documents\Codex\2026-10-13\pu\outputs`.
-2. Ejecuta `Probar-web.cmd` con doble clic.
-3. Espera el mensaje `Ready` y abre <http://127.0.0.1:3000/es>.
-4. Mantén la ventana del servidor abierta durante la prueba. Al cerrarla, la dirección local deja de funcionar.
+Si no aparece un botón indicado aquí, puede que tu cuenta no tenga permiso para usarlo. Pide ayuda al administrador; no necesitas modificar el navegador.
 
-### Probar el panel
+## Busca la tarea que necesitas
 
-1. Ejecuta `Probar-admin.cmd` desde la misma carpeta.
-2. Espera el mensaje que indica que el panel está listo.
-3. Abre <http://localhost:3002/login>.
-4. Ingresa con el correo y contraseña entregados por el responsable del proyecto.
-5. Completa la verificación en dos pasos cuando se solicite.
+1. Encender la página de prueba y abrir el panel.
+2. Entrar con tu correo, contraseña y código del teléfono.
+3. Reconocer los botones del panel y salir de tu cuenta.
+4. Crear una historia o una leyenda.
+5. Corregir un artículo que ya existe.
+6. Subir una imagen y activar un banner.
+7. Preparar un tour nuevo.
+8. Añadir un precio y fechas disponibles.
+9. Revisar una reserva y sus pagos.
+10. Ver mensajes, testimonios y reclamos.
+11. Probar la página como visitante.
+12. Resolver problemas frecuentes.
+13. Revisar qué falta antes de atender clientes reales.
 
-No se incluyen contraseñas, claves de autenticador ni códigos de recuperación en este manual. Las credenciales de demostración no son cuentas para producción. Los lanzadores preparan una vista local de pruebas; no deben usarse como alojamiento público.
+## 1. Encender la página de prueba
 
-## 2. Seguridad y autenticador
+### A. Abrir la carpeta de trabajo
 
-### Primera configuración
+1. En el teclado, mantén presionada la tecla con el símbolo de **Windows** y presiona **E**. Se abrirá una ventana llamada Explorador de archivos.
+2. Haz clic en la barra de dirección que está arriba, donde aparece el nombre de la carpeta.
+3. Copia y pega esta dirección completa: `C:\Users\ingjo\Documents\Codex\2026-10-13\pu\outputs`.
+4. Presiona **Enter**. Debes ver los archivos de la carpeta de pruebas.
 
-1. Si el sistema exige cambiar una contraseña temporal, crea una propia y confirma el cambio.
-2. En la pantalla de activación, solicita mostrar el código QR.
-3. Escanéalo con tu app autenticadora o introduce manualmente la clave que aparece.
-4. Escribe el código de seis dígitos generado por la app y pulsa `Activar y entrar`.
-5. Guarda los códigos de recuperación en un gestor de contraseñas o en un lugar seguro. Se muestran una sola vez.
-6. Confirma que los guardaste para continuar.
+### B. Encender la web que ve el visitante
 
-### Ingresos posteriores
+1. Busca **Probar-web.cmd**. Dependiendo de Windows, puede verse simplemente como **Probar-web**.
+2. Haz doble clic en ese archivo.
+3. Se abrirá una ventana con letras. Espera hasta que aparezca la palabra **Ready**.
+4. **No cierres esa ventana.** Puedes minimizarla con el botón de la raya que aparece arriba a la derecha.
+5. Abre Chrome, Edge o el navegador que utilizas.
+6. Haz clic en la barra superior de direcciones y escribe: <http://127.0.0.1:3000/es>.
+7. Presiona **Enter**.
 
-Después de correo y contraseña, escribe el código actual de la app. Si no tienes el teléfono, utiliza la opción de código de recuperación; cada código sirve una sola vez. Un código rechazado no implica que debas cambiar la contraseña: comprueba primero la hora automática del teléfono y que estés usando la cuenta correcta.
+**Resultado esperado:** aparece la página de peruwonderstours con el logo y los tours.
 
-En `Mi cuenta` puedes consultar el perfil, cambiar contraseña y gestionar sesiones según las opciones disponibles. Pulsa `Salir` al terminar en un equipo compartido. Los permisos del rol determinan qué secciones aparecen y qué acciones están autorizadas.
+**Si aparece “rechazó la conexión”:** vuelve al paso 1 y comprueba que el archivo de prueba esté ejecutándose. Recargar el navegador no enciende el programa.
 
-## 3. Recorrido del viajero
+### C. Encender el panel de administración
 
-1. En inicio, elige idioma: español, inglés o portugués.
-2. Usa el buscador para elegir destino y viajeros.
-3. Abre un tour y revisa itinerario, inclusiones, condiciones y disponibilidad.
-4. Elige fecha y número de viajeros; añade el tour al carrito.
-5. Revisa el carrito antes de continuar.
-6. Completa los pasos de contacto y viajeros del checkout.
-7. Revisa el importe y las condiciones antes de pagar.
-8. Consulta el resultado de la reserva. En el escenario aprobado de pruebas se puede descargar el calendario del viaje.
+1. Regresa a la carpeta del apartado A.
+2. Haz doble clic en **Probar-admin.cmd**.
+3. Espera hasta que el mensaje indique que el panel está listo. El primer arranque puede tardar más.
+4. Mantén abierta la ventana que se acaba de abrir.
+5. En el navegador, abre una pestaña nueva y entra en <http://localhost:3002/login>.
 
-**Estado actual:** el pago es simulado. No introducir datos de tarjetas reales. La persistencia completa de identidad de viajeros y datos fiscales sigue pendiente; no usar esta versión para emitir boletos nominativos ni facturas. Consultar el apartado 13.
+**Resultado esperado:** aparece tu logo y el formulario **Iniciar sesión**.
 
-## 4. Secciones del administrador
+Si aparece un error dentro de la ventana con letras, copia las últimas líneas y envíalas al responsable técnico. No borres carpetas ni vuelvas a instalar nada por tu cuenta.
 
-| Sección | Uso principal |
+## 2. Entrar a tu cuenta
+
+### A. Escribir correo y contraseña
+
+1. En **Correo**, escribe la dirección que te entregó el administrador.
+2. En **Contraseña**, escribe tu contraseña. Respeta mayúsculas, minúsculas y símbolos.
+3. Si necesitas comprobar lo que escribiste, presiona el dibujo del **ojo**. Vuelve a presionarlo para ocultarla.
+4. Pulsa **Continuar** una sola vez y espera.
+
+**Resultado esperado:** aparece **Verificación en dos pasos** o, si es tu primera entrada, una pantalla para configurar la verificación.
+
+**Si dice “Correo o contraseña incorrectos”:** revisa lo que escribiste y vuelve a completar ambos campos. No compartas una captura en la que se vea tu contraseña.
+
+### B. Si ya tienes configurada la app del teléfono
+
+La app autenticadora es una aplicación del teléfono que muestra un código de seis números. No es el código del bloqueo del teléfono ni un mensaje de WhatsApp.
+
+1. Abre tu app autenticadora en el teléfono.
+2. Busca la cuenta correspondiente al panel de peruwonderstours.
+3. Mira el código de seis números que aparece.
+4. Escríbelo en **Código de 6 dígitos**, en la computadora. Si empieza con cero, escribe también ese cero.
+5. Pulsa **Ingresar**.
+
+**Resultado esperado:** aparece el **Tablero** y el menú del administrador.
+
+Si el código está a punto de cambiar, espera el siguiente y úsalo. Comprueba que el teléfono tenga fecha y hora automáticas.
+
+### C. Si es la primera vez y te pide activar la app
+
+1. Si aparece **Crea tu contraseña**, escribe una contraseña propia en los dos campos y pulsa **Guardar y continuar**.
+2. En la pantalla de verificación, sigue la indicación para instalar una app autenticadora si aún no la tienes. Pide ayuda al responsable si no conoces este paso.
+3. En la computadora, pulsa **Mostrar código QR**.
+4. En la app del teléfono, elige añadir una cuenta y escanear un código QR.
+5. Apunta la cámara al cuadrado que aparece en la computadora.
+6. La app mostrará seis números. Escríbelos en **Código de 6 dígitos**.
+7. Pulsa **Activar y entrar**.
+8. Aparecerán los códigos de recuperación. Guárdalos en un lugar seguro y privado. Sirven para entrar si pierdes acceso al teléfono.
+9. Marca **Guardé los códigos en un lugar seguro.**
+10. Pulsa **Ya los guardé, entrar al panel**.
+
+**Importante:** no publiques el QR, la clave manual ni los códigos de recuperación. No se incluyen contraseñas en este manual.
+
+### D. Si no tienes el teléfono
+
+1. Pulsa **No tengo mi teléfono: usar código de recuperación**.
+2. Escribe uno de los códigos que guardaste.
+3. Pulsa **Ingresar**.
+4. Marca ese código como usado en tu copia privada: no volverá a servir.
+
+Si no tienes teléfono ni códigos, contacta al administrador. No crees otra cuenta para intentar recuperar la anterior.
+
+## 3. Ubicarte dentro del panel
+
+En una pantalla grande, el menú aparece a la izquierda. En una pantalla pequeña, pulsa **Menú** para verlo.
+
+| Quiero hacer esto | Sección que debo abrir |
 |---|---|
-| Tablero | Consultar el resumen disponible de operaciones. |
-| Reservas | Buscar reservas y abrir sus detalles y estados. |
-| Pagos manuales | Revisar operaciones manuales con los permisos correspondientes. |
-| Tours | Crear y mantener las fichas comerciales. |
-| Precios | Gestionar tarifas del catálogo. |
-| Salidas y cupos | Mantener fechas y disponibilidad. |
-| Destinos / Categorías | Organizar los productos turísticos. |
-| Blog | Publicar historias, leyendas, cultura y guías. |
-| Banners de inicio | Gestionar imágenes y efectos de la portada. |
-| Testimonios | Revisar las reseñas antes de su publicación. |
-| Mensajes de contacto | Consultar consultas recibidas. |
-| Libro de Reclamaciones | Gestionar hojas registradas según el flujo disponible. |
-| Protección de datos | Revisar solicitudes relacionadas con datos personales. |
-| Auditoría | Consultar el registro de actividad autorizado. |
-| Usuarios | Administrar personal y permisos, si tu rol lo permite. |
-| Mi cuenta | Gestionar tu acceso y sesiones. |
+| Ver el resumen de trabajo | **Tablero** |
+| Buscar una reserva | **Reservas** |
+| Revisar pagos registrados manualmente | **Pagos manuales** |
+| Crear o corregir un tour | **Tours** |
+| Añadir o revisar una tarifa | **Precios** |
+| Elegir días disponibles y número de plazas | **Salidas y cupos** |
+| Crear una historia o guía | **Blog** |
+| Cambiar imágenes del banner principal | **Banners de inicio** |
+| Revisar consultas de visitantes | **Mensajes de contacto** |
+| Revisar opiniones | **Testimonios** |
+| Revisar hojas de reclamación | **Libro de Reclamaciones** |
+| Revisar tu contraseña y sesiones | **Mi cuenta** |
 
-## 5. Tours, precios y salidas
+**Para salir:** pulsa **Salir**, arriba a la derecha. Hazlo siempre que termines en una computadora compartida. Cerrar una pestaña no equivale necesariamente a cerrar la sesión.
 
-Trabaja primero en borrador. Prepara título, descripción, itinerario, inclusiones, exclusiones, condiciones y fotografías. Organiza el tour por destino y categoría; guarda y revisa la ficha antes de publicarla.
+## 4. Crear una historia, una leyenda o una guía
 
-Gestiona las tarifas en `Precios` y las fechas/cupos en `Salidas y cupos`. Comprueba moneda, tipo de pasajero y condiciones aplicables. Un tour publicado no equivale automáticamente a una salida con cupo y tarifa disponible.
+### Antes de escribir
 
-Después de un cambio comercial, abre la ficha como visitante y comprueba fecha, número de personas y total del carrito. No inventes tarifas ni marques disponibilidad que la agencia no haya confirmado. Las traducciones se revisan por separado; un aviso de contenido en español significa que todavía falta una traducción completa.
+Ten preparado el texto y una foto que tengas permiso de utilizar. Si cuentas la experiencia de una persona, pide su autorización para publicar el relato, su nombre y sus imágenes. No incluyas números de documentos, teléfonos ni códigos privados de reservas.
 
-## 6. Banners y movimiento
+El ejemplo de abajo es una guía cultural. **No lo presentes como si fuera el testimonio de un cliente.**
 
-En `Banners de inicio`, utiliza las acciones disponibles para las imágenes, el orden y los efectos. Revisa siempre el resultado en la portada y en móvil después de guardar.
+### A. Llenar el artículo
 
-La portada usa imágenes y efectos nativos de la web. No asumas que subir un archivo HTML ejecutará sus scripts tal cual: los documentos ejecutables originales no se sirven como páginas dentro del banner. Verifica el formato que admite el formulario actual antes de preparar archivos.
+1. Pulsa **Blog** en el menú izquierdo.
+2. Abre la opción para crear un artículo. Se abrirá la pantalla **Nuevo artículo**.
+3. Completa los campos así:
 
-Mantén los textos legibles y evita repetir un nombre ya incluido dentro de la imagen. Los controles permiten pausar la animación; el sitio respeta la preferencia de movimiento reducido del dispositivo.
+| Campo | Qué significa | Ejemplo de práctica |
+|---|---|---|
+| **Título** | Nombre que verá el lector | Qué conocer antes de visitar Taquile |
+| **Slug (URL)** | Nombre corto que irá en la dirección del artículo. Usa letras minúsculas y guiones, sin espacios ni tildes. | visitar-taquile |
+| **Extracto** | Resumen breve que aparece en la tarjeta | Una introducción a la cultura de Taquile y recomendaciones para una visita respetuosa. |
+| **Cuerpo** | Texto completo del artículo | Escribe la introducción y luego los párrafos. Deja una línea vacía entre párrafos. |
+| **Título SEO** | Título para los buscadores. Puede ser parecido al título normal. | Visitar Taquile: cultura y recomendaciones |
+| **Descripción SEO** | Resumen para los buscadores, de una o dos frases | Conoce el patrimonio textil de Taquile y cómo preparar una visita respetuosa al Lago Titicaca. |
+| **Etiquetas** | Palabras que indican dónde aparecerá el artículo | guias, taquile, puno |
 
-## 7. Historias, leyendas y guías
+No necesitas escribir HTML ni código. Puedes empezar con párrafos sencillos. Revisa la ortografía y comprueba las fuentes antes de publicar afirmaciones históricas.
 
-El botón `Historias` del menú abre el diario. También hay un apartado en inicio, después del contenido comercial.
+### B. Elegir la categoría correcta
 
-### Crear una publicación
+En **Etiquetas**, utiliza una de estas palabras exactamente como aparece, sin tildes, y añade después los destinos separados por comas:
 
-1. Entra en `Blog` y elige crear un artículo.
-2. Completa título, slug, extracto y cuerpo.
-3. Añade portada y revisa su descripción cuando corresponda.
-4. En `Etiquetas`, escribe una categoría estable y, si lo deseas, destinos separados por coma:
-   - `historias`: experiencias reales de viajeros.
-   - `leyendas`: mitos y relatos de tradición oral.
-   - `guias`: información cultural y práctica.
-5. Guarda el borrador.
-6. Añade o revisa inglés y portugués si los vas a publicar.
-7. Revisa el texto, sus fuentes y permisos antes de publicar.
-8. Abre `Historias` en la web y comprueba el filtro correspondiente.
-
-Si no incluyes una categoría reconocida, la publicación se muestra como guía. Si incluyes varias, `historias` tiene prioridad sobre `leyendas`; utiliza preferentemente una sola.
-
-### Historias de viajeros
-
-El botón `Proponer mi historia` abre WhatsApp para contactar al equipo; no publica automáticamente. Revisa el relato y conserva la autorización de su autor antes de publicarlo. Obtén permiso también para fotografías y nombres. No incluyas documentos, teléfonos personales ni datos de reservas en el artículo.
-
-### Leyendas y fuentes
-
-Distingue tradición oral de hechos documentados. Enlaza fuentes cuando afirmes información histórica o cultural. Las primeras lecturas tratan sobre Manco Cápac/Mama Ocllo y el patrimonio textil de Taquile; incluyen fuentes de PROMPERÚ y UNESCO.
-
-Estas dos lecturas iniciales son contenido local versionado y no aparecen como registros editables del panel. Su reemplazo o retirada tiene condiciones específicas: ver [Contenido editorial inicial](../content/journal-editorial.md). Los nuevos artículos sí se gestionan mediante el blog del administrador.
-
-## 8. Reservas y pagos
-
-Busca la reserva y abre su detalle antes de actuar. Revisa código, estado, fechas e importes; no interpretes un pago pendiente o rechazado como dinero recibido.
-
-En pruebas hay resultados simulados aprobado, pendiente y rechazado. Para operaciones manuales, confirma el sustento y usa exclusivamente las acciones autorizadas por tu rol. Registrar un pago manual no equivale a cobrar una tarjeta desde el panel. Una anulación contable tampoco acredita una devolución bancaria real.
-
-No repitas una operación dudosa sin revisar primero el estado y la auditoría. La integración con la pasarela real y el procedimiento de conciliación/devolución deben verificarse cuando se contrate el proveedor.
-
-## 9. Contacto, testimonios y reclamos
-
-Revisa las consultas en `Mensajes de contacto`. Ver un mensaje en el panel no acredita por sí mismo que se haya enviado un correo al viajero.
-
-Publica testimonios reales y autorizados; no conviertas textos promocionales en reseñas de clientes. El flujo contempla moderación.
-
-El Libro de Reclamaciones cuenta con formulario público y consulta de constancia. El equipo debe verificar los datos oficiales de la agencia y acordar su procedimiento de respuesta antes de operar en producción. Este manual no sustituye las políticas ni asesoramiento legal.
-
-## 10. Idiomas y SEO
-
-El sitio tiene español, inglés y portugués. Los campos traducidos deben revisarse antes de publicar. Cuando una ficha no tiene traducción, el sitio puede mostrar contenido español con un aviso.
-
-Para cada artículo o tour, utiliza un título concreto y una descripción propia. El SEO técnico ya incluye canonical, idiomas, sitemap y datos estructurados; no garantiza posiciones en Google. No inventes reseñas, certificaciones ni datos fiscales para mejorarlo.
-
-Search Console, Analytics y la verificación del dominio requieren configuración al publicar. No se consideran conectados por aparecer mencionados en el manual. Ver [Preparación SEO](../seo/preparacion-lanzamiento.md).
-
-## 11. Rutina de operación
-
-- Al comenzar: revisar reservas, pagos pendientes, consultas y reclamos.
-- Antes de publicar cambios: comprobar contenido, importes, cupos, traducciones y permisos de imágenes.
-- Después de guardar: revisar la vista pública y, para cambios comerciales, el recorrido hasta el carrito.
-- Al terminar: cerrar sesión si el equipo es compartido.
-- Al publicar en hosting: definir y probar copias de seguridad, restauración y monitoreo. No asumir que están contratados o activos en la vista local.
-
-## 12. Problemas frecuentes
-
-| Situación | Qué revisar |
+| Si el contenido es… | Escribe por ejemplo… |
 |---|---|
-| localhost rechazó la conexión | Ejecutar el lanzador correcto y mantenerlo abierto; esperar Ready/panel listo. |
-| No veo un cambio visual | Recargar con Ctrl + F5. Si persiste, informar qué pantalla y qué cambio falta. |
-| Falta una sección o aparece sin permiso | Revisar el rol con un administrador; no se resuelve cambiando la URL. |
-| Mi código del autenticador falla | Revisar hora automática y cuenta; usar recuperación si corresponde. |
-| Un cambio de edición entra en conflicto | Volver a cargar y revisar la versión actual antes de repetir; puede haber otra edición. |
-| El artículo no aparece | Revisar estado publicado, etiqueta y traducción. Los borradores no son publicaciones públicas. |
-| No hay tarifa o fecha disponible | Revisar precios, salidas, cupos y condiciones comerciales del tour. |
-| No llega el correo en pruebas | El entorno puede capturarlo sin enviarlo. SMTP real sigue pendiente de validación. |
+| Un relato real de un viajero | historias, puno |
+| Un mito o una leyenda | leyendas, titicaca |
+| Información cultural o consejos | guias, taquile |
 
-Al reportar un error, indicar pantalla, acción, resultado esperado y mensaje visible. Ocultar contraseñas, QR, códigos de recuperación y datos personales en capturas.
+Usa una sola categoría principal. La palabra `historias` es una etiqueta de clasificación: no significa que el relato ya tenga autorización para publicarse.
 
-## 13. Pendientes y control de versiones
+### C. Añadir una fotografía
 
-| Pendiente | Consecuencia |
+1. Busca **Imagen de portada**.
+2. Pulsa **Subir imagen**.
+3. En la ventana de archivos, busca la foto y selecciónala.
+4. Pulsa **Abrir**.
+5. Espera mientras aparece **Subiendo…**.
+6. Comprueba que se vea la foto seleccionada.
+
+Se admiten fotos JPEG, PNG, WebP o AVIF, de hasta **8 MB** en este selector. Si supera el límite, pide una copia más ligera. No cambies solo el nombre del archivo para intentar reducir su tamaño.
+
+### D. Guardar sin publicar todavía
+
+1. Pulsa **Crear borrador**.
+2. Espera a que se abra la pantalla del artículo creado.
+3. Comprueba que el título sea correcto y revisa su estado.
+
+**Resultado esperado:** el artículo queda guardado para seguir editándolo. Un borrador todavía no se muestra al público.
+
+### E. Revisar y publicar
+
+1. Entra en la pestaña **Español** y comprueba el texto.
+2. Si vas a ofrecerlo en otros idiomas, prepara sus pestañas **Inglés** y **Português (Brasil)**. No copies español y lo marques como traducido.
+3. Guarda cada formulario antes de cambiar de pestaña.
+4. Revisa título, fotografía, permisos y fuentes.
+5. Usa la acción **Publicar**, si tu cuenta tiene permiso.
+6. Abre la web en otra pestaña y pulsa **Historias** en el menú superior.
+7. Elige la categoría correspondiente y abre el artículo para leerlo completo.
+
+**Si no aparece:** revisa primero que esté publicado y que la etiqueta esté bien escrita. Si tu cuenta no puede publicar, pide a la persona responsable que revise el borrador.
+
+Las dos lecturas iniciales sobre Manco Cápac/Mama Ocllo y Taquile se añadieron como contenido inicial del proyecto. Para modificarlas o retirarlas, pide ayuda al responsable técnico. Los artículos nuevos que crees desde el panel sí se gestionan desde **Blog**.
+
+## 5. Corregir un artículo existente
+
+1. Abre **Blog**.
+2. Busca el artículo por su título y abre su detalle.
+3. Para cambiar foto o etiquetas, entra en **General**.
+4. Modifica lo necesario y pulsa **Guardar cambios**.
+5. Para cambiar el texto, abre la pestaña del idioma correspondiente y guarda ese formulario.
+6. Vuelve a la web y revisa el resultado.
+
+Evita cambiar el **Slug (URL)** de un artículo que ya compartiste. Esa es la dirección que otras personas podrían tener guardada. Si necesitas cambiarla, pide ayuda para revisar los enlaces anteriores.
+
+Si aparece un aviso de que otra persona modificó el artículo, vuelve a abrirlo y compara la información antes de repetir tu cambio.
+
+## 6. Cambiar una imagen del banner principal
+
+El banner es la imagen grande que aparece al inicio de la página. Puede tener efectos de agua o nubes.
+
+### A. Subir la imagen
+
+1. Pulsa **Banners de inicio**.
+2. Busca el bloque **Subir un banner**.
+3. En **Título**, escribe un nombre que permita reconocerlo, por ejemplo: `Experiencias en el Titicaca`.
+4. En **Imagen del banner**, elige el archivo de tu computadora.
+5. En **Efecto**, selecciona agua, nubes o la opción sin movimiento que corresponda a la imagen.
+6. Si la foto ya tiene letras con su nombre, marca **La imagen ya contiene el título**. Así no se repetirá el texto.
+7. Pulsa **Subir como inactivo**.
+
+Admite imágenes PNG, JPEG, WebP o AVIF, hasta **16 MB**. Subirlo como inactivo significa que queda guardado pero aún no aparece en la portada.
+
+### B. Mostrarlo al visitante
+
+1. Busca la imagen en **Banners guardados**.
+2. Revisa su título y el efecto elegido.
+3. En **Orden**, escribe el lugar en el que debe aparecer: por ejemplo, `1` antes que `2`.
+4. Marca **Mostrar en portada**.
+5. Pulsa **Guardar cambios**.
+6. Abre la web y revisa el banner. Usa las flechas del carrusel para encontrarlo.
+
+**Para retirarlo sin perderlo:** desmarca **Mostrar en portada** y pulsa **Guardar cambios**.
+
+Si importas un HTML anterior que contiene una imagen incorporada compatible, el sistema puede extraerla; no se ejecutan sus efectos originales. Si aparece «Sin imagen disponible», utiliza una foto normal. Si no sabes qué es un HTML, utiliza una foto normal desde el principio.
+
+## 7. Preparar un tour nuevo
+
+Antes de comenzar, pide al encargado comercial la duración, el itinerario, lo que incluye, las condiciones y las tarifas confirmadas.
+
+1. Pulsa **Tours**.
+2. Abre la opción de nuevo tour. Debe aparecer **Nuevo tour**.
+3. Completa los datos iniciales:
+
+| Campo | Cómo completarlo |
 |---|---|
-| Datos de viajeros y facturación | Se solicitan en checkout pero todavía no se guardan completos. Bloquea uso operativo definitivo. |
-| Teléfono actualizado por reserva | Se cifra para clientes nuevos; una reserva de invitado no sobrescribe el perfil existente. |
-| Pasarela real | Los pagos actuales son simulados. |
-| Hosting y dominio público | Las direcciones localhost no son la web publicada. |
-| SMTP y entrega real | Falta validar correos en buzones reales. |
-| Identidad fiscal y documentación final | RUC y razón social reales pendientes; ejemplos no son datos oficiales. |
-| Analytics / Search Console | Requieren configuración de cuentas y dominio. |
+| **Tipo** | Tour para una excursión; Paquete para varios días/noches; Traslado para un transporte. |
+| **Código** | Identificador interno acordado con la agencia, por ejemplo `PUN-UROS-01`. No reutilices el de otro tour. |
+| **Slug (URL en español)** | Nombre corto, por ejemplo `uros-y-taquile-un-dia`. No uses espacios ni tildes. |
+| **Duración (horas)** | Horas del tour o traslado, según la información comercial. |
+| **Días / Noches** | Para paquetes, los días y noches confirmados. |
+| **Pasajeros mínimos** | Número mínimo de personas que la agencia puede atender en esa opción. |
 
-Este documento se actualiza junto con las funciones. Las capturas finales y la capacitación se completarán cuando se estabilice la interfaz. No se incluyen capturas simuladas como evidencia de funciones terminadas.
+4. Pulsa **Crear borrador**.
+5. En el tour creado, completa los apartados de texto, itinerario, portada y clasificación que muestra el panel.
+6. Guarda cada apartado antes de salir de él.
+7. Revisa la información con la persona responsable antes de publicar.
+
+**Un tour guardado todavía puede necesitar precios y fechas.** Continúa con el apartado 8. No inventes una tarifa para completar una casilla.
+
+## 8. Añadir una tarifa y fechas disponibles
+
+### A. Precio por persona
+
+1. Pulsa **Precios**.
+2. Selecciona el tour con el que trabajarás y revisa que sea el correcto.
+3. En el formulario de tarifa, revisa **Pasajero**, **Residencia** y **Moneda**.
+4. En **Precio por persona**, escribe el importe confirmado. Ejemplo de formato: `450.00` significa 450 unidades de la moneda elegida; no significa 4.50.
+5. Completa **Vigente desde** y **Vigente hasta** según el periodo autorizado.
+6. Revisa temporada y límites de grupo si se aplican.
+7. Pulsa **Crear tarifa**.
+8. Comprueba que la nueva tarifa figure en la lista.
+
+Los importes de ejemplo de este manual sirven para explicar el formato. No son precios aprobados de la agencia.
+
+### B. Fechas y plazas
+
+1. Pulsa **Salidas y cupos**.
+2. Selecciona el tour correcto.
+3. Busca **Generar salidas en lote**. Significa crear varias fechas de una sola vez.
+4. En **Desde** y **Hasta**, elige el periodo autorizado.
+5. En **Días de la semana**, deja marcados solo los días en que habrá atención.
+6. Completa **Hora (Lima)** si hay hora fija.
+7. En **Capacidad**, escribe cuántas plazas puede atender la agencia en cada salida.
+8. Revisa los datos y pulsa **Generar salidas**.
+9. Comprueba que aparezcan las fechas previstas en la lista.
+10. Abre el tour como visitante y verifica que se pueda elegir una fecha con el precio correcto.
+
+No reduzcas las plazas por debajo de las que ya están vendidas o reservadas temporalmente. Si el sistema rechaza el cambio, consulta la reserva o pide ayuda; no intentes borrar fechas para evitar el aviso.
+
+## 9. Revisar una reserva y sus pagos
+
+1. Pulsa **Reservas**.
+2. Busca el código de reserva proporcionado por el viajero y abre su detalle.
+3. Comprueba que sea la reserva correcta: tour, fecha, cantidad de personas y estado.
+4. Revisa los importes antes de informar al cliente.
+
+| Lo que ves | Qué debes hacer |
+|---|---|
+| Pago pendiente | No confirmar que el dinero ya fue recibido. Revisar el medio y la operación. |
+| Pago rechazado | No registrarlo como pagado. Informar que debe revisarse el intento de pago. |
+| Importe pagado registrado | Revisar el estado y el sustento antes de dar instrucciones operativas. En pruebas sigue siendo una simulación. |
+
+**Pagos manuales:** utiliza esta sección solo si te autorizaron a gestionar esas operaciones. Comprueba el sustento y el importe. No pulses anular, cancelar o devolver por prueba en una reserva real.
+
+Registrar un pago en el panel no cobra una tarjeta. Anular un registro tampoco prueba que el banco haya devuelto dinero. Si hay dudas, consulta al encargado de pagos antes de repetir la acción.
+
+## 10. Mensajes, opiniones y reclamos
+
+### Mensajes de contacto
+
+1. Pulsa **Mensajes de contacto**.
+2. Abre el mensaje que necesitas atender.
+3. Lee la consulta completa antes de responder por el canal acordado por la agencia.
+4. No supongas que abrir el mensaje envía una respuesta al viajero.
+
+### Testimonios
+
+1. Pulsa **Testimonios**.
+2. Revisa que el texto corresponda a una experiencia real y autorizada.
+3. Usa las acciones de revisión/publicación disponibles para tu cuenta.
+4. Comprueba después la vista pública.
+
+### Libro de Reclamaciones
+
+1. Pulsa **Libro de Reclamaciones**.
+2. Ubica la hoja que corresponde al caso.
+3. Revisa sus datos y el estado de atención.
+4. Sigue el procedimiento de la agencia; no publiques el reclamo como una historia o testimonio.
+5. Si no sabes cómo responder, deriva el caso al responsable.
+
+Los plazos y el procedimiento legal deben verificarse con la persona responsable de la agencia. Este manual enseña a ubicar la sección; no sustituye esa revisión.
+
+## 11. Probar la página como visitante
+
+1. Abre <http://127.0.0.1:3000/es> en otra pestaña.
+2. Elige español, inglés o portugués en el selector de idioma.
+3. Busca un destino y abre un tour.
+4. Revisa la información y elige fecha y viajeros.
+5. Añádelo al carrito y comprueba el total.
+6. Continúa para probar el formulario de reserva.
+
+**Durante las pruebas:** usa datos ficticios y no introduzcas tarjetas reales. Los pagos todavía son simulados. Aunque aparezcan campos de documentos de viajeros o facturación, todavía falta completar su guardado; no se debe operar con boletos nominativos ni facturas desde esta versión.
+
+Para revisar una historia, pulsa **Historias** arriba y elige una categoría. **Proponer mi historia** abre WhatsApp: el relato no se publica automáticamente.
+
+## 12. Si algo no funciona
+
+| Problema | Qué hacer primero |
+|---|---|
+| “No se puede acceder” o “rechazó la conexión” | Abre el archivo de prueba correspondiente, espera a que esté listo y deja su ventana abierta. Luego recarga la página. |
+| No veo el último cambio | Mantén presionada **Ctrl** y pulsa **F5** en la pestaña de la web. |
+| Contraseña incorrecta | Revisa el correo, mayúsculas y símbolos. Vuelve a escribir ambos campos. |
+| El código de seis dígitos no sirve | Comprueba la hora automática del teléfono y usa un código nuevo de la cuenta correcta. |
+| No puedo guardar | Busca un mensaje debajo de los campos o al principio del formulario. Completa lo que indique. |
+| El botón muestra “Guardando…” o “Subiendo…” | Espera a que termine antes de volver a pulsarlo. |
+| No aparece un botón del manual | Puede faltar permiso. Consulta al administrador. |
+| La imagen pesa demasiado | Pide una copia más ligera: portada hasta 8 MB; banner hasta 16 MB. |
+| Publiqué un artículo y no lo veo en su categoría | Comprueba estado publicado y etiqueta: historias, leyendas o guias. |
+| No llega un correo de la prueba | Todavía no se ha validado el envío real. Informa al responsable técnico. |
+
+### Cómo pedir ayuda
+
+Envía estos cuatro datos:
+
+1. La pantalla donde estabas. Ejemplo: **Blog → artículo de Taquile**.
+2. El botón que pulsaste. Ejemplo: **Guardar cambios**.
+3. Qué esperabas que pasara.
+4. El mensaje que apareció, copiado tal cual, o una captura sin información privada.
+
+No envíes contraseñas, QR, códigos de recuperación ni documentos personales en la captura.
+
+## 13. Qué revisar cada día
+
+Al comenzar la jornada:
+
+1. Entrar a tu cuenta.
+2. Revisar reservas y pagos pendientes.
+3. Revisar consultas y reclamos.
+4. Comprobar cambios de precios y disponibilidad autorizados.
+
+Antes de publicar un contenido:
+
+1. Leerlo completo.
+2. Revisar foto y permiso de uso.
+3. Revisar la traducción si la incluyes.
+4. Guardar y comprobar el estado publicado.
+5. Abrir la web como visitante y comprobar el resultado.
+
+Al terminar: pulsar **Salir** si compartes la computadora.
+
+## 14. Qué sigue pendiente antes de usarlo con clientes reales
+
+- Publicar la web en el alojamiento contratado y conectar el dominio.
+- Contratar y probar el cobro real.
+- Comprobar que los correos lleguen a buzones reales.
+- Completar el guardado de documentos de viajeros y datos de facturación.
+- Completar el contacto actualizado de cada reserva. Por ahora el teléfono se guarda cifrado para clientes nuevos y no reemplaza el perfil anterior de otro cliente desde una reserva de invitado.
+- Confirmar razón social, RUC real y documentación oficial.
+- Preparar copias de seguridad y probar cómo recuperar la información.
+
+El SEO ayuda a que los buscadores entiendan la página, pero no garantiza aparecer primero. La conexión con las herramientas de Google se configura al publicar; no necesitas modificarla para crear historias o tours.
+
+## 15. Palabras que puedes encontrar
+
+| Palabra | Explicación sencilla |
+|---|---|
+| Navegador | Programa para entrar a las páginas: Chrome, Edge, Firefox, etc. |
+| Pestaña | Cada página abierta dentro del navegador. |
+| Panel | Parte privada donde el personal administra la web. |
+| Borrador | Trabajo guardado que todavía no está publicado. |
+| Publicar | Permitir que un contenido aparezca a los visitantes. |
+| Slug | Nombre corto de una página dentro de su dirección. |
+| Etiqueta | Palabra que clasifica un contenido. |
+| Portada | Foto principal de un artículo o tour. |
+| Banner | Imagen grande de la parte superior de la página de inicio. |
+| Carrusel | Grupo de imágenes que cambia con flechas o automáticamente. |
+| Cupo | Número de plazas disponibles. |
+| Autenticador | App del teléfono que genera códigos para entrar con seguridad. |
+| SEO | Preparación de la página para que los buscadores comprendan su contenido. |
+| Simulado / sandbox | Prueba que no realiza un cobro real. |
+
+## Control del manual
+
+Este documento se actualizará junto con las funciones. Las capturas paso a paso se añadirán cuando se estabilicen las pantallas; todavía no están incluidas.
 
 | Fecha | Versión | Cambio |
 |---|---|---|
-| 2026-10-15 | 0.1 | Primer manual: acceso, MFA, navegación, catálogo, diario y límites de la versión de pruebas. |
+| 2026-10-15 | 0.1 | Primera documentación del uso general. |
+| 2026-10-15 | 0.2 | Reescritura para principiantes: clic por clic, campos explicados, ejemplos, resultados y solución de problemas. |
+
+Documentación para el responsable técnico: [Contenido editorial inicial](../content/journal-editorial.md), [Preparación SEO](../seo/preparacion-lanzamiento.md) y [Límites del checkout](../qa/checkout-datos-2026-10-15.md).
