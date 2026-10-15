@@ -43,14 +43,13 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
 
   return (
     <main id="contenido" className="auth-shell">
+      <Image src="/brand/admin-machu-amanecer.webp" alt="" width={1672} height={941} sizes="100vw" className="auth-backdrop" preload />
       <section className="auth-scene" aria-labelledby="auth-scene-title">
-        <Image src="/brand/admin-machu-picchu.webp" alt="" width={1774} height={887} sizes="(min-width: 1024px) 58vw, 1px" className="auth-photo" />
         <div className="auth-scene-content">
-          <span className="auth-eyebrow">PERUWONDERSTOURS · EQUIPO</span>
+          <span className="auth-eyebrow">BIENVENIDO AL</span>
           <div className="auth-introduction">
-            <p className="auth-location">Machu Picchu · Perú</p>
-            <h1 id="auth-scene-title" className="auth-scene-title">Panel de<br />administración</h1>
-            <p className="auth-lead">Cada gran viaje empieza con un equipo que cuida los detalles.</p>
+            <h1 id="auth-scene-title" className="auth-scene-title">Panel de<br /><span>administración</span></h1>
+            <p className="auth-lead">Gestiona reservas, tours y operaciones de forma simple y segura.</p>
           </div>
           <ul className="auth-features">
             <li><span className="auth-feature-icon"><CalendarCheck2 aria-hidden size={20} strokeWidth={1.6} /></span><div><strong>Reservas y viajeros</strong><p>Organiza cada etapa de la experiencia.</p></div></li>
@@ -63,12 +62,12 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
       </section>
       <section className="auth-access" aria-label="Acceso del personal">
         <div className="auth-access-inner">
-          <div className="auth-brand"><Image src="/brand/peruwonderstours-dorado.png" alt="peruwonderstours.com" width={2171} height={724} sizes="260px" className="auth-logo" preload /></div>
-          <h1 className="auth-mobile-title">Panel de administración</h1>
           <div className="auth-card">
+            <div className="auth-brand"><Image src="/brand/peruwonderstours-dorado.png" alt="peruwonderstours.com" width={2171} height={724} sizes="(min-width: 1024px) 380px, 260px" className="auth-logo" preload /></div>
+            <h1 className="auth-mobile-title">Panel de administración</h1>
             <LoginFlow initial={initial} next={volver} notice={notice} />
+            <p className="auth-security"><ShieldCheck aria-hidden size={19} strokeWidth={1.7} /><span>Acceso exclusivo del personal.<br />Toda actividad queda registrada.</span></p>
           </div>
-          <p className="auth-security"><ShieldCheck aria-hidden size={15} strokeWidth={1.7} /><span>Acceso exclusivo del personal.<br />Toda actividad queda registrada.</span></p>
         </div>
       </section>
     </main>

@@ -175,3 +175,77 @@
   @media (prefers-reduced-motion: no-preference) { .auth-access-inner { animation: auth-arrive 450ms cubic-bezier(.25, 1, .5, 1) both; } }
   @media (prefers-reduced-motion: reduce) { .auth-password-toggle { transition: none; } }
 }
+
+/* Owner's sunrise composition: continuous landscape and a single access card. */
+@layer components {
+  .auth-shell { position: relative; isolation: isolate; --auth-ink: #292a28; --auth-muted: #625d56; }
+  .auth-backdrop { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: 42% center; pointer-events: none; }
+  .auth-shell::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: rgb(250 247 240 / 89%); }
+  .auth-access { background: transparent; }
+  .auth-access-inner { max-width: 600px; }
+  .auth-card { background: rgb(255 253 248 / 96%); border-color: #e8e0d4; padding: 28px 24px; box-shadow: 0 20px 65px rgb(72 49 28 / 10%); }
+  .auth-brand { margin-bottom: 26px; }
+  .auth-logo { width: 320px; }
+  .auth-step-heading, .auth-step-description { text-align: center; }
+  .auth-security { border-top: 1px solid #e5dbcd; padding-top: 20px; margin-top: 26px; flex-direction: column; align-items: center; }
+  .auth-security svg { color: #8d7557; }
+  @media (min-width: 1024px) {
+    .auth-shell { grid-template-columns: minmax(0, 1fr) minmax(480px, 1fr); padding: clamp(28px, 4vw, 70px); gap: clamp(24px, 4vw, 68px); }
+    .auth-shell::before { background: linear-gradient(90deg, rgb(255 249 235 / 92%) 0%, rgb(255 249 235 / 80%) 28%, rgb(255 249 235 / 20%) 51%, rgb(249 245 237 / 40%) 100%); }
+    .auth-scene { min-height: auto; background: transparent; color: #292a28; overflow: visible; }
+    .auth-scene::after { display: none; }
+    .auth-scene-content { min-height: auto; padding: 30px 0 16px; }
+    .auth-eyebrow { color: #915020; letter-spacing: .32em; font-size: .75rem; }
+    .auth-introduction { margin-top: 14px; }
+    .auth-scene-title { font-size: clamp(2.6rem, 4.2vw, 4.8rem); font-weight: 700; line-height: 1.08; }
+    .auth-scene-title span { color: #965020; }
+    .auth-lead { color: #393a35; max-width: 365px; font-size: 1rem; line-height: 1.65; }
+    .auth-lead::after { content: ""; display: block; width: 54px; height: 3px; margin-top: 20px; background: #b88a32; }
+    .auth-features { grid-template-columns: 1fr; gap: 18px; max-width: 370px; margin-top: 30px; }
+    .auth-feature-icon { color: #915020; background: rgb(255 248 231 / 85%); border-color: #dfc9a6; border-radius: 50%; width: 46px; height: 46px; flex-basis: 46px; }
+    .auth-features strong { color: #292a28; font-size: .875rem; }
+    .auth-features p { color: #4c493f; }
+    .auth-office { border-color: rgb(110 84 52 / 28%); color: #37382e; max-width: 370px; padding-top: 16px; margin-top: 30px; }
+    .auth-office svg { color: #915020; }
+    .auth-access { padding: 0; }
+    .auth-card { padding: clamp(30px, 3.2vw, 52px); border-radius: 24px; }
+    .auth-logo { width: 380px; }
+    .auth-brand { margin-bottom: 28px; }
+    .auth-step-heading { font-size: 2rem; }
+  }
+  @media (min-width: 1440px) { .auth-features { grid-template-columns: 1fr; } }
+}
+
+/* Fit staff access to laptop height without clipping MFA or browser zoom. */
+@layer components {
+  @media (min-width: 1024px) {
+    .auth-shell { padding: clamp(20px, 3vh, 40px) clamp(28px, 4vw, 70px); align-items: center; }
+    .auth-scene-content { padding-top: 12px; padding-bottom: 12px; }
+    .auth-access-inner { max-width: 520px; }
+    .auth-card { padding: clamp(24px, 3vh, 36px); }
+    .auth-logo { width: clamp(230px, 32vh, 310px); }
+    .auth-brand { margin-bottom: 18px; }
+    .auth-scene-title { font-size: clamp(2.5rem, 3.6vw, 4rem); }
+    .auth-step-heading { font-size: 1.7rem; }
+    .auth-security { margin-top: 18px; padding-top: 14px; line-height: 1.5; }
+    .auth-features { gap: 14px; margin-top: 24px; margin-bottom: 20px; }
+    .auth-lead { margin-top: 14px; }
+    .auth-office { margin-top: 18px; }
+  }
+  @media (min-width: 1024px) and (max-height: 760px) {
+    .auth-shell { padding-top: 16px; padding-bottom: 16px; }
+    .auth-card { padding: 22px 28px; }
+    .auth-logo { width: 220px; }
+    .auth-brand { margin-bottom: 12px; }
+    .auth-step-heading { font-size: 1.5rem; }
+    .auth-card .field-input { min-height: 46px; padding-top: 9px; padding-bottom: 9px; }
+    .auth-card .admin-button { min-height: 46px; }
+    .auth-password-toggle { top: 28px; }
+    .auth-security { margin-top: 14px; padding-top: 12px; }
+    .auth-scene-title { font-size: clamp(2.3rem, 3.4vw, 3.5rem); }
+    .auth-features { gap: 10px; margin-top: 20px; }
+    .auth-feature-icon { width: 38px; height: 38px; flex-basis: 38px; }
+    .auth-lead::after { margin-top: 12px; }
+    .auth-office { padding-top: 12px; margin-top: 12px; }
+  }
+}
