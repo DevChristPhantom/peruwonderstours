@@ -13,6 +13,7 @@ import type { LocalePaths } from "@/lib/catalog/types";
 import { env } from "@/lib/env";
 import { blogLocaleSlugs } from "./blog-locale-slugs";
 import { editorialBrand } from "./editorial-brand";
+import { journalArticles, mergeJournalArticles } from "./journal-articles";
 
 /**
  * Blog (F1) por idioma. Fuente: API `GET /blog` (ISR, tag `content`); si la API no responde o
@@ -130,9 +131,9 @@ export const getBlogPosts = cache((locale: Locale): Promise<BlogCard[]> =>
     async () => {
       const [list, es] = await Promise.all([listBlogPosts(locale), locale === "es" ? Promise.resolve(null) : listBlogPosts("es")]);
       const esById = new Map((es ?? list).map((c) => [c.id, c]));
-      return list.map((c) => fromApiCard(c, locale, esById.get(c.id)));
+      return mergeJournalArticles(list.map((c) => fromApiCard(c, locale, esById.get(c.id))), journalArticles(locale));
     },
-    () => seedList(locale),
+    () => mergeJournalArticles(seedList(locale), journalArticles(locale)),
   ),
 );
 
@@ -141,7 +142,7 @@ export const getBlogPostBySlug = cache((slug: string, locale: Locale): Promise<B
   withSeed(
     async () => {
       const post = await getBlogPost(slug, locale);
-      if (!post) return null;
+      if (!post) return journalArticles(locale).find(p => p.slug === slug) ?? null;
       const esSlug = post.alternateLocales?.find((a) => a.locale === "es")?.slug ?? (locale === "es" ? post.slug : undefined);
       const card = fromApiCard(post, locale, esSlug ? { ...post, slug: esSlug } : undefined);
       const enSlug = post.alternateLocales?.find((a) => a.locale === "en")?.slug;
@@ -162,7 +163,7 @@ export const getBlogPostBySlug = cache((slug: string, locale: Locale): Promise<B
         Object.entries(slugMap).find(([, en]) => en === slug)?.[0] ??
         [...enByKey].find(([, p]) => p.slug === slug)?.[0];
       const p = key ? esPosts.find((x) => x.slug === key) : undefined;
-      return p ? seedPost(p, locale) : null;
+      return p ? seedPost(p, locale) : journalArticles(locale).find(article => article.slug === slug) ?? null;
     },
   ),
 );

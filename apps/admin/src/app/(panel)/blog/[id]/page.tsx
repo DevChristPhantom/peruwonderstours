@@ -78,7 +78,7 @@ export default async function BlogPostPage({ params, searchParams }: PageProps<"
         <Section title="Portada y etiquetas">
           <ActionForm action={updateBlogPostAction.bind(null, post.id, post.version)} className="space-y-4">
             <fieldset disabled={!canWrite} className="space-y-4">
-              <Field label="Etiquetas" name="tags" hint="Separadas por coma. Máx. 20.">
+              <Field label="Etiquetas" name="tags" hint="Categoría del diario: historias, leyendas o guias; luego destinos separados por coma. Relatos de viajeros: autorización previa. Máx. 20.">
                 <input className="field-input" maxLength={1300} defaultValue={post.tags.join(", ")} />
               </Field>
               <ImageUploader

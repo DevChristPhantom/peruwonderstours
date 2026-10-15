@@ -25,6 +25,8 @@ tags:
 
 ## Recent Changes
 
+- 2026-10-15: diario de historias/leyendas/cultura con filtros, propuestas moderadas y dos lecturas iniciales ES/EN/PT; ver [[decisions/ADR-0020-diario-viajeros]].
+
 - 2026-10-15: SEO técnico, datos de agencia confirmados, tarjetas sociales y noindex rastreable; ver [[decisions/ADR-0019-seo-tecnico]].
 
 - 2026-10-15: recorrido buscador→pago sandbox comprobado 24/24 en CI; teléfono cifrado corregido y bloqueos de viajeros/facturación documentados. Ver [[decisions/ADR-0018-auditoria-reservas]].

@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { DestinationsSection } from "@/components/home/DestinationsSection";
 import { FeaturedTours, type FeaturedGroup } from "@/components/home/FeaturedTours";
 import { Hero } from "@/components/home/Hero";
+import { JournalSection } from "@/components/home/JournalSection";
 import { FinalCta, TestimonialsSection, WhyUsSection } from "@/components/home/HomeSections";
 import { TrustStrip } from "@/components/layout/TrustStrip";
 import { SearchBar } from "@/components/search/SearchBar";
@@ -72,6 +73,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
       <FeaturedTours groups={groups} totalTours={allTours.length} locale={locale} />
       <WhyUsSection tourCount={allTours.length} destinationCount={destinations.length} />
       <TestimonialsSection testimonials={testimonials} locale={locale} />
+      <JournalSection locale={locale} />
       <FinalCta />
       <TrustStrip locale={locale} />
     </>

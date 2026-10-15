@@ -952,6 +952,31 @@
       "packages": "See packages"
     }
   },
+  "journal": {
+    "eyebrow": "The stories of Peru",
+    "title": "Stories, legends and paths to discover",
+    "intro": "Beyond the itinerary: travelers’ voices, oral traditions and culture to understand the places you visit.",
+    "viewAll": "Explore the journal",
+    "explore": "Discover",
+    "all": "All journal entries",
+    "empty": "There are no articles in this category yet.",
+    "shareTitle": "Your journey deserves a story",
+    "shareText": "Share your experience with our team. We will review it and ask your permission before publishing.",
+    "shareButton": "Suggest my story",
+    "shareMessage": "Hello, I would like to suggest my travel story for the peruwonderstours journal.",
+    "historias": {
+      "title": "Traveler stories",
+      "description": "Experiences shared by the people who traveled these paths."
+    },
+    "leyendas": {
+      "title": "Myths and legends",
+      "description": "Oral traditions that offer another perspective on each destination."
+    },
+    "guias": {
+      "title": "Culture and guides",
+      "description": "Heritage, customs and information to add context to your trip."
+    }
+  },
   "language": {
     "name": {
       "es": "Español",

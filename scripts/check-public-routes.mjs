@@ -54,7 +54,9 @@ for (const image of ["titicaca-0.webp", "machu-picchu-0.webp"]) {
 
 for (const locale of ["es", "en", "pt"]) {
   const html = await response(`/${locale}`);
-  assert.match(html, /<title>[^<]+peruwonderstours[^<]*<\/title>/, `${locale}: descriptive branded title missing`);
+  assert.match(html, /<title>[^<]*peruwonderstours[^<]*<\/title>/, `${locale}: branded title missing`);
+  const title = /<title>([^<]+)<\/title>/.exec(html)?.[1] ?? "";
+  assert.ok(title.replace("peruwonderstours", "").trim().length > 10, `${locale}: descriptive title missing`);
   assert.match(html, /<meta name="description" content="[^"]{40,}"/, `${locale}: home description missing`);
   assert.ok(html.includes(`rel="canonical" href="https://peruwonderstours.com/${locale}"`), `${locale}: wrong home canonical`);
   for (const language of ["es-PE", "en", "pt-BR", "x-default"]) {
