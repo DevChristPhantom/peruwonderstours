@@ -15,6 +15,7 @@ import { Link } from "@/i18n/navigation";
 import { useWhatsappTools } from "@/hooks/useWhatsappTools";
 import type { CartLine } from "@/lib/cart/types";
 import type { ActionResult, CheckoutQuote, PlaceResult, PlanView } from "@/lib/checkout/api-checkout";
+import { checkoutPhoneE164 } from "@/lib/checkout/api-checkout";
 import { lineTotalCents, type PaymentOption } from "@/lib/checkout/payment-plan";
 import { paymentStepSchema, type ContactValues, type PaymentStepValues, type TravelersValues } from "@/lib/checkout/schemas";
 import type { PaymentMethod, PaymentRequest, PaymentWidgetHandle } from "@/lib/payments/types";
@@ -152,6 +153,7 @@ export function PaymentStep({
         simulate: confirmation.simulate,
         contact: {
           firstName: contact.firstName, lastName: contact.lastName, email: contact.email, country: contact.country,
+          phone: checkoutPhoneE164(contact.phoneCountry, contact.phone),
           marketingEmail: contact.marketingEmail, marketingWhatsapp: contact.marketingWhatsapp,
         },
         notes: buildNotes(lines, travelers),

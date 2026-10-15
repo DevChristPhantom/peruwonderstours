@@ -77,7 +77,7 @@ export interface CheckoutInput {
   cartToken: string;
   idempotencyKey: string;
   paymentOption: PaymentOption;
-  customer: { email: string; firstName: string; lastName: string; country?: string };
+  customer: { email: string; firstName: string; lastName: string; country?: string; phone?: string };
   customerNotes?: string;
   expectedTotalAmount?: number;
   /** Idioma de la reserva y de sus correos de confirmación. */

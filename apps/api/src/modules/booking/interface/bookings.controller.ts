@@ -46,6 +46,10 @@ import { CLOCK } from '../../../shared/application/tokens.js';
 import type { Clock } from '../../../shared/domain/ports.js';
 
 export class CheckoutCustomerDto {
+  @ApiPropertyOptional({ example: '+51924278597' })
+  @IsOptional()
+  @Matches(/^\+[1-9]\d{7,14}$/)
+  phone?: string;
   @ApiProperty({ example: 'viajero@example.com' })
   @IsEmail()
   @MaxLength(254)

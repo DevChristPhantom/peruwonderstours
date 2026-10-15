@@ -84,6 +84,7 @@ export async function placeBookingAction(raw: unknown): Promise<ActionResult<Pla
         paymentOption: input.option,
         customer: {
           email: input.contact.email,
+          phone: input.contact.phone,
           firstName: input.contact.firstName,
           lastName: input.contact.lastName,
           country: COUNTRY_ISO[input.contact.country],

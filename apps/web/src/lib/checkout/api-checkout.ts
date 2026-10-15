@@ -42,6 +42,7 @@ export const placeInputSchema = z.object({
     firstName: z.string().trim().min(1).max(100),
     lastName: z.string().trim().min(1).max(100),
     email: z.email().max(254),
+    phone: z.string().regex(/^\+[1-9]\d{7,14}$/).optional(),
     country: z.string().min(1).max(60),
     marketingEmail: z.boolean().default(false),
     marketingWhatsapp: z.boolean().default(false),
@@ -53,6 +54,11 @@ export const placeInputSchema = z.object({
   expectedTotalCents: z.number().int().positive(),
 });
 export type PlaceInput = z.infer<typeof placeInputSchema>;
+
+/** Convert the already-validated dial code and national number to E.164. */
+export function checkoutPhoneE164(countryCode: string, number: string): string {
+  return `${countryCode}${number.replace(/\D/g, '')}`;
+}
 
 export interface PlanView {
   depositPercent: number;

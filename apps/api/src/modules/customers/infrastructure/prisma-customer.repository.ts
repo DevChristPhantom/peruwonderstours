@@ -7,6 +7,7 @@ type CustomerRow = {
   firstName: string;
   lastName: string;
   country: string | null;
+  phoneEnc?: Uint8Array | null;
   preferredLocale: 'es' | 'en' | 'pt';
   createdAt: Date;
 };
@@ -18,6 +19,7 @@ function map(row: CustomerRow): Customer {
     firstName: row.firstName,
     lastName: row.lastName,
     country: row.country,
+    phoneEnc: row.phoneEnc,
     preferredLocale: row.preferredLocale,
     createdAt: row.createdAt,
   };
@@ -43,6 +45,7 @@ export class PrismaCustomerRepository implements CustomerRepository {
       lastName: customer.lastName,
       country: customer.country,
       preferredLocale: customer.preferredLocale,
+      ...(customer.phoneEnc !== undefined ? { phoneEnc: customer.phoneEnc ? Buffer.from(customer.phoneEnc) : null } : {}),
     };
     await this.db.customer.upsert({
       where: { id: customer.id },

@@ -1,13 +1,14 @@
 import { ValidationError } from '../../../shared/domain/domain-error.js';
 import type { Locale } from '../../catalog/domain/tour.js';
 
-/** Cliente (invitado o con cuenta). PII mínima (Ley 29733); sin teléfono hasta tener cifrado. */
+/** Cliente (invitado o con cuenta). PII mínima; teléfono solo cifrado con AAD por cliente. */
 export interface Customer {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
   country: string | null;
+  phoneEnc?: Uint8Array | null;
   preferredLocale: Locale;
   createdAt: Date;
 }
