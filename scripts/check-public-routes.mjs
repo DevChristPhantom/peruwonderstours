@@ -54,6 +54,12 @@ for (const image of ["titicaca-0.webp", "machu-picchu-0.webp"]) {
 
 for (const locale of ["es", "en", "pt"]) {
   const html = await response(`/${locale}`);
+  assert.match(html, /<title>[^<]+peruwonderstours[^<]*<\/title>/, `${locale}: descriptive branded title missing`);
+  assert.match(html, /<meta name="description" content="[^"]{40,}"/, `${locale}: home description missing`);
+  assert.ok(html.includes(`rel="canonical" href="https://peruwonderstours.com/${locale}"`), `${locale}: wrong home canonical`);
+  for (const language of ["es-PE", "en", "pt-BR", "x-default"]) {
+    assert.ok(html.includes(`hrefLang="${language}"`) || html.includes(`hreflang="${language}"`), `${locale}: missing ${language} alternate`);
+  }
   assert.ok(html.includes("nativeScene"), `${locale}: native hero missing`);
   assert.ok(!html.includes("<iframe"), `${locale}: legacy hero frame still rendered`);
   const productPosition = html.indexOf('id="paquetes-title"');
@@ -71,6 +77,14 @@ for (const locale of ["es", "en", "pt"]) {
 }
 
 const sitemap = await response("/sitemap.xml");
+const robots = await response("/robots.txt");
+assert.ok(robots.includes("Sitemap: https://peruwonderstours.com/sitemap.xml"), "Robots sitemap mismatch");
+assert.ok(!/^Disallow:\s*\/(?:es|en|pt)(?:\/|$)/m.test(robots), "Crawlers cannot read personal-page noindex");
+for (const path of ["/es/carrito", "/en/cart", "/pt/carrinho", "/es/checkout", "/en/checkout", "/pt/checkout", "/es/favoritos", "/en/favorites", "/pt/favoritos"]) {
+  const html = await response(path);
+  assert.match(html, /<meta name="robots" content="[^"]*noindex/, `${path}: missing noindex`);
+  assert.ok(!sitemap.includes(`<loc>https://peruwonderstours.com${path}</loc>`), `${path}: personal page in sitemap`);
+}
 for (const asset of ["/icons/whatsapp.svg", "/icons/rune/receipt.svg", "/official/complaints-book.webp", "/brand/peruwonderstours-dorado.png"]) {
   const image = await fetch(new URL(asset, origin));
   assert.equal(image.status, 200, `${asset}: visual asset unavailable`);

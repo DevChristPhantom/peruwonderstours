@@ -32,13 +32,18 @@ export function breadcrumbJsonLd(crumbs: Crumb[]): JsonLdObject {
   };
 }
 
-/** Agencia. Sin dirección/RUC hasta que el cliente los confirme. */
+/** Agencia con datos confirmados; nunca incluye registros, RUC o reseñas de ejemplo. */
 export function organizationJsonLd(): JsonLdObject {
   return {
     "@context": "https://schema.org",
     "@type": "TravelAgency",
+    "@id": absoluteUrl('/#organization'),
     name: SITE.name,
     url: SITE.url,
+    logo: absoluteUrl('/brand/peruwonderstours-dorado.png'),
+    ...(SITE.legal.email ? { email: SITE.legal.email } : {}),
+    telephone: SITE.whatsapp.display.replace(/[^+\d]/g, ''),
+    ...(SITE.legal.address ? { address: { '@type': 'PostalAddress', streetAddress: SITE.legal.address, addressLocality: 'Puno', addressCountry: 'PE' } } : {}),
     areaServed: { "@type": "Country", name: "Peru" },
   };
 }
@@ -58,7 +63,7 @@ export function touristTripJsonLd(tour: Tour, locale: Locale, dayLabel: (day: nu
     inLanguage: tour.fallback ? "es" : locale,
     image: tour.gallery.slice(0, 6).map((g) => g.src),
     touristType: tour.categorySlugs,
-    provider: { "@type": "TravelAgency", name: SITE.name, url: SITE.url },
+    provider: { "@type": "TravelAgency", '@id': absoluteUrl('/#organization'), name: SITE.name, url: SITE.url },
     itinerary: {
       "@type": "ItemList",
       numberOfItems: tour.itinerary.length,
@@ -76,8 +81,7 @@ export function touristTripJsonLd(tour: Tour, locale: Locale, dayLabel: (day: nu
       url,
       priceCurrency: tour.pricing.currency,
       price: (tour.pricing.adultCents / 100).toFixed(2),
-      availability: "https://schema.org/InStock",
-      seller: { "@type": "TravelAgency", name: SITE.name },
+      seller: { "@type": "TravelAgency", '@id': absoluteUrl('/#organization'), name: SITE.name },
     };
   }
   return data;
@@ -121,6 +125,6 @@ export function blogPostingJsonLd(post: { title: string; excerpt: string; path: 
     ...(post.image ? { image: [post.image] } : {}),
     ...(post.publishedAt ? { datePublished: post.publishedAt } : {}),
     author: { "@type": post.author ? "Person" : "Organization", name: post.author ?? SITE.name },
-    publisher: { "@type": "TravelAgency", name: SITE.name, url: SITE.url },
+    publisher: { "@type": "TravelAgency", '@id': absoluteUrl('/#organization'), name: SITE.name, url: SITE.url },
   };
 }
