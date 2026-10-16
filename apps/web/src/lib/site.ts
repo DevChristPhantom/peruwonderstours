@@ -6,27 +6,29 @@
  * y docs/cliente/solicitud-de-informacion.md.
  */
 export const SITE = {
-  name: "Peru Wonders Tours",
+  name: "peruwonderstours",
   url: "https://peruwonderstours.com",
   legal: {
     /** PENDIENTE(cliente): razón social (el sitio viejo muestra datos inconsistentes). */
     businessName: null as string | null,
     /** PENDIENTE(cliente): RUC real. El sitio viejo muestra el placeholder 20000000000: NO usarlo. */
     ruc: null as string | null,
+    /** Ejemplo solicitado para la vista previa; no es la identidad fiscal de la agencia. */
+    rucExample: "20000000000",
     /** PENDIENTE(cliente): n.º de registro de agencia MINCETUR/GERCETUR. */
     minceturRegistry: null as string | null,
-    /** PENDIENTE(cliente): dirección de la oficina de Puno. El sitio viejo muestra "Calle N 500", que parece un placeholder. */
-    address: null as string | null,
-    /** PENDIENTE(cliente): correo del dominio nuevo (@peruwonderstours.com). */
-    email: null as string | null,
+    /** Dirección confirmada por el propietario el 2026-10-14. */
+    address: "Calle N 500, Puno" as string | null,
+    /** Correo de contacto confirmado por el cliente; el dominio de la web es independiente. */
+    email: "jorgechaveztourt@gmail.com" as string | null,
   },
   /**
-   * WhatsApp publicado en el sitio actual (a validar con el cliente).
+   * WhatsApp confirmado por el cliente el 13 de octubre de 2026.
    * Se puede sobrescribir con NEXT_PUBLIC_WHATSAPP_NUMBER (solo dígitos, con código de país).
    */
   whatsapp: {
-    display: "+51 989 028 802",
-    digits: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "51989028802",
+    display: "+51 924 278 597",
+    digits: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "51924278597",
   },
 } as const;
 

@@ -3,7 +3,7 @@ type: meta
 title: Wiki Index
 status: evergreen
 created: 2026-10-07
-updated: 2026-10-09
+updated: 2026-10-13
 tags:
   - meta
   - index
@@ -15,6 +15,18 @@ This catalog is updated by completed knowledge operations.
 
 ## Concepts
 
+- [[decisions/ADR-0014-portugues-brasil]] — tercer idioma pt-BR, fallback editorial explícito y migraciones aditivas.
+
+
+- [[decisions/ADR-0010-prioridad-comercial-y-pruebas]] — tours antes de recursos legales, pruebas Chromium aisladas y límites de evidencia.
+
+
+- [[decisions/ADR-0007-ui-ux-y-skills-motion]] — diseño preservado, mejoras compartidas y skills instaladas.
+
+- [[decisions/ADR-0006-optimizacion-carga-web]] — carga bajo demanda, movimiento reducido y medición HTTP compilada.
+
+- [[concepts/entrega-octubre-2026]] — cambios y evidencia actual para la entrega de peruwonderstours; pendientes externos y validación restante.
+- [[decisions/ADR-0005-continuidad-codex-y-entrega]] — conservación de metodología, motion accesible y fuentes locales.
 - [[decisions/ADR-0001-stack-tecnologico]] — stack y metodología propuestos.
 - [[decisions/ADR-0002-sistema-de-diseno]] — paleta peruana, tipografía, movimiento, logo.
 - [[decisions/ADR-0003-pagos-manuales-sin-doble-control]] — pagos manuales al instante, control posterior.
@@ -45,3 +57,11 @@ This catalog is updated by completed knowledge operations.
 ## Questions
 
 - No questions indexed yet.
+
+
+
+- [[decisions/ADR-0008-banners-html-motion]] — HTML aislado, carrusel reiniciable y administración.
+
+- [[decisions/ADR-0009-recursos-oficiales-y-reclamaciones]] — recursos visuales, WhatsApp y Libro de Reclamaciones.
+
+- [[decisions/ADR-0010-prioridad-comercial-y-pruebas]] — jerarquía comercial y controles probados en CI aislado.

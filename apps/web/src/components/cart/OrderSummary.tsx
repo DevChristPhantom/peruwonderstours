@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { retiredImageGuard } from "@/lib/catalog/retired-image-guard";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
@@ -40,7 +41,7 @@ export function OrderSummary({ lines, plan, title, showThumbnails = false, child
           <li key={line.id} className="flex items-start gap-3 text-sm">
             {showThumbnails ? (
               <div className="relative size-14 shrink-0 overflow-hidden rounded-md bg-surface-muted">
-                {line.image ? <Image src={line.image.src} alt="" fill sizes="56px" className="object-cover" /> : null}
+                {line.image ? <Image src={retiredImageGuard(line.image.src)} alt="" fill sizes="56px" className="object-cover" /> : null}
               </div>
             ) : null}
             <div className="min-w-0 flex-1">

@@ -138,7 +138,7 @@ export function configureApp(app: INestApplication): AppSettings {
 /** Documento OpenAPI 3 de la API (Swagger UI y `pnpm openapi:export`). */
 export function buildOpenApiDocument(app: INestApplication): OpenAPIObject {
   const config = new DocumentBuilder()
-    .setTitle('Peru Wonders Tours API')
+    .setTitle('peruwonderstours API')
     .setDescription(
       'API v1. Montos en céntimos (enteros) + moneda ISO 4217. Fechas-hora en UTC (ISO 8601); fechas de viaje YYYY-MM-DD (America/Lima). ' +
         'Errores en RFC 9457 application/problem+json (campo `code` estable). Pensada para llamarse desde el servidor de Next: ' +

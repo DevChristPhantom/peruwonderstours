@@ -20,7 +20,7 @@
   "pricesConfirmed": "Prices and seats confirmed just now.",
   "dueOnShort": "due on {date}",
   "header": {
-    "home": "Peru Wonders Tours, home",
+    "home": "peruwonderstours, home",
     "leaveConfirm": "Leave checkout? Your cart is saved.",
     "secure": "Secure payment"
   },
@@ -153,7 +153,7 @@
   },
   "sandbox": {
     "title": "Sandbox mode: simulated payment, nothing will be charged",
-    "text": "The payment provider's secure form for {method} will appear here. Your card details go straight to the provider; Peru Wonders Tours does not store them.",
+    "text": "The payment provider's secure form for {method} will appear here. Your card details go straight to the provider; peruwonderstours does not store them.",
     "amount": "Amount to send:",
     "booking": "Booking",
     "outcome": "Outcome to simulate",

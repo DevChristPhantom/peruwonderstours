@@ -2,7 +2,7 @@ import type { Locale } from "@/i18n/routing";
 
 /**
  * Traducción de códigos problem+json de la API (RFC 9457, `code` en kebab-case inglés) a mensajes
- * claros para el viajero, en su idioma (es/en). Módulo puro: lo usa el servidor para armar la
+ * claros para el viajero, en su idioma (es/en/pt). Módulo puro: lo usa el servidor para armar la
  * respuesta de las Server Actions; el navegador solo recibe `{ code, message }`.
  */
 
@@ -73,6 +73,52 @@ const MESSAGES: Record<string, [UserErrorKind, string, string]> = {
 const GENERIC: Record<Locale, string> = {
   es: "No pudimos completar la operación. Intenta de nuevo o escríbenos por WhatsApp.",
   en: "We could not complete the operation. Try again or message us on WhatsApp.",
+  pt: "Não foi possível concluir a operação. Tente novamente ou fale conosco pelo WhatsApp.",
+};
+
+const PORTUGUESE_MESSAGES: Record<string, string> = {
+  "sold-out": "Não há mais vagas para a data escolhida. Escolha outra data no carrinho.",
+  "sales-closed": "As vendas para essa data já foram encerradas. Escolha uma data posterior.",
+  "no-departure": "Não há saída programada para essa data. Escolha outra data.",
+  "departure-required": "Há várias saídas nesse dia e não foi possível escolher uma com vagas. Fale conosco pelo WhatsApp.",
+  "departure-mismatch": "A saída escolhida não corresponde mais a essa data. Escolha a data novamente.",
+  "above-max-pax": "Você excedeu o número máximo de viajantes permitido para este passeio.",
+  "below-min-pax": "Este passeio exige um número mínimo maior de viajantes.",
+  "minor-without-adult": "As crianças devem viajar acompanhadas de pelo menos um adulto.",
+  "invalid-pax-quantity": "Confira o número de viajantes.",
+  "total-changed": "O preço da sua reserva mudou. Confira o novo total antes de pagar.",
+  "cart-has-issues": "Alguns passeios do seu carrinho mudaram de preço ou não têm mais vagas. Confira antes de pagar.",
+  "rate-not-available": "Este passeio ainda não tem preço para reserva on-line. Consulte pelo WhatsApp.",
+  "deposit-not-available": "Esta reserva permite apenas o pagamento integral.",
+  "cart-not-found": "Sua sessão de pagamento expirou. Confira seu carrinho novamente para continuar.",
+  "cart-expired": "Sua sessão de pagamento expirou. Confira seu carrinho novamente para continuar.",
+  "cart-not-active": "Este pedido já foi processado. Confira seu e-mail ou sua reserva.",
+  "cart-already-checked-out": "Este pedido já foi convertido em uma reserva. Confira seu e-mail.",
+  "cart-empty": "Seu carrinho está vazio.",
+  "cart-full": "Seu carrinho tem passeios demais. Divida a reserva em duas.",
+  "cart-item-duplicate": "O mesmo passeio e a mesma data estão repetidos no seu carrinho.",
+  "tour-not-found": "Este passeio não está mais disponível para reserva on-line.",
+  "booking-not-found": "Não encontramos a reserva.",
+  "hold-expired": "O prazo para pagar expirou e suas vagas foram liberadas. Volte ao carrinho para tentar novamente.",
+  "booking-not-payable": "Esta reserva não aceita mais pagamentos. Fale conosco pelo WhatsApp se precisar de ajuda.",
+  "booking-already-paid": "Sua reserva já está paga.",
+  "payment-rejected": "Seu banco recusou o pagamento. Nenhum valor foi cobrado; tente outro cartão ou o Yape.",
+  "payment-gateway-error": "O provedor de pagamentos não respondeu. Nenhum valor foi cobrado; tente novamente em alguns minutos.",
+  "payment-not-found": "Não encontramos o pagamento. Tente novamente.",
+  "consent-required": "Aceite os Termos e a Política de privacidade para continuar.",
+  "invalid-email": "Confira o e-mail.",
+  "invalid-country": "Confira o país de residência.",
+  "validation-failed": "Confira os dados informados.",
+  "idempotency-in-progress": "Já estamos processando seu pagamento. Aguarde alguns segundos sem fechar esta página.",
+  "concurrency-conflict": "Houve muita procura ao mesmo tempo. Tente novamente.",
+  "idempotency-key-reused": "Seu pedido mudou durante o processamento. Confira o resumo e tente novamente.",
+  "too-many-requests": "Você fez várias tentativas seguidas. Aguarde um minuto e tente novamente; nenhum valor foi cobrado.",
+  "http-429": "Você fez várias tentativas seguidas. Aguarde um minuto e tente novamente; nenhum valor foi cobrado.",
+  "payload-too-large": "O texto enviado é longo demais. Reduza o texto e tente novamente.",
+  "booking-token-required": "Não encontramos a reserva.",
+  "not-found": "Não encontramos o que você procurava. Confira os dados e tente novamente.",
+  "access-link-expired": "Este link já foi usado ou expirou. Solicite um novo com seu código e e-mail.",
+  "api-unavailable": "Não foi possível conectar ao sistema de reservas. Nenhum valor foi cobrado; tente novamente em alguns minutos.",
 };
 
 const FIELD_BY_CODE: Record<string, string> = {
@@ -82,10 +128,11 @@ const FIELD_BY_CODE: Record<string, string> = {
 };
 
 export function toUserError(code: string, fallbackDetail?: string, locale: Locale = "es"): UserError {
-  const known = MESSAGES[code] ?? (code.includes("429") || code.includes("too-many") ? MESSAGES["http-429"] : undefined);
+  const messageCode = MESSAGES[code] ? code : code.includes("429") || code.includes("too-many") ? "http-429" : code;
+  const known = MESSAGES[messageCode];
   if (known) {
     const [kind, es, en] = known;
-    return { code, kind, message: locale === "en" ? en : es, field: FIELD_BY_CODE[code] };
+    return { code, kind, message: locale === "pt" ? PORTUGUESE_MESSAGES[messageCode] ?? GENERIC.pt : locale === "en" ? en : es, field: FIELD_BY_CODE[code] };
   }
   // El `detail` de la API viene en español (es-PE): solo sirve de respaldo en la página en español.
   const detail = locale === "es" ? fallbackDetail?.trim() : undefined;
@@ -93,9 +140,9 @@ export function toUserError(code: string, fallbackDetail?: string, locale: Local
 }
 
 const CART_ISSUES: Record<string, Record<Locale, string>> = {
-  sold_out: { es: "ya no quedan cupos para esa fecha.", en: "no seats left for that date." },
-  date_unavailable: { es: "la fecha ya no está disponible.", en: "the date is no longer available." },
-  price_changed: { es: "el precio cambió.", en: "the price changed." },
+  sold_out: { es: "ya no quedan cupos para esa fecha.", en: "no seats left for that date.", pt: "não há mais vagas para essa data." },
+  date_unavailable: { es: "la fecha ya no está disponible.", en: "the date is no longer available.", pt: "a data não está mais disponível." },
+  price_changed: { es: "el precio cambió.", en: "the price changed.", pt: "o preço mudou." },
 };
 
 /** Mensaje por tipo de incidencia del carrito (`issues[].type` de la API). */

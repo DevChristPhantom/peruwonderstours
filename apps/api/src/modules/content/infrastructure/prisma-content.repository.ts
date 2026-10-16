@@ -93,11 +93,13 @@ export function mapTestimonialRow(r: TestimonialRow): Testimonial {
   };
 }
 
-/** Publicable: aprobado y (consentimiento del autor u origen heredado/transcrito). */
+/** Publicable: aprobado, no heredado y con consentimiento o transcripción del equipo. */
 export const PUBLIC_TESTIMONIAL_WHERE: Prisma.TestimonialWhereInput = {
   status: 'approved',
   deletedAt: null,
-  OR: [{ publishConsent: true }, { origin: { in: ['legacy_site', 'admin'] } }],
+  // Keep imported testimonials available to staff without publishing another brand's reviews.
+  origin: { not: 'legacy_site' },
+  OR: [{ publishConsent: true }, { origin: 'admin' }],
 };
 
 export class PrismaTestimonialRepository implements TestimonialRepository {

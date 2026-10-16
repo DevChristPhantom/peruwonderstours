@@ -1,8 +1,9 @@
 /**
- * Etiquetas y utilidades puras del backoffice de contenido (Sprint 3). Sin dependencias de
+ * Etiquetas y utilidades puras del backoffice de contenido (Sprint 3). Con mapa de medios local y sin dependencias de
  * runtime: se prueban con `node --test src/lib/content.test.ts`.
  */
 import type { Tone } from "./labels";
+import legacyMediaMap from "./legacy-media-map.json" with { type: "json" };
 
 export const TRANSLATION_STATUS_VALUES = ["machine_reviewed_pending_client", "client_approved", "staff_written"] as const;
 export type TranslationStatusValue = (typeof TRANSLATION_STATUS_VALUES)[number];
@@ -99,10 +100,17 @@ export function slugify(text: string): string {
     .slice(0, 120);
 }
 
-/** Clave o URL de medio → URL mostrable. Las URL absolutas pasan tal cual; las claves se cuelgan de `base`. */
-export function resolveMediaUrl(keyOrUrl: string | null | undefined, base: string): string | null {
+/** Clave o URL de medio → URL mostrable. Las URL heredadas usan el archivo propio; otras URL y claves del CMS conservan su origen. */
+export function resolveMediaUrl(keyOrUrl: string | null | undefined, base: string, publicWebBase = "https://peruwonderstours.com"): string | null {
   if (!keyOrUrl) return null;
-  if (/^https?:\/\//i.test(keyOrUrl)) return keyOrUrl;
+  if (/^https?:\/\//i.test(keyOrUrl)) {
+    let old: URL;
+    try { old = new URL(keyOrUrl); } catch { return null; }
+    if (!["www.andeanperutours.com", "andeanperutours.com", "turinet.turismoads.com"].includes(old.hostname)) return keyOrUrl;
+    const key = `${old.hostname.replace(/^www\./, "")}${old.pathname}`;
+    const local = (legacyMediaMap as Record<string, string>)[key] ?? "/brand/media-pending.svg";
+    return `${publicWebBase.replace(/\/+$/, "")}${local}`;
+  }
   if (!/^[A-Za-z0-9][A-Za-z0-9/_.-]{0,500}$/.test(keyOrUrl) || keyOrUrl.includes("..")) return null;
   return `${base.replace(/\/+$/, "")}/${keyOrUrl}`;
 }

@@ -84,6 +84,7 @@ export async function placeBookingAction(raw: unknown): Promise<ActionResult<Pla
         paymentOption: input.option,
         customer: {
           email: input.contact.email,
+          phone: input.contact.phone,
           firstName: input.contact.firstName,
           lastName: input.contact.lastName,
           country: COUNTRY_ISO[input.contact.country],
@@ -92,6 +93,8 @@ export async function placeBookingAction(raw: unknown): Promise<ActionResult<Pla
         expectedTotalAmount: input.expectedTotalCents,
         // Los correos de confirmación salen en el idioma en que se hizo la reserva.
         locale,
+        marketingEmailOptIn: input.contact.marketingEmail,
+        marketingWhatsappOptIn: input.contact.marketingWhatsapp,
       });
       if (!result.accessToken) {
         // Contrato pendiente del backend: sin token no podemos mostrar la reserva de forma segura.
@@ -101,7 +104,9 @@ export async function placeBookingAction(raw: unknown): Promise<ActionResult<Pla
             code: "booking-token-missing",
             kind: "other",
             message:
-              locale === "en"
+              locale === "pt"
+                ? `Salvamos sua reserva ${result.booking.code}, mas não foi possível abri-la aqui. Entraremos em contato por e-mail e WhatsApp para concluir o pagamento.`
+                : locale === "en"
                 ? `We saved your booking ${result.booking.code}, but could not open it here. We will contact you by email and WhatsApp to complete the payment.`
                 : `Guardamos tu reserva ${result.booking.code}, pero no pudimos abrirla aquí. Te escribiremos por correo y WhatsApp para completar el pago.`,
           },

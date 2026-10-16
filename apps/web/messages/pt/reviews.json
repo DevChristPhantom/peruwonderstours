@@ -1,0 +1,33 @@
+{
+  "title": "Depoimentos de viajantes",
+  "description": "Opiniões de viajantes que conheceram o Peru conosco, incluindo avaliações publicadas no TripAdvisor.",
+  "empty": "Ainda não há depoimentos publicados.",
+  "leaveCta": "Deixe seu depoimento",
+  "leave": {
+    "title": "Deixe seu depoimento",
+    "description": "Conte como foi sua viagem conosco. Publicamos os depoimentos após a revisão.",
+    "intro": "Sua opinião ajuda outros viajantes. Revisamos cada depoimento antes de publicá-lo e mostramos apenas seu nome e país; nunca seu e-mail.",
+    "name": "Nome que será exibido",
+    "country": "País (opcional)",
+    "countryHint": "Código de duas letras: PE (Peru), US (Estados Unidos), ES (Espanha).",
+    "invalidCountry": "Digite o código de duas letras do país, por exemplo, PE.",
+    "bodyHint": "Conte sua experiência usando entre 20 e 2000 caracteres.",
+    "invalidBody": "O depoimento deve ter entre 20 e 2000 caracteres.",
+    "email": "E-mail (não será publicado)",
+    "rating": "Avaliação",
+    "ratingOption": "{count, plural, one {# estrela} other {# estrelas}}",
+    "body": "Seu depoimento",
+    "travelDate": "Data da viagem (opcional)",
+    "publishConsent": "Autorizo a publicação do meu depoimento com meu nome e país neste site.",
+    "privacy": "Aceito o tratamento dos meus dados conforme a <link>Política de proteção de dados pessoais</link>.",
+    "submit": "Enviar depoimento",
+    "sending": "Enviando…",
+    "success": "Obrigado pelo seu depoimento! Vamos publicá-lo após a revisão.",
+    "invalid": "Confira os campos destacados.",
+    "busy": "Você fez várias tentativas seguidas. Aguarde um minuto e tente novamente.",
+    "unavailable": "Não foi possível enviar seu depoimento agora. Tente novamente em alguns minutos.",
+    "required": "Este campo é obrigatório.",
+    "invalidEmail": "Digite um e-mail válido.",
+    "consentRequired": "Precisamos das duas autorizações para publicar seu depoimento."
+  }
+}

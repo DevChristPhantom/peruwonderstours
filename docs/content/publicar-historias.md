@@ -1,0 +1,1 @@
+Publicar en Blog del admin con etiquetas historias, leyendas o guias. Para historias personales, conservar autorización del viajero antes de publicar. Artículos iniciales locales: ver docs/content/journal-editorial.md.

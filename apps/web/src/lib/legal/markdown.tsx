@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { catalogImageSource } from "@/lib/catalog/image-source";
 
 /**
  * Renderizador Markdown MÍNIMO para los borradores legales de `docs/legal/*.md` (sin dependencias
@@ -105,7 +106,10 @@ export function renderInline(text: string): ReactNode[] {
     }
     const link = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
     if (link) {
-      const href = link[2];
+      // Some imported article bodies link their original photos. Keep those
+      // usable after the previous image host is retired, without altering citations.
+      const href = /^https?:\/\/(?:(?:www\.)?andeanperutours\.com|turinet\.turismoads\.com)\/images\//i.test(link[2])
+        ? catalogImageSource(link[2]) : link[2];
       if (href.startsWith("/")) {
         return (
           <Link key={i} href={href} className="pwt-link">

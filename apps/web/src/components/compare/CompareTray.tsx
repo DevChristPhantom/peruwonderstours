@@ -33,7 +33,7 @@ export function CompareTray() {
       <div aria-hidden="true" className="h-20" />
       <section
         aria-label={t("trayLabel")}
-        className="pwt-toast fixed inset-x-0 bottom-0 z-10 border-t border-border bg-surface shadow-sticky"
+        className="pwt-toast fixed inset-x-0 bottom-0 z-10 max-w-[100vw] border-t border-border bg-surface shadow-sticky"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="pwt-container flex flex-wrap items-center gap-x-4 gap-y-2 py-3">

@@ -11,5 +11,5 @@ export function mediaBase(): string {
 
 /** `storageKey` (o URL absoluta heredada) → URL para `<img>` en el panel. */
 export function mediaUrl(keyOrUrl: string | null | undefined): string | null {
-  return resolveMediaUrl(keyOrUrl, mediaBase());
+  return resolveMediaUrl(keyOrUrl, mediaBase(), env().PUBLIC_WEB_BASE_URL);
 }

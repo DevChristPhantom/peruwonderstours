@@ -1,0 +1,17 @@
+{
+  "label": "Confiança e links oficiais",
+  "badges": "Selos e registros",
+  "officialLinks": "Links oficiais",
+  "externalHint": "(abre em outra aba)",
+  "links": {
+    "machu-picchu-tickets": "Ingressos oficiais para Machu Picchu",
+    "mincetur-directory": "Consulte as agências no diretório do MINCETUR",
+    "peru-travel": "Peru.travel",
+    "iperu": "iPerú: assistência ao turista",
+    "sernanp-visit": "Áreas naturais protegidas (SERNANP)",
+    "esnna-info": "Prevenção da exploração sexual de crianças e adolescentes no turismo"
+  },
+  "description": "Informações úteis para viajar: ingressos, orientação ao turista, áreas naturais e turismo responsável.",
+  "pause": "Pausar carrossel",
+  "play": "Retomar carrossel"
+}

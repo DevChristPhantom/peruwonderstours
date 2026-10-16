@@ -7,6 +7,7 @@ import { env } from "@/lib/env";
 
 import type { CatalogRepository } from "./repository";
 import { derivePaymentPolicy, durationBucketOf } from "./rules";
+import { catalogImageSource } from "./image-source";
 import { cleanSeedText, seedCatalogRepository, seedEnrichment } from "./seed-repository";
 import type { CatalogImage, Category, Destination, LocalePaths, PaymentPolicy, Tour, TourPricing, TourSummary } from "./types";
 
@@ -145,7 +146,7 @@ interface TaxonEntry {
   /** Registro en el idioma pedido (o el español si falta). */
   text: ApiTaxon;
   key: string;
-  alternates: { es: string; en: string };
+  alternates: { es: string; en: string; pt: string };
   fallback: boolean;
 }
 
@@ -158,21 +159,25 @@ async function loadTaxonomy(locale: Locale): Promise<Taxonomy> {
   const fetchList = (resource: "destinations" | "categories", lang: Locale) =>
     cached<ListEnvelope<ApiTaxon>>(`/${resource}?${q({ locale: lang })}`).then((r) => r.data);
   const build = async (resource: "destinations" | "categories") => {
-    const [es, en] = await Promise.all([fetchList(resource, "es"), fetchList(resource, "en").catch(() => [] as ApiTaxon[])]);
+    const [es, en, pt] = await Promise.all([fetchList(resource, "es"), fetchList(resource, "en").catch(() => [] as ApiTaxon[]), fetchList(resource, "pt").catch(() => [] as ApiTaxon[])]);
     const enById = new Map(en.map((x) => [x.id, x]));
+    const ptById = new Map(pt.map((x) => [x.id, x]));
     return new Map(
       es.map((item) => {
-        const translated = enById.get(item.id);
-        const enSlug = translated && !isFallback(translated, "en") ? translated.slug : item.slug;
-        const text = locale === "en" && translated ? translated : item;
+        const english = enById.get(item.id);
+        const portuguese = ptById.get(item.id);
+        const translated = locale === "pt" ? portuguese : english;
+        const enSlug = english && !isFallback(english, "en") ? english.slug : item.slug;
+        const ptSlug = portuguese && !isFallback(portuguese, "pt") ? portuguese.slug : item.slug;
+        const text = locale !== "es" && translated ? translated : item;
         return [
           item.id,
           {
             es: item,
             text,
             key: item.slug,
-            alternates: { es: item.slug, en: enSlug },
-            fallback: locale === "en" ? isFallback(translated, "en") : false,
+            alternates: { es: item.slug, en: enSlug, pt: ptSlug },
+            fallback: locale !== "es" ? isFallback(translated, locale) : false,
           } satisfies TaxonEntry,
         ];
       }),
@@ -202,16 +207,20 @@ interface CardEntry {
 }
 
 async function loadCards(locale: Locale): Promise<CardEntry[]> {
-  const [es, en] = await Promise.all([listAllCards("es"), listAllCards("en").catch(() => [] as ApiTourCard[])]);
+  const [es, en, pt] = await Promise.all([listAllCards("es"), listAllCards("en").catch(() => [] as ApiTourCard[]), listAllCards("pt").catch(() => [] as ApiTourCard[])]);
   const enById = new Map(en.map((c) => [c.id, c]));
+  const ptById = new Map(pt.map((c) => [c.id, c]));
   return es.map((card) => {
-    const translated = enById.get(card.id);
-    const enSlug = translated && !isFallback(translated, "en") ? translated.slug : card.slug;
+    const english = enById.get(card.id);
+    const portuguese = ptById.get(card.id);
+    const translated = locale === "pt" ? portuguese : english;
+    const enSlug = english && !isFallback(english, "en") ? english.slug : card.slug;
+    const ptSlug = portuguese && !isFallback(portuguese, "pt") ? portuguese.slug : card.slug;
     return {
       es: card,
-      text: locale === "en" && translated ? translated : card,
-      fallback: locale === "en" ? isFallback(translated, "en") : false,
-      alternates: { es: tourPath("es", card.slug), en: tourPath("en", enSlug) },
+      text: locale !== "es" && translated ? translated : card,
+      fallback: locale !== "es" ? isFallback(translated, locale) : false,
+      alternates: { es: tourPath("es", card.slug), en: tourPath("en", enSlug), pt: tourPath("pt", ptSlug) },
     };
   });
 }
@@ -243,15 +252,15 @@ function toSummary(entry: CardEntry, taxonomy: Taxonomy, locale: Locale): TourSu
   const { es, text, fallback, alternates } = entry;
   const key = es.slug;
   const seed = seedEnrichment.tour(key);
-  const seedText = seedEnrichment.tourText(key, fallback ? "es" : locale);
+  const seedText = locale === "pt" && !fallback ? null : seedEnrichment.tourText(key, fallback ? "es" : locale);
   const destinations = es.destinationIds.map((id) => taxonomy.destinations.get(id)).filter((d): d is TaxonEntry => !!d);
   const apiCategory = es.categoryId ? taxonomy.categories.get(es.categoryId)?.key : undefined;
   const categorySlugs = Array.from(new Set([...(apiCategory ? [apiCategory] : []), ...(seed?.categorySlugs ?? [])]));
   const shortTitle = (fallback ? null : seedText?.shortTitle?.trim()) || (locale === "es" ? seed?.shortTitle?.trim() : null) || text.title;
-  const image: CatalogImage | null = es.coverImage ? { src: es.coverImage.url, alt: text.coverImage?.alt || shortTitle } : null;
+  const image: CatalogImage | null = es.coverImage ? { src: catalogImageSource(es.coverImage.url), alt: text.coverImage?.alt || shortTitle } : null;
   return {
     key,
-    slug: locale === "es" ? es.slug : alternates.en.split("/").pop()!,
+    slug: alternates[locale].split("/").pop()!,
     path: alternates[locale],
     alternates,
     fallback,
@@ -275,11 +284,12 @@ function toSummary(entry: CardEntry, taxonomy: Taxonomy, locale: Locale): TourSu
 }
 
 function toTour(detail: ApiTourDetail, entry: CardEntry, taxonomy: Taxonomy, locale: Locale): Tour {
-  const fallback = locale === "en" ? isFallback(detail, "en") : false;
+  const fallback = locale !== "es" ? isFallback(detail, locale) : false;
   const enSlug = detail.alternateLocales?.find((a) => a.locale === "en")?.slug;
-  const alternates: LocalePaths = enSlug && !fallback ? { es: entry.alternates.es, en: tourPath("en", enSlug) } : entry.alternates;
+  const ptSlug = detail.alternateLocales?.find((a) => a.locale === "pt")?.slug;
+  const alternates: LocalePaths = { ...entry.alternates, ...(enSlug ? { en: tourPath("en", enSlug) } : {}), ...(ptSlug ? { pt: tourPath("pt", ptSlug) } : {}) };
   const summary = toSummary({ ...entry, text: detail, fallback, alternates }, taxonomy, locale);
-  const seedText = seedEnrichment.tourText(summary.key, fallback ? "es" : locale);
+  const seedText = locale === "pt" && !fallback ? null : seedEnrichment.tourText(summary.key, fallback ? "es" : locale);
   const images = detail.media.filter((m) => m.kind === "image");
   return {
     ...summary,
@@ -299,7 +309,7 @@ function toTour(detail: ApiTourDetail, entry: CardEntry, taxonomy: Taxonomy, loc
     faqs: (detail.faqs ?? []).filter((f) => f.question && f.answer),
     policies: detail.policies,
     // TODO(HU-0.3): alt descriptivo por foto cuando la API tenga metadatos por imagen (hoy repite el título).
-    gallery: images.map((m) => ({ src: m.url, alt: m.alt || summary.shortTitle })),
+    gallery: images.map((m) => ({ src: catalogImageSource(m.url), alt: m.alt || summary.shortTitle })),
   };
 }
 
@@ -310,7 +320,7 @@ async function apiTours(locale: Locale): Promise<TourSummary[]> {
 
 function taxonAlternates(entry: TaxonEntry, kind: "destination" | "category"): LocalePaths {
   const make = kind === "destination" ? destinationPath : categoryPath;
-  return { es: make("es", entry.alternates.es), en: make("en", entry.alternates.en) };
+  return { es: make("es", entry.alternates.es), en: make("en", entry.alternates.en), pt: make("pt", entry.alternates.pt) };
 }
 
 async function apiDestinations(locale: Locale): Promise<Destination[]> {
@@ -328,8 +338,8 @@ async function apiDestinations(locale: Locale): Promise<Destination[]> {
       fallback: d.fallback,
       name: d.text.name,
       description: cleanSeedText(d.text.description),
-      bannerImage: s?.bannerImage ? { src: s.bannerImage, alt } : null,
-      cardImage: s?.bannerImage || s?.cardImage ? { src: (s.bannerImage ?? s.cardImage)!, alt } : null,
+      bannerImage: s?.bannerImage ? { src: catalogImageSource(s.bannerImage), alt } : null,
+      cardImage: s?.bannerImage || s?.cardImage ? { src: catalogImageSource((s.bannerImage ?? s.cardImage)!), alt } : null,
       tourSlugs,
       tourCount: tourSlugs.length,
     };
@@ -350,7 +360,7 @@ async function apiCategories(locale: Locale): Promise<Category[]> {
       fallback: c.fallback,
       name: c.text.name,
       description: cleanSeedText(c.text.description),
-      bannerImage: s?.bannerImage ? { src: s.bannerImage, alt: c.text.name } : null,
+      bannerImage: s?.bannerImage ? { src: catalogImageSource(s.bannerImage), alt: c.text.name } : null,
       tourSlugs,
       tourCount: tourSlugs.length,
     };
@@ -360,9 +370,9 @@ async function apiCategories(locale: Locale): Promise<Category[]> {
 async function apiTour(slug: string, locale: Locale): Promise<Tour | null> {
   const cards = await loadCards(locale);
   // El slug puede venir en cualquier idioma (o ser la clave en español).
-  const entry = cards.find((c) => c.es.slug === slug || c.alternates.en.endsWith(`/${slug}`) || c.text.slug === slug);
+  const entry = cards.find((c) => c.es.slug === slug || c.alternates.en.endsWith(`/${slug}`) || c.alternates.pt.endsWith(`/${slug}`) || c.text.slug === slug);
   if (!entry) return null;
-  const localSlug = locale === "es" ? entry.es.slug : entry.alternates.en.split("/").pop()!;
+  const localSlug = entry.alternates[locale].split("/").pop()!;
   const fetchDetail = async (s: string, lang: Locale) => {
     try {
       return (await cached<{ data: ApiTourDetail }>(`/tours/${encodeURIComponent(s)}?${q({ locale: lang, currency: env.CATALOG_CURRENCY })}`)).data;
@@ -382,7 +392,7 @@ async function apiTour(slug: string, locale: Locale): Promise<Tour | null> {
 }
 
 function findTaxon<T extends { key: string; slug: string; alternates: LocalePaths }>(list: T[], slug: string): T | null {
-  return list.find((x) => x.key === slug || x.slug === slug || x.alternates.en.endsWith(`/${slug}`) || x.alternates.es.endsWith(`/${slug}`)) ?? null;
+  return list.find((x) => x.key === slug || x.slug === slug || x.alternates.en.endsWith(`/${slug}`) || x.alternates.es.endsWith(`/${slug}`) || x.alternates.pt.endsWith(`/${slug}`)) ?? null;
 }
 
 export function createApiCatalogRepository(): CatalogRepository {

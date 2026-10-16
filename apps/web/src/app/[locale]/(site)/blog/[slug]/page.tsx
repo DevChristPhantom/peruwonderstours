@@ -50,7 +50,7 @@ export default async function BlogPostPage({ params }: PageProps<"/[locale]/blog
     <article lang={post.fallback ? "es-PE" : undefined} className="pwt-container-narrow pt-8 pb-20">
       <JsonLd
         data={[
-          blogPostingJsonLd({ title: post.title, excerpt: post.excerpt, path: post.path, image: post.image?.src ?? null, publishedAt: post.publishedAt, author: post.author }, locale),
+          blogPostingJsonLd({ title: post.title, excerpt: post.excerpt, path: post.path, image: post.image?.src ?? null, publishedAt: post.publishedAt, author: post.author, fallback: post.fallback }, locale),
           breadcrumbJsonLd(crumbs),
         ]}
       />

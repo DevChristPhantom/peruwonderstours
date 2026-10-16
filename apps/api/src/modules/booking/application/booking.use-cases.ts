@@ -1,4 +1,5 @@
 import { requestFingerprint } from '../../../shared/application/fingerprint.js';
+import type { PiiCipher } from '../../../shared/application/pii-cipher.js';
 import type { TransactionalRepositories, UnitOfWork } from '../../../shared/application/unit-of-work.js';
 import { addMinutes, maxDate, toLimaCalendarDate } from '../../../shared/domain/calendar-date.js';
 import { BusinessRuleError, ConflictError, ValidationError } from '../../../shared/domain/domain-error.js';
@@ -32,7 +33,7 @@ export interface CheckoutInput {
   cartToken: string | undefined;
   idempotencyKey: string | undefined;
   paymentOption: PaymentOption;
-  customer: { email: string; firstName: string; lastName: string; country?: string | null };
+  customer: { email: string; firstName: string; lastName: string; country?: string | null; phone?: string };
   acceptTerms: boolean;
   acceptPrivacyPolicy: boolean;
   /** Consentimientos opcionales de marketing por canal (Ley 29733; nunca obligatorios). */
@@ -78,6 +79,7 @@ export class BookingUseCases {
     private readonly carts: CartUseCases,
     private readonly settings: BookingSettings,
     private readonly privacy: CheckoutPrivacyRecorder | null = null,
+    private readonly cipher: PiiCipher | null = null,
   ) {}
 
   /**
@@ -86,6 +88,9 @@ export class BookingUseCases {
    */
   checkout(input: CheckoutInput): Promise<CheckoutResult> {
     const idempotencyKey = assertIdempotencyKey(input.idempotencyKey);
+    if (input.customer.phone !== undefined && !/^\+[1-9]\d{7,14}$/.test(input.customer.phone)) {
+      throw new ValidationError('invalid-checkout-phone', 'Ingresa el teléfono con código internacional.');
+    }
     if (!input.acceptTerms || !input.acceptPrivacyPolicy) {
       throw new ValidationError('consent-required', 'Debes aceptar los términos y la política de privacidad para reservar.');
     }
@@ -96,6 +101,7 @@ export class BookingUseCases {
       firstName: input.customer.firstName,
       lastName: input.customer.lastName,
       country: input.customer.country ?? null,
+      ...(input.customer.phone !== undefined ? { phone: input.customer.phone } : {}),
       notes: input.customerNotes ?? null,
       expectedTotalAmount: input.expectedTotalAmount,
     });
@@ -147,6 +153,12 @@ export class BookingUseCases {
       let customer = await repos.customers.findByEmail(email);
       if (!customer) {
         customer = createCustomer({ id: this.ids.next(), ...input.customer, preferredLocale: input.locale ?? cart.locale, now });
+        if (input.customer.phone) {
+          if (!this.cipher) throw new ValidationError('checkout-phone-unavailable', 'No se pudo guardar el teléfono de contacto.');
+          customer.phoneEnc = this.cipher.encrypt(input.customer.phone, `customers:phone_enc:${customer.id}`);
+        }
+        // A guest checkout must never change an existing customer's profile:
+        // knowing an email address is not proof of control over that account.
         await repos.customers.save(customer);
       }
 

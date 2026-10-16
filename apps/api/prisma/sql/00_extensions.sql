@@ -44,3 +44,10 @@ BEGIN
   v := set_byte(v, 6, (get_byte(v, 6) & 15) | 112);   -- nibble de versión = 7
   RETURN encode(v, 'hex')::uuid;                       -- variante RFC 9562 heredada de v4
 END $$;
+
+DO $$ BEGIN
+ IF NOT EXISTS (SELECT 1 FROM pg_ts_config WHERE cfgname = 'pt_unaccent') THEN
+  CREATE TEXT SEARCH CONFIGURATION pt_unaccent (COPY = pg_catalog.portuguese);
+  ALTER TEXT SEARCH CONFIGURATION pt_unaccent ALTER MAPPING FOR hword, hword_part, word WITH unaccent, portuguese_stem;
+ END IF;
+END $$;

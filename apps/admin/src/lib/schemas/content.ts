@@ -98,7 +98,7 @@ export const testimonialEditSchema = z.object({
     .transform((v) => (v ? v.toUpperCase() : null)),
   body: z.string().trim().min(20, "Mínimo 20 caracteres.").max(3000),
   rating: z.coerce.number().int().min(1, "De 1 a 5.").max(5, "De 1 a 5."),
-  locale: z.enum(["es", "en"]),
+  locale: z.enum(["es", "en", "pt"]),
 });
 
 export const moderationNoteSchema = z.object({ note: optText(500) });

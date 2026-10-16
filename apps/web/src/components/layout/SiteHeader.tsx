@@ -24,6 +24,8 @@ import { useUiStore } from "@/stores/ui-store";
 import { useFavoritesCount } from "@/stores/wishlist-store";
 
 import { LanguageLinks } from "./LanguageSwitcher";
+import { LanguageFlag } from "./LanguageFlag";
+import { BrandLogo } from "./BrandLogo";
 import s from "./SiteHeader.module.css";
 
 /* ---------- Constantes de la spec (§4–§5) ---------- */
@@ -38,7 +40,7 @@ const PAD = 20;
 const EDGE = 12;
 const CLOSE_DELAY = 140;
 const LINK_CLOSE_DELAY = 60;
-const MOBILE_QUERY = "(max-width: 860px)";
+const MOBILE_QUERY = "(max-width: 1100px)";
 
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -373,14 +375,7 @@ export function SiteHeader({ media }: { media: NavMedia }) {
     >
       <div className={s.bar}>
         <Link href="/" className={s.logo} aria-label={tc("logoHome")}>
-          <Image
-            src="/logo.png"
-            alt={tc("logoAlt")}
-            width={120}
-            height={40}
-            className={s.logoImg}
-            preload
-          />
+          <BrandLogo alt={tc("logoAlt")} preload />
         </Link>
 
         <nav
@@ -425,6 +420,7 @@ export function SiteHeader({ media }: { media: NavMedia }) {
                 {t("about")}
               </Link>
             </li>
+            <li><Link href="/blog" className={s.trigger} onPointerEnter={(e) => { if (e.pointerType === "mouse") scheduleClose(LINK_CLOSE_DELAY); }} onFocus={() => close()}>{t("stories")}</Link></li>
           </ul>
 
           {/* Un solo contenedor con tres paneles (spec §4). */}
@@ -502,7 +498,8 @@ export function SiteHeader({ media }: { media: NavMedia }) {
               aria-label={t("languageButton", { language: t(`languageName.${locale}`) })}
               onClick={() => setLangOpen((v) => !v)}
             >
-              {locale.toUpperCase()}
+              <LanguageFlag locale={locale} />
+              <span className={s.languageLabel}>{t(`languageName.${locale}`)}</span>
               <Chevron />
             </button>
             {langOpen ? (
@@ -577,6 +574,7 @@ export function SiteHeader({ media }: { media: NavMedia }) {
             <li>
               <Link href="/nosotros">{t("about")}</Link>
             </li>
+            <li><Link href="/blog">{t("stories")}</Link></li>
             <li>
               <Link href="/tours">{tc("viewAllTours")}</Link>
             </li>

@@ -1,0 +1,50 @@
+{
+  "states": {
+    "idle": "",
+    "sent": "Se houver reservas vinculadas a esse e-mail, em alguns minutos você receberá um link de acesso. O link só pode ser usado uma vez. Confira também a pasta de spam.",
+    "invalid": "Confira o e-mail.",
+    "busy": "Você fez várias tentativas seguidas. Aguarde um minuto e tente novamente.",
+    "unavailable": "Não foi possível concluir a solicitação agora. Tente novamente em alguns minutos ou fale conosco pelo WhatsApp.",
+    "expired": "Este link já foi usado ou expirou. Solicite um novo abaixo.",
+    "linkNotFound": "Este link não é válido. Solicite um novo abaixo."
+  },
+  "access": {
+    "title": "Acessar minhas reservas",
+    "description": "Receba um link seguro por e-mail para consultar todas as suas reservas, sem senha.",
+    "intro": "Informe o e-mail usado ao reservar. Enviaremos um link seguro para consultar todas as suas reservas, sem senha.",
+    "emailLabel": "E-mail",
+    "emailHint": "O mesmo e-mail usado ao reservar.",
+    "submit": "Enviar link de acesso",
+    "sending": "Enviando…",
+    "tokenTitle": "Acesse suas reservas",
+    "tokenText": "Clique no botão para acessar suas reservas neste navegador. O link só pode ser usado uma vez.",
+    "open": "Ver minhas reservas",
+    "opening": "Entrando…",
+    "privacy": "Para sua segurança, nunca mostramos suas reservas sem verificar seu e-mail.",
+    "byCode": "Quer consultar apenas uma reserva?",
+    "byCodeLink": "Acesse com o código da reserva",
+    "alreadyIn": "Você já tem uma sessão aberta neste navegador.",
+    "goToBookings": "Ir para minhas reservas",
+    "loggedOut": "Você encerrou a sessão neste navegador."
+  },
+  "bookings": {
+    "title": "Minhas reservas",
+    "description": "Todas as suas reservas com a peruwonderstours: situação, datas e voucher.",
+    "listLabel": "Suas reservas",
+    "logout": "Sair",
+    "loggingOut": "Saindo…",
+    "signIn": "Receber link de acesso",
+    "problems": {
+      "signedOut": "Para consultar suas reservas, enviaremos um link seguro ao seu e-mail. Você não precisa de senha.",
+      "expired": "Sua sessão expirou. Solicite um novo link para entrar novamente.",
+      "unavailable": "Não foi possível carregar suas reservas agora. Tente novamente em alguns minutos."
+    },
+    "openError": "Não foi possível abrir essa reserva. Tente novamente ou fale conosco pelo WhatsApp.",
+    "empty": "Você ainda não tem reservas vinculadas a este e-mail.",
+    "browseTours": "Ver passeios",
+    "travelDate": "viagem em {date}",
+    "open": "Abrir",
+    "openLabel": "Abrir a reserva {code}",
+    "opening": "Abrindo…"
+  }
+}

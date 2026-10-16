@@ -35,7 +35,7 @@ const uuid = () => new ParseUUIDPipe();
 const pg = (q: { page?: number; pageSize?: number }) => ({ page: q.page ?? 1, pageSize: q.pageSize ?? 20 });
 
 function locale(value: string): ContentLocale {
-  if (value !== 'es' && value !== 'en') throw new ValidationError('unsupported-locale', 'Idioma no soportado (es | en).');
+  if (value !== 'es' && value !== 'en' && value !== 'pt') throw new ValidationError('unsupported-locale', 'Idioma no soportado (es | en | pt).');
   return value;
 }
 
@@ -76,7 +76,7 @@ export class BlogAdminController {
 
   @Put(':id/translations/:locale')
   @StaffAuth('content:write')
-  @ApiParam({ name: 'locale', enum: ['es', 'en'] })
+  @ApiParam({ name: 'locale', enum: ['es', 'en', 'pt'] })
   async upsertTranslation(@CurrentStaff() a: StaffActor, @ReqMeta() m: RequestMeta, @Param('id', uuid()) id: string, @Param('locale') loc: string, @Body() body: VersionedBlogTranslationDto) {
     return { data: await this.content.upsertPostTranslation(a, m, id, locale(loc), body) };
   }
@@ -231,7 +231,7 @@ function taxonomyController(kind: 'destination' | 'category', path: string, tag:
 
     @Put(':id/translations/:locale')
     @StaffAuth('content:write')
-    @ApiParam({ name: 'locale', enum: ['es', 'en'] })
+    @ApiParam({ name: 'locale', enum: ['es', 'en', 'pt'] })
     async upsertTranslation(@CurrentStaff() a: StaffActor, @ReqMeta() m: RequestMeta, @Param('id', uuid()) id: string, @Param('locale') loc: string, @Body() body: VersionedTaxonomyTranslationDto) {
       return { data: await this.content.upsertTaxonomyTranslation(a, m, kind, id, locale(loc), body) };
     }

@@ -28,11 +28,11 @@ export default async function NewBlogPostPage() {
   }
   return (
     <>
-      <PageHeader title="Nuevo artículo" back={back} description="Se crea como borrador. La versión en inglés y la publicación se hacen después." />
+      <PageHeader title="Nuevo artículo" back={back} description="Se crea como borrador. Después puedes añadir inglés y portugués, revisar y publicar." />
       <Section>
         <ActionForm action={createBlogPostAction} refresh={false} className="space-y-4">
           <BlogTranslationFields locale="es" />
-          <Field label="Etiquetas" name="tags" hint="Separadas por coma: cusco, trekking, gastronomía. Máx. 20.">
+          <Field label="Etiquetas" name="tags" hint="Categoría del diario: historias, leyendas o guias. Añade destinos separados por coma. Publica relatos de viajeros solo con su autorización. Máx. 20.">
             <input className="field-input" maxLength={1300} />
           </Field>
           <ImageUploader name="coverStorageKey" folder="blog" canUpload={can(session, "media:upload")} />

@@ -1,0 +1,113 @@
+{
+  "notice": {
+    "label": "Livro de Reclamações",
+    "text": "De acordo com o Código de Proteção e Defesa do Consumidor do Peru, a {name} disponibiliza um Livro de Reclamações virtual."
+  },
+  "page": {
+    "title": "Livro de Reclamações",
+    "description": "Livro de Reclamações virtual da {name} (Lei peruana 29571). Registre sua reclamação ou queixa sem criar uma conta.",
+    "intro": "De acordo com o Código de Proteção e Defesa do Consumidor do Peru, a {name} disponibiliza este Livro de Reclamações virtual. Você não precisa de uma conta nem de uma reserva para usá-lo. Se precisar de ajuda para preencher, fale conosco pelo WhatsApp {whatsapp}.",
+    "spanishForm": "Os rótulos oficiais e a folha de reclamação são mantidos em espanhol, com orientações em português."
+  },
+  "form": {
+    "help": {
+      "sheet": "Folha de reclamação",
+      "sheetNumber": "N.º da folha",
+      "date": "Data",
+      "provider": "Fornecedor (razão social) / RUC",
+      "establishment": "Endereço do estabelecimento / código",
+      "section1": "Identificação do consumidor reclamante",
+      "section2": "Identificação do bem contratado",
+      "section3": "Descrição da reclamação e solicitação do consumidor",
+      "fullName": "Nome completo",
+      "docType": "Tipo de documento",
+      "docNumber": "Número do documento",
+      "address": "Endereço",
+      "phone": "Telefone",
+      "email": "E-mail",
+      "emailConfirm": "Confirme seu e-mail",
+      "isMinor": "Sou menor de idade (serão solicitados os dados do meu pai, mãe ou representante).",
+      "guardian": "Pai, mãe ou representante",
+      "guardianFullName": "Nome completo do representante",
+      "guardianAddress": "Endereço do representante",
+      "guardianPhone": "Telefone do representante",
+      "guardianEmail": "E-mail do representante",
+      "goodType": "Bem contratado",
+      "service": "Serviço",
+      "product": "Produto",
+      "claimedAmount": "Valor reclamado",
+      "claimedAmountOptional": "Valor reclamado (opcional)",
+      "currency": "Moeda",
+      "goodDescription": "Descrição do serviço ou produto",
+      "bookingCode": "Código da reserva (opcional)",
+      "declaredType": "Tipo",
+      "reclamo": "Reclamação",
+      "queja": "Queixa",
+      "unknown": "Não tenho certeza",
+      "detail": "Descrição",
+      "consumerRequest": "Solicitação",
+      "responseChannel": "Como você quer receber a resposta?",
+      "channelEmail": "Por e-mail",
+      "channelLetter": "Por carta no meu endereço"
+    },
+    "summary": {
+      "fullName": "Nome completo",
+      "docNumber": "Documento",
+      "address": "Endereço",
+      "phone": "Telefone",
+      "email": "E-mail",
+      "emailConfirm": "Confirmar e-mail",
+      "guardianFullName": "Representante",
+      "guardianAddress": "Endereço do representante",
+      "guardianPhone": "Telefone do representante",
+      "guardianEmail": "E-mail do representante",
+      "claimedAmount": "Valor reclamado",
+      "goodDescription": "Descrição",
+      "bookingCode": "Código da reserva",
+      "declaredType": "Tipo",
+      "detail": "Descrição detalhada",
+      "consumerRequest": "Solicitação",
+      "conformityAccepted": "Concordância"
+    },
+    "hints": {
+      "phone": "Celular do Peru ou com código do país (+56…).",
+      "emailConfirm": "Enviaremos a cópia da folha e a resposta para este endereço.",
+      "claimedAmount": "Pode ser 0 se você não estiver reclamando um valor.",
+      "goodDescription": "Por exemplo: passeio, data e número de viajantes.",
+      "bookingCode": "Se você tiver um, no formato PWT-2026-000123. Não é obrigatório.",
+      "detail": "Conte o que aconteceu, quando e com quem.",
+      "consumerRequest": "Qual solução você espera?"
+    },
+    "docTypes": {
+      "dni": "DNI",
+      "ce": "Carnê de estrangeiro (Peru)",
+      "passport": "Passaporte",
+      "other": "Outro documento"
+    },
+    "pending": "a confirmar",
+    "autoNumber": "Atribuído automaticamente ao enviar",
+    "announceRegistered": "Registramos sua folha {code}.",
+    "connectionError": "Não foi possível registrar sua folha. Confira sua conexão e tente novamente.",
+    "serverErrorTitle": "Não foi possível registrar sua folha:",
+    "currencyPEN": "Soles (S/)",
+    "currencyUSD": "Dólares (USD)",
+    "unknownNote": "Se você não tiver certeza, analisaremos e processaremos como reclamação.",
+    "definitions": {
+      "reclamo": "Reclamação: insatisfação relacionada aos produtos ou serviços.",
+      "queja": "Queixa: insatisfação não relacionada aos produtos ou serviços; ou mal-estar ou descontentamento com o atendimento ao público."
+    },
+    "conformity": "Declaro que os dados informados nesta folha são verdadeiros e que concordo com seu conteúdo. Esta declaração substitui minha assinatura.",
+    "legends": {
+      "first": "O registro da reclamação não impede o recurso a outros meios de solução de controvérsias nem é requisito prévio para apresentar uma denúncia ao INDECOPI.",
+      "second": "O fornecedor deve responder à reclamação ou queixa em um prazo máximo de quinze (15) dias úteis, que não pode ser prorrogado."
+    },
+    "privacy": "Usaremos estes dados apenas para tratar sua reclamação ou queixa e responder, conforme exige o Código de Proteção e Defesa do Consumidor do Peru, e os conservaremos por pelo menos 2 anos. Registramos a data, a hora e o IP do envio. Mais informações na <link>Política de privacidade</link>.",
+    "sending": "Enviando…",
+    "submit": "Enviar folha de reclamação"
+  },
+  "receipt": {
+    "registered": "Registramos sua folha de reclamação",
+    "copySent": "Enviaremos uma cópia para {email}. Salve ou imprima este comprovante; responderemos até <strong>{date}</strong>.",
+    "print": "Imprimir ou salvar como PDF"
+  }
+}

@@ -3,7 +3,7 @@ type: meta
 title: Hot Cache
 status: developing
 created: 2026-10-07
-updated: 2026-10-07
+updated: 2026-10-14
 tags:
   - meta
   - hot-cache
@@ -13,7 +13,7 @@ tags:
 
 ## Last Updated
 
-2026-10-07 — Fase 0 (setup) completada: cerebro, equipo de subagentes y skills instalados.
+2026-10-13 — Continuidad en Codex sobre el backup del Sprint 3. Ver [[concepts/entrega-octubre-2026]] para la evidencia actual; el historial de abajo conserva las notas anteriores.
 
 ## Key Recent Facts
 
@@ -24,6 +24,60 @@ tags:
 - Equipo: 12 subagentes senior en `.claude/agents/`, dirigidos por `tech-lead-orchestrator`.
 
 ## Recent Changes
+
+- 2026-10-15: manual de uso v0.1 en docs/manual/manual-de-uso.md; actualizar con cambios del sistema. Ver [[decisions/ADR-0021-manual-de-uso]].
+
+- 2026-10-15: diario de historias/leyendas/cultura con filtros, propuestas moderadas y dos lecturas iniciales ES/EN/PT; ver [[decisions/ADR-0020-diario-viajeros]].
+
+- 2026-10-15: SEO técnico, datos de agencia confirmados, tarjetas sociales y noindex rastreable; ver [[decisions/ADR-0019-seo-tecnico]].
+
+- 2026-10-15: recorrido buscador→pago sandbox comprobado 24/24 en CI; teléfono cifrado corregido y bloqueos de viajeros/facturación documentados. Ver [[decisions/ADR-0018-auditoria-reservas]].
+
+- 2026-10-14: rediseño login/MFA y dirección Puno confirmada; ver [[decisions/ADR-0017-acceso-visual-personal]].
+
+- 2026-10-14: avatar del personal, nombre y rol estilizados en topbaradmin, sin cambios a logout/sesión; tipos/lint aprobados. Ver [[decisions/ADR-0015-avatar-del-administrador]].
+
+
+- 2026-10-14: tercer idioma pt-BR con 1098 claves, banderaBR, rutas, legales, reservas/correos y editoresPT. Catálogo sin traducción muestraESconaviso; migracionesPTpreparadas, no aplicadas aBDcliente. Ver [[decisions/ADR-0014-portugues-brasil]].
+
+
+- 2026-10-14: logo dorado diseñado por el cliente sustituye al anterior, transparente y completo sin recortes en web/admin; tipos/lint aprobados. Ver ADR-0013.
+
+
+- 2026-10-14: retirado fondo blanco del logo en web y login admin por petición del cliente; PNG transparente intacto.
+
+
+- 2026-10-14: marca definitiva peruwonderstours.com y logo PNG del cóndor proporcionado por el cliente; marca unificada, redes/reseñas heredadas archivadas y tipos/lint/pruebas focalizadas aprobadas. Ver [[decisions/ADR-0013-marca-y-logo-del-cliente]].
+
+
+- 2026-10-14: selector de idioma con SVG locales de Perú/Reino Unido y nombres, conservando rutas equivalentes, búsqueda y etiquetas accesibles; ver [[decisions/ADR-0012-idiomas-con-banderas]].
+
+
+- 2026-10-14: retirado nombre repetido en controles del banner; título de escena y motion preservados. Lint/tipos locales aprobados, ver [[decisions/ADR-0011-banner-sin-titulo-repetido]].
+
+
+- 2026-10-14: prioridad comercial de home corregida; pruebas Chromium CI con PostgreSQL efímero, staff MFA ficticio y pagos sandbox. Ver [[decisions/ADR-0010-prioridad-comercial-y-pruebas]] y docs/qa/funcional-2026-10-14.md para estado y límites actuales. El historial siguiente conserva evidencias anteriores.
+
+
+- 2026-10-13: UI/UX web/admin con siete skills instaladas y validadas, marca preservada,
+  navegación agrupada, superficies/tablas y microinteracciones accesibles. Ver [[decisions/ADR-0007-ui-ux-y-skills-motion]].
+  Web y login admin responden HTTP 200; la revisión visual automatizada sigue limitada.
+
+- 2026-10-13: optimización progresiva de carga: drawer al primer uso, fuente Mono sin preload,
+  GSAP omitido con movimiento reducido, hero opacity/transform y sizes compartido de galería.
+  Ver [[decisions/ADR-0006-optimizacion-carga-web]]; medición HTTP compilada en CI, sin afirmar Web Vitals.
+
+- 2026-10-13: dominio confirmado `peruwonderstours.com`, WhatsApp `+51 924 278 597`
+  y correo `jorgechaveztourt@gmail.com`. El cliente dará el RUC real el día de entrega;
+  ejemplo `20000000000` solo visual y etiquetado, sin sustituir la identidad fiscal real.
+- Continuidad: Nosotros bilingüe con destinos del catálogo, sitemap editorial con slugs
+  traducidos de la API, motion accesible, validación de fechas del panel y fuentes locales
+  Geist/Geist Mono/Fraunces. Se mantienen arquitectura, diseño y agentes originales.
+- Validación: 219 pruebas unitarias API, 32 e2e API, 12 pruebas admin y 3 pruebas web pasaron.
+  GitHub aprobó la compilación de API/web/admin y 150 rutas HTTP públicas/legacy (run 38441950356).
+  Integración PostgreSQL y revisión visual completas siguen pendientes; no acreditar producción lista.
+- Hosting y pasarela aún no contratados. La API solo implementa sandbox y lo rechaza en
+  producción: se requiere integración real antes de habilitar cobros. No se ha publicado.
 
 - 2026-10-08: benchmark OTA 2026 en [[concepts/benchmark-ota-2026]] (Ola A: 10 HU-B sin terceros; búsqueda web incompleta por límite de sesión, celdas `?` pendientes).
 - 2026-10-07: contenido público extraído a `data/seed/` (41 tours, 0 con precio; ver `_extraction-report.md`).
@@ -97,3 +151,13 @@ tags:
   - Preguntas al cliente ampliadas a 45 (secciones 7–8).
 - Detalle a revisar: `balanceDueAt` = 00:00 Lima del día −7 → la web dice "vence el 13 nov"
   pero en rigor vence al inicio del 13; aclarar regla con el cliente.
+
+
+
+- 2026-10-13: banners HTML originales aislados, carrusel reiniciable, eventos de mouse y gestión admin. Web cinco pruebas, tipos y HTTP 200; API vieja requiere reinicio. Ver [[decisions/ADR-0008-banners-html-motion]].
+
+- 2026-10-13: cliente aprueba sustituir iframes por banners nativos. Imágenes + título + efectos de agua/nubes, entrada reiniciable, admin con selector y titleEmbedded. Revisión independiente detectó y corrigió duplicado Machu, none no estático, geografía inferida y will-change permanente. Validación visual/FPS sigue pendiente.
+
+- 2026-10-14: tarjetas de recursos oficiales con carrusel transform y bordes difuminados, pausa y acceso teclado; WhatsApp con símbolo y Libro con aviso INDECOPI Anexo III. Formularios preservados. Ver [[decisions/ADR-0009-recursos-oficiales-y-reclamaciones]].
+
+- 2026-10-14: venta priorizada en home; recursos/aviso movidos tras CTA. Suite de navegador Chromium con PostgreSQL y MFA ficticios en CI para usuario/admin, capturas y tiempos por acción. Ejecución pendiente hasta disponer de resultados. Ver [[decisions/ADR-0010-prioridad-comercial-y-pruebas]].

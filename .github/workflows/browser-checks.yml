@@ -1,0 +1,172 @@
+name: Browser functional checks
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: browser-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: browser_fixture
+          POSTGRES_PASSWORD: ci-only-browser-fixture
+          POSTGRES_DB: pwt_browser_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U browser_fixture -d pwt_browser_test"
+          --health-interval 5s --health-timeout 5s --health-retries 15
+    env:
+      # All credentials below are disposable fixtures, never production credentials.
+      DATABASE_URL: postgresql://browser_fixture:ci-only-browser-fixture@localhost:5432/pwt_browser_test
+      DATA_SOURCE: prisma
+      CATALOG_SOURCE: api
+      API_BASE_URL: http://localhost:3001/api/v1
+      API_ALLOW_HTTP: 'true'
+      E2E_WEB_BASE_URL: http://localhost:3100
+      E2E_ADMIN_BASE_URL: http://localhost:3102
+      E2E_ADMIN_EMAIL: browser-admin@peruwonderstours.test
+      E2E_ADMIN_PASSWORD: BrowserFixture-2026!only
+      E2E_ADMIN_TOTP_SECRET: JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP
+      PII_ENCRYPTION_KEY: MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=
+      JWT_ACCESS_SECRET: Browser-fixture-HS256-2026-test-only-key-123
+      ADMIN_SESSION_SECRET: Browser-fixture-cookie-2026-test-only-key-456
+      ADMIN_TRUSTED_ORIGINS: http://localhost:3102
+      WEB_ORIGIN: http://localhost:3100,http://localhost:3102
+      PUBLIC_WEB_BASE_URL: http://localhost:3100
+      SANDBOX_CHECKOUT_BASE_URL: http://localhost:3001/api/v1/sandbox/checkout
+      SANDBOX_WEBHOOK_SECRET: Browser-fixture-sandbox-2026-test-only-key
+      MEDIA_LOCAL_DIR: /tmp/pwt-browser-media
+      MEDIA_PUBLIC_BASE_URL: http://localhost:3001/media
+      MAIL_TRANSPORT: memory
+      OUTBOX_RELAY_ENABLED: 'false'
+      THROTTLE_LIMIT: '3000'
+      THROTTLE_STRICT_LIMIT: '300'
+      NEXT_TELEMETRY_DISABLED: '1'
+      NEXT_PUBLIC_PAYMENTS_MODE: sandbox
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.34.6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @pwt/api prisma:generate
+      - run: pnpm --filter @pwt/api prisma:migrate
+      - run: pnpm --filter @pwt/api build
+      - name: Populate disposable catalog and staff
+        env:
+          NODE_ENV: test
+        run: |
+          pnpm --filter @pwt/api db:seed -- --publish --demo-pricing
+          node scripts/e2e/seed-staff.mjs
+          node scripts/e2e/seed-catalog.mjs
+      - name: Start fixture API
+        run: |
+          (cd apps/api && NODE_ENV=test PORT=3001 node dist/main.js) > /tmp/pwt-browser-api.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --max-time 5 http://localhost:3001/api/v1/health/ready > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/pwt-browser-api.log
+          exit 1
+      - run: pnpm --filter @pwt/web build
+      - run: pnpm --filter @pwt/admin build
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Start compiled web and administration
+        run: |
+          pnpm --filter @pwt/web exec next start --hostname localhost --port 3100 > /tmp/pwt-browser-web.log 2>&1 &
+          pnpm --filter @pwt/admin exec next start --hostname localhost --port 3102 > /tmp/pwt-browser-admin.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent --max-time 5 http://localhost:3100/es > /dev/null && curl --fail --silent --max-time 5 http://localhost:3102/login > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/pwt-browser-web.log /tmp/pwt-browser-admin.log
+          exit 1
+      - run: pnpm exec playwright test
+      - name: Print bounded browser measurements
+        if: always()
+        run: |
+          node --input-type=module <<'NODE'
+          import { readdir, readFile } from 'node:fs/promises';
+          import { join } from 'node:path';
+          let printed = 0;
+          async function measurements(directory) {
+            for (const entry of await readdir(directory, { withFileTypes: true }).catch(() => [])) {
+              if (printed >= 60) return;
+              const path = join(directory, entry.name);
+              if (entry.isDirectory()) await measurements(path);
+              else if (/\.json$/.test(entry.name) && /action-timings|navigation-timing|browser-errors|image-load-diagnostics/.test(entry.name)) {
+                const body = JSON.parse(await readFile(path, 'utf8'));
+                printed++;
+                if (entry.name.includes('image-load-diagnostics') && Array.isArray(body)) {
+                  console.log(JSON.stringify({ file: path, images: body.length, broken: body.filter(image => !image.loaded && !image.pending).length, pending: body.filter(image => image.pending).length }));
+                } else {
+                  const bounded = Array.isArray(body) ? body.slice(0, 30).map(value => typeof value === 'string' ? value.slice(0, 500) : value) : body;
+                  console.log(JSON.stringify({ file: path, measurement: bounded }));
+                }
+              }
+            }
+          }
+          await measurements('test-results');
+          const results = await readFile('test-results/results.json', 'utf8').then(JSON.parse).catch(() => null);
+          const allowed = /^(?:user-action-timings|admin-action-timings|admin-finance-action-timings|admin-user-action-timings|mobile-action-timings|sandbox-payment-action-timings|catalog-control-timings|navigation-timing|browser-errors|image-load-diagnostics|mobile-menu-hit-target|mobile-overflow|performance-probe)\.json$/;
+          function attachments(node) {
+            if (!node || typeof node !== 'object') return;
+            if (Array.isArray(node.attachments)) for (const attachment of node.attachments) {
+              if (printed >= 60 || !allowed.test(attachment.name) || !attachment.body) continue;
+              let body; try { body = JSON.parse(Buffer.from(attachment.body, 'base64').toString('utf8')); } catch { continue; }
+              printed++;
+              if (attachment.name === 'image-load-diagnostics.json' && Array.isArray(body)) {
+                console.log(JSON.stringify({ attachment: attachment.name, images: body.length, broken: body.filter(image => !image.loaded && !image.pending).length, pending: body.filter(image => image.pending).length }));
+              } else console.log(JSON.stringify({ attachment: attachment.name, measurement: Array.isArray(body) ? body.slice(0, 30) : body }));
+            }
+            for (const [key, value] of Object.entries(node)) if (key !== 'attachments' && value && typeof value === 'object') {
+              if (Array.isArray(value)) value.forEach(attachments); else attachments(value);
+            }
+          }
+          attachments(results);
+          if (results?.stats) console.log(JSON.stringify({ browserResults: results.stats }));
+          NODE
+      - name: Include service diagnostics on failure
+        if: failure()
+        run: |
+          cat /tmp/pwt-browser-api.log /tmp/pwt-browser-web.log /tmp/pwt-browser-admin.log || true
+          node --input-type=module <<'NODE'
+          import { readdir, readFile } from 'node:fs/promises';
+          import { join } from 'node:path';
+          let printed = 0;
+          async function inspect(directory) {
+            for (const entry of await readdir(directory, { withFileTypes: true }).catch(() => [])) {
+              if (printed >= 12) return;
+              const path = join(directory, entry.name);
+              if (entry.isDirectory()) await inspect(path);
+              else if (entry.name === 'error-context.md') {
+                printed++;
+                console.log(`Browser failure context: ${path}\n${(await readFile(path, 'utf8')).slice(0, 8000)}`);
+              }
+            }
+          }
+          await inspect('test-results');
+          NODE
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-functional-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

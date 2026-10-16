@@ -7,6 +7,8 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { localePath } from "@/i18n/paths";
 import type { Locale } from "@/i18n/routing";
 import { getBlogPosts } from "@/lib/content/blog";
+import { isJournalTopic, journalTopic, JOURNAL_TOPICS } from "@/lib/content/journal-topics";
+import { whatsappHref } from "@/lib/site";
 import { formatDate } from "@/lib/format";
 import { alternatesFor, pageMetadata } from "@/lib/seo/metadata";
 
@@ -20,10 +22,13 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/blog">):
 }
 
 /** Índice del blog (F1): tarjetas por fecha de publicación, en el idioma de la página. */
-export default async function BlogIndexPage({ params }: PageProps<"/[locale]/blog">) {
+export default async function BlogIndexPage({ params, searchParams }: PageProps<"/[locale]/blog">) {
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
-  const [posts, t, tc] = await Promise.all([getBlogPosts(locale), getTranslations("blog"), getTranslations("common")]);
+  const [allPosts, t, tc, tj, query] = await Promise.all([getBlogPosts(locale), getTranslations("blog"), getTranslations("common"), getTranslations("journal"), searchParams]);
+  const topic = isJournalTopic(query.tema) ? query.tema : null;
+  const posts = topic ? allPosts.filter(post => journalTopic(post.tags) === topic) : allPosts;
+  const blogPath = localePath(locale, "/blog");
 
   return (
     <div className="pwt-container pt-8 pb-20">
@@ -35,6 +40,10 @@ export default async function BlogIndexPage({ params }: PageProps<"/[locale]/blo
       />
       <h1 className="mt-4 font-display text-h1 font-medium">{t("title")}</h1>
       <p className="mt-3 max-w-2xl text-body-lg text-foreground-muted">{t("description")}</p>
+      <nav aria-label={tj("title")} className="mt-6 flex flex-wrap gap-2">
+        <Link href={blogPath} aria-current={!topic ? "page" : undefined} className="inline-flex min-h-11 items-center rounded-pill border border-border px-4 text-sm aria-[current=page]:bg-primary aria-[current=page]:text-on-primary">{tj("all")}</Link>
+        {JOURNAL_TOPICS.map(value => <Link key={value} href={`${blogPath}?tema=${value}`} aria-current={topic === value ? "page" : undefined} className="inline-flex min-h-11 items-center rounded-pill border border-border px-4 text-sm aria-[current=page]:bg-primary aria-[current=page]:text-on-primary">{tj(`${value}.title`)}</Link>)}
+      </nav>
       {posts.length ? (
         <ul className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-reveal-stagger>
           {posts.map((post) => (
@@ -75,8 +84,9 @@ export default async function BlogIndexPage({ params }: PageProps<"/[locale]/blo
           ))}
         </ul>
       ) : (
-        <p className="mt-10 rounded-lg border border-dashed border-border-strong p-6 text-foreground-muted">{t("empty")}</p>
+        <p className="mt-10 rounded-lg border border-dashed border-border-strong p-6 text-foreground-muted">{topic ? tj("empty") : t("empty")}</p>
       )}
+      {topic === "historias" ? <aside className="mt-10 rounded-lg border border-border bg-surface-muted p-6"><h2 className="text-h3 font-medium">{tj("shareTitle")}</h2><p className="mt-3 max-w-2xl text-foreground-muted">{tj("shareText")}</p><a href={whatsappHref(tj("shareMessage"))} target="_blank" rel="noopener noreferrer" className="pwt-link mt-4 inline-flex min-h-11 items-center">{tj("shareButton")}</a></aside> : null}
     </div>
   );
 }

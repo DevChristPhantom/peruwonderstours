@@ -1,0 +1,9 @@
+{
+  "tourHelp": "Olá, tenho uma dúvida sobre este passeio: {tour}",
+  "cartHelp": "Olá, preciso de ajuda com meu carrinho:",
+  "cartHelpStep": "Olá, preciso de ajuda com minha reserva (etapa: {step}):",
+  "bookingHelp": "Olá, preciso de ajuda com minha reserva {code}:",
+  "bookingHelpStep": "Olá, preciso de ajuda com minha reserva {code} (etapa: {step}):",
+  "bookingQuestion": "Olá, tenho uma dúvida sobre minha reserva {code}.",
+  "more": "{count, plural, one {e mais # passeio} other {e mais # passeios}}"
+}

@@ -45,7 +45,7 @@ export function MobileBookingBar({ pricing }: { pricing: TourPricing | null }) {
 
   return (
     <div
-      className={`pointer-events-none fixed inset-x-0 bottom-0 z-10 flex justify-end px-4 transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none lg:hidden ${
+      className={`pointer-events-none fixed inset-x-0 bottom-0 z-10 flex max-w-[100vw] justify-end px-4 transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none lg:hidden ${
         panelVisible ? "translate-y-4 opacity-0" : "translate-y-0 opacity-100"
       }`}
       style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}

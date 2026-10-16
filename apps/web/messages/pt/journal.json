@@ -1,0 +1,25 @@
+{
+  "eyebrow": "O Peru que se conta",
+  "title": "Histórias, lendas e caminhos para descobrir",
+  "intro": "Além do roteiro: vozes de viajantes, tradição oral e cultura para conhecer o lugar que você visita.",
+  "viewAll": "Explorar o diário",
+  "explore": "Descobrir",
+  "all": "Todo o diário",
+  "empty": "Ainda não há publicações nesta categoria.",
+  "shareTitle": "Sua viagem também merece ser contada",
+  "shareText": "Compartilhe sua experiência com nossa equipe. Vamos revisar o relato e pedir sua autorização antes de publicá-lo.",
+  "shareButton": "Propor minha história",
+  "shareMessage": "Olá, gostaria de propor minha história de viagem para o diário da peruwonderstours.",
+  "historias": {
+    "title": "Histórias de viajantes",
+    "description": "Experiências compartilhadas por quem percorreu estes caminhos."
+  },
+  "leyendas": {
+    "title": "Mitos e lendas",
+    "description": "Relatos da tradição oral que oferecem outro olhar sobre os destinos."
+  },
+  "guias": {
+    "title": "Cultura e guias",
+    "description": "Patrimônio, costumes e informações para viajar com mais contexto."
+  }
+}

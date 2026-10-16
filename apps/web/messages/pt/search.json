@@ -1,0 +1,8 @@
+{
+  "hints": {
+    "destination": "Destino · {count, plural, =0 {em breve} one {# passeio} other {# passeios}}",
+    "category": "Tipo de passeio · {count, plural, =0 {em breve} one {# passeio} other {# passeios}}",
+    "tour": "Passeio · {places}",
+    "severalDestinations": "Vários destinos"
+  }
+}

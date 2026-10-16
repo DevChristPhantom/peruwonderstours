@@ -46,6 +46,8 @@ export function TourGallery({ images, title }: { images: CatalogImage[]; title: 
   if (!total) return null;
   const [main, ...rest] = images;
   const thumbs = rest.slice(0, 4);
+  // Both responsive copies select the same initial resource instead of competing sizes.
+  const mainSizes = "(min-width: 1024px) 640px, (min-width: 768px) 66vw, 100vw";
 
   return (
     <div>
@@ -58,7 +60,7 @@ export function TourGallery({ images, title }: { images: CatalogImage[]; title: 
           aria-label={t("enlarge", { n: 1, total })}
           data-reveal-clip
         >
-          <Image src={main.src} alt={main.alt} fill preload sizes="(min-width: 1024px) 640px, 66vw" className="object-cover" />
+          <Image src={main.src} alt={main.alt} fill preload sizes={mainSizes} className="object-cover" />
         </button>
         {thumbs.map((img, i) => (
           <button
@@ -76,7 +78,7 @@ export function TourGallery({ images, title }: { images: CatalogImage[]; title: 
       {/* Móvil: carrusel a sangre 4:3 */}
       <div className="relative -mx-4 md:hidden">
         <div className="relative aspect-[4/3] overflow-hidden bg-surface-muted">
-          <Image src={images[mobileIndex].src} alt={images[mobileIndex].alt} fill loading={mobileIndex === 0 ? "eager" : "lazy"} sizes="100vw" className="object-cover" />
+          <Image src={images[mobileIndex].src} alt={images[mobileIndex].alt} fill loading={mobileIndex === 0 ? "eager" : "lazy"} sizes={mobileIndex === 0 ? mainSizes : "100vw"} className="object-cover" />
         </div>
         <p className="absolute top-3 right-3 rounded-pill bg-hero-panel px-3 py-1 text-sm text-white" aria-live="polite">
           {t("counter", { n: mobileIndex + 1, total })}

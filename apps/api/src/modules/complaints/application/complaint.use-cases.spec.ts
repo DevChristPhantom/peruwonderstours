@@ -6,7 +6,7 @@ import type { ComplaintDraft } from '../domain/complaint.js';
 import { ComplaintNotFoundError, ComplaintUseCases, type ComplaintSettings, type SubmitComplaintInput } from './complaint.use-cases.js';
 
 const SETTINGS: ComplaintSettings = {
-  provider: { legalName: 'Peru Wonders Tours E.I.R.L.', ruc: '20000000001', establishmentAddress: 'Jr. Lima 123, Puno', establishmentCode: 'WEB' },
+  provider: { legalName: 'peruwonderstours E.I.R.L.', ruc: '20000000001', establishmentAddress: 'Jr. Lima 123, Puno', establishmentCode: 'WEB' },
   conformityTextVersion: 'conf-v1',
   privacyNoticeVersion: 'priv-v1',
   idempotencyTtlMinutes: 60,

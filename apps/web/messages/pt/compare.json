@@ -1,0 +1,19 @@
+{
+  "toggle": "Comparar",
+  "toggleLabel": "Comparar {title}",
+  "addedAnnounce": "{title} adicionado ao comparador ({count} de {max}).",
+  "addedToast": "{count, plural, one {# passeio no comparador} other {# passeios no comparador}} (máximo {max}).",
+  "removedAnnounce": "{title} removido do comparador.",
+  "full": "Você pode comparar até {max} passeios de uma vez.",
+  "fullAnnounce": "{title} não foi adicionado: o comparador já tem {max} passeios.",
+  "compareNow": "Comparar agora",
+  "trayLabel": "Comparador de passeios",
+  "trayTitle": "Comparar passeios ({count} de {max})",
+  "removeLabel": "Remover {title} do comparador",
+  "clear": "Limpar",
+  "clearedAnnounce": "Comparador vazio.",
+  "compareCount": "Comparar {count}",
+  "chooseTwo": "Escolha pelo menos 2 passeios para comparar.",
+  "remove": "Remover",
+  "removeFromTable": "Remover {title} da comparação"
+}

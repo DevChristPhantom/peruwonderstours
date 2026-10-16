@@ -3,17 +3,17 @@ import type { Metadata } from "next";
 import { localePath } from "@/i18n/paths";
 import { HREFLANG, OG_LOCALE, routing, type Locale } from "@/i18n/routing";
 import type { LocalePaths } from "@/lib/catalog/types";
-import { SITE } from "@/lib/site";
+import { absoluteUrl, SITE } from "@/lib/site";
 
 type Href = Parameters<typeof localePath>[1];
 
-/** Rutas de una página estática en ambos idiomas, a partir de su ruta interna. */
+/** Rutas de una página estática en los tres idiomas, a partir de su ruta interna. */
 export function alternatesFor(href: Href): LocalePaths {
-  return { es: localePath("es", href), en: localePath("en", href) };
+  return { es: localePath("es", href), en: localePath("en", href), pt: localePath("pt", href) };
 }
 
 /**
- * hreflang recíproco (I3): `es-PE`, `en` y `x-default` (→ español). Cada idioma apunta a su propia
+ * hreflang recíproco (I3): `es-PE`, `en`, `pt-BR` y `x-default` (→ español). Cada idioma apunta a su propia
  * URL (con el slug traducido cuando existe).
  */
 export function hreflang(paths: LocalePaths): Record<string, string> {
@@ -35,12 +35,13 @@ export function pageMetadata({
   locale: Locale;
   title: string;
   description: string;
-  /** Rutas en ambos idiomas (`alternatesFor('/tours')` o `tour.alternates`). */
+  /** Rutas en los tres idiomas (`alternatesFor('/tours')` o `tour.alternates`). */
   paths: LocalePaths;
   image?: string | null;
   index?: boolean;
 }): Metadata {
   const path = paths[locale];
+  const shareImage = absoluteUrl(image || '/brand/peruwonderstours-dorado.png');
   return {
     title,
     description,
@@ -53,8 +54,9 @@ export function pageMetadata({
       locale: OG_LOCALE[locale],
       alternateLocale: routing.locales.filter((l) => l !== locale).map((l) => OG_LOCALE[l]),
       type: "website",
-      ...(image ? { images: [{ url: image }] } : {}),
+      images: [{ url: shareImage, alt: image ? title : SITE.name }],
     },
-    ...(index ? {} : { robots: { index: false, follow: true } }),
+    twitter: { card: 'summary_large_image', title, description, images: [{ url: shareImage, alt: image ? title : SITE.name }] },
+    robots: index ? { index: true, follow: true, googleBot: { 'max-image-preview': 'large' } } : { index: false, follow: true },
   };
 }

@@ -48,7 +48,7 @@ export function TranslationEditor({
 }: {
   tourId: string;
   version: number;
-  locale?: "es" | "en";
+  locale?: "es" | "en" | "pt";
   translation?: TourTranslation;
   fallbackSlug: string;
   readOnly: boolean;

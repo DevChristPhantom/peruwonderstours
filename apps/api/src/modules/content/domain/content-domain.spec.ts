@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { curateSiteContent } from '../application/site-content.service.js';
 import { pickTranslation } from '../../../shared/domain/i18n.js';
 import { assertPlainText, canTransitionContact, createWebTestimonial } from './content.js';
@@ -56,5 +57,28 @@ describe('Contenido: testimonios, contacto, i18n y contenido institucional', () 
     expect(json).not.toContain('companyData');
     expect(out).toMatchObject({ locale: 'es', fallback: true, faqs: [{ question: '¿Q?', answer: 'R' }], contact: { phones: [{ number: '+51989028802', whatsapp: true }] } });
     expect(out.about?.images).toEqual(['https://a/b.jpg']);
+  });
+
+  it('site-content: excludes retired hosts and retired-brand social profiles without changing the archive', () => {
+    const raw = {
+      aboutUs: { images: ['https://turinet.turismoads.com/images/old.jpg', 'https://www.andeanperutours.com/images/old.jpg', 'https://peruwonderstours.test/new.jpg'] },
+      socialLinks: [
+        { network: 'Facebook', url: 'https://www.facebook.com/andeanperutours' },
+        { network: 'TripAdvisor', urlEncoded: 'https://tripadvisor.test/Reviews-Andean%20Peru%20Tours.html' },
+        { network: 'New profile', url: 'https://facebook.com/peruwonderstours' },
+        { network: 'Old host', url: 'https://andeanperutours.com/social' },
+      ],
+    };
+    const archive = JSON.stringify(raw);
+    const result = curateSiteContent(raw, 'pt');
+    expect(result.about?.images).toEqual(['https://peruwonderstours.test/new.jpg']);
+    expect(result.socialLinks).toEqual([{ network: 'New profile', url: 'https://facebook.com/peruwonderstours' }]);
+    expect(JSON.stringify(result)).not.toMatch(/andeanperutours|turinet\.turismoads|Andean%20Peru%20Tours/i);
+    expect(JSON.stringify(raw)).toBe(archive);
+  });
+
+  it('does not publish retired host URLs from the actual archived site-content source', () => {
+    const raw: unknown = JSON.parse(readFileSync(new URL('../../../../../../data/seed/site-content.json', import.meta.url), 'utf8'));
+    expect(JSON.stringify(curateSiteContent(raw, 'es'))).not.toMatch(/andeanperutours\.com|turinet\.turismoads\.com/i);
   });
 });

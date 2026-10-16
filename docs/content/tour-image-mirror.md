@@ -1,0 +1,17 @@
+# Copias locales de imágenes: independencia del sitio anterior
+
+Fecha: 16 de octubre de 2026.
+
+Fuentes: URL públicas de imágenes presentes en los JSON de `data/seed/`, incluidos español e inglés, tours, destinos, categorías, blog y contenido de navegación. Se inspeccionan también referencias dentro de textos Markdown. Los hosts permitidos de descarga son `www.andeanperutours.com`, `andeanperutours.com` y `turinet.turismoads.com`, únicamente sus rutas `/images/`. El manifiesto histórico `media-manifest.json` no se usa como contenido de la web. Se conservó el contenido fotográfico sin recortar ni añadir elementos. La copia técnica no cambia la autoría ni acredita una licencia nueva.
+
+La primera fase cubrió cinco tours prioritarios. La ampliación elimina ese límite y procesa todas las URL encontradas. Las URL repetidas comparten archivo; las 24 copias de la primera fase se reutilizaron tras verificar su SHA-256.
+
+`apps/web/src/lib/content/tour-image-manifest.json` registra cada URL original, ruta local, contenido asociado, tamaños, dimensiones y SHA-256 del original y de la copia. Las referencias encontradas en el manifiesto cambian a ruta local. Cualquier imagen no disponible de los hosts retirados utiliza `/brand/media-pending.svg`, un marcador neutro: no se solicita la imagen antigua ni se inventa una foto. Las imágenes nuevas de otros hosts del CMS mantienen su origen. La resolución cubre portadas/galerías de tours, destinos/categorías, navegación, blog seed/API y enlaces a fotografías dentro del cuerpo Markdown. Las citas externas no se modifican.
+
+Reproducción: `node scripts/mirror-priority-tour-images.mjs` (se conserva el nombre del script inicial). Descarga con concurrencia máxima de cuatro, rechaza redirecciones, limita cada descarga a 8 MiB y 15 segundos, comprueba MIME y decodificación raster y limita la entrada a 40 millones de píxeles. Compara el original con WebP calidad 75 de ancho máximo 1600 sin ampliar ni recortar; guarda el de menor peso, conservando la extensión real cuando gana el original. `encoding` distingue ambas opciones. Las copias existentes con SHA válido no se descargan otra vez. Los fallos quedan en `tour-image-failures.json`. Si todas las descargas fallan y no hay copias válidas, no reemplaza el manifiesto.
+
+No se midieron tiempos de carga de navegador en esta tarea. La ventaja comprobable del mirror es que estas imágenes ya no requieren el host antiguo en ejecución; el tamaño final que recibe el visitante depende además de Next Image y de su viewport.
+
+Resultado final medido tras recuperar cuatro fuentes con extensión `.heic` incorrecta: 366 archivos únicos, 329 WebP calidad 75 y 37 originales conservados porque eran más pequeños. Total original 84 525 354 bytes; total local 74 549 477 bytes: 9 975 877 bytes menos (11,80 %).
+
+28 referencias no se pudieron copiar: 15 del host turinet sin resolución DNS, tres HTTP 404 y diez SVG históricos de pagos/sellos. Las cuatro fuentes `.heic` se recuperaron con una excepción acotada para `application/octet-stream`, seguida de decodificación raster válida; no se confía solo en su extensión. Estos SVG no se usan en la franja de confianza actual, que utiliza recursos oficiales locales; tampoco se consideran autorizaciones de la agencia. Si alguna referencia no disponible aparece en un contenido importado, el marcador local evita depender del host anterior. La auditoría detallada de contenido y de fotos no reproducidas figura en `docs/qa/legacy-content-coverage-2026-10-16.md`.

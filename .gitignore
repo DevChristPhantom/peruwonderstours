@@ -1,5 +1,6 @@
 node_modules/
 .next/
+.next-demo/
 dist/
 coverage/
 .turbo/
@@ -16,3 +17,5 @@ apps/api/src/generated/
 *.tsbuildinfo
 .claude/launch.json
 .claude/settings.local.json
+playwright-report/
+test-results/

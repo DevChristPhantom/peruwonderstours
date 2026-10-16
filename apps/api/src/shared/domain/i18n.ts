@@ -3,7 +3,7 @@
  * si falta, la canónica `es` y la respuesta lo indica con `{ locale: 'es', fallback: true }`.
  * Se aplica igual a tours, destinos, categorías y blog.
  */
-export const CONTENT_LOCALES = ['es', 'en'] as const;
+export const CONTENT_LOCALES = ['es', 'en', 'pt'] as const;
 export type ContentLocale = (typeof CONTENT_LOCALES)[number];
 export const DEFAULT_LOCALE: ContentLocale = 'es';
 

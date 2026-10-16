@@ -10,5 +10,8 @@
     "iperu": "iPerú: tourist assistance",
     "sernanp-visit": "Protected natural areas (SERNANP)",
     "esnna-info": "Child protection in tourism (ESNNA)"
-  }
+  },
+  "description": "Useful travel resources: tickets, tourist assistance, natural areas and responsible tourism.",
+  "pause": "Pause carousel",
+  "play": "Resume carousel"
 }

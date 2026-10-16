@@ -47,7 +47,7 @@ export interface CatalogImage {
 export type DurationBucket = "1" | "2-3" | "4-6" | "7+";
 
 /** Rutas de la misma ficha en cada idioma (hreflang y selector de idioma). */
-export type LocalePaths = Record<"es" | "en", string>;
+export type LocalePaths = Record<"es" | "en" | "pt", string>;
 
 export interface TourSummary {
   /**

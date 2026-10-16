@@ -7,12 +7,21 @@ import { useEffect, useState, type ReactNode } from "react";
 import { CART_STORAGE_KEY, useCartStore } from "@/stores/cart-store";
 import { useCompareStore } from "@/stores/compare-store";
 import { useWishlistStore, WISHLIST_STORAGE_KEY } from "@/stores/wishlist-store";
+import { useUiStore } from "@/stores/ui-store";
 import { LiveAnnouncer } from "./LiveAnnouncer";
 import { Toaster } from "@/components/ui/Toaster";
 
 // Carga diferida: GSAP/Lenis y el drawer no bloquean la hidratación inicial.
 const MotionEffects = dynamic(() => import("@/components/motion/MotionEffects"), { ssr: false });
 const CartDrawer = dynamic(() => import("@/components/cart/CartDrawer"), { ssr: false });
+
+function OnDemandCartDrawer() {
+  const open = useUiStore((state) => state.cartDrawerOpen);
+  const [hasOpened, setHasOpened] = useState(false);
+  if (open && !hasOpened) setHasOpened(true);
+  // Keep the native dialog mounted after first use so close restores the opener's focus.
+  return open || hasOpened ? <CartDrawer /> : null;
+}
 
 function CartHydrator() {
   useEffect(() => {
@@ -47,7 +56,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
       <CartHydrator />
       <LiveAnnouncer />
       <Toaster />
-      <CartDrawer />
+      <OnDemandCartDrawer />
       <MotionEffects />
     </QueryClientProvider>
   );

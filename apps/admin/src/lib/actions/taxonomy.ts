@@ -16,7 +16,7 @@ function itemPath(kind: TaxonomyKind, id: string, suffix = ""): string {
 }
 
 function assertLocale(locale: string): ContentLocale {
-  if (locale !== "es" && locale !== "en") throw new Error("Idioma inválido");
+  if (locale !== "es" && locale !== "en" && locale !== "pt") throw new Error("Idioma inválido");
   return locale;
 }
 

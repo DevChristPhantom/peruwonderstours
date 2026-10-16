@@ -14,7 +14,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "messages");
-const locales = ["es", "en"];
+const locales = ["es", "en", "pt"];
 const referenceLocale = "es";
 const checkOnly = process.argv.includes("--check");
 

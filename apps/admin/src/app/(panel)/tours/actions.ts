@@ -46,16 +46,16 @@ export async function updateTourAction(id: string, version: number, input: TourF
   return action(() => apiData<TourDetail>(tourPath(id), { method: "PATCH", body: { ...parsed.data, version } }).then((t) => ({ version: t.version })));
 }
 
-export async function saveTranslationAction(id: string, version: number, locale: "es" | "en", input: TranslationFormInput) {
-  if (locale !== "es" && locale !== "en") throw new Error("Idioma inválido");
+export async function saveTranslationAction(id: string, version: number, locale: "es" | "en" | "pt", input: TranslationFormInput) {
+  if (locale !== "es" && locale !== "en" && locale !== "pt") throw new Error("Idioma inválido");
   const parsed = translationSchema.safeParse(input);
   if (!parsed.success) return invalid(parsed.error);
   return action(() => apiData<TourDetail>(tourPath(id, `/translations/${locale}`), { method: "PUT", body: { ...parsed.data, version } }).then((t) => ({ version: t.version })));
 }
 
-export async function deleteTranslationAction(id: string, version: number, _prev: unknown, _fd: FormData) {
-  return action(() => apiData<TourDetail>(tourPath(id, "/translations/en"), { method: "DELETE", body: { version } }).then(() => null), {
-    message: "Traducción al inglés eliminada.",
+export async function deleteTranslationAction(id: string, version: number, locale: "en" | "pt", _prev: unknown, _fd: FormData) {
+  return action(() => apiData<TourDetail>(tourPath(id, `/translations/${locale}`), { method: "DELETE", body: { version } }).then(() => null), {
+    message: "Traducción eliminada.",
   });
 }
 

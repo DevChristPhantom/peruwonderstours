@@ -1,9 +1,35 @@
 {
   "about": {
     "title": "Nosotros",
-    "description": "{name}: agencia de viajes con oficina en Puno.",
-    "notice": "Contenido en preparación: la historia, el equipo y los datos de registro de la agencia se publicarán cuando el cliente los confirme.",
-    "body": "{name} organiza tours y paquetes por el sur del Perú desde su oficina en Puno: Lago Titicaca, Cusco y Machu Picchu, Arequipa y el Colca."
+    "description": "Explora el catálogo de destinos, tours y paquetes de {name}. Compara opciones y consulta los detalles de tu viaje por el Perú.",
+    "body": "En {name} puedes explorar destinos, tours y paquetes por el Perú, comparar opciones y preparar tu consulta de viaje. Empieza por los destinos disponibles en nuestro catálogo.",
+    "destinationsTitle": "Destinos para tu próximo viaje",
+    "destinationsDescription": "Descubre los destinos del catálogo y las experiencias disponibles en cada uno.",
+    "tourCount": "{count, plural, =0 {Consulta las opciones disponibles} one {# tour en el catálogo} other {# tours en el catálogo}}",
+    "exploreDestination": "Explorar destino",
+    "planningTitle": "Prepara tu viaje, paso a paso",
+    "planningDescription": "Encuentra opciones, revisa sus diferencias y consulta los detalles que necesitas antes de decidir.",
+    "steps": {
+      "explore": {
+        "title": "Explora",
+        "body": "Busca tours por destino y revisa el itinerario, la duración y la información de cada experiencia.",
+        "link": "Ver tours"
+      },
+      "compare": {
+        "title": "Compara",
+        "body": "Añade las opciones que te interesan al comparador para revisar sus características en una misma página.",
+        "link": "Abrir comparador"
+      },
+      "consult": {
+        "title": "Consulta",
+        "body": "Cuéntanos qué opciones te interesan y qué dudas tienes sobre tu viaje a través del formulario de contacto.",
+        "link": "Enviar una consulta"
+      }
+    },
+    "ctaTitle": "Encuentra tu próxima experiencia",
+    "ctaBody": "Explora las opciones del catálogo o envíanos una consulta para revisar los detalles de tu viaje.",
+    "viewTours": "Explorar tours",
+    "contact": "Contactar"
   },
   "access": {
     "codeLabel": "Código",
@@ -93,7 +119,7 @@
     },
     "bookings": {
       "title": "Mis reservas",
-      "description": "Todas tus reservas con Peru Wonders Tours: estado, fechas y voucher.",
+      "description": "Todas tus reservas con peruwonderstours: estado, fechas y voucher.",
       "listLabel": "Tus reservas",
       "logout": "Cerrar sesión",
       "loggingOut": "Cerrando sesión…",
@@ -255,7 +281,7 @@
     "pricesConfirmed": "Precios y cupos confirmados ahora.",
     "dueOnShort": "vence el {date}",
     "header": {
-      "home": "Peru Wonders Tours, inicio",
+      "home": "peruwonderstours, inicio",
       "leaveConfirm": "¿Salir del pago? Tu carrito se guarda.",
       "secure": "Pago seguro"
     },
@@ -388,7 +414,7 @@
     },
     "sandbox": {
       "title": "Modo sandbox: pago simulado, no se realizará ningún cobro",
-      "text": "Aquí se mostrará el formulario seguro del proveedor de pagos para {method}. Tus datos de tarjeta irán directo al proveedor; Peru Wonders Tours no los guarda.",
+      "text": "Aquí se mostrará el formulario seguro del proveedor de pagos para {method}. Tus datos de tarjeta irán directo al proveedor; peruwonderstours no los guarda.",
       "amount": "Monto a enviar:",
       "booking": "Reserva",
       "outcome": "Resultado a simular",
@@ -429,8 +455,8 @@
     "fallbackNotice": "Contenido disponible solo en español por ahora.",
     "viewAllTours": "Ver todos los tours",
     "breadcrumbs": "Ruta de navegación",
-    "logoAlt": "Peru Wonders Tours",
-    "logoHome": "Peru Wonders Tours, ir al inicio",
+    "logoAlt": "peruwonderstours",
+    "logoHome": "peruwonderstours, ir al inicio",
     "pending": "Por confirmar",
     "whatsappUs": "Escríbenos por WhatsApp",
     "skipToContent": "Saltar al contenido principal"
@@ -604,6 +630,10 @@
     "email": "Correo electrónico",
     "phone": "Teléfono (opcional)",
     "subject": "Asunto",
+    "subjectHint": "Entre 3 y 150 caracteres.",
+    "invalidSubject": "Escribe un asunto de entre 3 y 150 caracteres.",
+    "invalidMessage": "Escribe un mensaje de entre 10 y 4000 caracteres.",
+    "invalidPhone": "Usa un teléfono de entre 6 y 20 caracteres, con números y código de país.",
     "message": "Mensaje",
     "messageHint": "Fechas aproximadas, número de viajeros y tours que te interesan.",
     "privacy": "Acepto el tratamiento de mis datos para responder esta consulta, según la <link>Política de protección de datos personales</link>.",
@@ -735,6 +765,7 @@
     "legal": {
       "businessName": "Razón social",
       "ruc": "RUC",
+      "rucExample": "{number} (ejemplo; RUC real pendiente)",
       "mincetur": "Registro MINCETUR",
       "office": "Oficina",
       "email": "Correo"
@@ -778,7 +809,8 @@
     "payments": "Medios de pago",
     "paymentsText": "Tarjetas Visa y Mastercard, y transferencia bancaria.",
     "esnna": "{name} rechaza la explotación sexual de niñas, niños y adolescentes. Si conoces algún caso, denúncialo a la Línea 100.",
-    "copyright": "© {year} {name}. Todos los derechos reservados."
+    "copyright": "© {year} {name}. Todos los derechos reservados.",
+    "whatsappHelp": "¿Planeamos tu viaje?"
   },
   "formErrors": {
     "firstNameRequired": "Escribe tus nombres.",
@@ -846,11 +878,13 @@
     "languageButton": "Idioma: {language}. Cambiar idioma",
     "languageName": {
       "es": "Español",
-      "en": "English"
+      "en": "English",
+      "pt": "Português"
     },
     "favoritesLabel": "{count, plural, =0 {Favoritos} one {Favoritos, # tour guardado} other {Favoritos, # tours guardados}}",
     "cartLabel": "{count, plural, =0 {Carrito vacío} one {Carrito, # tour} other {Carrito, # tours}}",
-    "whatsappMessage": "Hola, quiero información sobre sus tours en Perú."
+    "whatsappMessage": "Hola, quiero información sobre sus tours en Perú.",
+    "stories": "Historias"
   },
   "home": {
     "metaTitle": "Tours en Puno, Lago Titicaca, Cusco y Machu Picchu",
@@ -858,7 +892,13 @@
       "title": "Viaja por el Perú con quienes lo conocen",
       "lead": "Tours al Lago Titicaca, Machu Picchu, el Colca y la costa sur con guías locales, salidas confirmadas y reserva con adelanto.",
       "imageAlt": "Islas flotantes de los Uros en el Lago Titicaca, Puno",
-      "scroll": "Desliza para descubrir"
+      "scroll": "Desliza para descubrir",
+      "banners": "Destinos del banner principal",
+      "previousBanner": "Banner anterior",
+      "nextBanner": "Banner siguiente",
+      "showBanner": "Mostrar {name}",
+      "playBanner": "Reproducir animación y carrusel",
+      "pauseBanner": "Pausar animación y carrusel"
     },
     "featured": {
       "title": "Tours destacados",
@@ -913,10 +953,36 @@
       "packages": "Ver paquetes"
     }
   },
+  "journal": {
+    "eyebrow": "El Perú que se cuenta",
+    "title": "Historias, leyendas y caminos por descubrir",
+    "intro": "Más allá del itinerario: voces de viajeros, tradición oral y cultura para conocer el lugar que visitas.",
+    "viewAll": "Explorar el diario",
+    "explore": "Descubrir",
+    "all": "Todo el diario",
+    "empty": "Todavía no hay publicaciones en esta categoría.",
+    "shareTitle": "Tu viaje también merece contarse",
+    "shareText": "Comparte tu experiencia con nuestro equipo. Revisaremos el relato y pediremos tu autorización antes de publicarlo.",
+    "shareButton": "Proponer mi historia",
+    "shareMessage": "Hola, quisiera proponer mi historia de viaje para el diario de peruwonderstours.",
+    "historias": {
+      "title": "Historias de viajeros",
+      "description": "Experiencias compartidas por quienes recorrieron estos caminos."
+    },
+    "leyendas": {
+      "title": "Mitos y leyendas",
+      "description": "Relatos de tradición oral que dan otra mirada a los destinos."
+    },
+    "guias": {
+      "title": "Cultura y guías",
+      "description": "Patrimonio, costumbres e información para viajar con más contexto."
+    }
+  },
   "language": {
     "name": {
       "es": "Español",
-      "en": "English"
+      "en": "English",
+      "pt": "Português"
     }
   },
   "legal": {
@@ -927,7 +993,7 @@
     "pages": {
       "terms": {
         "title": "Términos y condiciones",
-        "description": "Condiciones de uso del sitio y de contratación de tours y paquetes con Peru Wonders Tours."
+        "description": "Condiciones de uso del sitio y de contratación de tours y paquetes con peruwonderstours."
       },
       "privacy": {
         "title": "Protección de datos personales",
@@ -1055,6 +1121,10 @@
       "intro": "Tu opinión ayuda a otros viajeros. Revisamos cada testimonio antes de publicarlo y solo mostramos tu nombre y país; nunca tu correo.",
       "name": "Nombre que se mostrará",
       "country": "País (opcional)",
+      "countryHint": "Código de dos letras: PE (Perú), US (Estados Unidos), ES (España).",
+      "invalidCountry": "Escribe el código de dos letras del país, por ejemplo PE.",
+      "bodyHint": "Cuéntanos tu experiencia en entre 20 y 2000 caracteres.",
+      "invalidBody": "El testimonio debe tener entre 20 y 2000 caracteres.",
       "email": "Correo electrónico (no se publica)",
       "rating": "Calificación",
       "ratingOption": "{count, plural, one {# estrella} other {# estrellas}}",
@@ -1204,7 +1274,7 @@
     "ics": {
       "pickup": "Hora y punto de recojo: te los confirmamos por WhatsApp (hora de Lima).",
       "notConfirmed": "Reserva pendiente de pago: este calendario no confirma cupos.",
-      "calendarName": "Mi viaje · Peru Wonders Tours",
+      "calendarName": "Mi viaje · peruwonderstours",
       "fileName": "mi-viaje-peru-wonders-tours.ics",
       "announce": "Descargamos tu calendario de viaje."
     },
@@ -1231,7 +1301,10 @@
       "iperu": "iPerú: asistencia al turista",
       "sernanp-visit": "Áreas naturales protegidas (SERNANP)",
       "esnna-info": "Prevención de la ESNNA en turismo"
-    }
+    },
+    "description": "Información útil para viajar: entradas, orientación al turista, áreas naturales y turismo responsable.",
+    "pause": "Pausar carrusel",
+    "play": "Reanudar carrusel"
   },
   "units": {
     "adults": "{count, plural, one {# adulto} other {# adultos}}",
@@ -1309,7 +1382,7 @@
       "title": "{title} · Reserva {code}",
       "description": "{count, plural, one {Reserva {code} · # viajero.} other {Reserva {code} · # viajeros.}}",
       "pickup": "Hora y punto de recojo: te los confirmamos por WhatsApp (hora de Lima).",
-      "calendarName": "Reserva {code} · Peru Wonders Tours",
+      "calendarName": "Reserva {code} · peruwonderstours",
       "fileName": "reserva-{code}.ics",
       "announce": "Descargamos el calendario de tu reserva.",
       "button": "Añadir al calendario"

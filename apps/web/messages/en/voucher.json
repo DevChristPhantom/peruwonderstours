@@ -64,7 +64,7 @@
     "title": "{title} · Booking {code}",
     "description": "{count, plural, one {Booking {code} · # traveler.} other {Booking {code} · # travelers.}}",
     "pickup": "Pickup time and place: we will confirm them on WhatsApp (Lima time).",
-    "calendarName": "Booking {code} · Peru Wonders Tours",
+    "calendarName": "Booking {code} · peruwonderstours",
     "fileName": "booking-{code}.ics",
     "announce": "We downloaded your booking calendar.",
     "button": "Add to calendar"

@@ -1,4 +1,4 @@
-import { Clock, MapPin, MessageCircle } from "lucide-react";
+import { Clock, Mail, MapPin, MessageCircle } from "lucide-react";
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
@@ -34,6 +34,14 @@ export default async function ContactPage({ params }: PageProps<"/[locale]/conta
         <div>
           <p className="text-body-lg text-foreground-muted">{t("intro")}</p>
           <ul className="mt-6 space-y-3">
+            {SITE.legal.email ? (
+              <li>
+                <a href={`mailto:${SITE.legal.email}`} className="pwt-link inline-flex min-h-11 items-center gap-2 break-all">
+                  <Mail aria-hidden size={20} strokeWidth={1.5} />
+                  {SITE.legal.email}
+                </a>
+              </li>
+            ) : null}
             <li>
               <a
                 href={whatsappHref(th("whatsappMessage"))}

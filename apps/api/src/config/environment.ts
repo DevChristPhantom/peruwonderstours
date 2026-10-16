@@ -274,7 +274,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @Length(1, 60)
-  MFA_ISSUER = 'Peru Wonders Tours';
+  MFA_ISSUER = 'peruwonderstours';
 
   // --- Correo transaccional ---
   /** file = .eml en MAIL_OUTBOX_DIR (desarrollo); smtp = servidor SMTP; memory = pruebas; disabled = no envía. */
@@ -286,7 +286,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @Length(3, 200)
-  MAIL_FROM = 'Peru Wonders Tours <no-reply@peruwonderstours.com>';
+  MAIL_FROM = 'peruwonderstours <no-reply@peruwonderstours.com>';
 
   @IsOptional()
   @IsString()
@@ -350,10 +350,10 @@ export class EnvironmentVariables {
 
   /** Correo y teléfono de atención que aparecen en los correos. */
   @IsString()
-  CONTACT_EMAIL = 'reservas@peruwonderstours.com';
+  CONTACT_EMAIL = 'jorgechaveztourt@gmail.com';
 
   @IsString()
-  CONTACT_PHONE = 'POR CONFIRMAR';
+  CONTACT_PHONE = '+51 924 278 597';
 
   // --- Protección de datos ---
   /** Secreto HMAC de los enlaces de baja de marketing (>= 32). Obligatorio en producción. */
@@ -418,7 +418,7 @@ export class EnvironmentVariables {
   /** Bandeja de la agencia que recibe los mensajes del formulario de contacto. */
   @IsString()
   @Matches(/^[^@\s]+@[^@\s]+\.[^@\s]+$/, { message: 'AGENCY_INBOX_EMAIL debe ser un correo.' })
-  AGENCY_INBOX_EMAIL = 'reservas@peruwonderstours.com';
+  AGENCY_INBOX_EMAIL = 'jorgechaveztourt@gmail.com';
 
   // --- Medios (subida de imágenes) ---
   /** local = disco (desarrollo, MEDIA_LOCAL_DIR servido en /media/*). S3/R2: adaptador pendiente. */

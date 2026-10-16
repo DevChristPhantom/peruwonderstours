@@ -29,7 +29,7 @@
   },
   "bookings": {
     "title": "My bookings",
-    "description": "All your bookings with Peru Wonders Tours: status, dates and voucher.",
+    "description": "All your bookings with peruwonderstours: status, dates and voucher.",
     "listLabel": "Your bookings",
     "logout": "Sign out",
     "loggingOut": "Signing out…",

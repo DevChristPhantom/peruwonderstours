@@ -15,8 +15,8 @@ function postPath(id: string, suffix = ""): string {
   return `/admin/blog-posts/${id}${suffix}`;
 }
 
-function assertLocale(locale: string): "es" | "en" {
-  if (locale !== "es" && locale !== "en") throw new Error("Idioma inválido");
+function assertLocale(locale: string): "es" | "en" | "pt" {
+  if (locale !== "es" && locale !== "en" && locale !== "pt") throw new Error("Idioma inválido");
   return locale;
 }
 
@@ -56,8 +56,8 @@ export async function markBlogReviewedAction(id: string, version: number, t: Blo
   return action(() => apiData<BlogPost>(postPath(id, `/translations/${loc}`), { method: "PUT", body }).then(() => null), { message: "Traducción marcada como revisada." });
 }
 
-export async function deleteBlogTranslationAction(id: string, version: number, _prev: unknown, _fd: FormData) {
-  return action(() => apiData<BlogPost>(postPath(id, "/translations/en"), { method: "DELETE", body: { version } }).then(() => null), { message: "Traducción al inglés eliminada." });
+export async function deleteBlogTranslationAction(id: string, version: number, locale: "en" | "pt", _prev: unknown, _fd: FormData) {
+  return action(() => apiData<BlogPost>(postPath(id, `/translations/${assertLocale(locale)}`), { method: "DELETE", body: { version } }).then(() => null), { message: "Traducción eliminada." });
 }
 
 const STATUS_MESSAGES = {

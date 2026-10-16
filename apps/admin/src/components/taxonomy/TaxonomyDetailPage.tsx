@@ -41,7 +41,8 @@ export async function TaxonomyDetailPage({ kind, id, tab }: { kind: TaxonomyKind
   const canDelete = can(session, "content:publish");
   const es = item.translations.find((t) => t.locale === "es");
   const en = item.translations.find((t) => t.locale === "en");
-  const active = tab === "es" || tab === "en" ? tab : "general";
+  const pt = item.translations.find((t) => t.locale === "pt");
+  const active = tab === "es" || tab === "en" || tab === "pt" ? tab : "general";
   const parents = all && all.ok ? all.data.filter((p) => p.id !== item.id).map((p) => ({ id: p.id, name: p.translations.find((t) => t.locale === "es")?.name ?? p.slug })) : [];
   const status = DESTINATION_STATUS[item.status] ?? { label: item.status, tone: "neutral" as const };
   const base = `${cfg.route}/${item.id}`;
@@ -73,6 +74,8 @@ export async function TaxonomyDetailPage({ kind, id, tab }: { kind: TaxonomyKind
         tabs={[
           { key: "general", href: base, label: "General" },
           { key: "es", href: `${base}?pestana=es`, label: "Español" },
+          { key: "pt", href: `${base}?pestana=pt`, label: <>Português (Brasil) <TranslationStatusBadge status={pt ? pt.translationStatus : undefined} /></> },
+
           {
             key: "en",
             href: `${base}?pestana=en`,
@@ -104,7 +107,7 @@ export async function TaxonomyDetailPage({ kind, id, tab }: { kind: TaxonomyKind
           </ActionForm>
         </Section>
       ) : (
-        <Section title={active === "es" ? "Traducción en español" : "Traducción al inglés"} description={active === "es" ? "Idioma canónico: obligatorio." : "Opcional; sin ella el sitio en inglés usa el español."}>
+        <Section title={active === "es" ? "Traducción en español" : active === "pt" ? "Traducción al portugués (Brasil)" : "Traducción al inglés"} description={active === "es" ? "Idioma canónico: obligatorio." : "Sin ella se muestra el español con aviso de idioma."}>
           <TaxonomyTranslationPanel kind={kind} item={item} locale={active} canWrite={canWrite} />
         </Section>
       )}

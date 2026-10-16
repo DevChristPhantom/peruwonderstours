@@ -3,6 +3,7 @@ import "server-only";
 import type { Locale } from "@/i18n/routing";
 
 import { apiJson, apiRequest, ApiError } from "./client";
+import { contactPayload, testimonialPayload } from '../content/form-payloads';
 
 /**
  * ADAPTADOR AISLADO del contenido editorial (sprint 3): blog (F1), testimonios (F2) y contacto (F3).
@@ -28,6 +29,7 @@ export interface ApiBlogCard {
   author?: string | null;
   locale?: Locale;
   fallback?: boolean;
+  alternateLocales?: { locale: Locale; slug: string }[];
 }
 
 export interface ApiBlogPost extends ApiBlogCard {
@@ -74,6 +76,7 @@ function toCard(raw: RawBlog): ApiBlogCard {
     author: raw.author ?? null,
     locale: raw.locale,
     fallback: raw.fallback,
+    alternateLocales: raw.alternateLocales,
   };
 }
 
@@ -154,7 +157,7 @@ export interface TestimonialInput {
 }
 
 export async function submitTestimonial(input: TestimonialInput): Promise<void> {
-  await apiRequest("/testimonials", { method: "POST", body: input });
+  await apiRequest("/testimonials", { method: "POST", body: testimonialPayload(input) });
 }
 
 /* ---------- Contacto ---------- */
@@ -171,7 +174,7 @@ export interface ContactInput {
 }
 
 export async function submitContact(input: ContactInput): Promise<void> {
-  await apiRequest("/contact", { method: "POST", body: input });
+  await apiRequest("/contact", { method: "POST", body: contactPayload(input) });
 }
 
 /** Versión del aviso de privacidad que se muestra en los formularios (se guarda con cada envío). */

@@ -1,0 +1,4 @@
+.frame { display: inline-block; flex-shrink: 0; width: 186px; }
+.image { display: block; width: 100%; height: auto; }
+.wide { width: 220px; }
+@media (max-width: 860px) { .frame:not(.wide) { width: 146px; } }

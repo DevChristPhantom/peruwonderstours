@@ -75,7 +75,7 @@ export function buildIcs(events: readonly CalendarEvent[], options: { name: stri
   const lines: string[] = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//Peru Wonders Tours//Mi viaje//ES",
+    "PRODID:-//peruwonderstours//Mi viaje//ES",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     `X-WR-CALNAME:${escapeText(options.name)}`,

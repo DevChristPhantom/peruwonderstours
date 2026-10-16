@@ -8,12 +8,12 @@ import { api, apiData, type Paged } from "@/lib/api/client";
 import type { AuditEntry } from "@/lib/api/content-types";
 import type { StaffUserSummary } from "@/lib/api/types";
 import { can, load, requireSession } from "@/lib/auth/guard";
+import { isCalendarDate, limaDayBoundary } from "@/lib/calendar-date";
 import { formatDateTime } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Auditoría" };
 
 const UUID = /^[0-9a-f-]{36}$/i;
-const DAY = /^\d{4}-\d{2}-\d{2}$/;
 const ACTOR_TYPE: Record<string, string> = { system: "Sistema", customer: "Cliente", webhook: "Pasarela (webhook)" };
 const str = (v: string | string[] | undefined) => (typeof v === "string" ? v.trim() : "");
 
@@ -25,8 +25,8 @@ export default async function AuditPage({ searchParams }: PageProps<"/auditoria"
   const entityId = UUID.test(str(sp.entityId)) ? str(sp.entityId) : undefined;
   const actorId = UUID.test(str(sp.actorId)) ? str(sp.actorId) : undefined;
   const action = /^[A-Za-z_]{2,40}$/.test(str(sp.action)) ? str(sp.action).toUpperCase() : undefined;
-  const from = DAY.test(str(sp.from)) ? str(sp.from) : undefined;
-  const to = DAY.test(str(sp.to)) ? str(sp.to) : undefined;
+  const from = isCalendarDate(str(sp.from)) ? str(sp.from) : undefined;
+  const to = isCalendarDate(str(sp.to)) ? str(sp.to) : undefined;
   const page = Math.max(1, Number(sp.page) || 1);
 
   const [result, usersResult] = await Promise.all([
@@ -40,8 +40,8 @@ export default async function AuditPage({ searchParams }: PageProps<"/auditoria"
           actorId,
           action,
           // Días de Lima (UTC-5, sin horario de verano) → instantes ISO.
-          from: from ? new Date(`${from}T00:00:00-05:00`).toISOString() : undefined,
-          to: to ? new Date(`${to}T23:59:59.999-05:00`).toISOString() : undefined,
+          from: from ? limaDayBoundary(from) : undefined,
+          to: to ? limaDayBoundary(to, true) : undefined,
         },
       }),
     ),

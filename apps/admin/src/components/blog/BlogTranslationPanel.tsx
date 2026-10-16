@@ -8,9 +8,10 @@ import { isPendingReview } from "@/lib/content";
 import { BlogTranslationFields } from "./BlogTranslationFields";
 
 /** Pestaña de traducción (es/en) del artículo con su estado de revisión. */
-export function BlogTranslationPanel({ post, locale, canWrite }: { post: BlogPost; locale: "es" | "en"; canWrite: boolean }) {
+export function BlogTranslationPanel({ post, locale, canWrite }: { post: BlogPost; locale: "es" | "en" | "pt"; canWrite: boolean }) {
   const t = post.translations.find((x) => x.locale === locale);
-  const isEn = locale === "en";
+  const isEn = locale !== "es";
+  const language = locale === "pt" ? "portugués (Brasil)" : "inglés";
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
@@ -24,7 +25,7 @@ export function BlogTranslationPanel({ post, locale, canWrite }: { post: BlogPos
           </ActionForm>
         ) : null}
       </div>
-      {isEn && !t ? <Alert tone="info">Aún no hay versión en inglés: el blog en inglés muestra el texto en español. Completa el formulario para crearla.</Alert> : null}
+      {isEn && !t ? <Alert tone="info">Aún no hay versión en {language}: el blog en {language} muestra el texto en español. Completa el formulario para crearla.</Alert> : null}
 
       <ActionForm action={saveBlogTranslationAction.bind(null, post.id, post.version, locale)} className="space-y-4">
         <fieldset disabled={!canWrite} className="space-y-4">
@@ -42,12 +43,12 @@ export function BlogTranslationPanel({ post, locale, canWrite }: { post: BlogPos
 
       {isEn && t && canWrite ? (
         <ActionForm
-          action={deleteBlogTranslationAction.bind(null, post.id, post.version)}
-          confirm="¿Eliminar la traducción al inglés? El blog en inglés mostrará el texto en español."
+          action={deleteBlogTranslationAction.bind(null, post.id, post.version, locale)}
+          confirm={`¿Eliminar la traducción a ${language}? El blog mostrará el texto en español.`}
           className="border-t border-border pt-4"
         >
           <SubmitButton variant="danger" size="sm" pendingLabel="Eliminando…">
-            Eliminar traducción al inglés
+            Eliminar traducción a {language}
           </SubmitButton>
         </ActionForm>
       ) : null}

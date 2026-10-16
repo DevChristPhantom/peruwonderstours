@@ -20,6 +20,8 @@ const schema = z.object({
     .url({ protocol: /^https?$/, error: "API_BASE_URL debe ser una URL http(s) que incluya /api/v1." })
     .default("http://localhost:3001/api/v1")
     .transform((value) => value.replace(/\/+$/, "")),
+  /** Owned public website serves the locally archived catalog images. */
+  PUBLIC_WEB_BASE_URL: z.url({ protocol: /^https?$/ }).default("https://peruwonderstours.com").transform((value) => value.replace(/\/+$/, "")),
   ADMIN_SESSION_SECRET: z
     .string({ error: "Falta ADMIN_SESSION_SECRET (mínimo 32 caracteres aleatorios)." })
     .min(32, "ADMIN_SESSION_SECRET debe tener al menos 32 caracteres.")

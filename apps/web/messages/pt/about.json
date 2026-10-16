@@ -1,0 +1,20 @@
+{
+  "title": "Sobre nós",
+  "description": "Explore o catálogo de destinos, passeios e pacotes da {name}. Compare opções e confira os detalhes da sua viagem pelo Peru.",
+  "body": "Na {name}, você pode explorar destinos, passeios e pacotes pelo Peru, comparar opções e preparar sua consulta sobre a viagem. Comece pelos destinos disponíveis no nosso catálogo.",
+  "destinationsTitle": "Destinos para sua próxima viagem",
+  "destinationsDescription": "Descubra os destinos do catálogo e as experiências disponíveis em cada um.",
+  "tourCount": "{count, plural, =0 {Consulte as opções disponíveis} one {# passeio no catálogo} other {# passeios no catálogo}}",
+  "exploreDestination": "Explorar destino",
+  "planningTitle": "Planeje sua viagem, passo a passo",
+  "planningDescription": "Encontre opções, compare as diferenças e consulte as informações necessárias antes de decidir.",
+  "steps": {
+    "explore": { "title": "Explore", "body": "Busque passeios por destino e confira o roteiro, a duração e as informações de cada experiência.", "link": "Ver passeios" },
+    "compare": { "title": "Compare", "body": "Adicione as opções que interessam a você ao comparador para conferir suas características na mesma página.", "link": "Abrir comparador" },
+    "consult": { "title": "Tire suas dúvidas", "body": "Conte quais opções interessam a você e tire suas dúvidas sobre a viagem pelo formulário de contato.", "link": "Enviar uma consulta" }
+  },
+  "ctaTitle": "Encontre sua próxima experiência",
+  "ctaBody": "Explore as opções do catálogo ou envie uma consulta para conferir os detalhes da sua viagem.",
+  "viewTours": "Explorar passeios",
+  "contact": "Entrar em contato"
+}

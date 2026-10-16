@@ -1,0 +1,41 @@
+{
+  "installed": "2026-10-13",
+  "discovery": "Available next Codex turn; manually applied during current work",
+  "skills": [
+    {
+      "name": "web-design-reviewer",
+      "source": "https://github.com/github/awesome-copilot/tree/main/skills/web-design-reviewer",
+      "skill_md_sha256": "a08a147cfe555dabe30f2c8f2e267f287e992f74f2b802e68989884338e23b17"
+    },
+    {
+      "name": "web-design-engineer",
+      "source": "https://github.com/ConardLi/garden-skills/tree/web-design-engineer-v1.3.0/skills/web-design-engineer",
+      "skill_md_sha256": "00633aa430281e9921c35bb181ab233879d2a21e999d605fc330258a54e26df1"
+    },
+    {
+      "name": "ui-ux-pro-max",
+      "source": "Claude local plugin ui-ux-pro-max 2.13.0",
+      "skill_md_sha256": "88aadd21220542083a455e373bd162ffe7843266a71f06f4d837bb3b34f9c9c7"
+    },
+    {
+      "name": "gsap-react",
+      "source": "https://github.com/greensock/gsap-skills/tree/main/skills/gsap-react",
+      "skill_md_sha256": "fd1ce4fa883a256e6578f13a4271b494a18dffaaa6111ab64ca1bc97d4dd8b21"
+    },
+    {
+      "name": "gsap-performance",
+      "source": "https://github.com/greensock/gsap-skills/tree/main/skills/gsap-performance",
+      "skill_md_sha256": "2dd51f19a7fcabe1c06caee9e61554485696d05003396c528237aba970a959ce"
+    },
+    {
+      "name": "gsap-scrolltrigger",
+      "source": "https://github.com/greensock/gsap-skills/tree/main/skills/gsap-scrolltrigger",
+      "skill_md_sha256": "e6612777bcce1617d3b9e061b2f671fb0f36379684d0c61f7a1baa06d7f7a989"
+    },
+    {
+      "name": "tourism-motion-designer",
+      "source": "Adapted from user supplied tourism motion guide",
+      "skill_md_sha256": "46e16ff642232d56a0e9ba7057352e9f9ee714cac0b84a38d55c1c2d9176a342"
+    }
+  ]
+}

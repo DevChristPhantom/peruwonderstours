@@ -11,7 +11,7 @@
 ## 1. Identificación del proveedor
 
 - Razón social: [POR CONFIRMAR: razón social]
-- Nombre comercial: Peru Wonders Tours
+- Nombre comercial: peruwonderstours
 - RUC: [POR CONFIRMAR: RUC]
 - Domicilio: [POR CONFIRMAR: dirección], Puno, Perú
 - Teléfono / WhatsApp: [POR CONFIRMAR: teléfono] · Correo: [POR CONFIRMAR: correo]

@@ -12,6 +12,7 @@ import { CartModule } from './modules/cart/cart.module.js';
 import { CatalogModule } from './modules/catalog/catalog.module.js';
 import { ComplaintsModule } from './modules/complaints/complaints.module.js';
 import { HealthModule } from './modules/health/health.module.js';
+import { HeroBannersModule } from './modules/hero-banners/hero-banners.module.js';
 import { PaymentsModule } from './modules/payments/payments.module.js';
 import { BackofficeModule } from './modules/backoffice/backoffice.module.js';
 import { IdentityModule } from './modules/identity/identity.module.js';
@@ -31,6 +32,7 @@ import { throttlerOptions } from './shared/interface/throttling.js';
     IdentityModule,
     PrivacyModule,
     HealthModule,
+    HeroBannersModule,
     CatalogModule,
     CartModule,
     BookingModule,

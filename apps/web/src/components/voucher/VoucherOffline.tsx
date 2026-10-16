@@ -66,7 +66,7 @@ function collectAssets(): string[] {
       const url = new URL(u);
       return (
         url.origin === location.origin &&
-        (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/_next/image") || url.pathname === "/logo.png")
+        (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/_next/image") || url.pathname.startsWith("/brand/"))
       );
     } catch {
       return false;

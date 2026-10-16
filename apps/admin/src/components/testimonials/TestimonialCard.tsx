@@ -23,7 +23,7 @@ export function TestimonialCard({ t, canPublish, canWrite }: { t: Testimonial; c
             {t.authorCountry ? <span className="font-normal text-foreground-muted"> · {t.authorCountry}</span> : null}
           </h2>
           <p className="text-xs text-foreground-muted">
-            {formatDateTime(t.createdAt)} · {TESTIMONIAL_ORIGIN[t.origin] ?? t.origin} · {t.locale === "en" ? "Inglés" : "Español"}
+            {formatDateTime(t.createdAt)} · {TESTIMONIAL_ORIGIN[t.origin] ?? t.origin} · {t.locale === "pt" ? "Português (Brasil)" : t.locale === "en" ? "Inglés" : "Español"}
             {t.travelDate ? ` · viajó el ${formatDate(t.travelDate)}` : ""}
           </p>
         </div>

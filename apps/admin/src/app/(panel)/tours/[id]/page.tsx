@@ -28,7 +28,7 @@ export const metadata: Metadata = { title: "Editar tour" };
 export default async function TourDetailPage({ params, searchParams }: PageProps<"/tours/[id]">) {
   const session = await requireSession();
   const [{ id }, sp] = await Promise.all([params, searchParams]);
-  const lang = sp.idioma === "en" ? "en" : "es";
+  const lang = sp.idioma === "pt" ? "pt" : sp.idioma === "en" ? "en" : "es";
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const result = await load(() => apiData<TourDetail>(`/admin/tours/${id}`));
   if (!result.ok) {
@@ -42,6 +42,8 @@ export default async function TourDetailPage({ params, searchParams }: PageProps
   const t = result.data;
   const es = t.translations.find((x) => x.locale === "es");
   const en = t.translations.find((x) => x.locale === "en");
+  const currentTranslation = t.translations.find((x) => x.locale === lang);
+  const language = lang === "pt" ? "portugués (Brasil)" : "inglés";
   const canWrite = can(session, "tours:write") && t.status !== "archived";
   const canPublish = can(session, "tours:publish") && t.status !== "archived";
   const status = TOUR_STATUS[t.status] ?? { label: t.status, tone: "neutral" as const };
@@ -99,15 +101,16 @@ export default async function TourDetailPage({ params, searchParams }: PageProps
 
       <div className="space-y-4">
         <Section
-          title={lang === "en" ? "Traducción al inglés" : "Traducción en español"}
+          title={lang !== "es" ? `Traducción a ${language}` : "Traducción en español"}
           id="traduccion"
-          description={lang === "en" ? "Opcional: sin ella el sitio en inglés muestra el español." : "Idioma canónico: obligatorio para publicar."}
+          description={lang !== "es" ? "Sin traducción se muestra el español con aviso de idioma." : "Idioma canónico: obligatorio para publicar."}
         >
           <TabLinks
             label="Idioma de la traducción"
             active={lang}
             tabs={[
               { key: "es", href: `/tours/${t.id}#traduccion`, label: "Español" },
+              { key: "pt", href: `/tours/${t.id}?idioma=pt#traduccion`, label: "Português (Brasil)" },
               {
                 key: "en",
                 href: `/tours/${t.id}?idioma=en#traduccion`,
@@ -119,20 +122,20 @@ export default async function TourDetailPage({ params, searchParams }: PageProps
               },
             ]}
           />
-          {lang === "en" && !en ? <p className="mb-3 text-sm text-foreground-muted">Aún no hay versión en inglés. Completa el formulario para crearla.</p> : null}
+          {lang !== "es" && !currentTranslation ? <p className="mb-3 text-sm text-foreground-muted">Aún no hay versión en {language}. Completa el formulario para crearla.</p> : null}
           <TranslationEditor
             key={lang}
             tourId={t.id}
             version={t.version}
             locale={lang}
-            translation={lang === "en" ? en : es}
-            fallbackSlug={lang === "en" ? (es?.slug ?? t.slug) : t.slug}
+            translation={currentTranslation}
+            fallbackSlug={lang !== "es" ? (es?.slug ?? t.slug) : t.slug}
             readOnly={!canWrite}
           />
-          {lang === "en" && en && canWrite ? (
-            <ActionForm action={deleteTranslationAction.bind(null, t.id, t.version)} confirm="¿Eliminar la traducción al inglés? El sitio en inglés mostrará el español." className="mt-4 border-t border-border pt-4">
+          {lang !== "es" && currentTranslation && canWrite ? (
+            <ActionForm action={deleteTranslationAction.bind(null, t.id, t.version, lang)} confirm={`¿Eliminar la traducción a ${language}? Se mostrará el español con aviso.`} className="mt-4 border-t border-border pt-4">
               <SubmitButton variant="danger" size="sm" pendingLabel="Eliminando…">
-                Eliminar traducción al inglés
+                Eliminar traducción a {language}
               </SubmitButton>
             </ActionForm>
           ) : null}

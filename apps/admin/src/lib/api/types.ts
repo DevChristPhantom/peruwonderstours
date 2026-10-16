@@ -216,7 +216,7 @@ export interface TourListItem {
   publishedAt: string | null;
   version: number;
   updatedAt: string;
-  translations?: { locale: "es" | "en"; translationStatus: TranslationStatus | null }[];
+  translations?: { locale: "es" | "en" | "pt"; translationStatus: TranslationStatus | null }[];
 }
 
 export interface ItineraryDay {
@@ -228,7 +228,7 @@ export interface ItineraryDay {
 }
 
 export interface TourTranslation {
-  locale: "es" | "en";
+  locale: "es" | "en" | "pt";
   slug: string;
   title: string;
   summary: string;

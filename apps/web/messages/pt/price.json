@@ -1,0 +1,9 @@
+{
+  "from": "A partir de <amount></amount> por adulto",
+  "fromShort": "A partir de <amount></amount>",
+  "onRequest": "Preço sob consulta",
+  "toQuote": "Solicitar orçamento",
+  "fullPayment": "Pagamento integral na reserva",
+  "depositAmount": "Reserve com {percent}% ({amount})",
+  "depositPercent": "Reserve com {percent}% de entrada"
+}

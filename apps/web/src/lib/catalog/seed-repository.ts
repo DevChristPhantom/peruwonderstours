@@ -13,6 +13,7 @@ import { categoryPath, destinationPath, tourPath } from "@/i18n/paths";
 
 import type { CatalogRepository } from "./repository";
 import { derivePaymentPolicy, durationBucketOf } from "./rules";
+import { catalogImageSource } from "./image-source";
 import type { CatalogImage, Category, Destination, LocalePaths, Tour, TourSummary } from "./types";
 
 /* ---------- Forma de los JSON extraídos (data/seed/_extraction-report.md) ---------- */
@@ -113,18 +114,19 @@ function stripEmoji(value: string): string {
 }
 
 function image(src: string | null | undefined, alt: string): CatalogImage | null {
-  return src ? { src, alt } : null;
+  return src ? { src: catalogImageSource(src), alt } : null;
 }
 
 /** Texto del tour en el idioma pedido (o el español como respaldo). */
 function localized(t: SeedTour, locale: Locale): { text: SeedTour; fallback: boolean } {
   if (locale === "es") return { text: t, fallback: false };
+  if (locale === "pt") return { text: t, fallback: true };
   const en = enByKey.get(t.slug);
   return en ? { text: en, fallback: false } : { text: t, fallback: true };
 }
 
 function tourAlternates(key: string): LocalePaths {
-  return { es: tourPath("es", key), en: tourPath("en", SEED_SLUG_MAP.tours[key] ?? enByKey.get(key)?.slug ?? key) };
+  return { es: tourPath("es", key), en: tourPath("en", SEED_SLUG_MAP.tours[key] ?? enByKey.get(key)?.slug ?? key), pt: tourPath("pt", key) };
 }
 
 function toSummary(t: SeedTour, locale: Locale): TourSummary {
@@ -178,21 +180,21 @@ function toTour(t: SeedTour, locale: Locale): Tour {
     // Algunas FAQ del sitio viejo vienen sin pregunta o sin respuesta: se omiten (TODO(E0): completar).
     faqs: (text.faqs ?? []).flatMap((f) => (f.question && f.answer ? [{ question: f.question, answer: f.answer }] : [])),
     policies: text.policies,
-    gallery: urls.map((src) => ({ src, alt: summary.shortTitle })),
+    gallery: urls.map((src) => ({ src: catalogImageSource(src), alt: summary.shortTitle })),
   };
 }
 
 function toDestination(d: SeedDestination, locale: Locale): Destination {
   const en = enDestinations.get(d.slug);
   const enSlug = SEED_SLUG_MAP.destinations[d.slug] ?? en?.slug ?? d.slug;
-  const alternates = { es: destinationPath("es", d.slug), en: destinationPath("en", enSlug) };
+  const alternates = { es: destinationPath("es", d.slug), en: destinationPath("en", enSlug), pt: destinationPath("pt", d.slug) };
   const text = locale === "en" && en ? en : d;
   return {
     key: d.slug,
-    slug: locale === "es" ? d.slug : enSlug,
+    slug: locale === "en" ? enSlug : d.slug,
     path: alternates[locale],
     alternates,
-    fallback: locale !== "es" && !en,
+    fallback: locale === "pt" || (locale === "en" && !en),
     name: text.name,
     description: text.description,
     bannerImage: image(d.bannerImage, text.name),
@@ -205,14 +207,14 @@ function toDestination(d: SeedDestination, locale: Locale): Destination {
 function toCategory(c: SeedCategory, locale: Locale): Category {
   const en = enCategories.get(c.slug);
   const enSlug = SEED_SLUG_MAP.categories[c.slug] ?? en?.slug ?? c.slug;
-  const alternates = { es: categoryPath("es", c.slug), en: categoryPath("en", enSlug) };
+  const alternates = { es: categoryPath("es", c.slug), en: categoryPath("en", enSlug), pt: categoryPath("pt", c.slug) };
   const text = locale === "en" && en ? en : c;
   return {
     key: c.slug,
-    slug: locale === "es" ? c.slug : enSlug,
+    slug: locale === "en" ? enSlug : c.slug,
     path: alternates[locale],
     alternates,
-    fallback: locale !== "es" && !en,
+    fallback: locale === "pt" || (locale === "en" && !en),
     name: text.name,
     description: text.description,
     bannerImage: image(c.bannerImage, text.name),

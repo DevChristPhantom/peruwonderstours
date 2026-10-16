@@ -37,8 +37,8 @@ interface UiState {
    * Rutas equivalentes de la página actual en cada idioma (selector de idioma). Las fijan las páginas
    * con slugs traducidos (tour, destino, categoría, blog); null = se calcula desde la ruta.
    */
-  localeAlternates: { es: string; en: string } | null;
-  setLocaleAlternates: (value: { es: string; en: string } | null) => void;
+  localeAlternates: { es: string; en: string; pt: string } | null;
+  setLocaleAlternates: (value: { es: string; en: string; pt: string } | null) => void;
 }
 
 let toastSeq = 0;

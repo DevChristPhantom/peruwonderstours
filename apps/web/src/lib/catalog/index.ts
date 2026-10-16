@@ -71,9 +71,12 @@ export async function getToursBySlugs(slugs: readonly string[], locale: Locale):
 /** Destacados para la home: multidía primero (paquetes), luego full days. */
 export async function getFeaturedTours(locale: Locale, limit = 6): Promise<TourSummary[]> {
   const all = await getAllTours(locale);
+  // Editorial presentation order. Only tours explicitly featured by the CMS qualify.
+  const priority = ["tour-islas-de-los-uros-y-taquile-full-day", "full-day-machu-picchu-esencia-ciudadela", "tour-full-day-canon-del-colca", "tour-complejo-arqueologico-de-sillustani", "cusco-machu-picchu-premium-4d-3n"];
+  const rank = (key: string) => { const index = priority.indexOf(key); return index < 0 ? priority.length : index; };
   return all
     .filter((t) => t.featured)
-    .sort((a, b) => (b.durationDays ?? 0) - (a.durationDays ?? 0))
+    .sort((a, b) => rank(a.key) - rank(b.key) || (b.durationDays ?? 0) - (a.durationDays ?? 0))
     .slice(0, limit);
 }
 
@@ -187,7 +190,7 @@ export const getNavMedia = cache(async (locale: Locale): Promise<NavMedia> => {
       {
         key: "privados",
         title: t("journeys.private"),
-        href: toursSearchPath(locale, { q: locale === "es" ? "privado" : "private" }),
+        href: toursSearchPath(locale, { q: locale === "en" ? "private" : "privado" }),
         image: img("tour-privado-puerta-interdimensional-de-aramu-muru", ""),
       },
     ],

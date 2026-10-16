@@ -29,6 +29,7 @@ export function Field({
           name={input.name}
           required={input.required}
           maxLength={input.maxLength}
+          minLength={input.minLength}
           rows={6}
           className={`${inputClass} py-3`}
         />

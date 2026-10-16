@@ -74,7 +74,7 @@ function StepIndicator({ step, maxReached, onGo }: { step: Step; maxReached: Ste
         {t("stepOf", { step, total: 3 })} · {t(`steps.${STEPS[step - 1].key}`)}
       </p>
       <div className="h-1 overflow-hidden rounded-pill bg-surface-muted md:hidden" aria-hidden="true">
-        <div className="h-full bg-primary transition-[width] duration-500" style={{ width: `${(step / 3) * 100}%` }} />
+        <div className="h-full origin-left bg-primary transition-transform duration-500 motion-reduce:transition-none" style={{ transform: `scaleX(${step / 3})` }} />
       </div>
       <ol className="hidden items-center gap-3 md:flex">
         {STEPS.map(({ n, key }, i) => {

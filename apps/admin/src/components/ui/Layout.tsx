@@ -16,18 +16,18 @@ export function PageHeader({
   meta?: React.ReactNode;
 }) {
   return (
-    <header className="mb-4 flex flex-wrap items-end justify-between gap-3 border-b border-border pb-3">
+    <header className="admin-page-header mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
       <div className="min-w-0">
         {back ? (
-          <Link href={back.href} className="mb-1 inline-flex min-h-6 items-center gap-1 text-xs text-link">
+          <Link href={back.href} className="mb-1 inline-flex min-h-11 items-center gap-1 text-sm text-link hover:underline">
             <ChevronLeft aria-hidden size={14} /> {back.label}
           </Link>
         ) : null}
-        <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-        {description ? <p className="mt-0.5 text-sm text-foreground-muted">{description}</p> : null}
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
+        {description ? <p className="mt-2 max-w-2xl text-sm leading-relaxed text-foreground-muted">{description}</p> : null}
         {meta ? <div className="mt-2 flex flex-wrap items-center gap-2">{meta}</div> : null}
       </div>
-      {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
+      {actions ? <div className="flex max-w-full flex-wrap items-center gap-2">{actions}</div> : null}
     </header>
   );
 }
@@ -49,19 +49,19 @@ export function Section({
 }) {
   const headingId = id ? `${id}-titulo` : undefined;
   return (
-    <section id={id} aria-labelledby={headingId} className={clsx("min-w-0 rounded-md border border-border bg-surface", className)}>
+    <section id={id} aria-labelledby={title ? headingId : undefined} className={clsx("admin-section min-w-0 rounded-lg border border-border bg-surface", className)}>
       {title ? (
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-2.5">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-5">
           <div>
             <h2 id={headingId} className="text-base font-semibold">
               {title}
             </h2>
-            {description ? <p className="text-xs text-foreground-muted">{description}</p> : null}
+            {description ? <p className="mt-1 text-sm text-foreground-muted">{description}</p> : null}
           </div>
           {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
         </div>
       ) : null}
-      <div className="p-4">{children}</div>
+      <div className="p-4 sm:p-5">{children}</div>
     </section>
   );
 }
@@ -69,7 +69,7 @@ export function Section({
 /** Tabla con scroll horizontal propio (la página nunca hace scroll lateral). */
 export function TableWrap({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="overflow-x-auto rounded-sm border border-border bg-surface" role="region" aria-label={label} tabIndex={0}>
+    <div className="admin-table-wrap overflow-x-auto rounded-md border border-border bg-surface" role="region" aria-label={label} tabIndex={0}>
       {children}
     </div>
   );

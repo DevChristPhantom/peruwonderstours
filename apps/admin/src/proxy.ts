@@ -12,7 +12,7 @@ import {
   unsealSession,
 } from "@/lib/session/model";
 import { refreshSession } from "@/lib/session/refresh";
-import { securityHeaders } from "@/lib/security-headers";
+import { publicWebImageOrigin, securityHeaders } from "@/lib/security-headers";
 
 /**
  * Proxy (Next 16, runtime Node.js) delante de todo el panel:
@@ -24,7 +24,9 @@ import { securityHeaders } from "@/lib/security-headers";
  *    Refresh terminal (`refresh-token-reused`, `session-revoked`…) → borra la cookie y va al login.
  */
 
-const PUBLIC_PATHS = [/^\/login(\/|$)/, /^\/auth\//];
+// El optimizador de Next lee el logo público sin la cookie de la página.
+// Permitir solo este archivo; el resto del panel conserva su autenticación.
+const PUBLIC_PATHS = [/^\/login(\/|$)/, /^\/auth\//, /^\/brand\/(?:peruwonderstours-dorado\.png|admin-machu-picchu\.webp|admin-machu-amanecer\.webp)$/];
 
 /** Origen de los medios subidos (en desarrollo es http://localhost:3001, que `https:` no cubre). */
 function mediaOrigin(): string {
@@ -37,6 +39,7 @@ function mediaOrigin(): string {
 
 function buildCsp(nonce: string, dev: boolean): string {
   const media = mediaOrigin();
+  const webImages = publicWebImageOrigin(process.env.PUBLIC_WEB_BASE_URL);
   return [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${dev ? " 'unsafe-eval'" : ""}`,
@@ -45,7 +48,7 @@ function buildCsp(nonce: string, dev: boolean): string {
     // Sin atributos style en producción (el panel no los usa; `<meter>` en lugar de barras con width).
     ...(dev ? [] : ["style-src-attr 'none'"]),
     // Portadas de tours: URLs absolutas del CDN (solo https) + origen de los medios subidos.
-    `img-src 'self' data: blob: https:${media && !media.startsWith("https:") ? ` ${media}` : ""}`,
+    `img-src 'self' data: blob: https:${media && !media.startsWith("https:") ? ` ${media}` : ""}${webImages && !webImages.startsWith("https:") ? ` ${webImages}` : ""}`,
     "font-src 'self'",
     `connect-src 'self'${dev ? " ws: wss:" : ""}`,
     "object-src 'none'",

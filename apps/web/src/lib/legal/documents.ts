@@ -1,6 +1,7 @@
 import "server-only";
 
 import { parseMarkdown } from "./markdown";
+import type { Locale } from "@/i18n/routing";
 
 /**
  * Borradores legales de `docs/legal/*.md` (compliance-peru-analyst). Se publican tal cual con un
@@ -21,6 +22,12 @@ const RAW_DOCUMENTS = {
   cancelacion: process.env.PWT_LEGAL_CANCELACION,
   cookies: process.env.PWT_LEGAL_COOKIES,
 };
+const PORTUGUESE_DOCUMENTS = {
+  terminos: process.env.PWT_LEGAL_PT_TERMINOS,
+  privacidad: process.env.PWT_LEGAL_PT_PRIVACIDAD,
+  cancelacion: process.env.PWT_LEGAL_PT_CANCELACION,
+  cookies: process.env.PWT_LEGAL_PT_COOKIES,
+};
 
 export const LEGAL_DOCUMENTS = {
   terminos: "terminos-y-condiciones.md",
@@ -37,8 +44,8 @@ export interface LegalDocument {
   blocks: ReturnType<typeof parseMarkdown>;
 }
 
-export function loadLegalDocument(key: LegalDocumentKey): LegalDocument {
-  const source = RAW_DOCUMENTS[key];
+export function loadLegalDocument(key: LegalDocumentKey, locale: Locale = "es"): LegalDocument {
+  const source = (locale === "pt" ? PORTUGUESE_DOCUMENTS : RAW_DOCUMENTS)[key];
   if (!source) throw new Error(`No se encontró docs/legal/${LEGAL_DOCUMENTS[key]} (borrador legal) al compilar.`);
   const lines = source.replace(/\r\n/g, "\n").split("\n");
   const h1 = lines.map((l, i) => (/^#\s/.test(l) ? i : -1)).filter((i) => i >= 0);
@@ -46,7 +53,7 @@ export function loadLegalDocument(key: LegalDocumentKey): LegalDocument {
   const start = h1.length > 1 ? h1[1] : (h1[0] ?? 0);
   const preamble = lines.slice(0, start).join("\n");
   // "Versión del borrador: 0.1 (2026-10-07)." → "0.1 (2026-10-07)"
-  const version = /Versión del borrador:\s*([^)\n]*\))/.exec(preamble)?.[1]?.trim() ?? null;
+  const version = /(?:Versión del borrador|Versão do rascunho):\s*([^)\n]*\))/.exec(preamble)?.[1]?.trim() ?? null;
   const title = lines[start]?.replace(/^#\s+/, "").trim() || "Documento legal";
   return { title, draftVersion: version, blocks: parseMarkdown(lines.slice(start + 1).join("\n")) };
 }

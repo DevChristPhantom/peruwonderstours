@@ -1,0 +1,50 @@
+{
+  "metaDescription": "Seu carrinho em um roteiro dia a dia, com avisos sobre datas e aclimatação.",
+  "loading": "Carregando sua viagem…",
+  "title": "Minha viagem",
+  "empty": "Ao adicionar passeios ao carrinho, você verá aqui seu roteiro dia a dia, com avisos sobre datas que coincidem e aclimatação à altitude.",
+  "range": "De {from} a {to} · {days, plural, one {# dia} other {# dias}} · {tours, plural, one {# passeio} other {# passeios}}",
+  "download": "Baixar calendário (.ics)",
+  "backToCart": "Voltar ao carrinho",
+  "sameDay": "{titles} acontecem no mesmo dia e na mesma cidade. Vamos confirmar se os horários não coincidem.",
+  "planLabel": "Roteiro dia a dia",
+  "day": "Dia {n}",
+  "dayRange": "Dias {from} a {to}",
+  "freeDays": "{count, plural, one {Dia livre ou de deslocamento} other {Dias livres ou de deslocamento}}",
+  "overlapping": "Datas sobrepostas",
+  "tourDay": "Dia {n} de {total}",
+  "tourEnd": "fim do passeio",
+  "severalDestinations": "Vários destinos",
+  "tooLong": "Sua viagem dura mais de 4 meses; mostramos até {date}.",
+  "helpLabel": "Ajuda para sua viagem",
+  "pickupTitle": "Horários e embarque",
+  "pickupText": "Os horários de embarque são confirmados na reserva, no horário de Lima. O calendário os incluirá quando estiverem confirmados.",
+  "whatsapp": "Dúvidas sobre seu roteiro? Fale conosco pelo WhatsApp",
+  "altitude": {
+    "title": "Aclimatação à altitude",
+    "text": "Puno, Cusco e o Colca ficam acima de 3.400 m. Chegar um dia antes, hidratar-se e comer refeições leves ajuda a reduzir o mal de altitude (soroche).",
+    "where": "{region} ({meters} m de altitude)",
+    "starts": "{date}: {title} começa em {where}.",
+    "from": "Você vem de {region}, a {meters} m: a diferença de altitude é grande.",
+    "demanding": "É um passeio exigente devido à altitude: recomendamos chegar pelo menos um dia antes e descansar.",
+    "easy": "Se chegar no mesmo dia, recomendamos descansar algumas horas e se movimentar com calma.",
+    "notBlocking": "(Recomendação; não impede sua reserva.)"
+  },
+  "ics": {
+    "pickup": "Horário e local de embarque: confirmaremos pelo WhatsApp (horário de Lima).",
+    "notConfirmed": "Reserva com pagamento pendente: este calendário não confirma vagas.",
+    "calendarName": "Minha viagem · peruwonderstours",
+    "fileName": "minha-viagem-peruwonderstours.ics",
+    "announce": "Seu calendário de viagem foi baixado."
+  },
+  "conflict": {
+    "title": "Estes passeios têm datas sobrepostas",
+    "item": "{title} ({date}{days, plural, =1 {} other {, # dias}})",
+    "and": " e ",
+    "overlapOn": " coincidem em {dates}.",
+    "help": "Altere a data de um deles ou confirme que está correto (por exemplo, se forem grupos diferentes).",
+    "change": "Alterar datas",
+    "confirmed": "Você confirmou as datas. Agora pode continuar com a reserva.",
+    "confirm": "As datas estão corretas"
+  }
+}

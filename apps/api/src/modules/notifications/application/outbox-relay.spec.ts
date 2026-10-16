@@ -26,7 +26,7 @@ function setup() {
   const h = createHarness();
   const cipher = AesGcmPiiCipher.fromBase64(DEVELOPMENT_PII_KEY_BASE64);
   const complaints = new ComplaintUseCases(h.uow, h.clock, h.ids, cipher, {
-    provider: { legalName: 'Peru Wonders Tours E.I.R.L.', ruc: '20000000001', establishmentAddress: 'Jr. Lima 123, Puno', establishmentCode: 'WEB' },
+    provider: { legalName: 'peruwonderstours E.I.R.L.', ruc: '20000000001', establishmentAddress: 'Jr. Lima 123, Puno', establishmentCode: 'WEB' },
     conformityTextVersion: 'c1',
     privacyNoticeVersion: 'p1',
     idempotencyTtlMinutes: 60,
@@ -41,10 +41,10 @@ function setup() {
   });
   const transport = new MemoryMailTransport();
   const composer = new MailComposer({
-    brand: { providerLegalName: 'Peru Wonders Tours E.I.R.L.', providerRuc: '20000000001', contactEmail: 'reservas@pwt.test', contactPhone: '+51 999', publicWebBaseUrl: 'https://pwt.test' },
+    brand: { providerLegalName: 'peruwonderstours E.I.R.L.', providerRuc: '20000000001', contactEmail: 'reservas@pwt.test', contactPhone: '+51 999', publicWebBaseUrl: 'https://pwt.test' },
     cipher,
-    unsubscribeUrl: (repos, email) => privacy.unsubscribeUrlIfGranted(repos, email),
-    marketingConfirmationUrl: (email, purposes) => privacy.buildConfirmationUrl(email, purposes),
+    unsubscribeUrl: (repos, email, locale) => privacy.unsubscribeUrlIfGranted(repos, email, locale),
+    marketingConfirmationUrl: (email, purposes, locale) => privacy.buildConfirmationUrl(email, purposes, locale),
     issueLink: async (repos, p) => (await issueAccessToken(repos, h.ids, { ...p, now: h.clock.now() })).token,
     links: { requestedTtlMinutes: 30, emailTtlHours: 72 },
     agencyInboxEmail: 'agencia@pwt.test',
@@ -53,7 +53,7 @@ function setup() {
     batchSize: 10,
     maxAttempts: 3,
     leaseSeconds: 120,
-    from: 'Peru Wonders Tours <no-reply@pwt.test>',
+    from: 'peruwonderstours <no-reply@pwt.test>',
     messageIdDomain: 'pwt.test',
   });
   const reminders = new BalanceReminderJob(h.uow, h.clock, h.ids);
@@ -265,5 +265,43 @@ describe('Relay del outbox -> correo', () => {
     expect(stranger.complaint.consumer.docEnc[0]).toBe(0x02);
     const view = await ctx.complaints.getByCode({ code: stranger.complaint.code, token: stranger.accessToken });
     expect(view.consumerDocNumber).toBe('45678912');
+  });
+});
+
+describe('Portuguese notification routing integration (memory only)', () => {
+  it('uses Portuguese consent request language for an existing Spanish customer without overwriting their preference', async () => {
+    const ctx = setup();
+    const priorCart = await ctx.h.cartWith([{ tourId: IDS.valle, travelDate: '2026-11-10' }]);
+    const prior = await ctx.bookings.checkout(ctx.h.checkoutInput(priorCart, 'existing-es-customer', { locale: 'es', marketingEmailOptIn: false }));
+    const currentCart = await ctx.h.cartWith([{ tourId: IDS.valle, travelDate: '2026-11-10' }]);
+    const current = await ctx.bookings.checkout(ctx.h.checkoutInput(currentCart, 'existing-es-customer-pt-optin', { locale: 'pt', marketingEmailOptIn: true }));
+    expect(current.booking.toSnapshot().customerId).toBe(prior.booking.toSnapshot().customerId);
+    const customer = await ctx.h.uow.run((repos) => repos.customers.findById(current.booking.toSnapshot().customerId));
+    expect(customer?.preferredLocale).toBe('es');
+    const request = [...ctx.h.store.state.outbox.values()].find((event) => event.eventType === MAIL_EVENTS.privacyMarketingConfirmation);
+    expect(request?.payload).toMatchObject({ locale: 'pt', purposes: ['marketing_email'] });
+    await ctx.relay.runOnce();
+    const mail = ctx.transport.sent.find((message) => message.subject.includes('Confirme sua inscrição'));
+    expect(mail).toBeDefined();
+    expect(mail?.html).toContain('<html lang="pt-BR">');
+    expect(mail?.text).toContain('/pt/privacidade/confirmar?token=');
+    expect(mail?.text).not.toContain('/es/privacidad/confirmar');
+    expect((await ctx.h.uow.run((repos) => repos.customers.findById(current.booking.toSnapshot().customerId)))?.preferredLocale).toBe('es');
+  });
+  it('persists booking locale pt and sends exact Portuguese access/voucher and consent links', async () => {
+    const ctx = setup();
+    const cart = await ctx.h.cartWith([{ tourId: IDS.valle, travelDate: '2026-11-10' }]);
+    const { booking, accessToken } = await ctx.bookings.checkout(ctx.h.checkoutInput(cart, 'checkout-pt-notifications', { locale: 'pt', marketingEmailOptIn: true }));
+    expect(booking.toSnapshot().locale).toBe('pt');
+    const access = { code: booking.code, token: accessToken };
+    const intent = await ctx.h.payments.createPayment({ booking: access, idempotencyKey: 'payment-pt-notifications' });
+    await ctx.h.payments.confirmPayment(access, intent.payment.id, {});
+    await ctx.relay.runOnce();
+    const emails = ctx.transport.sent.map((mail) => mail.text).join('\n');
+    expect(emails).toContain('/pt/reserva/acesso?token=');
+    expect(emails).toContain('/pt/privacidade/confirmar?token=');
+    expect(emails).toContain('Confirme sua inscrição');
+    expect(emails).not.toContain('/pt/reserva/acceso');
+    expect(ctx.privacy.buildUnsubscribeUrl('ana@example.com', 'pt')).toContain('/pt/privacidade/cancelar-inscricao?token=');
   });
 });

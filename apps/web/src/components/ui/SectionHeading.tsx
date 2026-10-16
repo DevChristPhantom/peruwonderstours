@@ -25,7 +25,7 @@ export function SectionHeading({ id, title, eyebrow, description, link, as: Tag 
         {description ? <div className="mt-3 text-body-lg text-foreground-muted">{description}</div> : null}
       </div>
       {link ? (
-        <Link href={link.href} className="pwt-link inline-flex min-h-11 shrink-0 items-center gap-1.5 font-medium">
+        <Link href={link.href} className="pwt-section-link pwt-link inline-flex min-h-11 shrink-0 items-center gap-1.5 self-start font-medium">
           {link.label}
           <ArrowRight aria-hidden size={18} strokeWidth={1.5} />
         </Link>

@@ -8,6 +8,7 @@ import { SITE, whatsappHref } from "@/lib/site";
 import { SOCIAL_LINKS } from "@/lib/social";
 
 import { AndesSkyline } from "./AndesSkyline";
+import { BrandLogo } from "./BrandLogo";
 
 type Href = ComponentProps<typeof Link>["href"];
 type LinkKey = "allTours" | "tourTypes" | "about" | "blog" | "reviews" | "contact" | "myBookings" | "myBooking" | "complaintStatus" | "favorites" | "terms" | "payments" | "privacy" | "cookies";
@@ -63,6 +64,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
   const [t, tc, locale] = await Promise.all([getTranslations("footer"), getTranslations("common"), getLocale()]);
   const { legal } = SITE;
   const pending = tc("pending");
+  const rucDisplay = legal.ruc ?? t("legal.rucExample", { number: legal.rucExample });
   const year = new Date().getFullYear();
 
   if (variant === "minimal") {
@@ -70,7 +72,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
       <footer className="border-t border-border bg-surface-muted">
         <div className="pwt-container flex flex-col gap-3 py-6 text-sm text-foreground-muted md:flex-row md:items-center md:justify-between">
           <p>
-            {legal.businessName ?? SITE.name} · RUC: {legal.ruc ?? pending}
+            {legal.businessName ?? SITE.name} · RUC: {rucDisplay}
           </p>
           <ul className="flex flex-wrap gap-x-5 gap-y-2">
             {LEGAL.slice(0, 3).map(([href, key]) => (
@@ -109,12 +111,12 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
         <div className="pwt-container grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="inline-flex min-h-11 items-center" aria-label={tc("logoHome")}>
-              <Image src="/logo.png" alt={tc("logoAlt")} width={120} height={40} className="h-10 w-auto brightness-0 invert" />
+              <BrandLogo alt={tc("logoAlt")} wide />
             </Link>
             <p className="mt-3 text-sm">{t("tagline")}</p>
             <ul className="mt-4 space-y-1 text-sm">
               <LegalItem label={t("legal.businessName")} value={legal.businessName} pending={pending} />
-              <LegalItem label={t("legal.ruc")} value={legal.ruc} pending={pending} />
+              <LegalItem label={t("legal.ruc")} value={rucDisplay} pending={pending} />
               <LegalItem label={t("legal.mincetur")} value={legal.minceturRegistry} pending={pending} />
               <LegalItem label={t("legal.office")} value={legal.address} pending={pending} />
             </ul>
@@ -131,7 +133,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
           <Column id="footer-tours" title={t("columns.tours")}>
             {DESTINATIONS.map(({ key, ...slugs }) => (
               <li key={key}>
-                <Link href={{ pathname: "/destinos/[slug]", params: { slug: slugs[locale] } }} className={linkClass}>
+                <Link href={{ pathname: "/destinos/[slug]", params: { slug: slugs[locale === "pt" ? "es" : locale] } }} className={linkClass}>
                   {t(`destinations.${key}`)}
                 </Link>
               </li>
@@ -159,8 +161,8 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
           </Column>
         </div>
 
-        <div className="pwt-container grid gap-8 border-t border-[color:var(--pwt-hero-line)] py-8 text-sm md:grid-cols-3">
-          <div>
+        <div className={`pwt-container grid gap-8 border-t border-[color:var(--pwt-hero-line)] py-8 text-sm ${SOCIAL_LINKS.length ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
+          {SOCIAL_LINKS.length ? <div>
             <h3 className={headingClass}>{t("follow")}</h3>
             <ul className="flex flex-wrap gap-x-5">
               {SOCIAL_LINKS.map((s) => (
@@ -173,7 +175,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
                 </li>
               ))}
             </ul>
-          </div>
+          </div> : null}
           <div>
             <h3 className={headingClass}>{t("payments")}</h3>
             <p className="flex items-start gap-2">
@@ -184,10 +186,9 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
           <div>
             <Link
               href="/libro-de-reclamaciones"
-              className="inline-flex min-h-11 items-center gap-3 rounded-md border-2 border-[color:var(--pwt-terracota-600)] bg-white/5 px-4 py-2 text-white hover:bg-hero-hover"
+              className="flex min-h-11 w-full flex-wrap items-center gap-3 rounded-lg border border-[color:var(--pwt-hero-line)] bg-white/5 px-4 py-4 text-white hover:bg-hero-hover"
             >
-              {/* PENDIENTE(cumplimiento): ícono oficial del Libro de Reclamaciones. */}
-              <BookOpenText aria-hidden size={24} strokeWidth={1.5} />
+              <Image src="/official/complaints-book.webp" alt="" width={686} height={386} className="h-auto w-[120px] shrink-0 rounded-sm" />
               <span>
                 <span className="block font-medium">{t("complaintsBook")}</span>
                 <span className="block text-xs text-hero-muted">{t("complaintsBookHint")}</span>

@@ -35,7 +35,7 @@ export class BookingDto {
   @ApiProperty({ format: 'uuid' }) id: string;
   @ApiProperty({ example: 'PWT-2026-000123', pattern: '^PWT-\\d{4}-\\d{6}$' }) code: string;
   @ApiProperty({ enum: BOOKING_STATUSES }) status: string;
-  @ApiProperty({ enum: ['es', 'en'] }) locale: string;
+  @ApiProperty({ enum: ['es', 'en', 'pt'] }) locale: string;
   @ApiProperty({ enum: ['PEN', 'USD'] }) currency: string;
   @ApiProperty({ type: MoneyDto }) total: MoneyDto;
   @ApiProperty({ enum: ['deposit', 'full'] }) paymentOption: string;

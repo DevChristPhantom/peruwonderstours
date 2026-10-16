@@ -11,6 +11,10 @@ import { ApiError } from "@/lib/api/client";
 import { getBlogPost, listBlogPosts, type ApiBlogCard } from "@/lib/api/content";
 import type { LocalePaths } from "@/lib/catalog/types";
 import { env } from "@/lib/env";
+import { blogLocaleSlugs } from "./blog-locale-slugs";
+import { editorialBrand } from "./editorial-brand";
+import { catalogImageSource } from "../catalog/image-source";
+import { journalArticles, mergeJournalArticles } from "./journal-articles";
 
 /**
  * Blog (F1) por idioma. Fuente: API `GET /blog` (ISR, tag `content`); si la API no responde o
@@ -61,7 +65,7 @@ const slugMap = (slugMapJson as unknown as { blog: Record<string, string> }).blo
 const AUTHOR = null;
 
 function seedAlternates(key: string): LocalePaths {
-  return { es: blogPostPath("es", key), en: blogPostPath("en", slugMap[key] ?? enByKey.get(key)?.slug ?? key) };
+  return { es: blogPostPath("es", key), en: blogPostPath("en", slugMap[key] ?? enByKey.get(key)?.slug ?? key), pt: blogPostPath("pt", key) };
 }
 
 function seedPost(p: SeedPost, locale: Locale): BlogPost {
@@ -74,15 +78,15 @@ function seedPost(p: SeedPost, locale: Locale): BlogPost {
     path: alternates[locale],
     alternates,
     fallback: locale !== "es" && !en,
-    title: text.title,
-    excerpt: text.summary ?? "",
-    image: p.image ? { src: p.image, alt: text.imageAlt ?? text.title } : null,
+    title: editorialBrand(text.title),
+    excerpt: editorialBrand(text.summary ?? ""),
+    image: p.image ? { src: catalogImageSource(p.image), alt: editorialBrand(text.imageAlt ?? text.title) } : null,
     publishedAt: p.date,
     author: AUTHOR,
     tags: text.tags ?? [],
-    body: text.body ?? "",
-    metaTitle: text.title,
-    metaDescription: (text.summary ?? "").slice(0, 160),
+    body: editorialBrand(text.body ?? ""),
+    metaTitle: editorialBrand(text.title),
+    metaDescription: editorialBrand(text.summary ?? "").slice(0, 160),
   };
 }
 
@@ -93,21 +97,22 @@ function seedList(locale: Locale): BlogCard[] {
 }
 
 function fromApiCard(card: ApiBlogCard, locale: Locale, esCard: ApiBlogCard | undefined): BlogCard {
-  const key = esCard?.slug ?? card.slug;
+  const key = card.alternateLocales?.find((item) => item.locale === "es")?.slug ?? esCard?.slug ?? card.slug;
   const fallback = locale !== "es" && (card.fallback ?? (card.locale !== undefined && card.locale !== locale));
-  const enSlug = locale === "en" && !fallback ? card.slug : (slugMap[key] ?? key);
-  const alternates = { es: blogPostPath("es", key), en: blogPostPath("en", enSlug) };
+  const slugs = blogLocaleSlugs(card, locale, key, slugMap[key]);
+  const enSlug = slugs.en;
+  const alternates = { es: blogPostPath("es", key), en: blogPostPath("en", enSlug), pt: blogPostPath("pt", slugs.pt) };
   return {
     key,
     slug: alternates[locale].split("/").pop()!,
     path: alternates[locale],
     alternates,
     fallback,
-    title: card.title,
-    excerpt: card.excerpt ?? "",
-    image: card.coverUrl ? { src: card.coverUrl, alt: card.coverAlt ?? card.title } : null,
+    title: editorialBrand(card.title),
+    excerpt: editorialBrand(card.excerpt ?? ""),
+    image: card.coverUrl ? { src: catalogImageSource(card.coverUrl), alt: editorialBrand(card.coverAlt ?? card.title) } : null,
     publishedAt: card.publishedAt,
-    author: card.author ?? null,
+    author: card.author ? editorialBrand(card.author) : null,
     tags: card.tags,
   };
 }
@@ -127,9 +132,9 @@ export const getBlogPosts = cache((locale: Locale): Promise<BlogCard[]> =>
     async () => {
       const [list, es] = await Promise.all([listBlogPosts(locale), locale === "es" ? Promise.resolve(null) : listBlogPosts("es")]);
       const esById = new Map((es ?? list).map((c) => [c.id, c]));
-      return list.map((c) => fromApiCard(c, locale, esById.get(c.id)));
+      return mergeJournalArticles(list.map((c) => fromApiCard(c, locale, esById.get(c.id))), journalArticles(locale));
     },
-    () => seedList(locale),
+    () => mergeJournalArticles(seedList(locale), journalArticles(locale)),
   ),
 );
 
@@ -138,18 +143,19 @@ export const getBlogPostBySlug = cache((slug: string, locale: Locale): Promise<B
   withSeed(
     async () => {
       const post = await getBlogPost(slug, locale);
-      if (!post) return null;
+      if (!post) return journalArticles(locale).find(p => p.slug === slug) ?? null;
       const esSlug = post.alternateLocales?.find((a) => a.locale === "es")?.slug ?? (locale === "es" ? post.slug : undefined);
       const card = fromApiCard(post, locale, esSlug ? { ...post, slug: esSlug } : undefined);
       const enSlug = post.alternateLocales?.find((a) => a.locale === "en")?.slug;
-      const alternates = enSlug && !card.fallback ? { ...card.alternates, en: blogPostPath("en", enSlug) } : card.alternates;
+      const ptSlug = post.alternateLocales?.find((a) => a.locale === "pt")?.slug;
+      const alternates = { ...card.alternates, ...(enSlug ? { en: blogPostPath("en", enSlug) } : {}), ...(ptSlug ? { pt: blogPostPath("pt", ptSlug) } : {}) };
       return {
         ...card,
         alternates,
         path: alternates[locale],
-        body: post.body,
-        metaTitle: post.seoTitle ?? post.title,
-        metaDescription: post.seoDescription ?? (post.excerpt ?? "").slice(0, 160),
+        body: editorialBrand(post.body),
+        metaTitle: editorialBrand(post.seoTitle ?? post.title),
+        metaDescription: editorialBrand(post.seoDescription ?? (post.excerpt ?? "")).slice(0, 160),
       };
     },
     () => {
@@ -158,7 +164,7 @@ export const getBlogPostBySlug = cache((slug: string, locale: Locale): Promise<B
         Object.entries(slugMap).find(([, en]) => en === slug)?.[0] ??
         [...enByKey].find(([, p]) => p.slug === slug)?.[0];
       const p = key ? esPosts.find((x) => x.slug === key) : undefined;
-      return p ? seedPost(p, locale) : null;
+      return p ? seedPost(p, locale) : journalArticles(locale).find(article => article.slug === slug) ?? null;
     },
   ),
 );

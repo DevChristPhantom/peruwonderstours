@@ -30,7 +30,8 @@ const handleI18nRouting = createIntlMiddleware(routing);
 
 /** Rutas sensibles (externas, en ambos idiomas) que se renderizan por petición con nonce. */
 const NONCE_ROUTES = [
-  /^\/(es|en)\/checkout(\/|$)/,
+  /^\/(es|en|pt)\/checkout(\/|$)/,
+  /^\/pt\/(reserva|livro-de-reclamacoes|privacidade|comparar|conta|minhas-reservas|contato|deixar-avaliacao)(\/|$)/,
   /^\/es\/reserva\//,
   /^\/en\/booking\//,
   /^\/es\/libro-de-reclamaciones(\/|$)/,
@@ -43,9 +44,6 @@ const NONCE_ROUTES = [
   /^\/en\/(my-bookings|account|contact|leave-a-review)(\/|$)/,
 ];
 
-/** Fotos del cliente servidas temporalmente desde su sitio (HU-0.3; ver next.config images). */
-const IMAGE_ORIGINS = "https://www.andeanperutours.com";
-
 function csp(nonce: string | null, dev: boolean): string {
   const scripts = nonce ? `'self' 'nonce-${nonce}' 'strict-dynamic'` : `'self' 'unsafe-inline'`;
   return [
@@ -53,7 +51,7 @@ function csp(nonce: string | null, dev: boolean): string {
     `script-src ${scripts}${dev ? " 'unsafe-eval'" : ""}`,
     nonce && !dev ? `style-src-elem 'self' 'nonce-${nonce}'` : "style-src-elem 'self' 'unsafe-inline'",
     "style-src-attr 'unsafe-inline'",
-    `img-src 'self' data: blob: ${IMAGE_ORIGINS}`,
+    "img-src 'self' data: blob:",
     "font-src 'self'",
     "media-src 'self'",
     `connect-src 'self'${dev ? " ws: wss:" : ""}`,
