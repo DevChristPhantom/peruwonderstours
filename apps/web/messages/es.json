@@ -364,7 +364,12 @@
       "fullOption": "Pagar el 100 % ahora",
       "fullHelp": "Sin saldos pendientes. Recibes un solo comprobante.",
       "lockedOption": "Tu reserva {code} ya está guardada: completa el pago de {amount}.",
-      "fullOnlyReason": "Este pedido se paga completo: {reason}",
+      "fullOnlyReasons": {
+        "departure_too_close": "Este pedido se paga completo porque la salida es en menos de 7 días.",
+        "third_party_tickets": "Este pedido se paga completo porque incluye boletos de terceros (tren, ingreso a Machu Picchu o sobrevuelos).",
+        "tour_override": "Este tour se paga completo al reservar.",
+        "deposit_covers_total": "Este pedido se paga completo porque el adelanto cubriría casi todo el total."
+      },
       "fullOnly": "Este pedido se paga completo: incluye boletos de terceros o salidas en menos de 7 días.",
       "bookingTotal": "Total de la reserva",
       "deposit": "Adelanto",

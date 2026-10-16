@@ -364,7 +364,12 @@
       "fullOption": "Pay 100% now",
       "fullHelp": "No balance due. You get a single receipt.",
       "lockedOption": "Your booking {code} is already saved: complete the payment of {amount}.",
-      "fullOnlyReason": "This order is paid in full: {reason}",
+      "fullOnlyReasons": {
+        "departure_too_close": "This order is paid in full because the departure is less than 7 days away.",
+        "third_party_tickets": "This order is paid in full because it includes third-party tickets (train, Machu Picchu entry or flights).",
+        "tour_override": "This tour is paid in full at booking.",
+        "deposit_covers_total": "This order is paid in full because the deposit would cover almost the whole total."
+      },
       "fullOnly": "This order is paid in full: it includes third-party tickets or departures in less than 7 days.",
       "bookingTotal": "Booking total",
       "deposit": "Deposit",

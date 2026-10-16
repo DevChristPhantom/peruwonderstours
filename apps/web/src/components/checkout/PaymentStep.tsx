@@ -26,6 +26,12 @@ import { HoldTimer } from "./HoldTimer";
 import { SandboxPaymentWidget } from "./SandboxPaymentWidget";
 import { ErrorSummary, fieldId, flattenErrors, useErrorText } from "./form-fields";
 
+/** Motivos de pago completo que envía la API (`FullPaymentReason` sin `customer_choice`). */
+const FULL_ONLY_REASONS = ["departure_too_close", "third_party_tickets", "tour_override", "deposit_covers_total"] as const;
+type FullOnlyReason = (typeof FULL_ONLY_REASONS)[number];
+const isFullOnlyReason = (reason: string | null | undefined): reason is FullOnlyReason =>
+  (FULL_ONLY_REASONS as readonly string[]).includes(reason ?? "");
+
 const METHODS: { value: PaymentMethod; icon: typeof CreditCard }[] = [
   { value: "card", icon: CreditCard },
   { value: "yape", icon: Smartphone },
@@ -380,8 +386,8 @@ export function PaymentStep({
         <p className="rounded-md bg-surface-muted p-4">
           {lockedOption
             ? t("lockedOption", { code: quote.booking?.code ?? "", amount: money(plan.payNowCents) })
-            : plans?.depositUnavailableReason
-              ? t("fullOnlyReason", { reason: plans.depositUnavailableReason })
+            : isFullOnlyReason(plans?.depositUnavailableReason)
+              ? t(`fullOnlyReasons.${plans.depositUnavailableReason}`)
               : t("fullOnly")}
         </p>
       ) : null}
