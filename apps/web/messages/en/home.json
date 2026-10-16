@@ -64,5 +64,11 @@
     "whatsapp": "Plan on WhatsApp",
     "whatsappMessage": "Hi {name}, I'd like to plan a trip to Peru.",
     "packages": "See packages"
+  },
+  "gallery": {
+    "eyebrow": "A closer look at Peru",
+    "title": "Places that stay with you",
+    "intro": "From the blue waters of Titicaca to the mountains of Cusco: find the landscape for your next journey.",
+    "openTour": "Explore this trip"
   }
 }

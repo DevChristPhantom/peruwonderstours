@@ -29,6 +29,8 @@ tags:
 
 ## Recent Changes
 
+- 2026-10-16: galería fotográfica de experiencias tras los productos y fotos en motivos de viaje, cierre, diario, Nosotros y Contacto; medios del catálogo actual, sin nuevas consultas ni JS de carrusel. Ver [[decisions/ADR-0023-fotografia-editorial]].
+
 - 2026-10-16: independencia del sitio anterior: 366 imágenes propias, 41 tours y contenido ES/EN preservados; 227 rutas sin hosts retirados y 366 archivos verificados por HTTP/SHA-256 en demo compilada. Mapas API/admin sincronizados; 35 pruebas web, 14 admin y 16 API dirigidas aprobadas. Ver [[decisions/ADR-0022-independencia-de-medios]]. Validación de navegador actual en CI pendiente.
 
 - 2026-10-15: manual de uso v0.1 en docs/manual/manual-de-uso.md; actualizar con cambios del sistema. Ver [[decisions/ADR-0021-manual-de-uso]].

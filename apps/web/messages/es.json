@@ -957,6 +957,12 @@
       "whatsapp": "Planear por WhatsApp",
       "whatsappMessage": "Hola {name}, quiero planear un viaje por el Perú.",
       "packages": "Ver paquetes"
+    },
+    "gallery": {
+      "eyebrow": "El Perú, de cerca",
+      "title": "Lugares que se quedan contigo",
+      "intro": "Del azul del Titicaca a las montañas de Cusco: encuentra el paisaje de tu próximo viaje.",
+      "openTour": "Ver experiencia"
     }
   },
   "journal": {
