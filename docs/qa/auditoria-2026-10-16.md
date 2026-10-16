@@ -10,7 +10,7 @@ Todo lo marcado "verificado" se ejecutó en esta auditoría; lo demás se indica
 
 | Área | Estado | Comentario |
 |---|---|---|
-| Pruebas automáticas | ✅ | API 253 unit + 32 e2e; admin 14; web 35; tipos y lint sin errores; CI de GitHub en verde |
+| Pruebas automáticas | ✅ | API 253 unit + 32 e2e + 43 con PostgreSQL; admin 14; web 35; navegador 27/27; CI en verde |
 | Funcionamiento público | ✅ | 216/216 URLs del sitemap en 200 (es/en/pt); 73 redirecciones legadas OK |
 | Compra de punta a punta | ✅ | Reserva sandbox PWT-2026-000001 pagada, voucher por correo, cupos descontados |
 | Seguridad | ✅ con notas | Cabeceras, CORS, MFA, bloqueo de login, panel protegido; 2 correcciones menores aplicadas |
@@ -28,8 +28,15 @@ Todo lo marcado "verificado" se ejecutó en esta auditoría; lo demás se indica
   1120 claves por idioma.
 - `next build` de producción sin errores.
 - GitHub Actions "Quality checks" en verde para `51fd38c`, `11956f0` y `19da301`.
-- **Pendiente:** `test:integration` de la API contra PostgreSQL y la suite Playwright local (en CI
-  la suite de navegador pasó por última vez el 2026-10-15 sobre `1d0ae16`).
+- API `test:integration` contra PostgreSQL real: **43/43** sobre bases desechables (`pwt_int_seeded`
+  sembrada y `pwt_test` recreada), sin tocar `pwt_admin_preview`. **Corregido:** la prueba de
+  `--demo-pricing` solo pasaba en una base con uso previo; en una base limpia la "medición de línea
+  base" borraba lo DEMO y fallaba. Ahora lo vuelve a cargar y relee la temporada.
+- Suite Playwright local (réplica de `browser-checks.yml` en `pwt_browser_test`, API/web/admin
+  compiladas): **27/27**, incluidas las 3 del panel con login real + segundo factor TOTP (catálogo,
+  banners, pagos manuales con anulación, usuarios del personal). Un fallo inicial en portugués fue
+  caché de datos de Next (`.next-demo/cache/fetch-cache`) heredada de un build contra la API de la
+  demo; con la caché limpia pasa. Lección: limpiar `fetch-cache` al cambiar de base entre builds.
 
 ## 2. Funcionamiento (verificado)
 
@@ -77,9 +84,14 @@ Todo lo marcado "verificado" se ejecutó en esta auditoría; lo demás se indica
 
 ## 6. Accesibilidad (revisión automática parcial)
 
-- `lang` correcto por idioma (es-PE, en, pt-BR); todas las imágenes con `alt`; jerarquía de
-  encabezados sin saltos en la home; foco de teclado visible en las tarjetas de destino.
-- **Pendiente:** auditoría WCAG completa (contraste, lector de pantalla) con herramienta dedicada.
+- axe-core 4.14 (reglas WCAG 2.0/2.1 A y AA) en 11 páginas clave × escritorio y móvil (22 vistas):
+  **0 incumplimientos** tras corregir uno: el botón flotante "Reservar" de la ficha en móvil tenía un
+  nombre accesible distinto del texto visible (WCAG 2.5.3); ahora el lector anuncia el texto real,
+  el precio y la pista "elegir fecha y viajeros".
+- `lang` correcto por idioma (es-PE, en, pt-BR); todas las imágenes con `alt`; encabezados sin
+  saltos; foco de teclado visible en las tarjetas de destino.
+- axe cubre solo las reglas automatizables: falta una prueba manual con lector de pantalla
+  (NVDA/VoiceOver) y de navegación completa con teclado.
 
 ## 7. SEO (verificado)
 

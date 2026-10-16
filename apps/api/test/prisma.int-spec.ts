@@ -325,7 +325,7 @@ describeDb('Repositorios Prisma contra PostgreSQL (transacción revertida)', () 
       expect(first.tours).toBe(tours - first.toursSkippedWithRealRates.length);
       expect(first.rates.created + first.rates.updated).toBe(first.tours * 16);
 
-      const season = await tx.season.findUniqueOrThrow({ where: { code: DEMO_SEASON_CODE } });
+      let season = await tx.season.findUniqueOrThrow({ where: { code: DEMO_SEASON_CODE } });
       expect(season.name).toBe(DEMO_MARK);
       expect(await tx.rate.count({ where: { seasonId: season.id } })).toBe(first.tours * 16);
       expect(await tx.rate.count({ where: { tourId: realTour.id, seasonId: season.id } })).toBe(0);
@@ -340,6 +340,11 @@ describeDb('Repositorios Prisma contra PostgreSQL (transacción revertida)', () 
       // se mide la línea base para que la prueba no dependa de esos datos.
       const baselineError = await deleteDemoPricing(tx).catch((e: unknown) => e);
       const baseline = baselineError instanceof DemoPricingInUseError ? baselineError.usage : {};
+      // En una base limpia (CI) no hay uso previo y la medición SÍ borra lo DEMO: se vuelve a cargar.
+      if (!(baselineError instanceof DemoPricingInUseError)) {
+        await applyDemoPricing(tx, { now, departureDays: 3, capacity: 12 });
+        season = await tx.season.findUniqueOrThrow({ where: { code: DEMO_SEASON_CODE } });
+      }
 
       // Un carrito con una salida DEMO: aborta sin borrar nada.
       const demoTour = await tx.tour.findFirstOrThrow({ where: { rates: { some: { seasonId: season.id } } }, orderBy: { slug: 'asc' } });
