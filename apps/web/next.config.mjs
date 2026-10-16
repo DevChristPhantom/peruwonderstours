@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import createNextIntlPlugin from "next-intl/plugin";
+import { isLocalHttpDemo } from "./src/lib/security/transport-policy.mjs";
 
 const configDirectory = path.dirname(fileURLToPath(import.meta.url));
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
@@ -62,6 +63,10 @@ function legalDocumentsEnv() {
 const apiOrigin = new URL(process.env.API_BASE_URL || "http://localhost:3001/api/v1");
 const apiIsLocal = ["localhost", "127.0.0.1", "[::1]"].includes(apiOrigin.hostname);
 
+// Local presentations serve the already compressed archive directly. This avoids
+// cold image conversions on Windows; public production keeps responsive optimization.
+const localImagePreview = isLocalHttpDemo(process.env.PWT_DEMO_BUILD, process.env.PUBLIC_WEB_BASE_URL);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Compilación de demostración aislada del servidor de desarrollo que ya usa el cliente.
@@ -74,6 +79,7 @@ const nextConfig = {
   // L1: los borradores legales se incrustan en el build (ver src/lib/legal/documents.ts).
   env: legalDocumentsEnv(),
   images: {
+    unoptimized: localImagePreview,
     formats: ["image/avif", "image/webp"],
     // El catálogo archivado usa rutas locales; solo medios nuevos de la API tienen origen remoto.
     // Solo en desarrollo con la API local: Next bloquea por defecto optimizar imágenes de IPs locales.
@@ -100,7 +106,7 @@ const nextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          ...(process.env.NODE_ENV === "production" ? [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" }] : []),
+          ...(process.env.NODE_ENV === "production" && !isLocalHttpDemo(process.env.PWT_DEMO_BUILD, process.env.PUBLIC_WEB_BASE_URL) ? [{ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" }] : []),
         ],
       },
       {

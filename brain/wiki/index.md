@@ -15,6 +15,8 @@ This catalog is updated by completed knowledge operations.
 
 ## Concepts
 
+- [[decisions/ADR-0024-imagenes-demo-http]] — imágenes de demo sin conversión fría y transporte local compatible.
+
 - [[decisions/ADR-0023-fotografia-editorial]] — más fotografías del catálogo, galería enlazada y carga diferida.
 
 - [[decisions/ADR-0022-independencia-de-medios]] — contenido y fotos propias, rendimiento y verificación de la demo compilada.

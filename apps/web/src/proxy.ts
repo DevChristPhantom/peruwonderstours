@@ -1,6 +1,9 @@
 import createIntlMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 
+import { contentSecurityPolicy } from "./lib/security/content-security-policy";
+import { isHttpLoopback, localDemoMediaOrigin } from "./lib/security/transport-policy.mjs";
+
 import { routing } from "./i18n/routing";
 
 /**
@@ -44,28 +47,6 @@ const NONCE_ROUTES = [
   /^\/en\/(my-bookings|account|contact|leave-a-review)(\/|$)/,
 ];
 
-function csp(nonce: string | null, dev: boolean): string {
-  const scripts = nonce ? `'self' 'nonce-${nonce}' 'strict-dynamic'` : `'self' 'unsafe-inline'`;
-  return [
-    "default-src 'self'",
-    `script-src ${scripts}${dev ? " 'unsafe-eval'" : ""}`,
-    nonce && !dev ? `style-src-elem 'self' 'nonce-${nonce}'` : "style-src-elem 'self' 'unsafe-inline'",
-    "style-src-attr 'unsafe-inline'",
-    "img-src 'self' data: blob:",
-    "font-src 'self'",
-    "media-src 'self'",
-    `connect-src 'self'${dev ? " ws: wss:" : ""}`,
-    // Service worker del voucher offline (/sw-voucher.js) y manifest de la reserva.
-    "worker-src 'self'",
-    "manifest-src 'self'",
-    "frame-src 'none'",
-    "object-src 'none'",
-    "base-uri 'none'",
-    "form-action 'self'",
-    "frame-ancestors 'none'",
-    ...(dev ? [] : ["upgrade-insecure-requests"]),
-  ].join("; ");
-}
 
 /** Páginas y el manifest de la reserva pasan por next-intl; el resto (archivos, íconos) no. */
 function isLocalizable(pathname: string): boolean {
@@ -80,7 +61,11 @@ export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const sensitive = NONCE_ROUTES.some((re) => re.test(pathname));
   const nonce = sensitive ? Buffer.from(crypto.randomUUID()).toString("base64") : null;
-  const policy = csp(nonce, dev);
+  const upgradeTransport = !dev && !isHttpLoopback(request.nextUrl);
+  const localMediaOrigin = isHttpLoopback(request.nextUrl)
+    ? localDemoMediaOrigin(process.env.PWT_DEMO_BUILD, process.env.PUBLIC_WEB_BASE_URL, process.env.MEDIA_PUBLIC_BASE_URL, process.env.API_BASE_URL)
+    : null;
+  const policy = contentSecurityPolicy(nonce, dev, upgradeTransport, localMediaOrigin);
   const cspHeader = reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
 
   const requestHeaders = new Headers(request.headers);
@@ -105,7 +90,7 @@ export function proxy(request: NextRequest) {
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(self), usb=(), interest-cohort=()");
   response.headers.set("Cross-Origin-Opener-Policy", "same-origin");
-  if (!dev) response.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+  if (upgradeTransport) response.headers.set("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
   return response;
 }
 

@@ -44,6 +44,9 @@ jobs:
       ADMIN_TRUSTED_ORIGINS: http://localhost:3102
       WEB_ORIGIN: http://localhost:3100,http://localhost:3102
       PUBLIC_WEB_BASE_URL: http://localhost:3100
+      # Exercise the same HTTP loopback image delivery as the owner's compiled demo.
+      # The separate quality job still builds and checks normal production optimization.
+      PWT_DEMO_BUILD: '1'
       SANDBOX_CHECKOUT_BASE_URL: http://localhost:3001/api/v1/sandbox/checkout
       SANDBOX_WEBHOOK_SECRET: Browser-fixture-sandbox-2026-test-only-key
       MEDIA_LOCAL_DIR: /tmp/pwt-browser-media
