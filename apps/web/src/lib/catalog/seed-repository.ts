@@ -13,6 +13,7 @@ import { categoryPath, destinationPath, tourPath } from "@/i18n/paths";
 
 import type { CatalogRepository } from "./repository";
 import { derivePaymentPolicy, durationBucketOf } from "./rules";
+import { catalogImageSource } from "./image-source";
 import type { CatalogImage, Category, Destination, LocalePaths, Tour, TourSummary } from "./types";
 
 /* ---------- Forma de los JSON extraídos (data/seed/_extraction-report.md) ---------- */
@@ -113,7 +114,7 @@ function stripEmoji(value: string): string {
 }
 
 function image(src: string | null | undefined, alt: string): CatalogImage | null {
-  return src ? { src, alt } : null;
+  return src ? { src: catalogImageSource(src), alt } : null;
 }
 
 /** Texto del tour en el idioma pedido (o el español como respaldo). */
@@ -179,7 +180,7 @@ function toTour(t: SeedTour, locale: Locale): Tour {
     // Algunas FAQ del sitio viejo vienen sin pregunta o sin respuesta: se omiten (TODO(E0): completar).
     faqs: (text.faqs ?? []).flatMap((f) => (f.question && f.answer ? [{ question: f.question, answer: f.answer }] : [])),
     policies: text.policies,
-    gallery: urls.map((src) => ({ src, alt: summary.shortTitle })),
+    gallery: urls.map((src) => ({ src: catalogImageSource(src), alt: summary.shortTitle })),
   };
 }
 

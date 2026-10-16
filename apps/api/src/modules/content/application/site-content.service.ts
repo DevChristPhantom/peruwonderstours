@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import type { ContentLocale } from '../../../shared/domain/i18n.js';
+import { isLegacyMediaUrl } from '../../media/domain/media.js';
 
 /** Vista pública curada de data/seed/site-content.json (Quiénes somos, FAQ, redes, horario). */
 export interface PublicSiteContent {
@@ -43,7 +44,7 @@ export function curateSiteContent(raw: unknown, locale: ContentLocale): PublicSi
           history: noEmail(strings(about['history'])),
           teamIntro: noEmail(strings(team['intro'])),
           office: { heading: str(office['heading']), paragraphs: noEmail(strings(office['paragraphs'])) },
-          images: strings(about['images']).filter((u) => u.startsWith('https://')),
+          images: strings(about['images']).filter((u) => u.startsWith('https://') && !isLegacyMediaUrl(u)),
         }
       : null,
     faqs: (Array.isArray(faqs['items']) ? faqs['items'] : [])
@@ -53,7 +54,7 @@ export function curateSiteContent(raw: unknown, locale: ContentLocale): PublicSi
       const o = obj(l);
       const url = str(o['urlEncoded']) ?? str(o['url']);
       const network = str(o['network']);
-      return url && network && url.startsWith('https://') ? [{ network, url: url.replace(/ /g, '%20') }] : [];
+      return url && network && url.startsWith('https://') && !isLegacyMediaUrl(url) && !/andean[\s%20_-]*peru[\s%20_-]*tours/i.test(url.replace(/%20/gi, ' ')) ? [{ network, url: url.replace(/ /g, '%20') }] : [];
     }),
     contact: {
       phones: (Array.isArray(contact['phones']) ? contact['phones'] : []).flatMap((p) => {

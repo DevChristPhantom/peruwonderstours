@@ -1,0 +1,1194 @@
+{
+  "checkedAt": "2026-10-16T16:46:34.022Z",
+  "coverage": {
+    "tours": {
+      "es": 41,
+      "en": 41,
+      "englishMissingOriginalKeys": [],
+      "spanishKeys": [
+        "arequipa-colca-profundo-condores-4d-3n",
+        "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+        "aventura-andina-cusco-5d-4n",
+        "canon-del-colca-y-arequipa-3d-2n",
+        "city-tour-arequipa",
+        "cultura-titicaca-uros-llachon-taquile-3d-2n",
+        "cusco-machu-picchu-premium-4d-3n",
+        "escapada-rapida-cusco-3d-2n",
+        "explorador-imperial-cusco-4d-3n",
+        "full-day-cataratas-pillones-bosque-piedras",
+        "full-day-machu-picchu-esencia-ciudadela",
+        "full-day-maras-moray-sal-anden",
+        "full-day-ruta-sillar-arquitectura-volcanica",
+        "full-day-salinas-aguada-blanca-fauna-andina",
+        "full-day-valle-sur-cusco-descubrimiento",
+        "full-day-vinicunca-montana-arcoiris",
+        "laguna-humantay-espejo-turquesa",
+        "lo-mejor-peru-en-5-dias-5d-4n",
+        "peru-de-ensueno-andes-incas-8d-7n",
+        "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches",
+        "peru-express-capital-de-reyes-y-legado-inca-5-dias-4-noches",
+        "peru-magico-cusco-lima-6d-5n",
+        "peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+        "puno-clasico-lago-titicaca-3d-2n",
+        "qeswachaka-experiencia-ultimo-puente-inca",
+        "ruta-del-sol-puno-desde-cusco-3d-2n",
+        "rutas-andinas-un-viaje-esencial-por-peru-8-dias-7-noches",
+        "tour-campina-arequipa",
+        "tour-complejo-arqueologico-de-sillustani",
+        "tour-full-day-canon-del-colca",
+        "tour-islas-de-los-uros-y-taquile-full-day",
+        "tour-islas-flotantes-de-los-uros",
+        "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+        "tour-laguna-de-salinas-y-banos-termales-lojen-full-day",
+        "tour-privado-puerta-interdimensional-de-aramu-muru",
+        "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+        "trekking-7-lagunas-tour",
+        "trekking-canon-del-colca-2-dias",
+        "valle-sagrado-incas",
+        "vivencia-titicaca-uros-amantani-taquile-3d-2n",
+        "waqrapukara-fortaleza-entre-nubes"
+      ]
+    },
+    "destinations": {
+      "es": 5,
+      "en": 5,
+      "englishMissingOriginalKeys": [],
+      "spanishKeys": [
+        "cuzco",
+        "tours-en-arequipa",
+        "tours-en-ica-paracas",
+        "tours-en-lima",
+        "tours-en-puno"
+      ]
+    },
+    "categories": {
+      "es": 5,
+      "en": 5,
+      "englishMissingOriginalKeys": [],
+      "spanishKeys": [
+        "excursiones",
+        "full-days",
+        "paquetes-turisticos-en-peru",
+        "rutas-del-altiplano",
+        "tours-a-machu-picchu"
+      ]
+    },
+    "blog-posts": {
+      "es": 6,
+      "en": 6,
+      "englishMissingOriginalKeys": [],
+      "spanishKeys": [
+        "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+        "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+        "cusco-mejor-ciudad",
+        "boleto-turistico-del-cusco",
+        "tipos-de-tren-e-ingreso-a-machu-picchu",
+        "datos-utiles-peru"
+      ],
+      "bodyEmpty": []
+    }
+  },
+  "live": {
+    "pages": [
+      {
+        "url": "https://www.andeanperutours.com/es/tipos-de-tours",
+        "status": 200,
+        "bytes": 70718,
+        "sha256": "10fa05a05ea7c1eee165487adb45aa4182b6f0df0091502ec7542c5925ef5503",
+        "title": "Actividades Turísticas en Perú - Andean Peru Tours Travel Agency",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/blog",
+        "status": 200,
+        "bytes": 77034,
+        "sha256": "02a19cd0ace6d807504eb1591950d76c1f30b1e17efae923c2864fbca1474f37",
+        "title": "Blog - Andean Peru Tours Travel Agency",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/destinos",
+        "status": 200,
+        "bytes": 77519,
+        "sha256": "8338ed0fcb9c4fdce5d202e430d262bd6b7e0cb1ce2f23dd0471e8254d916cfb",
+        "title": "Principales destinos para conocer - Andean Peru Tours Travel Agency",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/tours",
+        "status": 200,
+        "bytes": 172217,
+        "sha256": "5b57b718b003e3abc735f26cde03c5cc2abd2f58083a5dc1319d40d9f90a1efb",
+        "title": "Tours en Perú - Andean Peru Tours Travel Agency",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n",
+          "trekking-7-lagunas-tour",
+          "city-tour-arequipa",
+          "tour-laguna-de-salinas-y-banos-termales-lojen-full-day",
+          "tour-campina-arequipa",
+          "tour-full-day-canon-del-colca",
+          "valle-sagrado-incas",
+          "full-day-maras-moray-sal-anden",
+          "full-day-valle-sur-cusco-descubrimiento",
+          "full-day-vinicunca-montana-arcoiris",
+          "laguna-humantay-espejo-turquesa",
+          "waqrapukara-fortaleza-entre-nubes",
+          "qeswachaka-experiencia-ultimo-puente-inca",
+          "trekking-canon-del-colca-2-dias",
+          "ruta-del-sol-puno-desde-cusco-3d-2n",
+          "vivencia-titicaca-uros-amantani-taquile-3d-2n",
+          "cultura-titicaca-uros-llachon-taquile-3d-2n",
+          "puno-clasico-lago-titicaca-3d-2n",
+          "peru-express-capital-de-reyes-y-legado-inca-5-dias-4-noches",
+          "peru-de-ensueno-andes-incas-8d-7n",
+          "rutas-andinas-un-viaje-esencial-por-peru-8-dias-7-noches",
+          "peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+          "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/andean-peru-tours/quienes-somos",
+        "status": 200,
+        "bytes": 73482,
+        "sha256": "88699ff837fe51c6273fccb2c2462d88d5eec24bacd025999e4e29c20fd857a0",
+        "title": "Quienes Somos",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/andean-peru-tours/politicas-y-condiciones-de-pago",
+        "status": 200,
+        "bytes": 75145,
+        "sha256": "b379f3650e56aed382766ab3de72ac1a4259bc7b353bfaebe5e93833088d5d91",
+        "title": "Políticas y Condiciones de Pago",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/destinos/cuzco",
+        "status": 200,
+        "bytes": 114138,
+        "sha256": "21bd51f102a47c43c6014f3fde3f319536ba2cbbcd0346b7b0516e992c9f864c",
+        "title": "Tours en la ciudad del Cusco",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n",
+          "laguna-humantay-espejo-turquesa",
+          "qeswachaka-experiencia-ultimo-puente-inca",
+          "valle-sagrado-incas",
+          "full-day-maras-moray-sal-anden",
+          "full-day-valle-sur-cusco-descubrimiento",
+          "full-day-vinicunca-montana-arcoiris",
+          "waqrapukara-fortaleza-entre-nubes",
+          "trekking-7-lagunas-tour",
+          "cusco-machu-picchu-premium-4d-3n",
+          "peru-express-capital-de-reyes-y-legado-inca-5-dias-4-noches",
+          "rutas-andinas-un-viaje-esencial-por-peru-8-dias-7-noches",
+          "peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+          "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/destinos/tours-en-arequipa",
+        "status": 200,
+        "bytes": 104070,
+        "sha256": "b11551d0b9269e305770a402c4a40c90cec5235e46f1ede04dd384c9424870ad",
+        "title": "Tours en Arequipa",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n",
+          "city-tour-arequipa",
+          "tour-laguna-de-salinas-y-banos-termales-lojen-full-day",
+          "tour-campina-arequipa",
+          "tour-full-day-canon-del-colca",
+          "trekking-canon-del-colca-2-dias",
+          "peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+          "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/destinos/tours-en-ica-paracas",
+        "status": 200,
+        "bytes": 73189,
+        "sha256": "9f58ea8dc88bee0782bae01b4e6df7d936109aea9f021608e761cfd8821d5954",
+        "title": "Tours en Ica",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n",
+          "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/en/tours",
+        "status": 500,
+        "bytes": 631044,
+        "sha256": "a20f72af284f7606626aacdaf65f9e72a5cf1407afbb41878d1bdd80e2a51154",
+        "title": "Whoops! There was an error.",
+        "tourSlugs": [],
+        "blogSlugs": []
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/destinos/tours-en-lima",
+        "status": 200,
+        "bytes": 81441,
+        "sha256": "37706392da73ff7bfebb21f8fd6cfeb65eb7e5f56fcc05da044f0a8a3a616edb",
+        "title": "tours en Lima",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n",
+          "peru-express-capital-de-reyes-y-legado-inca-5-dias-4-noches",
+          "rutas-andinas-un-viaje-esencial-por-peru-8-dias-7-noches",
+          "peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+          "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/destinos/tours-en-puno",
+        "status": 200,
+        "bytes": 105303,
+        "sha256": "4f43a4fb0c0268bf7b3880fce52f1ec5920f6f8687001f8af98d78eba268a37f",
+        "title": "Tours en Puno",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n",
+          "puno-clasico-lago-titicaca-3d-2n",
+          "ruta-del-sol-puno-desde-cusco-3d-2n",
+          "vivencia-titicaca-uros-amantani-taquile-3d-2n",
+          "cultura-titicaca-uros-llachon-taquile-3d-2n",
+          "rutas-andinas-un-viaje-esencial-por-peru-8-dias-7-noches",
+          "peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+          "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/categorias/excursiones",
+        "status": 200,
+        "bytes": 77600,
+        "sha256": "aab5d1738739959880be74a06a2bf36ee5fe994444473d3e5d0742f5f0941c53",
+        "title": "Excursiones",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n",
+          "trekking-canon-del-colca-2-dias"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/categorias/full-days",
+        "status": 200,
+        "bytes": 96703,
+        "sha256": "54b57f6f2b699e1bb5a3420e27eb089fcefc381505bd919f214cdd40e924c8fe",
+        "title": "Full Days",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n",
+          "valle-sagrado-incas",
+          "full-day-maras-moray-sal-anden",
+          "full-day-valle-sur-cusco-descubrimiento",
+          "full-day-vinicunca-montana-arcoiris",
+          "laguna-humantay-espejo-turquesa",
+          "trekking-7-lagunas-tour",
+          "city-tour-arequipa",
+          "tour-laguna-de-salinas-y-banos-termales-lojen-full-day",
+          "tour-campina-arequipa",
+          "tour-full-day-canon-del-colca"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/categorias/paquetes-turisticos-en-peru",
+        "status": 200,
+        "bytes": 104491,
+        "sha256": "b475a3e9b26d6c0a6ebba6a0a5eeecdab559375fd9c34eb0217c3353fe659752",
+        "title": "Paquetes turísticos en Perú",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n",
+          "peru-express-capital-de-reyes-y-legado-inca-5-dias-4-noches",
+          "peru-de-ensueno-andes-incas-8d-7n",
+          "rutas-andinas-un-viaje-esencial-por-peru-8-dias-7-noches",
+          "peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+          "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/categorias/rutas-del-altiplano",
+        "status": 200,
+        "bytes": 84850,
+        "sha256": "262f0351ed3b2e7addacbf16c591d9ea46c97de81537045907e0aabf4855de5f",
+        "title": "Rutas del Altiplano",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      },
+      {
+        "url": "https://www.andeanperutours.com/es/categorias/tours-a-machu-picchu",
+        "status": 200,
+        "bytes": 90019,
+        "sha256": "83e03a21ccc04257f32429d859a15e5d21c3ee2371017173443706b124d4aa09",
+        "title": "Tours a Machu Picchu",
+        "tourSlugs": [
+          "tour-islas-flotantes-de-los-uros",
+          "tour-complejo-arqueologico-de-sillustani",
+          "tour-islas-de-los-uros-y-taquile-full-day",
+          "tour-privado-puerta-interdimensional-de-aramu-muru",
+          "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+          "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+          "full-day-machu-picchu-esencia-ciudadela",
+          "escapada-rapida-cusco-3d-2n",
+          "explorador-imperial-cusco-4d-3n",
+          "aventura-andina-cusco-5d-4n",
+          "lo-mejor-peru-en-5-dias-5d-4n",
+          "peru-magico-cusco-lima-6d-5n",
+          "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+          "full-day-ruta-sillar-arquitectura-volcanica",
+          "full-day-salinas-aguada-blanca-fauna-andina",
+          "full-day-cataratas-pillones-bosque-piedras",
+          "canon-del-colca-y-arequipa-3d-2n",
+          "arequipa-colca-profundo-condores-4d-3n",
+          "cusco-machu-picchu-premium-4d-3n",
+          "peru-de-ensueno-andes-incas-8d-7n"
+        ],
+        "blogSlugs": [
+          "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+          "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+          "cusco-mejor-ciudad",
+          "boleto-turistico-del-cusco",
+          "tipos-de-tren-e-ingreso-a-machu-picchu",
+          "datos-utiles-peru"
+        ]
+      }
+    ],
+    "tourSlugs": [
+      "tour-islas-flotantes-de-los-uros",
+      "tour-complejo-arqueologico-de-sillustani",
+      "tour-islas-de-los-uros-y-taquile-full-day",
+      "tour-privado-puerta-interdimensional-de-aramu-muru",
+      "tour-privado-templo-de-la-fertilidad-inka-uyo-medio-dia",
+      "tour-lago-titicaca-vivencial-uros-amantani-y-taquile-2-dias",
+      "full-day-machu-picchu-esencia-ciudadela",
+      "escapada-rapida-cusco-3d-2n",
+      "explorador-imperial-cusco-4d-3n",
+      "aventura-andina-cusco-5d-4n",
+      "lo-mejor-peru-en-5-dias-5d-4n",
+      "peru-magico-cusco-lima-6d-5n",
+      "arequipa-ruta-rapida-ciudad-blanca-3d-2n",
+      "full-day-ruta-sillar-arquitectura-volcanica",
+      "full-day-salinas-aguada-blanca-fauna-andina",
+      "full-day-cataratas-pillones-bosque-piedras",
+      "canon-del-colca-y-arequipa-3d-2n",
+      "arequipa-colca-profundo-condores-4d-3n",
+      "trekking-7-lagunas-tour",
+      "city-tour-arequipa",
+      "tour-laguna-de-salinas-y-banos-termales-lojen-full-day",
+      "tour-campina-arequipa",
+      "tour-full-day-canon-del-colca",
+      "valle-sagrado-incas",
+      "full-day-maras-moray-sal-anden",
+      "full-day-valle-sur-cusco-descubrimiento",
+      "full-day-vinicunca-montana-arcoiris",
+      "laguna-humantay-espejo-turquesa",
+      "waqrapukara-fortaleza-entre-nubes",
+      "qeswachaka-experiencia-ultimo-puente-inca",
+      "trekking-canon-del-colca-2-dias",
+      "ruta-del-sol-puno-desde-cusco-3d-2n",
+      "vivencia-titicaca-uros-amantani-taquile-3d-2n",
+      "cultura-titicaca-uros-llachon-taquile-3d-2n",
+      "puno-clasico-lago-titicaca-3d-2n",
+      "peru-express-capital-de-reyes-y-legado-inca-5-dias-4-noches",
+      "peru-de-ensueno-andes-incas-8d-7n",
+      "rutas-andinas-un-viaje-esencial-por-peru-8-dias-7-noches",
+      "peru-milenario-legado-andino-y-tesoros-precolombinos-10-dias",
+      "peru-especial-la-esencia-del-sur-y-costa-14-dias-13-noches",
+      "cusco-machu-picchu-premium-4d-3n"
+    ],
+    "blogSlugs": [
+      "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+      "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+      "cusco-mejor-ciudad",
+      "boleto-turistico-del-cusco",
+      "tipos-de-tren-e-ingreso-a-machu-picchu",
+      "datos-utiles-peru"
+    ],
+    "toursAbsentFromSeed": [],
+    "blogAbsentFromSeed": []
+  },
+  "photos": {
+    "mirrored": 366,
+    "originalBytes": 84525354,
+    "localBytes": 74549477,
+    "failures": [
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/travel481904885-1041611151326647-8059059419185604176-n-1746407888.jpg",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [
+          "cusco-mejor-ciudad"
+        ],
+        "siteArchive": false
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/inca-rail-1746411704.png",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [
+          "tipos-de-tren-e-ingreso-a-machu-picchu"
+        ],
+        "siteArchive": false
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/perurailimages-1746411724.png",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [
+          "tipos-de-tren-e-ingreso-a-machu-picchu"
+        ],
+        "siteArchive": false
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/tren1-1746415971.jpg",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [
+          "tipos-de-tren-e-ingreso-a-machu-picchu"
+        ],
+        "siteArchive": false
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/tren2the-first-class-by-inca-1746416648.jpg",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [
+          "tipos-de-tren-e-ingreso-a-machu-picchu"
+        ],
+        "siteArchive": false
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/tren3the-360-by-inca-rail-1746416731.jpg",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [
+          "tipos-de-tren-e-ingreso-a-machu-picchu"
+        ],
+        "siteArchive": false
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/dat16699067125209028211-1200x630-1746410381.jpg",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [
+          "datos-utiles-peru"
+        ],
+        "siteArchive": false
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/g6f8979ce2fbdfffd549c7e19c79f81b0d47fe3cb344de41cebiche59fe8236d48bce0d35b43110f3531243f41e2692f5d223219d766d8690cf9e4dc40fe0a5232ee5b5b-1280-6472044-1024x679-1746410678.jpg",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [
+          "datos-utiles-peru"
+        ],
+        "siteArchive": false
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/b36c55bd-aeaf-4fd8-ad92-3f3bd5232e10-1745463775.jpg",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": true
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/93d10a8a-f719-448b-a67b-04b03fe14f95-1745464135.jpg",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": true
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/d74ba75e-64ad-4259-8e13-b9c63d1ba6f1-1745464167.jpg",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": true
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/b0685f5a-0937-41cc-adb0-e2138fc0b5d9-1745467227.jpg",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": true
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/38c15694-372f-4a2d-8562-91ae031cfc3f-1745467247.jpg",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": true
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/1b44e975-d893-4f7a-a3c7-33cc2da84478-1745467281.jpg",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": true
+      },
+      {
+        "source": "https://turinet.turismoads.com/images/galleries/491cb0b4-5b6b-4c25-8b53-3f01bc825da0-1745467301.jpg",
+        "reason": "ENOTFOUND",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": true
+      },
+      {
+        "source": "https://www.andeanperutours.com/images/og_andeanperutours.jpg",
+        "reason": "HTTP 404",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": true
+      },
+      {
+        "source": "https://www.andeanperutours.com/images/pages/5e0b3c2f-3e09-45b9-b2fd-b8282a3848ec-1746420506.jpg",
+        "reason": "HTTP 404",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": true
+      },
+      {
+        "source": "https://www.andeanperutours.com/images/pages/9a7b74c5-86a4-4a22-abcd-fe6bfe6722b6-1746420642.jpg",
+        "reason": "HTTP 404",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": true
+      },
+      {
+        "source": "https://www.andeanperutours.com/images/secure-payments-white.svg",
+        "reason": "Unsupported image MIME: image/svg+xml",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": true
+      },
+      {
+        "source": "https://www.andeanperutours.com/images/paybutton-paypal.svg",
+        "reason": "Unsupported image MIME: image/svg+xml",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": true
+      },
+      {
+        "source": "https://www.andeanperutours.com/images/paybutton-westernunion.svg",
+        "reason": "Unsupported image MIME: image/svg+xml",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": true
+      },
+      {
+        "source": "https://www.andeanperutours.com/images/enterprises/tripadvisor.svg",
+        "reason": "Unsupported image MIME: image/svg+xml",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": false
+      },
+      {
+        "source": "https://www.andeanperutours.com/images/partners/esnna-horizontal.svg?v=0.1",
+        "reason": "Unsupported image MIME: image/svg+xml",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": false
+      },
+      {
+        "source": "https://www.andeanperutours.com/images/partners/gercetur.svg?v=0.1",
+        "reason": "Unsupported image MIME: image/svg+xml",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": false
+      },
+      {
+        "source": "https://www.andeanperutours.com/images/partners/promperu.svg?v=0.1",
+        "reason": "Unsupported image MIME: image/svg+xml",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": false
+      },
+      {
+        "source": "https://www.andeanperutours.com/images/partners/marca-peru.svg?v=0.1",
+        "reason": "Unsupported image MIME: image/svg+xml",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": false
+      },
+      {
+        "source": "https://www.andeanperutours.com/images/partners/sernanp.svg?v=0.1",
+        "reason": "Unsupported image MIME: image/svg+xml",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": false
+      },
+      {
+        "source": "https://www.andeanperutours.com/images/partners/safe-travels.svg?ver=1.3",
+        "reason": "Unsupported image MIME: image/svg+xml",
+        "tours": [],
+        "destinations": [],
+        "categories": [],
+        "blogCovers": [],
+        "blogBodyImages": [],
+        "siteArchive": false
+      }
+    ],
+    "variants": [
+      {
+        "original": "https://www.andeanperutours.com/images/og_andeanperutours.jpg",
+        "url": "https://www.andeanperutours.com/images/sm/og_andeanperutours.jpg",
+        "status": 404,
+        "mime": "text/html; charset=UTF-8"
+      },
+      {
+        "original": "https://www.andeanperutours.com/images/og_andeanperutours.jpg",
+        "url": "https://www.andeanperutours.com/images/md/og_andeanperutours.jpg",
+        "status": 404,
+        "mime": "text/html; charset=UTF-8"
+      },
+      {
+        "original": "https://www.andeanperutours.com/images/og_andeanperutours.jpg",
+        "url": "https://www.andeanperutours.com/images/lg/og_andeanperutours.jpg",
+        "status": 404,
+        "mime": "text/html; charset=UTF-8"
+      },
+      {
+        "original": "https://www.andeanperutours.com/images/pages/5e0b3c2f-3e09-45b9-b2fd-b8282a3848ec-1746420506.jpg",
+        "url": "https://www.andeanperutours.com/images/pages/sm/5e0b3c2f-3e09-45b9-b2fd-b8282a3848ec-1746420506.jpg",
+        "status": 404,
+        "mime": "text/html; charset=UTF-8"
+      },
+      {
+        "original": "https://www.andeanperutours.com/images/pages/5e0b3c2f-3e09-45b9-b2fd-b8282a3848ec-1746420506.jpg",
+        "url": "https://www.andeanperutours.com/images/pages/md/5e0b3c2f-3e09-45b9-b2fd-b8282a3848ec-1746420506.jpg",
+        "status": 404,
+        "mime": "text/html; charset=UTF-8"
+      },
+      {
+        "original": "https://www.andeanperutours.com/images/pages/5e0b3c2f-3e09-45b9-b2fd-b8282a3848ec-1746420506.jpg",
+        "url": "https://www.andeanperutours.com/images/pages/lg/5e0b3c2f-3e09-45b9-b2fd-b8282a3848ec-1746420506.jpg",
+        "status": 404,
+        "mime": "text/html; charset=UTF-8"
+      },
+      {
+        "original": "https://www.andeanperutours.com/images/pages/9a7b74c5-86a4-4a22-abcd-fe6bfe6722b6-1746420642.jpg",
+        "url": "https://www.andeanperutours.com/images/pages/sm/9a7b74c5-86a4-4a22-abcd-fe6bfe6722b6-1746420642.jpg",
+        "status": 404,
+        "mime": "text/html; charset=UTF-8"
+      },
+      {
+        "original": "https://www.andeanperutours.com/images/pages/9a7b74c5-86a4-4a22-abcd-fe6bfe6722b6-1746420642.jpg",
+        "url": "https://www.andeanperutours.com/images/pages/md/9a7b74c5-86a4-4a22-abcd-fe6bfe6722b6-1746420642.jpg",
+        "status": 404,
+        "mime": "text/html; charset=UTF-8"
+      },
+      {
+        "original": "https://www.andeanperutours.com/images/pages/9a7b74c5-86a4-4a22-abcd-fe6bfe6722b6-1746420642.jpg",
+        "url": "https://www.andeanperutours.com/images/pages/lg/9a7b74c5-86a4-4a22-abcd-fe6bfe6722b6-1746420642.jpg",
+        "status": 404,
+        "mime": "text/html; charset=UTF-8"
+      }
+    ]
+  },
+  "archive": {
+    "pages": [
+      "generatedAt",
+      "source",
+      "legacyBrand",
+      "aboutUs",
+      "policies",
+      "faqs",
+      "home",
+      "contact",
+      "socialLinks",
+      "socialLinksNotFound",
+      "socialLinksNote",
+      "paymentMethods",
+      "footer",
+      "unlistedTours",
+      "blog"
+    ],
+    "blogBodyImages": [
+      {
+        "slug": "turismo-en-peru-para-mexicanos-cultura-aventura-y-sabores-inolvidables",
+        "count": 0
+      },
+      {
+        "slug": "paquetes-a-peru-desde-colombia-como-conseguir-el-mejor-precio-y-vivir-una-experiencia-inolvidable",
+        "count": 0
+      },
+      {
+        "slug": "cusco-mejor-ciudad",
+        "count": 1
+      },
+      {
+        "slug": "boleto-turistico-del-cusco",
+        "count": 0
+      },
+      {
+        "slug": "tipos-de-tren-e-ingreso-a-machu-picchu",
+        "count": 5
+      },
+      {
+        "slug": "datos-utiles-peru",
+        "count": 2
+      }
+    ],
+    "tourPricesMissing": 41
+  }
+}

@@ -178,7 +178,7 @@ function presentPost(p: LocalizedPost, urls: MediaUrlResolver, full: boolean) {
     publishedAt: p.post.publishedAt,
     tags: p.post.tags,
     alternateLocales: p.post.translations.map((x) => ({ locale: x.locale, slug: x.slug })),
-    ...(full ? { body: t.body, seo: { title: t.seoTitle ?? t.title, description: t.seoDescription ?? t.excerpt }, updatedAt: p.post.updatedAt } : {}),
+    ...(full ? { body: urls.editorial(t.body), seo: { title: t.seoTitle ?? t.title, description: t.seoDescription ?? t.excerpt }, updatedAt: p.post.updatedAt } : {}),
   };
 }
 

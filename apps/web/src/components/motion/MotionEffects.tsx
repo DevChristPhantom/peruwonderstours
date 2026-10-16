@@ -79,9 +79,19 @@ export default function MotionEffects() {
         const lenis = new Lenis({ lerp: 0.1, anchors: true });
         lenis.on("scroll", ScrollTrigger.update);
         const tick = (time: number) => lenis.raf(time * 1000);
-        gsap.ticker.add(tick);
+        // A persistent Lenis listener otherwise keeps the shared ticker alive
+        // in background tabs even when there are no visible transitions.
+        let ticking = false;
+        const visibility = () => {
+          const visible = document.visibilityState === "visible";
+          if (visible && !ticking) { gsap.ticker.add(tick); ticking = true; }
+          else if (!visible && ticking) { gsap.ticker.remove(tick); ticking = false; }
+        };
+        document.addEventListener("visibilitychange", visibility);
+        visibility();
         gsap.ticker.lagSmoothing(0);
         cleanup = () => {
+          document.removeEventListener("visibilitychange", visibility);
           gsap.ticker.remove(tick);
           // stop() marks the root as stopped and can lock scroll; destroy restores native scroll.
           lenis.destroy();

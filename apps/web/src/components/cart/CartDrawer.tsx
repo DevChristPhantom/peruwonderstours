@@ -2,6 +2,7 @@
 
 import { ShoppingBag, X } from "lucide-react";
 import Image from "next/image";
+import { retiredImageGuard } from "@/lib/catalog/retired-image-guard";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 
@@ -96,7 +97,7 @@ export default function CartDrawer() {
               {lines.map((line) => (
                 <li key={line.id} className="flex gap-3 py-4">
                   <div className="relative size-16 shrink-0 overflow-hidden rounded-md bg-surface-muted">
-                    {line.image ? <Image src={line.image.src} alt="" fill sizes="64px" className="object-cover" /> : null}
+                    {line.image ? <Image src={retiredImageGuard(line.image.src)} alt="" fill sizes="64px" className="object-cover" /> : null}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="line-clamp-2 font-medium">{line.title}</p>

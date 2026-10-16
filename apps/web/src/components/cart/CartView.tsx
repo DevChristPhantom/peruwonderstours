@@ -2,6 +2,7 @@
 
 import { CalendarRange, MessageCircle, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
+import { retiredImageGuard } from "@/lib/catalog/retired-image-guard";
 import NextLink from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import { useId, useMemo, useRef, useState } from "react";
@@ -89,7 +90,7 @@ function CartItem({ line, onRemove }: { line: CartLine; onRemove: (line: CartLin
     <li className="py-6" data-line-id={line.id}>
       <article className="flex gap-4">
         <div className="relative h-[66px] w-[88px] shrink-0 overflow-hidden rounded-md bg-surface-muted md:h-[90px] md:w-[120px]">
-          {line.image ? <Image src={line.image.src} alt="" fill sizes="120px" className="object-cover" /> : null}
+          {line.image ? <Image src={retiredImageGuard(line.image.src)} alt="" fill sizes="120px" className="object-cover" /> : null}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex flex-col gap-1 md:flex-row md:items-start md:justify-between md:gap-6">

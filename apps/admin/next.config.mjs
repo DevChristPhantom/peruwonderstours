@@ -20,6 +20,7 @@ const common = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  distDir: process.env.PWT_DEMO_BUILD === "1" ? ".next-demo" : ".next",
   transpilePackages: ["@pwt/ui"],
   outputFileTracingRoot: path.join(__dirname, "../.."),
   poweredByHeader: false,

@@ -13,6 +13,7 @@ import type { LocalePaths } from "@/lib/catalog/types";
 import { env } from "@/lib/env";
 import { blogLocaleSlugs } from "./blog-locale-slugs";
 import { editorialBrand } from "./editorial-brand";
+import { catalogImageSource } from "../catalog/image-source";
 import { journalArticles, mergeJournalArticles } from "./journal-articles";
 
 /**
@@ -77,15 +78,15 @@ function seedPost(p: SeedPost, locale: Locale): BlogPost {
     path: alternates[locale],
     alternates,
     fallback: locale !== "es" && !en,
-    title: text.title,
-    excerpt: text.summary ?? "",
-    image: p.image ? { src: p.image, alt: text.imageAlt ?? text.title } : null,
+    title: editorialBrand(text.title),
+    excerpt: editorialBrand(text.summary ?? ""),
+    image: p.image ? { src: catalogImageSource(p.image), alt: editorialBrand(text.imageAlt ?? text.title) } : null,
     publishedAt: p.date,
     author: AUTHOR,
     tags: text.tags ?? [],
-    body: text.body ?? "",
-    metaTitle: text.title,
-    metaDescription: (text.summary ?? "").slice(0, 160),
+    body: editorialBrand(text.body ?? ""),
+    metaTitle: editorialBrand(text.title),
+    metaDescription: editorialBrand(text.summary ?? "").slice(0, 160),
   };
 }
 
@@ -109,7 +110,7 @@ function fromApiCard(card: ApiBlogCard, locale: Locale, esCard: ApiBlogCard | un
     fallback,
     title: editorialBrand(card.title),
     excerpt: editorialBrand(card.excerpt ?? ""),
-    image: card.coverUrl ? { src: card.coverUrl, alt: editorialBrand(card.coverAlt ?? card.title) } : null,
+    image: card.coverUrl ? { src: catalogImageSource(card.coverUrl), alt: editorialBrand(card.coverAlt ?? card.title) } : null,
     publishedAt: card.publishedAt,
     author: card.author ? editorialBrand(card.author) : null,
     tags: card.tags,

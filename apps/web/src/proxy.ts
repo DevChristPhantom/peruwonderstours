@@ -44,9 +44,6 @@ const NONCE_ROUTES = [
   /^\/en\/(my-bookings|account|contact|leave-a-review)(\/|$)/,
 ];
 
-/** Fotos del cliente servidas temporalmente desde su sitio (HU-0.3; ver next.config images). */
-const IMAGE_ORIGINS = "https://www.andeanperutours.com";
-
 function csp(nonce: string | null, dev: boolean): string {
   const scripts = nonce ? `'self' 'nonce-${nonce}' 'strict-dynamic'` : `'self' 'unsafe-inline'`;
   return [
@@ -54,7 +51,7 @@ function csp(nonce: string | null, dev: boolean): string {
     `script-src ${scripts}${dev ? " 'unsafe-eval'" : ""}`,
     nonce && !dev ? `style-src-elem 'self' 'nonce-${nonce}'` : "style-src-elem 'self' 'unsafe-inline'",
     "style-src-attr 'unsafe-inline'",
-    `img-src 'self' data: blob: ${IMAGE_ORIGINS}`,
+    "img-src 'self' data: blob:",
     "font-src 'self'",
     "media-src 'self'",
     `connect-src 'self'${dev ? " ws: wss:" : ""}`,

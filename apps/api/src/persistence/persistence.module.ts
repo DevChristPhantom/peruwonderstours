@@ -39,7 +39,7 @@ class PersistenceLifecycle implements OnApplicationShutdown {
         return AesGcmPiiCipher.fromBase64(settings.piiEncryptionKey ?? DEVELOPMENT_PII_KEY_BASE64);
       },
     },
-    { provide: MEDIA_URL_RESOLVER, inject: [APP_SETTINGS], useFactory: (s: AppSettings) => new MediaUrlResolver(s.media.publicBaseUrl) },
+    { provide: MEDIA_URL_RESOLVER, inject: [APP_SETTINGS], useFactory: (s: AppSettings) => new MediaUrlResolver(s.media.publicBaseUrl, s.mail.publicWebBaseUrl) },
     // Puerto MediaStorage: hoy solo `local`; un adaptador S3/R2 se elige aquí por MEDIA_STORAGE.
     { provide: MEDIA_STORAGE, inject: [APP_SETTINGS], useFactory: (s: AppSettings) => new LocalMediaStorage(s.media.localDir) },
     PersistenceLifecycle,

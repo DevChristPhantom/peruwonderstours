@@ -7,6 +7,7 @@ import { env } from "@/lib/env";
 
 import type { CatalogRepository } from "./repository";
 import { derivePaymentPolicy, durationBucketOf } from "./rules";
+import { catalogImageSource } from "./image-source";
 import { cleanSeedText, seedCatalogRepository, seedEnrichment } from "./seed-repository";
 import type { CatalogImage, Category, Destination, LocalePaths, PaymentPolicy, Tour, TourPricing, TourSummary } from "./types";
 
@@ -256,7 +257,7 @@ function toSummary(entry: CardEntry, taxonomy: Taxonomy, locale: Locale): TourSu
   const apiCategory = es.categoryId ? taxonomy.categories.get(es.categoryId)?.key : undefined;
   const categorySlugs = Array.from(new Set([...(apiCategory ? [apiCategory] : []), ...(seed?.categorySlugs ?? [])]));
   const shortTitle = (fallback ? null : seedText?.shortTitle?.trim()) || (locale === "es" ? seed?.shortTitle?.trim() : null) || text.title;
-  const image: CatalogImage | null = es.coverImage ? { src: es.coverImage.url, alt: text.coverImage?.alt || shortTitle } : null;
+  const image: CatalogImage | null = es.coverImage ? { src: catalogImageSource(es.coverImage.url), alt: text.coverImage?.alt || shortTitle } : null;
   return {
     key,
     slug: alternates[locale].split("/").pop()!,
@@ -308,7 +309,7 @@ function toTour(detail: ApiTourDetail, entry: CardEntry, taxonomy: Taxonomy, loc
     faqs: (detail.faqs ?? []).filter((f) => f.question && f.answer),
     policies: detail.policies,
     // TODO(HU-0.3): alt descriptivo por foto cuando la API tenga metadatos por imagen (hoy repite el título).
-    gallery: images.map((m) => ({ src: m.url, alt: m.alt || summary.shortTitle })),
+    gallery: images.map((m) => ({ src: catalogImageSource(m.url), alt: m.alt || summary.shortTitle })),
   };
 }
 
@@ -337,8 +338,8 @@ async function apiDestinations(locale: Locale): Promise<Destination[]> {
       fallback: d.fallback,
       name: d.text.name,
       description: cleanSeedText(d.text.description),
-      bannerImage: s?.bannerImage ? { src: s.bannerImage, alt } : null,
-      cardImage: s?.bannerImage || s?.cardImage ? { src: (s.bannerImage ?? s.cardImage)!, alt } : null,
+      bannerImage: s?.bannerImage ? { src: catalogImageSource(s.bannerImage), alt } : null,
+      cardImage: s?.bannerImage || s?.cardImage ? { src: catalogImageSource((s.bannerImage ?? s.cardImage)!), alt } : null,
       tourSlugs,
       tourCount: tourSlugs.length,
     };
@@ -359,7 +360,7 @@ async function apiCategories(locale: Locale): Promise<Category[]> {
       fallback: c.fallback,
       name: c.text.name,
       description: cleanSeedText(c.text.description),
-      bannerImage: s?.bannerImage ? { src: s.bannerImage, alt: c.text.name } : null,
+      bannerImage: s?.bannerImage ? { src: catalogImageSource(s.bannerImage), alt: c.text.name } : null,
       tourSlugs,
       tourCount: tourSlugs.length,
     };

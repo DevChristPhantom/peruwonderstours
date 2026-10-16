@@ -1,5 +1,11 @@
 import { createHash } from 'node:crypto';
 import { ValidationError } from '../../../shared/domain/domain-error.js';
+import { LEGACY_LINK_PATHS, LEGACY_MEDIA_MAP } from './legacy-media-map.js';
+
+const LEGACY_MEDIA_HOSTS = new Set(['www.andeanperutours.com', 'andeanperutours.com', 'turinet.turismoads.com']);
+export function isLegacyMediaUrl(value: string): boolean {
+  try { return LEGACY_MEDIA_HOSTS.has(new URL(value).hostname); } catch { return false; }
+}
 
 /** Tipos de imagen aceptados (por contenido real, no por extensión ni por Content-Type declarado). */
 export const IMAGE_TYPES = {
@@ -122,11 +128,26 @@ export interface MediaStorage {
 
 /** Convierte una clave de medios (o URL absoluta heredada) en URL pública. */
 export class MediaUrlResolver {
-  constructor(private readonly publicBaseUrl: string) {}
+  constructor(private readonly publicBaseUrl: string, private readonly publicWebBaseUrl: string) {}
 
   url(key: string | null | undefined): string | null {
     if (!key) return null;
-    if (/^https?:\/\//i.test(key)) return key;
+    if (/^https?:\/\//i.test(key)) {
+      if (!isLegacyMediaUrl(key)) return key;
+      const old = new URL(key);
+      const local = LEGACY_MEDIA_MAP[`${old.hostname.replace(/^www\./, '')}${old.pathname}`] ?? '/brand/media-pending.svg';
+      return `${this.publicWebBaseUrl.replace(/\/+$/, '')}${local}`;
+    }
     return `${this.publicBaseUrl}/${key.replace(/^\/+/, '')}`;
+  }
+
+  /** Rewrite archived editorial URLs at the response boundary, without modifying stored content. */
+  editorial(text: string): string {
+    return text.replace(/https?:\/\/(?:(?:www\.)?andeanperutours\.com|turinet\.turismoads\.com)(?::\d+)?(?=[/?#\s<>"')\]]|$)(?:[/?#][^\s<>"')\]]*)?/gi, (value) => {
+      const old = new URL(value);
+      if (/^\/images\//i.test(old.pathname) || /\.(?:jpe?g|png|webp|avif|gif|svg)$/i.test(old.pathname)) return this.url(value)!;
+      const path = LEGACY_LINK_PATHS[old.pathname.replace(/\/$/, '')] ?? old.pathname;
+      return `${this.publicWebBaseUrl.replace(/\/+$/, '')}${path}${old.search}${old.hash}`;
+    });
   }
 }

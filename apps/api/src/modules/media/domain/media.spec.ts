@@ -29,10 +29,31 @@ describe('Medios: tipo real por magic bytes, claves y política de importación'
     expect(key).toBe(`tours/ab/${'ab'.repeat(12)}.png`);
     expect(() => assertSafeKey('../etc/passwd')).toThrow();
     expect(() => assertSafeKey('a//b')).toThrow();
-    const urls = new MediaUrlResolver('https://cdn.pwt.test/media');
+    const urls = new MediaUrlResolver('https://cdn.pwt.test/media', 'https://peruwonderstours.test');
     expect(urls.url(key)).toBe(`https://cdn.pwt.test/media/${key}`);
     expect(urls.url('https://old.site/x.jpg')).toBe('https://old.site/x.jpg');
     expect(urls.url(null)).toBeNull();
+  });
+
+  it('serves imported media from the owned web origin, with an owned placeholder for missing legacy files', () => {
+    const urls = new MediaUrlResolver('https://api.peruwonderstours.test/media', 'https://peruwonderstours.test/');
+    const path = '/images/blog/lg/b8b79eb9-73ba-48e9-8de0-1f0c17f5842f-1746491708.jpg';
+    expect(urls.url(`https://www.andeanperutours.com${path}`)).toBe('https://peruwonderstours.test/tours/e7d3d7eb7cd52a1965cf.webp');
+    expect(urls.url(`http://andeanperutours.com${path}?v=1#photo`)).toBe('https://peruwonderstours.test/tours/e7d3d7eb7cd52a1965cf.webp');
+    for (const host of ['www.andeanperutours.com', 'andeanperutours.com', 'turinet.turismoads.com']) {
+      expect(urls.url(`https://${host}/images/missing.jpg`)).toBe('https://peruwonderstours.test/brand/media-pending.svg');
+    }
+    expect(urls.url('tours/new-cms-upload.webp')).toBe('https://api.peruwonderstours.test/media/tours/new-cms-upload.webp');
+    expect(urls.url('https://cdn.new-owner.test/photo.webp')).toBe('https://cdn.new-owner.test/photo.webp');
+    expect(urls.url('https://www.andeanperutours.com.evil.test/photo.webp')).toBe('https://www.andeanperutours.com.evil.test/photo.webp');
+  });
+
+  it('rewrites archived editorial media and links without changing new CMS or unrelated URLs', () => {
+    const urls = new MediaUrlResolver('https://api.pwt.test/media', 'https://pwt.test');
+    const text = '<img src="https://turinet.turismoads.com/images/missing.jpg"><a href="https://www.andeanperutours.com/es/andean-peru-tours/quienes-somos">About</a> ![new](https://new-owner.test/photo.webp)';
+    expect(urls.editorial(text)).toBe('<img src="https://pwt.test/brand/media-pending.svg"><a href="https://pwt.test/es/nosotros">About</a> ![new](https://new-owner.test/photo.webp)');
+    const unrelated = 'https://www.andeanperutours.com.evil.test/photo.webp';
+    expect(urls.editorial(unrelated)).toBe(unrelated);
   });
 
   it('importación legacy: solo hosts permitidos y contenido; sin sellos, logos ni otra agencia', () => {

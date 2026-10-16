@@ -64,6 +64,8 @@ const apiIsLocal = ["localhost", "127.0.0.1", "[::1]"].includes(apiOrigin.hostna
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Compilación de demostración aislada del servidor de desarrollo que ya usa el cliente.
+  distDir: process.env.PWT_DEMO_BUILD === "1" ? ".next-demo" : ".next",
   transpilePackages: ["@pwt/ui"],
   // Monorepo pnpm: la raíz incluye data/seed y packages/ui.
   outputFileTracingRoot: path.join(configDirectory, "../.."),
@@ -73,20 +75,15 @@ const nextConfig = {
   env: legalDocumentsEnv(),
   images: {
     formats: ["image/avif", "image/webp"],
-    // TEMPORAL (HU-0.3): fotos del cliente servidas desde su sitio actual hasta re-alojarlas.
+    // El catálogo archivado usa rutas locales; solo medios nuevos de la API tienen origen remoto.
     // Solo en desarrollo con la API local: Next bloquea por defecto optimizar imágenes de IPs locales.
-    dangerouslyAllowLocalIP: apiIsLocal && process.env.NODE_ENV !== "production",
+    dangerouslyAllowLocalIP: apiIsLocal && (process.env.NODE_ENV !== "production" || process.env.PWT_DEMO_BUILD === "1"),
     remotePatterns: [
       {
         protocol: apiOrigin.protocol === "https:" ? "https" : "http",
         hostname: apiOrigin.hostname,
         ...(apiOrigin.port ? { port: apiOrigin.port } : {}),
         pathname: "/media/**",
-      },
-      {
-        protocol: "https",
-        hostname: "www.andeanperutours.com",
-        pathname: "/images/**",
       },
     ],
   },

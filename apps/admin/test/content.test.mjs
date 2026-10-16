@@ -54,6 +54,17 @@ test("resolveMediaUrl acepta claves seguras y URLs absolutas", () => {
   assert.equal(resolveMediaUrl(null, "http://h/media"), null);
 });
 
+test("resolveMediaUrl uses owned archive URLs without changing persisted keys or new uploads", () => {
+  const original = "https://www.andeanperutours.com/images/blog/lg/b8b79eb9-73ba-48e9-8de0-1f0c17f5842f-1746491708.jpg";
+  assert.equal(resolveMediaUrl(original, "http://localhost:3001/media", "http://localhost:4000/"), "http://localhost:4000/tours/e7d3d7eb7cd52a1965cf.webp");
+  assert.equal(original, "https://www.andeanperutours.com/images/blog/lg/b8b79eb9-73ba-48e9-8de0-1f0c17f5842f-1746491708.jpg");
+  for (const host of ["www.andeanperutours.com", "andeanperutours.com", "turinet.turismoads.com"]) {
+    assert.equal(resolveMediaUrl(`https://${host}/images/unknown.jpg`, "http://localhost:3001/media", "http://localhost:4000"), "http://localhost:4000/brand/media-pending.svg");
+  }
+  assert.equal(resolveMediaUrl("tours/new-upload.webp", "http://localhost:3001/media", "http://localhost:4000"), "http://localhost:3001/media/tours/new-upload.webp");
+  assert.equal(resolveMediaUrl("https://cdn.new.test/image.jpg", "http://localhost:3001/media", "http://localhost:4000"), "https://cdn.new.test/image.jpg");
+});
+
 test("checkUpload valida tipo y tamaño", () => {
   assert.equal(checkUpload({ type: "image/webp", size: 1000 }), null);
   assert.match(checkUpload({ type: "image/gif", size: 1000 }) ?? "", /Formato/);

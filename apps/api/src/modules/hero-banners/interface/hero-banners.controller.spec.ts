@@ -16,9 +16,10 @@ describe('sandboxed hero document response', () => {
   });
   afterAll(async () => { await app.close(); });
   it('requires upload and catalog write permissions together for HTML upload', () => {
-    expect(Reflect.getMetadata('pwt:required-permissions', HeroBannersAdminController.prototype.upload)).toEqual(['media:upload', 'tours:write']);
-    expect(Reflect.getMetadata('pwt:required-permissions', HeroBannersAdminController.prototype.patch)).toEqual(['tours:write']);
-    expect(Reflect.getMetadata('pwt:required-permissions', HeroBannersAdminController.prototype.list)).toEqual(['tours:read']);
+    const permissions = (method: string) => Reflect.getMetadata('pwt:required-permissions', Object.getOwnPropertyDescriptor(HeroBannersAdminController.prototype, method)!.value as object) as string[];
+    expect(permissions('upload')).toEqual(['media:upload', 'tours:write']);
+    expect(permissions('patch')).toEqual(['tours:write']);
+    expect(permissions('list')).toEqual(['tours:read']);
   });
   it('serves HTML with sandboxed inline-only scripts and no network access', async () => {
     const response = await request(app.getHttpServer()).get('/hero-banners/test/document').expect(200);

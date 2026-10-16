@@ -29,7 +29,7 @@ export default async function HomePage({ params }: PageProps<"/[locale]">) {
     getNavMedia(locale),
     getDestinations(locale),
     getAllTours(locale),
-    getFeaturedTours(locale, 6),
+    getFeaturedTours(locale, 5),
     getSearchOptions(locale),
     getTestimonials(locale),
     getTranslations("home.featured"),

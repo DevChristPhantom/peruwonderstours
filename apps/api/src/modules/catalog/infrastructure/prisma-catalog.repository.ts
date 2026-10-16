@@ -273,9 +273,12 @@ export class PrismaCatalogRepository implements CatalogRepository {
   }
 
   async countPublishedTours(): Promise<{ byDestination: Map<string, number>; byCategory: Map<string, number> }> {
-    // Secuencial: dentro de una transacción interactiva la conexión es única.
-    const byDestination = await this.db.tourDestination.groupBy({ by: ['destinationId'], where: { tour: PUBLISHED }, _count: { _all: true } });
-    const byCategory = await this.db.tour.groupBy({ by: ['categoryId'], where: PUBLISHED, _count: { _all: true } });
+    // Public reads can use independent pool connections. Prisma still serializes these
+    // when this repository is bound to a single interactive transaction connection.
+    const [byDestination, byCategory] = await Promise.all([
+      this.db.tourDestination.groupBy({ by: ['destinationId'], where: { tour: PUBLISHED }, _count: { _all: true } }),
+      this.db.tour.groupBy({ by: ['categoryId'], where: PUBLISHED, _count: { _all: true } }),
+    ]);
     return {
       byDestination: new Map(byDestination.map((r) => [r.destinationId, r._count._all])),
       byCategory: new Map(byCategory.flatMap((r) => (r.categoryId ? [[r.categoryId, r._count._all] as const] : []))),
