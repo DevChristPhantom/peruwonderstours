@@ -30,6 +30,8 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/destinos
     description: destination.description ?? t("destinationDescription", { name: destination.name }),
     paths: destination.alternates,
     image: destination.bannerImage?.src,
+    // Sin traducción propia se muestra el texto en español: noindex para no duplicar el original.
+    index: !destination.fallback,
   });
 }
 

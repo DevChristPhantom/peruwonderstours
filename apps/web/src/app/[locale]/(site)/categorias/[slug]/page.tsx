@@ -31,6 +31,8 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/categori
     description: category.description ?? t("categoryDescription", { name: category.name }),
     paths: category.alternates,
     image: category.bannerImage?.src,
+    // Sin traducción propia se muestra el texto en español: noindex para no duplicar el original.
+    index: !category.fallback,
   });
 }
 

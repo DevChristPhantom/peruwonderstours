@@ -28,7 +28,8 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/blog/[sl
   const locale = rawLocale as Locale;
   const post = await getBlogPostBySlug(slug, locale);
   if (!post) return {};
-  return pageMetadata({ locale, title: post.metaTitle, description: post.metaDescription, paths: post.alternates, image: post.image?.src });
+  // Sin traducción propia se muestra el texto en español: noindex para no duplicar el original en Google.
+  return pageMetadata({ locale, title: post.metaTitle, description: post.metaDescription, paths: post.alternates, image: post.image?.src, index: !post.fallback });
 }
 
 /** Artículo del blog (F1). Slug de otro idioma → 308 a la URL canónica del idioma de la página. */

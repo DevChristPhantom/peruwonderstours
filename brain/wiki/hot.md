@@ -13,6 +13,8 @@ tags:
 
 ## Last Updated
 
+- 2026-10-16 (Claude, auditoría integral): ver docs/qa/auditoria-2026-10-16.md. Pruebas en verde (API 253+32, admin 14, web 35, CI). Build de producción 216/216 en 200 (0,05 s). Corregido: filtro `?volver=` del login admin alineado con `safeNext`; 57 páginas PT en español pasan a noindex hasta traducirse. Pendiente: repo público, rama `feature/entrega-peruwonderstours` obsoleta, `PUBLIC_WEB_BASE_URL` apunta a :4000, precios DEMO y RUC de ejemplo antes de publicar.
+
 - 2026-10-16 (Claude, revisión local): 216/216 URLs del sitemap en 200 (es/en/pt) y 73 redirecciones legadas OK. Causa de bucles 307 en 28 rutas traducidas: `next dev --hostname 127.0.0.1` (Next normaliza 127.0.0.1→localhost y el rewrite de next-intl se trata como externo); arrancar con `localhost`. BD local `pwt_admin_preview` sin tours publicados → `db:seed -- --publish --demo-pricing` (41 tours, 656 tarifas y 4920 salidas DEMO, solo local). `start-web-preview.ps1` pasa a `CATALOG_SOURCE=api` (con `seed` la ficha mostraba "A cotizar"). Compra sandbox E2E verificada: PWT-2026-000001, S/ 598 pagado al 100 % (salida <7 días), voucher por correo, reserva 404 sin cookie. Corregido: motivo de pago completo mostraba el código crudo (`departure_too_close`) → mensajes es/en/pt; quitada ruta `/cuenta/ingresar` sin página.
 
 2026-10-13 — Continuidad en Codex sobre el backup del Sprint 3. Ver [[concepts/entrega-octubre-2026]] para la evidencia actual; el historial de abajo conserva las notas anteriores.
