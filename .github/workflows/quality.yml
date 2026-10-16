@@ -51,3 +51,4 @@ jobs:
           preview_pid=$!
           trap 'kill "$preview_pid" || true' EXIT
           node scripts/check-public-routes.mjs || { cat /tmp/pwt-web.log; exit 1; }
+          node scripts/check-owned-media.mjs || { cat /tmp/pwt-web.log; exit 1; }

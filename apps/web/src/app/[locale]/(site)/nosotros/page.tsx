@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
@@ -21,6 +22,8 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/nosotro
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
   const [t, tc, destinations] = await Promise.all([getTranslations("about"), getTranslations("common"), getDestinations(locale)]);
+  const puno = destinations.find((destination) => destination.key === "tours-en-puno");
+  const punoImage = puno?.bannerImage ?? puno?.cardImage;
   const steps = [
     { key: "explore", path: "/tours" },
     { key: "compare", path: "/comparar" },
@@ -32,21 +35,39 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/nosotro
         { name: tc("home"), path: localePath(locale, "/") },
         { name: t("title"), path: localePath(locale, "/nosotros") },
       ]} />
-      <section className="mt-8" aria-labelledby="about-title">
+      <section className="mt-8 grid items-center gap-8 lg:grid-cols-2 lg:gap-12" aria-labelledby="about-title">
         <SectionHeading id="about-title" as="h1" title={t("title")} eyebrow={SITE.name} description={t("body", { name: SITE.name })} />
+        {puno && punoImage ? (
+          <figure className="overflow-hidden rounded-lg border border-border bg-surface" lang={puno.fallback ? "es-PE" : undefined}>
+            <div className="relative aspect-[4/3]">
+              <Image src={punoImage.src} alt={punoImage.alt || puno.name} fill sizes="(min-width: 1280px) 560px, (min-width: 1024px) 45vw, 100vw" className="object-cover" loading="lazy" />
+            </div>
+            <figcaption className="px-5 py-3 text-sm text-foreground-muted">{puno.name}</figcaption>
+          </figure>
+        ) : null}
       </section>
       <section className="mt-12 md:mt-16" aria-labelledby="about-destinations">
         <SectionHeading id="about-destinations" title={t("destinationsTitle")} description={t("destinationsDescription")} />
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-reveal-stagger>
-          {destinations.map((destination) => (
-            <li key={destination.key} lang={destination.fallback ? "es-PE" : undefined}>
-              <Link href={destination.path} className="block rounded-lg border border-border bg-surface p-6 hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-                <h3 className="font-display text-h3 font-medium">{destination.name}</h3>
-                <p className="mt-2 text-sm text-foreground-muted">{t("tourCount", { count: destination.tourCount })}</p>
-                <span className="pwt-link mt-4 inline-flex min-h-11 items-center">{t("exploreDestination")}</span>
-              </Link>
-            </li>
-          ))}
+          {destinations.map((destination) => {
+            const image = destination.cardImage ?? destination.bannerImage;
+            return (
+              <li key={destination.key} lang={destination.fallback ? "es-PE" : undefined}>
+                <Link href={destination.path} className="block h-full overflow-hidden rounded-lg border border-border bg-surface hover:border-border-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+                  {image ? (
+                    <div className="relative aspect-[16/10] overflow-hidden">
+                      <Image src={image.src} alt={image.alt || destination.name} fill sizes="(min-width: 1280px) 380px, (min-width: 1024px) 30vw, (min-width: 640px) 46vw, 100vw" className="object-cover" loading="lazy" />
+                    </div>
+                  ) : null}
+                  <div className="p-6">
+                    <h3 className="font-display text-h3 font-medium">{destination.name}</h3>
+                    <p className="mt-2 text-sm text-foreground-muted">{t("tourCount", { count: destination.tourCount })}</p>
+                    <span className="pwt-link mt-4 inline-flex min-h-11 items-center">{t("exploreDestination")}</span>
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </section>
       <section className="mt-12 md:mt-16" aria-labelledby="about-planning">
