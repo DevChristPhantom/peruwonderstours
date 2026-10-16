@@ -25,7 +25,8 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   await connection();
   const params = await searchParams;
   const motivo = typeof params.motivo === "string" ? params.motivo : undefined;
-  const volver = typeof params.volver === "string" && /^\/(?!\/)/.test(params.volver) ? params.volver : "/";
+  // Mismo criterio que `safeNext` (actions.ts): solo rutas internas, sin "//" ni barra invertida (redirección abierta).
+  const volver = typeof params.volver === "string" && /^\/(?!\/)[\w\-./?=&%]*$/.test(params.volver) ? params.volver : "/";
   const challenge = await readChallenge();
   const initial: LoginStep | null = challenge
     ? challenge.kind === "mfa"

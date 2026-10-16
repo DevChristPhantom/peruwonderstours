@@ -3,6 +3,8 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, type ReactNode } from "react";
 
+import styles from "./DestinationCard.module.css";
+
 /**
  * Carrusel manual < 768 px (scroll-snap, 82 % de ancho, botones Anterior/Siguiente, sin autoplay);
  * grilla desde 768 px (home.md §5).
@@ -35,7 +37,7 @@ export function DestinationRail({
       <ul
         ref={ref}
         aria-label={label}
-        className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scroll-padding-inline:1rem] [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-3 xl:grid-cols-5"
+        className={`${styles.rail} -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [scroll-padding-inline:1rem] [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 lg:grid-cols-3 xl:grid-cols-5`}
         data-reveal-stagger
       >
         {children}

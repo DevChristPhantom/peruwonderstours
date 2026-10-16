@@ -55,7 +55,6 @@ export function MobileBookingBar({ pricing }: { pricing: TourPricing | null }) {
     >
       <a
         href={PANEL_SELECTOR}
-        aria-label={t("floatingLabel")}
         className={buttonClass("primary", "lg", "pointer-events-auto gap-3 rounded-pill px-5 shadow-lg")}
         onClick={() => {
           requestAnimationFrame(() =>
@@ -64,8 +63,10 @@ export function MobileBookingBar({ pricing }: { pricing: TourPricing | null }) {
         }}
       >
         <CalendarCheck aria-hidden size={20} strokeWidth={1.5} />
+        {/* Nombre accesible = texto visible (WCAG 2.5.3) + pista solo para lectores de pantalla. */}
         <span className="font-semibold">{t("floating")}</span>
-        <span aria-hidden className="border-l border-white/30 pl-3 text-sm font-normal opacity-90">
+        <span className="sr-only">{t("floatingHint")}</span>
+        <span className="border-l border-white/30 pl-3 text-sm font-normal opacity-90">
           {pricing
             ? tp.rich("fromShort", { amount: () => <span className="tabular font-semibold">{f.money(pricing.adultCents, pricing.currency)}</span> })
             : tp("onRequest")}

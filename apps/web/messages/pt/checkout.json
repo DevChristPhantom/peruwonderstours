@@ -91,7 +91,12 @@
     "fullOption": "Pagar 100 % agora",
     "fullHelp": "Sem saldo pendente. Você recebe um único comprovante.",
     "lockedOption": "Sua reserva {code} já está salva: conclua o pagamento de {amount}.",
-    "fullOnlyReason": "Este pedido exige pagamento integral: {reason}",
+    "fullOnlyReasons": {
+      "departure_too_close": "Este pedido exige pagamento integral porque a saída é em menos de 7 dias.",
+      "third_party_tickets": "Este pedido exige pagamento integral porque inclui ingressos de terceiros (trem, entrada em Machu Picchu ou sobrevoos).",
+      "tour_override": "Este passeio exige pagamento integral na reserva.",
+      "deposit_covers_total": "Este pedido exige pagamento integral porque o sinal cobriria quase todo o total."
+    },
     "fullOnly": "Este pedido exige pagamento integral: inclui ingressos de terceiros ou saídas em menos de 7 dias.",
     "bookingTotal": "Total da reserva",
     "deposit": "Entrada",

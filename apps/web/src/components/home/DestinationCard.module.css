@@ -1,0 +1,143 @@
+/*
+ * Tarjeta de destino con profundidad (home · Destinos).
+ *
+ * Variables escritas por `TiltCard` (puntero fino): --rx/--ry (inclinación en grados), --mx/--my
+ * (posición del puntero en %) y --px/--py (desplazamiento de la foto, -1…1). Solo transform y
+ * opacity (compositor). Táctil o movimiento reducido: sin inclinación ni paralaje; la llamada a la
+ * acción queda visible y el foco de teclado recibe el mismo realce que el hover.
+ */
+
+.card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+  --px: 0;
+  --py: 0;
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(0);
+  transition:
+    transform 450ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 300ms ease,
+    filter 300ms ease;
+}
+
+.media {
+  transform: scale(1) translate3d(0, 0, 0);
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Brillo que sigue al puntero. */
+.glare {
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at var(--mx) var(--my), rgb(255 255 255 / 0.28), transparent 45%);
+  mix-blend-mode: soft-light;
+  transition: opacity 300ms ease;
+}
+
+/* Borde dorado (color del logo) que aparece al activar la tarjeta. */
+.ring {
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  box-shadow:
+    inset 0 0 0 1px rgb(227 169 43 / 0.9),
+    inset 0 0 32px rgb(227 169 43 / 0.18);
+  transition: opacity 350ms ease;
+}
+
+.body {
+  transform: translateY(0);
+  transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--pwt-dorado-400);
+}
+
+.ctaArrow {
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rule {
+  display: block;
+  height: 2px;
+  width: 2.5rem;
+  margin-top: 0.75rem;
+  background: var(--pwt-dorado-400);
+  transform-origin: left;
+  transform: scaleX(0.4);
+  transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Estado activo: hover con puntero fino o foco de teclado dentro de la tarjeta. */
+.card:focus-within .ring,
+.card:focus-within .glare {
+  opacity: 1;
+}
+.card:focus-within .rule {
+  transform: scaleX(1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* La llamada a la acción entra al activar la tarjeta (en táctil siempre está visible). */
+  .cta {
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition:
+      opacity 300ms ease,
+      transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .card:hover .cta,
+  .card:focus-within .cta {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .card:hover .ctaArrow {
+    transform: translateX(4px);
+  }
+  .card:hover .ring,
+  .card:hover .glare {
+    opacity: 1;
+  }
+  .card:hover .rule {
+    transform: scaleX(1);
+  }
+  .card:hover .body {
+    transform: translateY(-0.25rem);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .card:hover {
+    transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) translateY(-6px);
+    transition-duration: 120ms, 300ms, 300ms;
+  }
+  .card:hover .media {
+    transform: scale(1.12) translate3d(calc(var(--px) * -14px), calc(var(--py) * -14px), 0);
+  }
+
+  /* Foco en la tarjeta activa: las demás del carril se atenúan. */
+  .rail:has(.card:hover) .card:not(:hover) {
+    opacity: 0.55;
+    filter: saturate(0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .media,
+  .body,
+  .cta,
+  .ctaArrow,
+  .rule {
+    transition: none;
+  }
+}

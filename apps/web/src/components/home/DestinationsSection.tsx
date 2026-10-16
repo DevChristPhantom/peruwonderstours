@@ -1,3 +1,4 @@
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
@@ -6,14 +7,16 @@ import type { Destination } from "@/lib/catalog/types";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { localePath } from "@/i18n/paths";
 import type { Locale } from "@/i18n/routing";
+import styles from "./DestinationCard.module.css";
 import { DestinationRail } from "./DestinationRail";
+import { TiltCard } from "./TiltCard";
 
 export async function DestinationCard({ destination, featured = false }: { destination: Destination; featured?: boolean }) {
   const t = await getTranslations("home.destinations");
   return (
-    <article
+    <TiltCard
       className={
-        "group relative isolate flex aspect-[4/5] h-full items-end overflow-hidden rounded-lg bg-hero-ink p-5 text-white " +
+        `${styles.card} group relative isolate flex aspect-[4/5] h-full items-end overflow-hidden rounded-lg bg-hero-ink p-5 text-white ` +
         "has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-ring " +
         (featured ? "lg:aspect-auto xl:aspect-[4/5]" : "")
       }
@@ -25,20 +28,27 @@ export async function DestinationCard({ destination, featured = false }: { desti
             alt={destination.cardImage.alt}
             fill
             sizes="(min-width: 1440px) 280px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 82vw"
-            className="object-cover transition-transform duration-500 ease-out [@media(hover:hover)_and_(pointer:fine)_and_(prefers-reduced-motion:no-preference)]:group-hover:scale-[1.04] motion-reduce:transition-none"
+            className={`${styles.media} object-cover`}
           />
         </div>
       ) : null}
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,rgba(6,9,11,.8),transparent_60%)]" aria-hidden="true" />
-      <div>
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,rgba(6,9,11,.85),rgba(6,9,11,.15)_55%,transparent)]" aria-hidden="true" />
+      <div className={`${styles.glare} absolute inset-0 -z-10`} aria-hidden="true" />
+      <div className={`${styles.ring} absolute inset-0`} aria-hidden="true" />
+      <div className={styles.body}>
         <h3 className="font-display text-h3 font-medium">
           <Link href={destination.path} className="pwt-card-link focus-visible:outline-none">
             {destination.name}
           </Link>
         </h3>
         <p className="text-sm text-hero-soft">{t("tourCount", { count: destination.tourCount })}</p>
+        <span className={styles.rule} aria-hidden="true" />
+        <span className={styles.cta} aria-hidden="true">
+          {t("explore")}
+          <ArrowRight className={styles.ctaArrow} size={16} strokeWidth={1.75} />
+        </span>
       </div>
-    </article>
+    </TiltCard>
   );
 }
 

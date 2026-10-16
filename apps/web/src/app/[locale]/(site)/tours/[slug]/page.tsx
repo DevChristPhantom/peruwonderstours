@@ -34,7 +34,8 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/tours/[s
   const locale = raw as Locale;
   const tour = await getTour(decodeURIComponent(slug), locale);
   if (!tour) return {};
-  return pageMetadata({ locale, title: tour.metaTitle, description: tour.metaDescription, paths: tour.alternates, image: tour.image?.src });
+  // Sin traducción propia se muestra el texto en español: noindex para no duplicar el original.
+  return pageMetadata({ locale, title: tour.metaTitle, description: tour.metaDescription, paths: tour.alternates, image: tour.image?.src, index: !tour.fallback });
 }
 
 /** Avisos de altura por destino (clave en español). */

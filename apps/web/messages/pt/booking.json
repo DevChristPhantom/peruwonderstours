@@ -28,5 +28,5 @@
   "questions": "Dúvidas? Fale conosco pelo WhatsApp",
   "seeDates": "Ver datas",
   "floating": "Reservar",
-  "floatingLabel": "Reservar: escolher data e viajantes"
+  "floatingHint": ": escolher data e viajantes,"
 }

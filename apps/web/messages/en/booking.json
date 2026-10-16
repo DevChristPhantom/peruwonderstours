@@ -28,5 +28,5 @@
   "questions": "Questions? Message us on WhatsApp",
   "seeDates": "See dates",
   "floating": "Book",
-  "floatingLabel": "Book: choose date and travelers"
+  "floatingHint": ": choose date and travelers,"
 }

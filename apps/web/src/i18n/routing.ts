@@ -59,7 +59,6 @@ export const routing = defineRouting({
     "/privacidad/baja": { es: "/privacidad/baja", en: "/privacy/unsubscribe", pt: "/privacidade/cancelar-inscricao" },
     "/privacidad/confirmar": { es: "/privacidad/confirmar", en: "/privacy/confirm", pt: "/privacidade/confirmar" },
     "/mis-reservas": { es: "/mis-reservas", en: "/my-bookings", pt: "/minhas-reservas" },
-    "/cuenta/ingresar": { es: "/cuenta/ingresar", en: "/account/sign-in", pt: "/conta/entrar" },
     "/cuenta/acceso": { es: "/cuenta/acceso", en: "/account/access", pt: "/conta/acesso" },
   },
 });

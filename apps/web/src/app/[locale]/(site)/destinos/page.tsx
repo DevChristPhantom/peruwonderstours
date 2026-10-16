@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
+import styles from "@/components/home/DestinationCard.module.css";
 import { DestinationCard } from "@/components/home/DestinationsSection";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { localePath } from "@/i18n/paths";
@@ -27,7 +28,7 @@ export default async function DestinationsPage({ params }: PageProps<"/[locale]/
         ]}
       />
       <h1 className="mt-4 mb-8 font-display text-h1 font-medium">{t("title")}</h1>
-      <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" data-reveal-stagger>
+      <ul className={`${styles.rail} grid gap-6 sm:grid-cols-2 lg:grid-cols-3`} data-reveal-stagger>
         {destinations.map((d) => (
           <li key={d.key}>
             <DestinationCard destination={d} />
