@@ -21,11 +21,20 @@ await Promise.all(Array.from({ length: 4 }, async () => {
     verified++;
   }
 }));
-const image = manifest[0].local;
-const optimized = await fetch(new URL(`/_next/image?url=${encodeURIComponent(image)}&w=640&q=75`, origin), {
-  headers: { Accept: 'image/webp' }, redirect: 'error', signal: AbortSignal.timeout(30_000),
-});
-assert.equal(optimized.status, 200, 'Owned catalog image rejected by the image optimizer');
-assert.match(optimized.headers.get('content-type') ?? '', /^image\//);
-assert.ok((await optimized.arrayBuffer()).byteLength > 0);
-console.log(`PASS: ${verified} archived images served from own origin with matching SHA-256; image optimizer returns 200.`);
+const home = await fetch(new URL('/es', origin), { redirect: 'error', signal: AbortSignal.timeout(15_000) });
+assert.equal(home.status, 200);
+const html = await home.text();
+const direct = /<img\b[^>]*\bsrc="\/tours\/[^\"]+"/.test(html);
+if (direct) {
+  assert.ok(!home.headers.get('content-security-policy')?.includes('upgrade-insecure-requests'), 'HTTP demo forces image transport to HTTPS');
+  assert.equal(home.headers.get('strict-transport-security'), null, 'HTTP demo must not advertise HSTS');
+} else {
+  const image = manifest[0].local;
+  const optimized = await fetch(new URL(`/_next/image?url=${encodeURIComponent(image)}&w=640&q=75`, origin), {
+    headers: { Accept: 'image/webp' }, redirect: 'error', signal: AbortSignal.timeout(30_000),
+  });
+  assert.equal(optimized.status, 200, 'Owned catalog image rejected by the image optimizer');
+  assert.match(optimized.headers.get('content-type') ?? '', /^image\//);
+  assert.ok((await optimized.arrayBuffer()).byteLength > 0);
+}
+console.log(`PASS: ${verified} archived images served from own origin with matching SHA-256; ${direct ? 'direct HTTP demo delivery verified' : 'image optimizer returns 200'}.`);
