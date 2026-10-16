@@ -922,6 +922,7 @@
     "destinations": {
       "title": "Destinos",
       "viewAll": "Ver todos los destinos",
+      "explore": "Explorar tours",
       "railLabel": "Destinos del Perú",
       "previous": "Destinos anteriores",
       "next": "Más destinos",
