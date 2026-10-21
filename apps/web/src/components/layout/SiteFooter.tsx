@@ -106,8 +106,8 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
       <h2 id="footer-title" className="sr-only">
         {t("title")}
       </h2>
-      <AndesSkyline className="block h-14 w-full md:h-20" />
-      <div className="bg-[color:var(--pwt-titicaca-800)]">
+      <AndesSkyline className="block h-[clamp(100px,15.75vw,252px)] w-full object-cover object-bottom" />
+      <div className="bg-[#133464]">
         <div className="pwt-container grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1fr]">
           <div>
             <Link href="/" className="inline-flex min-h-11 items-center" aria-label={tc("logoHome")}>

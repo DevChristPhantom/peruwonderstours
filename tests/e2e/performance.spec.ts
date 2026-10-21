@@ -5,7 +5,7 @@ if (process.env.CI !== 'true' || !['localhost', '127.0.0.1'].includes(new URL(or
 
 for (const width of [1280, 390]) test(`public performance probe at ${width}px`, async ({ page }, info) => {
   const retiredRequests: string[] = [];
-  await page.route(/https?:\/\/(?:www\.)?(?:andeanperutours\.com|turinet\.turismoads\.com)(?:\/|$)/i, route => {
+  await page.route(/https?:\/\/(?:www\.)?(?:andeanperutours\.com|turinet\.turismoads\.com|turinet\.com\.pe)(?:[/:?#]|$)/i, route => {
     retiredRequests.push(route.request().url());
     return route.abort('failed');
   });
@@ -27,7 +27,11 @@ for (const width of [1280, 390]) test(`public performance probe at ${width}px`, 
       }).observe({ type, buffered: true });
     }
   });
-  await page.goto('/es');
+  const home = await page.goto('/es');
+  if (process.env.PWT_DEMO_BUILD === '1') {
+    expect(await home!.headerValue('content-security-policy')).not.toContain('upgrade-insecure-requests');
+    expect(await home!.headerValue('strict-transport-security')).toBeNull();
+  }
   await expect(page.locator('#hero-title')).toBeVisible();
   const activeImage = page.locator('[data-active="true"][data-effect] img').first();
   await expect.poll(() => activeImage.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
@@ -52,6 +56,7 @@ for (const width of [1280, 390]) test(`public performance probe at ${width}px`, 
   await expect(productImage).not.toHaveAttribute('src', /andeanperutours|turinet\.turismoads/i);
   const productUrl = new URL((await productImage.getAttribute('src'))!, origin);
   expect(productUrl.searchParams.get('url') ?? productUrl.pathname).toMatch(/^\/tours\//);
+  if (process.env.PWT_DEMO_BUILD === '1') expect(productUrl.pathname).toMatch(/^\/tours\//);
 
   expect(retiredRequests, 'The homepage must not request the retired website').toEqual([]);
   let bannerBytes = 0;

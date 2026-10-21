@@ -12,12 +12,6 @@ export async function Hero({ image }: { image: CatalogImage | null }) {
     <section className={s.hero} aria-labelledby="hero-title">
       <HeroMotion scenes={scenes} fallback={image} />
 
-      <div className={s.cue} aria-hidden="true">
-        <span>(</span>
-        <span>{t("scroll")}</span>
-        <span>)</span>
-      </div>
-
       <div className={s.copy}>
         <h1 id="hero-title" className={s.title}>
           {t("title")}

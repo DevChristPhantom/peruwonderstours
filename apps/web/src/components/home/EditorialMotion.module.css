@@ -1,0 +1,25 @@
+.section { overflow: clip; }
+.tourGrid > li { min-width: 0; }
+.body { isolation: isolate; }
+.body::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(0deg, rgb(7 37 42 / .95), rgb(7 37 42 / .5), transparent);
+  opacity: 0;
+  transition: opacity 150ms ease;
+}
+.card:focus-visible .body::before { opacity: 1; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .tourGrid article { transition: transform 150ms ease; }
+  .tourGrid article:hover, .tourGrid article:focus-within { transform: translateY(-4px); }
+  .body { transition: transform 450ms cubic-bezier(.25, 1, .5, 1); }
+  .action svg { transition: transform 150ms ease; }
+  .card:hover .body, .card:focus-visible .body { transform: translateY(-6px); }
+  .card:hover .body::before { opacity: 1; }
+  .card:hover .action svg, .card:focus-visible .action svg { transform: translate(3px, -3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .body::before { transition: none; }
+}

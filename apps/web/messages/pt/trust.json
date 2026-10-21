@@ -1,4 +1,13 @@
 {
+  "logoDescription": "Conheça as instituições e os programas do turismo peruano. Estes links informativos não representam credenciamentos da agência.",
+  "institutions": {
+    "safe-travels": "Safe Travels · Programa histórico",
+    "esnna": "Protégeme · Turismo responsável",
+    "gercetur": "GERCETUR Cusco",
+    "promperu": "PROMPERÚ",
+    "marca-peru": "Marca Peru",
+    "sernanp": "SERNANP"
+  },
   "label": "Confiança e links oficiais",
   "badges": "Selos e registros",
   "officialLinks": "Links oficiais",

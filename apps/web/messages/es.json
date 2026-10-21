@@ -897,7 +897,6 @@
       "title": "Viaja por el Perú con quienes lo conocen",
       "lead": "Tours al Lago Titicaca, Machu Picchu, el Colca y la costa sur con guías locales, salidas confirmadas y reserva con adelanto.",
       "imageAlt": "Islas flotantes de los Uros en el Lago Titicaca, Puno",
-      "scroll": "Desliza para descubrir",
       "banners": "Destinos del banner principal",
       "previousBanner": "Banner anterior",
       "nextBanner": "Banner siguiente",
@@ -906,12 +905,14 @@
       "pauseBanner": "Pausar animación y carrusel"
     },
     "featured": {
+      "eyebrow": "Encuentra tu próximo viaje",
+      "intro": "Compara itinerarios, duración y precios. Elige una experiencia para consultar sus detalles y fechas disponibles.",
       "title": "Tours destacados",
       "viewAll": "Ver los {count} tours",
       "tabsLabel": "Filtrar tours destacados",
       "oneDayLink": "Ver tours de un día",
       "groups": {
-        "all": "Todos",
+        "all": "Recomendados",
         "altiplano": "Altiplano y Titicaca",
         "machuPicchu": "Machu Picchu",
         "multi": "Multidestino"
@@ -920,6 +921,8 @@
       "emptyGroup": "Aún no hay tours en este grupo."
     },
     "destinations": {
+      "eyebrow": "Elige dónde empezar",
+      "intro": "Explora los tours de cada destino y encuentra la ruta que va contigo.",
       "title": "Destinos",
       "viewAll": "Ver todos los destinos",
       "explore": "Explorar tours",
@@ -957,6 +960,12 @@
       "whatsapp": "Planear por WhatsApp",
       "whatsappMessage": "Hola {name}, quiero planear un viaje por el Perú.",
       "packages": "Ver paquetes"
+    },
+    "gallery": {
+      "eyebrow": "El Perú, de cerca",
+      "title": "Lugares que se quedan contigo",
+      "intro": "Del azul del Titicaca a las montañas de Cusco: encuentra el paisaje de tu próximo viaje.",
+      "openTour": "Ver experiencia"
     }
   },
   "journal": {
@@ -1221,6 +1230,7 @@
     "related": "Tours relacionados"
   },
   "tourCard": {
+    "details": "Ver itinerario y fechas",
     "package": "Paquete · {duration}",
     "minPax": "Mín. {count, plural, one {# viajero} other {# viajeros}}"
   },
@@ -1296,6 +1306,15 @@
     }
   },
   "trust": {
+    "logoDescription": "Conoce las entidades y programas del turismo peruano. Estos enlaces informativos no representan acreditaciones de la agencia.",
+    "institutions": {
+      "safe-travels": "Safe Travels · Programa histórico",
+      "esnna": "Protégeme · Turismo responsable",
+      "gercetur": "GERCETUR Cusco",
+      "promperu": "PROMPERÚ",
+      "marca-peru": "Marca Perú",
+      "sernanp": "SERNANP"
+    },
     "label": "Confianza y enlaces oficiales",
     "badges": "Sellos y registros",
     "officialLinks": "Enlaces oficiales",

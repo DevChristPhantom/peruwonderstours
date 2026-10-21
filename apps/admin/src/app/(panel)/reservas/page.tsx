@@ -46,7 +46,7 @@ export default async function BookingsPage({ searchParams }: PageProps<"/reserva
     <>
       <PageHeader title="Reservas" description="Filtra por estado, código o fecha del primer servicio. Abre una reserva para registrar pagos, cancelar o reenviar el voucher." />
 
-      <div className="mb-4 grid gap-3 lg:grid-cols-[1fr_auto]">
+      <div className="mb-4 grid gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(280px,360px)]">
         <form method="get" className="grid grid-cols-2 items-end gap-2 rounded-md border border-border bg-surface p-3 md:grid-cols-5" aria-label="Filtros de reservas">
           <label className="text-xs font-medium">
             Estado
@@ -133,18 +133,18 @@ export default async function BookingsPage({ searchParams }: PageProps<"/reserva
                 {result.data.data.map((b) => (
                   <tr key={b.id}>
                     <td>
-                      <Link href={`/reservas/${b.code}`} className="font-mono font-medium">
+                      <Link href={`/reservas/${b.code}`} className="font-mono font-medium whitespace-nowrap">
                         {b.code}
                       </Link>
                     </td>
                     <td>
                       <Badge tone={BOOKING_STATUS[b.status]?.tone ?? "neutral"}>{BOOKING_STATUS[b.status]?.label ?? b.status}</Badge>
                     </td>
-                    <td>
-                      <span className="block">{b.customer.fullName}</span>
-                      <span className="block text-xs text-foreground-muted">{b.customer.email}</span>
+                    <td className="max-w-52">
+                      <span className="block truncate" title={b.customer.fullName}>{b.customer.fullName}</span>
+                      <span className="block truncate text-xs text-foreground-muted" title={b.customer.email}>{b.customer.email}</span>
                     </td>
-                    <td className="max-w-72">
+                    <td className="max-w-56">
                       {b.tours.map((t, i) => (
                         <span key={i} className="block truncate" title={t.title}>
                           {t.title} <span className="text-xs text-foreground-muted">· {t.paxCount} pax</span>

@@ -897,7 +897,6 @@
       "title": "Travel Peru with people who know it",
       "lead": "Tours to Lake Titicaca, Machu Picchu, Colca Canyon and the southern coast with local guides, confirmed departures and deposit-based booking.",
       "imageAlt": "Uros floating islands on Lake Titicaca, Puno",
-      "scroll": "Scroll to explore",
       "banners": "Featured destinations",
       "previousBanner": "Previous banner",
       "nextBanner": "Next banner",
@@ -906,12 +905,14 @@
       "pauseBanner": "Pause animation and carousel"
     },
     "featured": {
+      "eyebrow": "Find your next journey",
+      "intro": "Compare itineraries, duration and prices. Choose an experience to explore its details and available dates.",
       "title": "Featured tours",
       "viewAll": "See all {count} tours",
       "tabsLabel": "Filter featured tours",
       "oneDayLink": "See day tours",
       "groups": {
-        "all": "All",
+        "all": "Recommended",
         "altiplano": "Altiplano & Titicaca",
         "machuPicchu": "Machu Picchu",
         "multi": "Multi-destination"
@@ -920,6 +921,8 @@
       "emptyGroup": "There are no tours in this group yet."
     },
     "destinations": {
+      "eyebrow": "Choose where to begin",
+      "intro": "Explore tours by destination and find the route that suits you.",
       "title": "Destinations",
       "viewAll": "See all destinations",
       "explore": "Explore tours",
@@ -957,6 +960,12 @@
       "whatsapp": "Plan on WhatsApp",
       "whatsappMessage": "Hi {name}, I'd like to plan a trip to Peru.",
       "packages": "See packages"
+    },
+    "gallery": {
+      "eyebrow": "A closer look at Peru",
+      "title": "Places that stay with you",
+      "intro": "From the blue waters of Titicaca to the mountains of Cusco: find the landscape for your next journey.",
+      "openTour": "Explore this trip"
     }
   },
   "journal": {
@@ -1221,6 +1230,7 @@
     "related": "Related tours"
   },
   "tourCard": {
+    "details": "View itinerary and dates",
     "package": "Package · {duration}",
     "minPax": "Min. {count, plural, one {# traveler} other {# travelers}}"
   },
@@ -1296,6 +1306,15 @@
     }
   },
   "trust": {
+    "logoDescription": "Discover Peru's tourism organizations and programs. These informational links do not represent agency accreditations.",
+    "institutions": {
+      "safe-travels": "Safe Travels · Historical program",
+      "esnna": "Protégeme · Responsible tourism",
+      "gercetur": "GERCETUR Cusco",
+      "promperu": "PROMPERÚ",
+      "marca-peru": "Peru Brand",
+      "sernanp": "SERNANP"
+    },
     "label": "Trust and official links",
     "badges": "Seals and registrations",
     "officialLinks": "Official links",

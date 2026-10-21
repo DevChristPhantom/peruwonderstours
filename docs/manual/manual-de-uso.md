@@ -2,7 +2,7 @@
 
 **Para la persona que atenderá la agencia y actualizará la página.**
 
-Versión 0.2 · 15 de octubre de 2026
+Versión 0.3 · 16 de octubre de 2026
 
 Este manual está pensado para una persona que no tiene conocimientos de programación. No necesitas instalar programas ni escribir comandos para seguir los pasos de uso habitual.
 
@@ -37,6 +37,20 @@ Si no aparece un botón indicado aquí, puede que tu cuenta no tenga permiso par
 13. Revisar qué falta antes de atender clientes reales.
 
 ## 1. Encender la página de prueba
+
+### Demostración rápida para presentar al cliente
+
+La versión compilada prepara la página antes de abrirla. Es la recomendada para presentar el avance.
+
+1. Abre la carpeta `C:\Users\ingjo\Documents\Codex\2026-10-13\pu\outputs`.
+2. Si está apagada, haz doble clic en **Preparar-demo.cmd**. Espera a que diga **DEMO LISTA**; la preparación puede tardar varios minutos.
+3. Abre `http://localhost:4000/es` para ver la web y `http://localhost:4002/login` para el panel. Usa tus datos de acceso habituales del entorno de prueba.
+4. No necesitas repetir la preparación para navegar. Si el programador modificó el código, ejecuta **Actualizar-demo.cmd**, espera **DEMO LISTA** y recarga la página.
+5. Para apagar la demostración, ejecuta **Detener-demo.cmd**. Esto no borra tours, reservas ni la base de prueba.
+
+Las fotos recuperadas se guardan con este proyecto: no necesitas abrir ni mantener funcionando el sitio anterior. Si ves un recuadro de imagen pendiente, falta reemplazar una foto que no se pudo recuperar; avisa al encargado, sin pegar enlaces del sitio antiguo.
+
+Los cobros siguen siendo simulados. Estos accesos funcionan únicamente en el equipo donde se preparó la demostración. Las siguientes instrucciones de desarrollo siguen disponibles para trabajar con cambios de código.
 
 ### A. Abrir la carpeta de trabajo
 

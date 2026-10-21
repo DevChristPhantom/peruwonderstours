@@ -37,21 +37,37 @@
 .motionRoot { position: absolute; inset: 0; pointer-events: none; }
 .motionFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; opacity: 0; pointer-events: auto; transition: opacity 500ms var(--ease); }
 .frameReady { opacity: 1; }
+/* Controles del carrusel: líneas de progreso finas + botones redondos translúcidos (sin "barra" opaca). */
 .controls {
-  position: absolute; right: clamp(20px, 3.4vw, 52px); bottom: 124px; z-index: 3;
+  position: absolute; right: clamp(20px, 3.4vw, 52px); bottom: 132px; z-index: 3;
   pointer-events: auto;
-  display: flex; align-items: center; gap: 4px; max-width: calc(100% - 40px);
-  padding: 6px; border: 1px solid rgb(255 255 255 / .3); border-radius: 999px;
-  background: rgb(11 16 19 / .82); color: white; overflow-x: auto;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 14px;
+  color: white;
 }
-.controls button { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; border: 0; border-radius: 50%; color: inherit; background: transparent; }
-.controls button:hover, .controls button[aria-pressed="true"] { background: rgb(255 255 255 / .16); }
-.controls button:focus-visible { outline-color: white; outline-offset: -3px; }
-.dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: .55; }
-.controls button[aria-pressed="true"] .dot { opacity: 1; }
-@media(max-width: 1023px) {
-  .controls { bottom: 56px; }
+.progress { display: flex; gap: 6px; }
+/* Área táctil de 44 px; la línea visible mide 2 px. */
+.segment { display: inline-flex; align-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; }
+.track { position: relative; display: block; width: 100%; height: 2px; overflow: hidden; border-radius: 2px; background: rgb(255 255 255 / .35); transition: background-color 200ms var(--ease); }
+.segment:hover .track { background: rgb(255 255 255 / .6); }
+.fill { position: absolute; inset: 0; background: white; transform-origin: left; transform: scaleX(1); }
+.fill[data-mode="playing"] { animation: heroProgress var(--hero-interval, 7s) linear both; }
+@keyframes heroProgress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.buttons { display: flex; gap: 8px; }
+.control {
+  display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px;
+  border: 1px solid rgb(255 255 255 / .45); border-radius: 50%; color: inherit;
+  background: rgb(255 255 255 / .08); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  transition: background-color 200ms var(--ease), border-color 200ms var(--ease), transform 200ms var(--ease);
 }
+.control:hover { background: rgb(255 255 255 / .2); border-color: white; }
+.control:active { transform: scale(.94); }
+.segment:focus-visible, .control:focus-visible { outline: 2px solid white; outline-offset: 2px; border-radius: 999px; }
+@media (max-width: 1023px) {
+  /* Móvil: debajo del texto, a la izquierda (el botón de WhatsApp ocupa la derecha). */
+  .controls { left: clamp(20px, 3.4vw, 52px); right: auto; bottom: 64px; flex-direction: row; align-items: center; gap: 12px; }
+  .segment { width: 32px; }
+}
+@media (prefers-reduced-motion: reduce) { .fill[data-mode="playing"] { animation: none; } .control, .track { transition: none; } }
 @media(prefers-reduced-motion: reduce) { .motionFrame { transition: none; } }
 
 .hero::after {
@@ -63,37 +79,6 @@
   background:
     linear-gradient(to bottom, rgba(6, 10, 12, 0.35) 0%, rgba(6, 10, 12, 0) 22%),
     linear-gradient(to top, rgba(6, 9, 11, 0.8) 0%, rgba(6, 9, 11, 0.25) 30%, rgba(6, 9, 11, 0) 55%);
-}
-
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 10px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-
-.cue {
-  position: absolute;
-  z-index: 2;
-  pointer-events: none;
-  left: 50%;
-  top: 44%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 16px;
-  font-size: 13.5px;
-  letter-spacing: 0.01em;
-  color: rgba(255, 255, 255, 0.92);
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
-  animation: fadeUp 500ms var(--ease) 200ms both;
-}
-.cue span:first-child,
-.cue span:last-child {
-  opacity: 0.8;
 }
 
 @keyframes copyIn {
@@ -120,12 +105,15 @@
 .title {
   margin: 0;
   font-family: var(--pwt-font-display);
-  font-weight: 400;
+  /* Fraunces con WONK/SOFT en 0: serif editorial limpia (las letras "torcidas" parecían mal escritas). */
+  font-weight: 500;
   font-size: var(--pwt-text-display-xl);
-  line-height: var(--pwt-leading-tight);
-  letter-spacing: -0.015em;
-  font-variation-settings: "SOFT" 50;
-  text-shadow: 0 1px 24px rgba(0, 0, 0, 0.25);
+  line-height: 1.04;
+  letter-spacing: -0.022em;
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 0, "WONK" 0;
+  text-wrap: balance;
+  text-shadow: 0 2px 28px rgba(0, 0, 0, 0.35);
 }
 .lead {
   margin: 14px 0 0;
@@ -143,7 +131,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .bg,
-  .cue,
   .copy {
     animation: none;
   }
@@ -156,7 +143,8 @@
 .nativeCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .nativeHeading { position: absolute; top: max(100px, 14%); left: clamp(20px, 7vw, 110px); right: 20px; pointer-events: none; color: #f2fcff; text-shadow: 0 3px 18px rgb(0 25 55 / .6); }
 .nativeHeading p { margin: 0 0 12px; font-size: 12px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; }
-.nativeHeading h2 { margin: 0; font-family: var(--pwt-font-display); font-size: clamp(42px, 7vw, 112px); font-style: italic; font-weight: 400; line-height: 1.1; }
+/* Solo se carga Fraunces recta: sin cursiva sintética (el navegador la inclina y se ve deforme). */
+.nativeHeading h2 { margin: 0; font-family: var(--pwt-font-display); font-size: clamp(42px, 7vw, 112px); font-style: normal; font-weight: 500; letter-spacing: -0.02em; font-variation-settings: "SOFT" 0, "WONK" 0; line-height: 1.05; }
 .nativeHeading h2 > span:not(.accessibleTitle) { display: inline-block; animation: native-letter 600ms cubic-bezier(.25,1,.5,1) both; }
 .accessibleTitle { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 @keyframes native-letter { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }

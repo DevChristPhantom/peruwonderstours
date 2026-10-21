@@ -4,12 +4,15 @@ import { env } from "@/lib/env";
 import { refreshSession } from "@/lib/session/refresh";
 import { getForwardHeaders, getSession, writeSession } from "@/lib/session/server";
 
+import { notifyPublicSite } from "./public-site";
+
 /**
  * Cliente del BFF hacia la API NestJS. Solo servidor: el navegador nunca habla con la API.
  * - `Authorization: Bearer` con el access token de la sesión cifrada.
  * - Reenvía `X-Forwarded-For` (según TRUSTED_PROXY_HOPS), `X-Request-Id` y `User-Agent`.
  * - Ante `401 access-token-expired` refresca (cola serializada por sesión) y reintenta una vez.
  * - Errores RFC 9457 → `ApiError` con `code` estable; red caída → `api-unavailable`.
+ * - Tras una escritura exitosa avisa a la web pública (`public-site.ts`) para refrescar su caché.
  */
 
 export interface ProblemDetails {
@@ -137,7 +140,25 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
       throw new ApiError(401, refreshed.code, null);
     }
   }
-  return parse<T>(res);
+  const result = await parse<T>(res);
+  // Escritura exitosa de contenido público: la web deja de servir su copia en caché.
+  if ((options.method ?? "GET") !== "GET") await notifyPublicSite(path);
+  return result;
+}
+
+/** Respuesta binaria de solo lectura (p. ej. vista previa de un banner) con la sesión del BFF. */
+export async function apiBinary(path: string): Promise<{ body: ArrayBuffer; contentType: string }> {
+  const session = await getSession();
+  if (!session) throw new NoSessionError();
+  let res = await send(path, {}, session.at);
+  if (res.status === 401 && EXPIRED_ACCESS.has((await peekCode(res)) ?? "")) {
+    const refreshed = await refreshSession(session, await getForwardHeaders());
+    if (!refreshed.ok) throw new ApiError(401, refreshed.code, null);
+    await writeSession(refreshed.session).catch(() => undefined);
+    res = await send(path, {}, refreshed.session.at);
+  }
+  if (!res.ok) await parse(res);
+  return { body: await res.arrayBuffer(), contentType: res.headers.get("content-type") ?? "application/octet-stream" };
 }
 
 /** Atajo para respuestas `{ data }`. */

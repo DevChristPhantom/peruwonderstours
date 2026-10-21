@@ -28,7 +28,8 @@ test("toSortOrders numera de 10 en 10", () => {
 test("translationBadge distingue ausente, revisada y pendiente", () => {
   assert.equal(translationBadge(undefined).label, "Sin traducción");
   assert.equal(translationBadge(null).label, "Revisada por el equipo");
-  assert.equal(translationBadge("machine_reviewed_pending_client").label, "Traducción automática pendiente de revisión");
+  assert.equal(translationBadge("machine_reviewed_pending_client").label, "Automática · por revisar");
+  assert.equal(translationBadge("machine_reviewed_pending_client").hint, "Traducción automática pendiente de revisión");
   assert.equal(translationBadge("machine_reviewed_pending_client").tone, "warning");
   assert.ok(isPendingReview("machine_reviewed_pending_client"));
   assert.ok(!isPendingReview(null));

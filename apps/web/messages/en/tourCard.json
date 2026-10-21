@@ -1,4 +1,5 @@
 {
+  "details": "View itinerary and dates",
   "package": "Package · {duration}",
   "minPax": "Min. {count, plural, one {# traveler} other {# travelers}}"
 }

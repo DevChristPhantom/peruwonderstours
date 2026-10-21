@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Header, HttpCode, Inject, Param, Patch, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Header, HttpCode, Inject, Param, Patch, Post, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { IsBoolean, IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 import type { Response } from 'express';
@@ -19,6 +19,9 @@ export class PatchHeroBannerDto {
   @IsOptional() @IsInt() @Min(0) @Max(999) sortOrder?: number;
   @IsOptional() @IsIn(HERO_BANNER_EFFECTS) effect?: HeroBannerEffect;
   @IsOptional() @IsBoolean() titleEmbedded?: boolean;
+}
+export class DeleteHeroBannerDto {
+  @IsInt() @Min(1) revision!: number;
 }
 interface HtmlFile { buffer: Buffer; originalname: string }
 
@@ -53,6 +56,14 @@ export class HeroBannersAdminController {
   @Get()
   @StaffAuth('tours:read')
   async list() { return { data: await this.banners.list() }; }
+  @Get(':id/poster')
+  @StaffAuth('tours:read')
+  @Header('X-Content-Type-Options', 'nosniff')
+  @Header('Cache-Control', 'private, no-store')
+  async poster(@Param('id') id: string, @Res() response: Response) {
+    const poster = await this.banners.poster(id, true);
+    response.type(poster.mime).send(poster.buffer);
+  }
   @Post()
   @HttpCode(201)
   @StaffAuth('media:upload', 'tours:write')
@@ -65,5 +76,11 @@ export class HeroBannersAdminController {
   @StaffAuth('tours:write')
   async patch(@Param('id') id: string, @Body() body: PatchHeroBannerDto) {
     return { data: await this.banners.patch(id, body) };
+  }
+  @Delete(':id')
+  @HttpCode(204)
+  @StaffAuth('tours:write')
+  async remove(@Param('id') id: string, @Body() body: DeleteHeroBannerDto): Promise<void> {
+    await this.banners.remove(id, body.revision);
   }
 }

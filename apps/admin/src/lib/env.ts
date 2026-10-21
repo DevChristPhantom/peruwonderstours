@@ -42,6 +42,21 @@ const schema = z.object({
     .url({ protocol: /^https?$/, error: "MEDIA_PUBLIC_BASE_URL debe ser una URL http(s)." })
     .optional()
     .transform((value) => value?.replace(/\/+$/, "")),
+  /**
+   * Aviso a la web pública tras cada cambio de contenido (portadas, tours, blog…) para que se vea
+   * al instante. Sin secreto, el aviso se desactiva y la web se actualiza sola en ≤ 1 h.
+   */
+  REVALIDATE_SECRET: z.string().min(32, "REVALIDATE_SECRET debe tener al menos 32 caracteres.").optional(),
+  /** Endpoints de la web a avisar (coma). Por defecto: PUBLIC_WEB_BASE_URL + `/api/revalidate`. */
+  WEB_REVALIDATE_URLS: z
+    .string()
+    .optional()
+    .transform((v) =>
+      (v ?? "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    ),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 

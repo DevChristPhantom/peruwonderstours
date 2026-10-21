@@ -1,6 +1,6 @@
 import { Star } from "lucide-react";
 
-import { approveTestimonialAction, featureTestimonialAction, rejectTestimonialAction } from "@/app/(panel)/testimonios/actions";
+import { approveTestimonialAction, deleteTestimonialAction, featureTestimonialAction, rejectTestimonialAction } from "@/app/(panel)/testimonios/actions";
 import { ActionForm, SubmitButton } from "@/components/forms/ActionForm";
 import { Badge } from "@/components/ui/Badge";
 import { buttonClass } from "@/components/ui/styles";
@@ -86,6 +86,17 @@ export function TestimonialCard({ t, canPublish, canWrite }: { t: Testimonial; c
           </details>
         ) : null}
         {canWrite ? <TestimonialEditForm t={t} /> : null}
+        {canPublish ? (
+          <ActionForm
+            action={deleteTestimonialAction.bind(null, t.id)}
+            confirm={`¿Eliminar el testimonio de ${t.authorName}? Saldrá del sitio y de esta lista. No se puede deshacer desde el panel.`}
+            className="ml-auto"
+          >
+            <SubmitButton variant="danger" size="sm" pendingLabel="Eliminando…">
+              Eliminar
+            </SubmitButton>
+          </ActionForm>
+        ) : null}
       </div>
     </article>
   );

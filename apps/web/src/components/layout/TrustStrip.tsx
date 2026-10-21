@@ -1,4 +1,4 @@
-import { BadgeCheck } from "lucide-react";
+import { BadgeCheck, ExternalLink } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { ComplaintsBookNotice } from "@/components/complaints/ComplaintsBookNotice";
@@ -11,16 +11,16 @@ import { enabledBadges, officialLinks } from "@/lib/trust";
  * - Siempre: el aviso del Libro de Reclamaciones (obligatorio en la home).
  * - Sellos con logo: solo los encendidos en `BADGE_SWITCHES` (hoy todos `enabled: false`); al
  *   encenderlos se muestra un distintivo neutro con su nombre, nunca una imagen enlazada de un sitio del Estado.
- * - Recursos oficiales: tarjetas con fotografías ilustrativas e iconos, sin afirmar acreditaciones.
+ * - Logos locales: enlaces informativos, separados de las acreditaciones de la agencia.
  */
-const RESOURCE_ART = {
-  "machu-picchu-tickets": { image: "/hero-motion/machu-picchu-0.webp", photo: true },
-  "mincetur-directory": { image: "/icons/rune/receipt.svg" },
-  "peru-travel": { image: "/hero-motion/titicaca-0.webp", photo: true },
-  "iperu": { image: "/icons/rune/phone.svg" },
-  "sernanp-visit": { image: "/icons/rune/map.svg" },
-  "esnna-info": { image: "/icons/rune/shield-check.svg" },
-} as const;
+const INSTITUTIONS = [
+  { id: 'safe-travels', image: 'safe-travels', url: 'https://wttc.org/initiatives/crisis-preparedness-management-recovery/safetravels-stamp-application' },
+  { id: 'esnna', image: 'esnna-horizontal', url: 'https://www.gob.pe/15106-ministerio-de-comercio-exterior-y-turismo-prevencion-de-la-explotacion-sexual-de-ninas-ninos-y-adolescentes-en-el-ambito-del-turismo-esnna' },
+  { id: 'gercetur', image: 'gercetur', url: 'https://www.gob.pe/regioncusco-gercetur' },
+  { id: 'promperu', image: 'promperu', url: 'https://www.gob.pe/promperu' },
+  { id: 'marca-peru', image: 'marca-peru', url: 'https://peru.info/es-pe/' },
+  { id: 'sernanp', image: 'sernanp', url: 'https://www.gob.pe/sernanp' },
+] as const;
 
 export async function TrustStrip({ locale }: { locale: Locale }) {
   const t = await getTranslations("trust");
@@ -57,7 +57,15 @@ export async function TrustStrip({ locale }: { locale: Locale }) {
           </div>
         ) : null}
       </div>
-      <OfficialResources resources={links.map((link) => ({ ...link, label: t(`links.${link.id}`), ...RESOURCE_ART[link.id] }))} title={t("officialLinks")} description={t("description")} externalHint={t("externalHint")} pauseLabel={t("pause")} playLabel={t("play")} />
+      <OfficialResources resources={INSTITUTIONS.map((item) => ({ ...item, image: `/official/${item.image}.svg`, label: t(`institutions.${item.id}`), logo: true }))} title={t("officialLinks")} description={t("logoDescription")} externalHint={t("externalHint")} pauseLabel={t("pause")} playLabel={t("play")} />
+      <ul className="pwt-container flex flex-wrap gap-x-6 gap-y-1 py-5">
+        {links.map((link) => <li key={link.id}>
+          <a href={link.url} target="_blank" rel="noopener noreferrer" className="pwt-link inline-flex min-h-11 items-center gap-2 text-sm">
+            {t(`links.${link.id}`)}<ExternalLink aria-hidden size={14} className="shrink-0" />
+            <span className="sr-only">{t('externalHint')}</span>
+          </a>
+        </li>)}
+      </ul>
     </section>
   );
 }

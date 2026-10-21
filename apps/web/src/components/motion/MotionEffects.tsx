@@ -133,6 +133,27 @@ export default function MotionEffects() {
             const base = { ease: "pwt" };
             const trigger = (el: Element): ScrollTrigger.Vars => ({ trigger: el, start: "top 85%", once: true });
 
+            // Home editorial scenes: each card enters when it reaches the viewport,
+            // rather than revealing an entire tall mobile grid at once.
+            const compact = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
+            // Batch geometry reads before GSAP writes styles; preserve content that
+            // is already visible when the deferred engine arrives.
+            const scenes = gsap.utils.toArray<HTMLElement>("[data-reveal-scene]")
+              .filter((el) => el.getBoundingClientRect().top >= window.innerHeight);
+            scenes.forEach((el) => {
+              const direction = el.dataset.revealScene;
+              const horizontal = !compact && (direction === "left" || direction === "right");
+              gsap.from(el, {
+                ...base,
+                opacity: 0,
+                x: horizontal ? (direction === "left" ? -24 : 24) : 0,
+                y: horizontal ? 0 : 20,
+                duration: compact ? 0.4 : 0.55,
+                clearProps: "transform,opacity",
+                scrollTrigger: trigger(el),
+              });
+            });
+
             gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
               gsap.from(el, { ...base, opacity: 0, y: 16, duration: 0.5, scrollTrigger: trigger(el) });
             });

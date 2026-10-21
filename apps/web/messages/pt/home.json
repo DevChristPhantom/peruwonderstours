@@ -4,7 +4,6 @@
     "title": "Viaje pelo Peru com quem conhece o país",
     "lead": "Passeios ao Lago Titicaca, Machu Picchu, Colca e costa sul com guias locais, saídas confirmadas e reserva com entrada.",
     "imageAlt": "Ilhas flutuantes dos Uros no Lago Titicaca, Puno",
-    "scroll": "Role para descobrir",
     "banners": "Destinos do banner principal",
     "previousBanner": "Banner anterior",
     "nextBanner": "Próximo banner",
@@ -13,15 +12,24 @@
     "pauseBanner": "Pausar animação e carrossel"
   },
   "featured": {
+    "eyebrow": "Encontre sua próxima viagem",
+    "intro": "Compare roteiros, duração e preços. Escolha uma experiência para consultar os detalhes e as datas disponíveis.",
     "title": "Passeios em destaque",
     "viewAll": "Ver os {count} passeios",
     "tabsLabel": "Filtrar passeios em destaque",
     "oneDayLink": "Ver passeios de um dia",
-    "groups": { "all": "Todos", "altiplano": "Altiplano e Titicaca", "machuPicchu": "Machu Picchu", "multi": "Vários destinos" },
+    "groups": {
+      "all": "Recomendados",
+      "altiplano": "Altiplano e Titicaca",
+      "machuPicchu": "Machu Picchu",
+      "multi": "Vários destinos"
+    },
     "emptyFeatured": "Em breve, publicaremos nossos passeios em destaque.",
     "emptyGroup": "Ainda não há passeios neste grupo."
   },
   "destinations": {
+    "eyebrow": "Escolha por onde começar",
+    "intro": "Explore os passeios de cada destino e encontre o roteiro que combina com você.",
     "title": "Destinos",
     "viewAll": "Ver todos os destinos",
     "explore": "Explorar passeios",
@@ -35,10 +43,22 @@
     "toursPublished": "Passeios publicados",
     "destinations": "Destinos",
     "reasons": {
-      "office": { "title": "Escritório em Puno", "text": "Somos operadores locais: atendemos você antes, durante e depois da viagem." },
-      "guides": { "title": "Guias locais", "text": "Guias que vivem em cada destino e compartilham sua história e cultura." },
-      "deposit": { "title": "Reserva com entrada", "text": "Garanta sua vaga com uma entrada e pague o saldo antes da saída." },
-      "whatsapp": { "title": "Atendimento pelo WhatsApp", "text": "Tiramos suas dúvidas na hora, em espanhol ou inglês." }
+      "office": {
+        "title": "Escritório em Puno",
+        "text": "Somos operadores locais: atendemos você antes, durante e depois da viagem."
+      },
+      "guides": {
+        "title": "Guias locais",
+        "text": "Guias que vivem em cada destino e compartilham sua história e cultura."
+      },
+      "deposit": {
+        "title": "Reserva com entrada",
+        "text": "Garanta sua vaga com uma entrada e pague o saldo antes da saída."
+      },
+      "whatsapp": {
+        "title": "Atendimento pelo WhatsApp",
+        "text": "Tiramos suas dúvidas na hora, em espanhol ou inglês."
+      }
     }
   },
   "finalCta": {
@@ -47,5 +67,11 @@
     "whatsapp": "Planejar pelo WhatsApp",
     "whatsappMessage": "Olá, {name}, quero planejar uma viagem pelo Peru.",
     "packages": "Ver pacotes"
+  },
+  "gallery": {
+    "eyebrow": "O Peru, de perto",
+    "title": "Lugares que ficam com você",
+    "intro": "Do azul do Titicaca às montanhas de Cusco: encontre a paisagem da sua próxima viagem.",
+    "openTour": "Ver experiência"
   }
 }

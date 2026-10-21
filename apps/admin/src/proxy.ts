@@ -45,8 +45,10 @@ function buildCsp(nonce: string, dev: boolean): string {
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${dev ? " 'unsafe-eval'" : ""}`,
     // En desarrollo el overlay de errores de Next inyecta estilos sin nonce.
     dev ? "style-src 'self' 'unsafe-inline'" : `style-src 'self' 'nonce-${nonce}'`,
-    // Sin atributos style en producción (el panel no los usa; `<meter>` en lugar de barras con width).
-    ...(dev ? [] : ["style-src-attr 'none'"]),
+    // Sin atributos style en producción (el panel no los usa; `<meter>` en lugar de barras con width),
+    // salvo los dos fijos que pone Next: `color:transparent` (next/image) y `position: absolute;`
+    // (anunciador de rutas para lectores de pantalla). Se permiten solo por hash exacto.
+    ...(dev ? [] : ["style-src-attr 'unsafe-hashes' 'sha256-zlqnbDt84zf1iSefLU/ImC54isoprH/MRiVZGskwexk=' 'sha256-32t0bJPIyxns/QqsW8RE3JGUERKnHL5RygHBgJvEanc='"]),
     // Portadas de tours: URLs absolutas del CDN (solo https) + origen de los medios subidos.
     `img-src 'self' data: blob: https:${media && !media.startsWith("https:") ? ` ${media}` : ""}${webImages && !webImages.startsWith("https:") ? ` ${webImages}` : ""}`,
     "font-src 'self'",

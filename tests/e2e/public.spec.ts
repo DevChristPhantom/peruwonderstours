@@ -28,7 +28,7 @@ test.afterEach(async ({ page }, info) => {
 
 test('Home prioritizes products; hero controls and featured tabs work', async ({ page }, info) => {
   await measured(info, 'Home ready', async () => { await page.goto('/es'); await expect(page.locator('#hero-title')).toBeVisible(); });
-  const positions = await page.evaluate(() => ['destinos-title', 'paquetes-title', 'enlaces-oficiales'].map(id => document.getElementById(id)!.getBoundingClientRect().top + scrollY));
+  const positions = await page.evaluate(() => ['paquetes-title', 'destinos-title', 'enlaces-oficiales'].map(id => document.getElementById(id)!.getBoundingClientRect().top + scrollY));
   expect(positions[0]).toBeLessThan(positions[1]); expect(positions[1]).toBeLessThan(positions[2]);
   const controls = page.getByRole('group', { name: 'Destinos del banner principal' });
   await measured(info, 'Select Machu Picchu banner', async () => { await controls.getByRole('button', { name: 'Mostrar Machu Picchu', exact: true }).click(); await expect(controls.getByRole('button', { name: 'Mostrar Machu Picchu', exact: true })).toHaveAttribute('aria-pressed', 'true'); });
@@ -41,11 +41,11 @@ test('Home prioritizes products; hero controls and featured tabs work', async ({
   await controls.getByRole('button', { name: 'Banner anterior', exact: true }).click();
   await expect(controls.getByRole('button', { name: 'Mostrar Lago Titicaca', exact: true })).toHaveAttribute('aria-pressed', 'true');
   const tabs = page.getByRole('tablist', { name: 'Filtrar tours destacados' });
-  for (const label of ['Todos', 'Altiplano y Titicaca', 'Machu Picchu', 'Multidestino']) await measured(info, `Featured tab ${label}`, async () => {
+  for (const label of ['Recomendados', 'Altiplano y Titicaca', 'Machu Picchu', 'Multidestino']) await measured(info, `Featured tab ${label}`, async () => {
     const tab = tabs.getByRole('tab', { name: label, exact: true }); await tab.click(); await expect(tab).toHaveAttribute('aria-selected', 'true');
   });
   await tabs.getByRole('tab', { name: 'Multidestino', exact: true }).press('Home');
-  await expect(tabs.getByRole('tab', { name: 'Todos', exact: true })).toBeFocused();
+  await expect(tabs.getByRole('tab', { name: 'Recomendados', exact: true })).toBeFocused();
   await page.screenshot({ path: info.outputPath('home-products.png'), fullPage: true });
 });
 
@@ -216,4 +216,62 @@ test('Tour photo gallery supports next, previous, Escape and focus restoration',
   await expect(gallery.locator('p[aria-live]')).toContainText(/^1 \/ /);
   await page.keyboard.press('Escape');
   await expect(gallery).toBeHidden();await expect(opener).toBeFocused();
+});
+
+test('Catalog photography stays after products and works across languages and screen sizes', async ({ page }, info) => {
+  test.setTimeout(240_000);
+  const routes = [
+    { locale: 'es', about: '/es/nosotros', contact: '/es/contactenos' },
+    { locale: 'en', about: '/en/about', contact: '/en/contact' },
+    { locale: 'pt', about: '/pt/sobre-nos', contact: '/pt/contato' },
+  ];
+  async function decodedImages(selector: string, count: number) {
+    const images = page.locator(selector);
+    await expect(images).toHaveCount(count);
+    for (let index = 0; index < count; index++) {
+      const image = images.nth(index);
+      await expect(image).toHaveAttribute('loading', 'lazy');
+      await image.scrollIntoViewIfNeeded();
+      await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+      await image.evaluate((element: HTMLImageElement) => element.decode());
+    }
+  }
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const route of routes) {
+      await test.step(`${route.locale} photography at ${width}px`, async () => {
+        await page.goto(`/${route.locale}`);
+        await expect(page.locator('main h1')).toHaveCount(1);
+        const gallery = page.locator('section[aria-labelledby="photo-gallery-title"]');
+        await expect(gallery.locator('h2')).toHaveCount(1);
+        const order = await page.evaluate(() => {
+          const products = document.getElementById('paquetes-title');
+          const photos = document.getElementById('photo-gallery-title');
+          return Boolean(products && photos && (products.compareDocumentPosition(photos) & Node.DOCUMENT_POSITION_FOLLOWING));
+        });
+        expect(order, 'Sell tours before the editorial photo gallery').toBe(true);
+        await decodedImages('[data-photo-gallery] img', 5);
+        const links = await gallery.locator('li > a').evaluateAll(elements => elements.map(element => (element as HTMLAnchorElement).getAttribute('href')));
+        expect(links).toHaveLength(5);
+        for (const href of links) {
+          expect(href).toMatch(new RegExp(`^/${route.locale}/tours/[^/?#]+$`));
+        }
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+        await gallery.screenshot({ path: info.outputPath(`gallery-${route.locale}-${width}.png`) });
+        // A real card navigation proves that the catalog link resolves, rather than just matching a URL shape.
+        await gallery.locator('li > a').first().click();
+        await expect(page).toHaveURL(new RegExp(`/${route.locale}/tours/`));
+        await expect(page.locator('main h1')).toBeVisible();
+        await page.goto(route.about);
+        await decodedImages('section[aria-labelledby="about-destinations"] img', 5);
+        await expect(page.locator('main h1')).toHaveCount(1);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+        await page.goto(route.contact);
+        await decodedImages('main figure img', 1);
+        await expect(page.locator('#contacto-form')).toBeVisible();
+        await expect(page.locator('main h1')).toHaveCount(1);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+      });
+    }
+  }
 });

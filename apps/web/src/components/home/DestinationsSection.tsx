@@ -55,9 +55,9 @@ export async function DestinationCard({ destination, featured = false }: { desti
 export async function DestinationsSection({ destinations, locale }: { destinations: Destination[]; locale: Locale }) {
   const t = await getTranslations("home.destinations");
   return (
-    <section className="pwt-section" aria-labelledby="destinos-title">
+    <section className="pwt-section border-y border-border bg-surface-muted" aria-labelledby="destinos-title">
       <div className="pwt-container">
-        <SectionHeading id="destinos-title" title={t("title")} link={{ href: localePath(locale, "/destinos"), label: t("viewAll") }} />
+        <SectionHeading id="destinos-title" eyebrow={t("eyebrow")} title={t("title")} description={t("intro")} link={{ href: localePath(locale, "/destinos"), label: t("viewAll") }} />
         <DestinationRail label={t("railLabel")} previousLabel={t("previous")} nextLabel={t("next")}>
           {destinations.map((d, i) => (
             <li key={d.key} className={`w-[82%] shrink-0 snap-start md:w-auto ${i === 0 ? "lg:row-span-2 xl:row-span-1" : ""}`}>

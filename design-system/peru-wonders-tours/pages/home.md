@@ -1,5 +1,7 @@
 # Página: Home (`/es`)
 
+> Actualización 2026-10-19 (ADR-0027): después del buscador, tours recomendados antes de destinos. Filtros de destacados con salto de línea en pantallas estrechas; tarjetas con ubicación superior y acción visible de itinerario/fechas. Los apartados históricos siguientes describen los componentes, no sustituyen este orden comercial.
+
 > Sobrescribe a `MASTER.md` solo donde se indica. Hero y header: **valores exactos** de
 > `docs/design/hero-morph-spec.md`; aquí solo se documenta la adaptación a la marca y lo que va debajo.
 

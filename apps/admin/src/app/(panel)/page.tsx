@@ -61,6 +61,10 @@ export default async function DashboardPage() {
   const d = result.data;
   const lights = d.complaints.byTrafficLight;
   const outboxTone = d.emailOutbox.failed > 0 ? "danger" : d.emailOutbox.retrying > 0 ? "warning" : "success";
+  // Con decenas de tours hay cientos de salidas en 14 días: el tablero muestra las que ya tienen
+  // movimiento (ventas, cupos retenidos o ventas cerradas); el detalle completo está en Salidas.
+  const busyDepartures = d.upcomingDepartures.filter((dep) => dep.booked + dep.held > 0 || dep.isClosed);
+  const shownDepartures = (busyDepartures.length ? busyDepartures : d.upcomingDepartures).slice(0, 12);
 
   return (
     <>
@@ -93,7 +97,7 @@ export default async function DashboardPage() {
         </Kpi>
       </div>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-3">
+      <div className="mt-4 grid items-start gap-4 lg:grid-cols-2 min-[1280px]:grid-cols-3">
         <Section title="Reservas por estado" id="estados">
           <ul className="divide-y divide-border text-sm">
             {Object.entries(BOOKING_STATUS).map(([status, meta]) => (
@@ -154,7 +158,7 @@ export default async function DashboardPage() {
         </Section>
       </div>
 
-      <div className="mt-4 grid gap-4 xl:grid-cols-2">
+      <div className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         <Section title="Saldos por vencer (7 días)" id="saldos" description={d.balances.dueNext7Days.totals.map((t) => formatMoney(t)).join(" · ") || "Sin saldos por vencer"}>
           {d.balances.dueNext7Days.bookings.length === 0 ? (
             <EmptyState>No hay saldos por vencer en los próximos 7 días.</EmptyState>
@@ -188,7 +192,24 @@ export default async function DashboardPage() {
           )}
         </Section>
 
-        <Section title="Ocupación de salidas (14 días)" id="ocupacion">
+        <Section
+          title="Ocupación de salidas (14 días)"
+          id="ocupacion"
+          description={
+            d.upcomingDepartures.length === 0
+              ? undefined
+              : busyDepartures.length
+                ? `${d.upcomingDepartures.length} salidas programadas · se muestran las que tienen ventas o cupos retenidos`
+                : `${d.upcomingDepartures.length} salidas programadas, todavía sin ventas`
+          }
+          actions={
+            d.upcomingDepartures.length > shownDepartures.length ? (
+              <Link href="/salidas" className="text-sm">
+                Ver todas
+              </Link>
+            ) : null
+          }
+        >
           {d.upcomingDepartures.length === 0 ? (
             <EmptyState>No hay salidas programadas en los próximos 14 días.</EmptyState>
           ) : (
@@ -205,7 +226,7 @@ export default async function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {d.upcomingDepartures.map((dep) => (
+                  {shownDepartures.map((dep) => (
                     <tr key={dep.departureId}>
                       <td className="whitespace-nowrap">
                         {formatWeekday(dep.departureDate)} {formatDate(dep.departureDate)}

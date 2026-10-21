@@ -1,4 +1,4 @@
-import { CalendarDays, MapPin, Users } from "lucide-react";
+import { ArrowUpRight, CalendarDays, MapPin, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -34,7 +34,7 @@ export async function TourCard({
   return (
     <article
       lang={tour.fallback ? "es-PE" : undefined}
-      className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition-shadow duration-300 hover:shadow-lg has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-ring"
+      className="group relative flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-sm has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-ring"
     >
       <div className="relative aspect-[4/3] overflow-hidden bg-surface-muted">
         {tour.image ? (
@@ -57,6 +57,10 @@ export async function TourCard({
         </div>
       </div>
       <div className="flex flex-1 flex-col gap-3 p-5">
+        <p className="flex items-start gap-1.5 text-xs font-medium tracking-wide text-primary">
+          <MapPin aria-hidden size={15} strokeWidth={1.5} className="mt-0.5 shrink-0" />
+          {places}
+        </p>
         <Heading className="text-h4 font-medium text-foreground">
           <Link href={tour.path} className="pwt-card-link line-clamp-2 focus-visible:outline-none">
             {tour.shortTitle}
@@ -66,10 +70,6 @@ export async function TourCard({
           <li className="inline-flex items-center gap-1.5">
             <CalendarDays aria-hidden size={16} strokeWidth={1.5} />
             {durationText(tu, tour.durationDays, tour.durationNights)}
-          </li>
-          <li className="inline-flex items-center gap-1.5">
-            <MapPin aria-hidden size={16} strokeWidth={1.5} />
-            {places}
           </li>
           <li className="inline-flex items-center gap-1.5">
             <Users aria-hidden size={16} strokeWidth={1.5} />
@@ -82,10 +82,14 @@ export async function TourCard({
             {tc("fallbackNotice")}
           </p>
         ) : null}
-        <div className="mt-auto flex items-end justify-between gap-3 border-t border-border pt-3">
+        <div className="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-border pt-4">
           <PriceTag pricing={tour.pricing} policy={tour.paymentPolicy} />
           {showCompare ? <CompareToggle slug={tour.key} title={tour.shortTitle} className="shrink-0" /> : null}
         </div>
+        <span aria-hidden="true" className="mt-1 inline-flex min-h-11 items-center justify-between gap-3 rounded-lg bg-primary px-4 text-sm font-medium text-on-primary">
+          {t("details")}
+          <ArrowUpRight size={18} strokeWidth={1.75} />
+        </span>
       </div>
     </article>
   );

@@ -2,14 +2,15 @@ import manifest from '../content/tour-image-manifest.json';
 
 const localBySource = new Map(manifest.map(record => [record.source, record.local]));
 
-/** Archived and owned images use local paths; unrelated CMS values retain their origin. */
+/** Archived and owned images use local paths; unrelated CMS values retain their origin.
+ * localhost:3000 is the API default for PUBLIC_WEB_BASE_URL (local dev). */
 export function catalogImageSource(source: string, publicWebBase = typeof process !== 'undefined' ? process.env.PUBLIC_WEB_BASE_URL : undefined): string {
   const local = localBySource.get(source);
   if (local) return local;
   try {
     const url = new URL(source, 'https://peruwonderstours.com');
     const hostname = url.hostname.toLowerCase();
-    const ownedOrigins = new Set(['https://peruwonderstours.com', 'https://www.peruwonderstours.com', 'http://localhost:3100', 'http://127.0.0.1:3100', 'http://localhost:4000', 'http://127.0.0.1:4000']);
+    const ownedOrigins = new Set(['https://peruwonderstours.com', 'https://www.peruwonderstours.com', 'http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3100', 'http://127.0.0.1:3100', 'http://localhost:4000', 'http://127.0.0.1:4000']);
     if (publicWebBase) {
       try {
         const configured = new URL(publicWebBase);

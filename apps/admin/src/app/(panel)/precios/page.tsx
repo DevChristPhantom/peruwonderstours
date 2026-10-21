@@ -20,21 +20,22 @@ export const metadata: Metadata = { title: "Precios" };
 const one = (v: string | string[] | undefined) => (typeof v === "string" ? v : undefined);
 
 function SeasonFields({ s }: { s?: Season }) {
+  const prefix = `temporada-${s?.id ?? "nueva"}`;
   return (
     <div className="grid gap-2 sm:grid-cols-5">
-      <Field label="Código" name="code" required>
+      <Field label="Código" name="code" idPrefix={prefix} required>
         <input className="field-input font-mono uppercase" defaultValue={s?.code} maxLength={40} />
       </Field>
-      <Field label="Nombre" name="name" required>
+      <Field label="Nombre" name="name" idPrefix={prefix} required>
         <input className="field-input" defaultValue={s?.name} maxLength={120} />
       </Field>
-      <Field label="Inicio" name="startDate" required>
+      <Field label="Inicio" name="startDate" idPrefix={prefix} required>
         <input type="date" className="field-input" defaultValue={s?.startDate} />
       </Field>
-      <Field label="Fin" name="endDate" required>
+      <Field label="Fin" name="endDate" idPrefix={prefix} required>
         <input type="date" className="field-input" defaultValue={s?.endDate} />
       </Field>
-      <Field label="Prioridad" name="priority" hint="Mayor gana si se solapan.">
+      <Field label="Prioridad" name="priority" idPrefix={prefix} hint="Mayor gana si se solapan.">
         <input inputMode="numeric" className="field-input" defaultValue={s?.priority ?? 0} />
       </Field>
     </div>

@@ -28,7 +28,9 @@ async function response(path) {
   }
   assert.equal(result.status, 200, `${path}: expected 200, got ${result.status}`);
   try {
-    return await result.text();
+    const html = await result.text();
+    assert.doesNotMatch(html, /(?:andeanperutours\.com|turinet\.turismoads\.com|turinet\.com\.pe)/i, `${path}: retired website reference in public response`);
+    return html;
   } catch (error) {
     throw new Error(`${path}: response body failed: ${error.message}`, { cause: error });
   }
@@ -126,5 +128,5 @@ for (const path of ["/es", "/es/tours", "/en", "/en/tours", "/pt", "/pt/tours"])
     samples.push(Math.round(performance.now() - start));
   }
   const sorted = [...samples].sort((a, b) => a - b);
-  console.log(`HTTP_TIMING ${JSON.stringify({ path, samples_ms: samples, median_ms: sorted[2], max_ms: sorted[4], mode: "production-seed-local-warm" })}`);
+  console.log(`HTTP_TIMING ${JSON.stringify({ path, samples_ms: samples, median_ms: sorted[2], max_ms: sorted[4], mode: "production-local-warm", catalogSource: process.env.CATALOG_SOURCE ?? "not asserted" })}`);
 }

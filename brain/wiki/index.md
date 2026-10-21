@@ -15,6 +15,18 @@ This catalog is updated by completed knowledge operations.
 
 ## Concepts
 
+- [[decisions/ADR-0028-logos-y-paisaje-footer]] — logos locales informativos y paisaje de cierre solicitado.
+
+- [[decisions/ADR-0027-jerarquia-y-tarjetas-home]] — tours primero, filtros de portada y tarjetas con acción visible.
+
+- [[decisions/ADR-0026-motion-editorial-home]] — efectos de entrada e interacción después del banner, con GSAP existente y movimiento reducido.
+
+- [[decisions/ADR-0024-imagenes-demo-http]] — imágenes de demo sin conversión fría y transporte local compatible.
+
+- [[decisions/ADR-0023-fotografia-editorial]] — más fotografías del catálogo, galería enlazada y carga diferida.
+
+- [[decisions/ADR-0022-independencia-de-medios]] — contenido y fotos propias, rendimiento y verificación de la demo compilada.
+
 - [[decisions/ADR-0014-portugues-brasil]] — tercer idioma pt-BR, fallback editorial explícito y migraciones aditivas.
 
 

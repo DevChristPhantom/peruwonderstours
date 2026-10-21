@@ -153,6 +153,14 @@ export class TestimonialsAdminController {
   async feature(@CurrentStaff() a: StaffActor, @ReqMeta() m: RequestMeta, @Param('id', uuid()) id: string, @Body() body: FeatureDto) {
     return { data: await this.content.featureTestimonial(a, m, id, body.featured) };
   }
+
+  @Delete(':id')
+  @HttpCode(204)
+  @StaffAuth('content:publish')
+  @ApiOperation({ summary: 'Elimina el testimonio de forma definitiva (spam o pedido del autor).' })
+  async remove(@CurrentStaff() a: StaffActor, @ReqMeta() m: RequestMeta, @Param('id', uuid()) id: string): Promise<void> {
+    await this.content.deleteTestimonial(a, m, id);
+  }
 }
 
 // =============================================================================

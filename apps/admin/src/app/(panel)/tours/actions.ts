@@ -82,3 +82,10 @@ export async function deleteMediaAction(id: string, version: number, mediaId: st
   if (!UUID.test(mediaId)) throw new Error("Id de medio inválido");
   return action(() => apiData<TourDetail>(tourPath(id, `/media/${mediaId}`), { method: "DELETE", body: { version } }).then(() => null));
 }
+
+/** Retira el tour del sitio (borrado lógico). La API lo rechaza si tiene reservas activas con viaje futuro. */
+export async function archiveTourAction(id: string, version: number, _prev: unknown, _fd: FormData) {
+  return action(() => apiData<null>(tourPath(id, "/archive"), { method: "POST", body: { version } }).then(() => null), {
+    message: "Tour retirado del sitio. Queda archivado y solo se puede consultar.",
+  });
+}

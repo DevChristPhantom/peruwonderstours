@@ -13,6 +13,8 @@ tags:
 
 ## Last Updated
 
+- 2026-10-19 (Claude): cambios del panel se ven al instante en la web (POST /api/revalidate con REVALIDATE_SECRET), botones Eliminar en banners/testimonios/tours/blog, vista previa de banners y espaciado del panel para laptops. Ver [[decisions/ADR-0025-refresco-inmediato-y-eliminar]].
+
 - 2026-10-16 (Claude, auditoría integral): ver docs/qa/auditoria-2026-10-16.md. Pruebas en verde (API 253+32, admin 14, web 35, CI). Build de producción 216/216 en 200 (0,05 s). Corregido: filtro `?volver=` del login admin alineado con `safeNext`; 57 páginas PT en español pasan a noindex hasta traducirse. Pendiente: repo público, rama `feature/entrega-peruwonderstours` obsoleta, `PUBLIC_WEB_BASE_URL` apunta a :4000, precios DEMO y RUC de ejemplo antes de publicar.
 
 - 2026-10-16 (Claude, revisión local): 216/216 URLs del sitemap en 200 (es/en/pt) y 73 redirecciones legadas OK. Causa de bucles 307 en 28 rutas traducidas: `next dev --hostname 127.0.0.1` (Next normaliza 127.0.0.1→localhost y el rewrite de next-intl se trata como externo); arrancar con `localhost`. BD local `pwt_admin_preview` sin tours publicados → `db:seed -- --publish --demo-pricing` (41 tours, 656 tarifas y 4920 salidas DEMO, solo local). `start-web-preview.ps1` pasa a `CATALOG_SOURCE=api` (con `seed` la ficha mostraba "A cotizar"). Compra sandbox E2E verificada: PWT-2026-000001, S/ 598 pagado al 100 % (salida <7 días), voucher por correo, reserva 404 sin cookie. Corregido: motivo de pago completo mostraba el código crudo (`departure_too_close`) → mensajes es/en/pt; quitada ruta `/cuenta/ingresar` sin página.
@@ -28,6 +30,18 @@ tags:
 - Equipo: 12 subagentes senior en `.claude/agents/`, dirigidos por `tech-lead-orchestrator`.
 
 ## Recent Changes
+
+- 2026-10-19: seis logos locales en recursos oficiales y franja original de montañas/caminantes al pie. Tipos/lint, XML y siete medios HTTP 200. Ver [[decisions/ADR-0028-logos-y-paisaje-footer]].
+
+- 2026-10-19: jerarquía de portada con tours primero, filtros visibles en móvil, subtítulos ES/EN/PT y CTA de itinerario/fechas en tarjetas. Tipos/lint y HTTP en tres idiomas aprobados; navegador pendiente. Ver [[decisions/ADR-0027-jerarquia-y-tarjetas-home]].
+
+- 2026-10-19: efectos editoriales propios tras el banner, inspirados en la configuración de andeanperuvian.com. Entradas por tarjeta, paneles de galería/diario y elevación de tours; tipos/lint y HTTP local aprobados, sin comprobación visual de navegador. Ver [[decisions/ADR-0026-motion-editorial-home]].
+
+- 2026-10-16: reporte de fotos no visibles en demo; entrega directa de originales comprimidos en modo local explícito y políticas HTTP loopback, manteniendo optimización/protecciones públicas. Ver [[decisions/ADR-0024-imagenes-demo-http]].
+
+- 2026-10-16: galería fotográfica de experiencias tras los productos y fotos en motivos de viaje, cierre, diario, Nosotros y Contacto; medios del catálogo actual, sin nuevas consultas ni JS de carrusel. Ver [[decisions/ADR-0023-fotografia-editorial]].
+
+- 2026-10-16: independencia del sitio anterior: 366 imágenes propias, 41 tours y contenido ES/EN preservados; 227 rutas sin hosts retirados y 366 archivos verificados por HTTP/SHA-256 en demo compilada. Mapas API/admin sincronizados; 35 pruebas web, 14 admin y 16 API dirigidas aprobadas. Ver [[decisions/ADR-0022-independencia-de-medios]]. Validación de navegador actual en CI pendiente.
 
 - 2026-10-15: manual de uso v0.1 en docs/manual/manual-de-uso.md; actualizar con cambios del sistema. Ver [[decisions/ADR-0021-manual-de-uso]].
 

@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-19",
+  "usage": "Informational links only; no agency accreditation. Decorative footer from client website.",
+  "assets": [
+    {
+      "file": "apps/web/public/official/safe-travels.svg",
+      "source": "https://www.andeanperutours.com/images/partners/safe-travels.svg?ver=1.3",
+      "sha256": "0060ead5bcd7da118073082ca5ad56e25940a8b84ad51f3f4c00bfbe945d65f7",
+      "bytes": 21081
+    },
+    {
+      "file": "apps/web/public/official/esnna-horizontal.svg",
+      "source": "https://www.andeanperutours.com/images/partners/esnna-horizontal.svg?v=0.1",
+      "sha256": "017ee759bbde34b4e997c8c44f9af05225b9002eb288c04fa004720db216d099",
+      "bytes": 30658
+    },
+    {
+      "file": "apps/web/public/official/gercetur.svg",
+      "source": "https://www.andeanperutours.com/images/partners/gercetur.svg?v=0.1",
+      "sha256": "3b3feec8224ca99e179fb7ae8b1cca461ca3f5c7072108db41f7098686ca41ca",
+      "bytes": 6115
+    },
+    {
+      "file": "apps/web/public/official/promperu.svg",
+      "source": "https://www.andeanperutours.com/images/partners/promperu.svg?v=0.1",
+      "sha256": "6c909e83b28b192e2c3032ff5183829c9a33889ed8048a3dea841f11dc612ed9",
+      "bytes": 9050
+    },
+    {
+      "file": "apps/web/public/official/marca-peru.svg",
+      "source": "https://www.andeanperutours.com/images/partners/marca-peru.svg?v=0.1",
+      "sha256": "14f731afc347237cb671ae99c3fb0b7ef6eb3f63f821f61d1eb2f67f8c252e3b",
+      "bytes": 4357
+    },
+    {
+      "file": "apps/web/public/official/sernanp.svg",
+      "source": "https://www.andeanperutours.com/images/partners/sernanp.svg?v=0.1",
+      "sha256": "3177fbf353274c7f531b82a1b01682aa021ecb5f286142230b705ee3ddb35ae8",
+      "bytes": 20877
+    },
+    {
+      "file": "apps/web/public/brand/andes-travelers.png",
+      "source": "https://www.andeanperutours.com/images/bg-top-footer.png",
+      "sha256": "684428890e13a73ce41e03721e4a0a6f83b80a738fe348bb0f04a4646b423294",
+      "bytes": 22122
+    }
+  ]
+}
