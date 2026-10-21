@@ -3,7 +3,7 @@
 import { CalendarRange, MessageCircle, Pencil, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { retiredImageGuard } from "@/lib/catalog/retired-image-guard";
-import NextLink from "next/link";
+import NextLink from "@/components/ui/IntentLink";
 import { useLocale, useTranslations } from "next-intl";
 import { useId, useMemo, useRef, useState } from "react";
 

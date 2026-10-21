@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/ui/IntentLink";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 

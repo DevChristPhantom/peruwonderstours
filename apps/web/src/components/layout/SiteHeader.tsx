@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import { Heart, ShoppingBag, UserRound } from "lucide-react";
 import Image from "next/image";
-import NextLink from "next/link";
+import NextLink from "@/components/ui/IntentLink";
 import { useLocale, useTranslations } from "next-intl";
 import {
   useCallback,

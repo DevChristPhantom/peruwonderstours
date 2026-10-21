@@ -1,7 +1,7 @@
 "use client";
 
 import { CalendarDays, CalendarPlus, Coffee, MapPin, MessageCircle, Mountain, Users } from "lucide-react";
-import NextLink from "next/link";
+import NextLink from "@/components/ui/IntentLink";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 

@@ -1,5 +1,5 @@
 import { ChevronRight } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/ui/IntentLink";
 import { getTranslations } from "next-intl/server";
 
 import { breadcrumbJsonLd, JsonLd, type Crumb } from "@/lib/seo/json-ld";

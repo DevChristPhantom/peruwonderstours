@@ -102,7 +102,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
   );
 
   return (
-    <footer aria-labelledby="footer-title" className="mt-16 text-[color:var(--pwt-hero-soft)]">
+    <footer aria-labelledby="footer-title" className="pwt-defer mt-16 text-[color:var(--pwt-hero-soft)]">
       <h2 id="footer-title" className="sr-only">
         {t("title")}
       </h2>

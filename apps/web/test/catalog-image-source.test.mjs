@@ -90,7 +90,7 @@ test('article-body photo links use local copies while external citations stay un
   const markdownModule = { exports: {} };
   runInNewContext(output, { module: markdownModule, exports: markdownModule.exports, require: id => {
     if (id === '@/lib/catalog/image-source') return { catalogImageSource };
-    if (id === 'next/link') return { default: 'local-link' };
+    if (id === 'next/link' || id === '@/components/ui/IntentLink') return { default: 'local-link' };
     if (id === 'react/jsx-runtime') return { jsx: (type, props) => ({ type, props }) };
     throw new Error(id);
   } });

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { connection } from "next/server";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowLeft, BookOpenCheck } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/ui/IntentLink";
 
 import { AccessExchangeForm, AccessRequestForm } from "@/components/access/AccessForms";
 import { ComplaintStatusCard } from "@/components/complaints/ComplaintStatusCard";
