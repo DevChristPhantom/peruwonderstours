@@ -409,6 +409,18 @@ export function SiteHeader({ media }: { media: NavMedia }) {
               </li>
             ))}
             <li>
+              <NextLink
+                href={media.packagesHref}
+                className={s.trigger}
+                onPointerEnter={(e) => {
+                  if (e.pointerType === "mouse") scheduleClose(LINK_CLOSE_DELAY);
+                }}
+                onFocus={() => close()}
+              >
+                {t("packages")}
+              </NextLink>
+            </li>
+            <li>
               <Link
                 href="/nosotros"
                 className={s.trigger}
@@ -571,6 +583,9 @@ export function SiteHeader({ media }: { media: NavMedia }) {
           </ul>
           <div className={s.sheetDivider} />
           <ul>
+            <li>
+              <NextLink href={media.packagesHref}>{t("packages")}</NextLink>
+            </li>
             <li>
               <Link href="/nosotros">{t("about")}</Link>
             </li>
