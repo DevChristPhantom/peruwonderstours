@@ -89,14 +89,14 @@ export default async function ToursPage({ searchParams }: PageProps<"/tours">) {
               <tbody>
                 {result.data.data.map((t) => (
                   <tr key={t.id}>
-                    <td>
+                    <td className="min-w-72">
                       <Link href={`/tours/${t.id}`} className="font-medium">
                         {t.title ?? t.slug}
                       </Link>
                       {t.isFeatured ? <span className="ml-2"><Badge tone="accent">Destacado</Badge></span> : null}
                       <span className="block text-xs text-foreground-muted">/{t.slug}</span>
                     </td>
-                    <td className="font-mono text-xs">{t.code}</td>
+                    <td className="font-mono text-xs whitespace-nowrap">{t.code}</td>
                     <td>{label(TOUR_TYPE, t.type)}</td>
                     <td>
                       <Badge tone={TOUR_STATUS[t.status]?.tone ?? "neutral"}>{TOUR_STATUS[t.status]?.label ?? t.status}</Badge>

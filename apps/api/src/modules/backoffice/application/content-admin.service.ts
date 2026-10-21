@@ -245,6 +245,18 @@ export class ContentAdminService {
     });
   }
 
+  /**
+   * Eliminación (borrado lógico, como el resto del contenido): sale del sitio y del panel. La
+   * auditoría guarda solo el estado previo, sin nombre ni texto del autor.
+   */
+  deleteTestimonial(actor: StaffActor, meta: RequestMeta, id: string) {
+    return this.db.run(actor, meta, async (ctx) => {
+      const row = await this.loadTestimonial(ctx, id);
+      await ctx.tx.testimonial.update({ where: { id }, data: { deletedAt: ctx.now, isFeatured: false } });
+      await ctx.audit({ entityType: 'testimonials', entityId: id, action: 'TESTIMONIAL_DELETED', before: { status: row.status, origin: row.origin } });
+    });
+  }
+
   /** Edición del staff (correcciones de ortografía, recorte); sigue sin admitir URLs ni HTML. */
   updateTestimonial(actor: StaffActor, meta: RequestMeta, id: string, input: { authorName?: string; authorCountry?: string | null; body?: string; rating?: number; locale?: ContentLocale }) {
     return this.db.run(actor, meta, async (ctx) => {

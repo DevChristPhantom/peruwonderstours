@@ -2,7 +2,7 @@
 
 **Para la persona que atenderá la agencia y actualizará la página.**
 
-Versión 0.3 · 16 de octubre de 2026
+Versión 0.4 · 21 de octubre de 2026
 
 Este manual está pensado para una persona que no tiene conocimientos de programación. No necesitas instalar programas ni escribir comandos para seguir los pasos de uso habitual.
 
@@ -139,6 +139,15 @@ Si no tienes teléfono ni códigos, contacta al administrador. No crees otra cue
 ## 3. Ubicarte dentro del panel
 
 En una pantalla grande, el menú aparece a la izquierda. En una pantalla pequeña, pulsa **Menú** para verlo.
+
+**Encontrar una sección rápidamente:**
+
+1. Haz clic en **Buscar sección…**, encima de las opciones del menú.
+2. Escribe una palabra, por ejemplo **reservas**, **precios** o **banners**. No necesitas escribir tildes.
+3. Haz clic en la opción que aparece para abrirla. Al abrirla se limpia la búsqueda; en celular también se cierra el menú.
+4. Si no aparece lo que buscas, pulsa la **X** del buscador para volver a ver tus opciones. Solo aparecen las secciones permitidas para tu cuenta.
+
+En el **Tablero**, debajo del título, encontrarás **¿Qué necesitas hacer hoy?**. Sus tarjetas abren directamente Reservas, Tours, Salidas y cupos o Banners de inicio, según tus permisos. Debajo se muestran ventas, reembolsos y saldos. Los montos se mantienen separados por moneda; no debes sumarlos como si todos fueran soles.
 
 | Quiero hacer esto | Sección que debo abrir |
 |---|---|

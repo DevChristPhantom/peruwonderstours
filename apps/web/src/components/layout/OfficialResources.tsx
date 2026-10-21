@@ -4,7 +4,7 @@ import { ExternalLink, Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import s from "./OfficialResources.module.css";
 
-export interface OfficialResource { id: string; url: string; label: string; image: string; photo?: boolean }
+export interface OfficialResource { id: string; url: string; label: string; image: string; photo?: boolean; logo?: boolean }
 export function OfficialResources({ resources, title, description, externalHint, pauseLabel, playLabel }: {
   resources: OfficialResource[]; title: string; description: string; externalHint: string; pauseLabel: string; playLabel: string;
 }) {
@@ -22,8 +22,8 @@ export function OfficialResources({ resources, title, description, externalHint,
   const group = (clone: boolean) => <ul className={`${s.group} ${clone ? s.clone : ""}`} aria-hidden={clone || undefined}>
     {resources.map((resource) => <li key={resource.id}>
       <a href={resource.url} target="_blank" rel="noopener noreferrer" tabIndex={clone ? -1 : undefined} className={s.card}>
-        <div className={`${s.art} ${resource.photo ? s.photo : ""}`}>
-          <Image src={resource.image} alt="" width={resource.photo ? 240 : 68} height={resource.photo ? 96 : 68} sizes="240px" className={s.image} />
+        <div className={`${s.art} ${resource.photo ? s.photo : ""} ${resource.logo ? s.logo : ""}`}>
+          <Image src={resource.image} alt="" width={resource.logo ? 200 : resource.photo ? 240 : 68} height={resource.logo ? 90 : resource.photo ? 96 : 68} loading="lazy" sizes="240px" className={s.image} />
           <span className={s.open}><ExternalLink size={15} aria-hidden /></span>
         </div>
         <span className={s.name}>{resource.label}</span><span className="sr-only"> {externalHint}</span>

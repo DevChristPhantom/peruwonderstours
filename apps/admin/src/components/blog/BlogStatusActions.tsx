@@ -2,7 +2,7 @@ import { changeBlogStatusAction } from "@/app/(panel)/blog/actions";
 import { ActionForm, SubmitButton } from "@/components/forms/ActionForm";
 import type { BlogPost } from "@/lib/api/content-types";
 
-/** Publicar / despublicar / archivar (permiso `content:publish`). Archivar pide confirmación. */
+/** Publicar / despublicar / eliminar (archiva; permiso `content:publish`). Eliminar pide confirmación. */
 export function BlogStatusActions({ post }: { post: BlogPost }) {
   if (post.status === "archived") return null;
   return (
@@ -23,10 +23,10 @@ export function BlogStatusActions({ post }: { post: BlogPost }) {
       <ActionForm
         action={changeBlogStatusAction.bind(null, post.id, post.version, "archive")}
         refresh={false}
-        confirm="¿Archivar el artículo? Saldrá del blog y de la lista de activos. Esta acción no se deshace desde el panel."
+        confirm="¿Eliminar el artículo? Saldrá del blog y de la lista (queda guardado en «Archivados»). No se puede deshacer desde el panel."
       >
-        <SubmitButton variant="danger" pendingLabel="Archivando…">
-          Archivar
+        <SubmitButton variant="danger" pendingLabel="Eliminando…">
+          Eliminar
         </SubmitButton>
       </ActionForm>
     </div>

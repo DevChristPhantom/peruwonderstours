@@ -16,6 +16,7 @@ export function Field({
   required,
   children,
   className,
+  idPrefix,
 }: {
   label: React.ReactNode;
   name: string;
@@ -26,8 +27,10 @@ export function Field({
   /** Un único control (`input`, `select`, `textarea`). */
   children: React.ReactElement<Record<string, unknown>>;
   className?: string;
+  /** Prefijo para formularios repetidos en la misma página (ids únicos: cada etiqueta apunta a su campo). */
+  idPrefix?: string;
 }) {
-  const id = `f-${name.replace(/[^\w-]/g, "-")}`;
+  const id = `f-${idPrefix ? `${idPrefix}-` : ""}${name.replace(/[^\w-]/g, "-")}`;
   const hintId = hint ? `${id}-ayuda` : undefined;
   const errorId = `${id}-error`;
   return (

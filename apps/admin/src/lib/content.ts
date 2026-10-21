@@ -8,17 +8,19 @@ import legacyMediaMap from "./legacy-media-map.json" with { type: "json" };
 export const TRANSLATION_STATUS_VALUES = ["machine_reviewed_pending_client", "client_approved", "staff_written"] as const;
 export type TranslationStatusValue = (typeof TRANSLATION_STATUS_VALUES)[number];
 
-export const TRANSLATION_STATUS: Record<TranslationStatusValue, { label: string; tone: Tone }> = {
-  machine_reviewed_pending_client: { label: "Traducción automática pendiente de revisión", tone: "warning" },
-  client_approved: { label: "Revisada y aprobada", tone: "success" },
-  staff_written: { label: "Redactada por el equipo", tone: "success" },
+/** `label`: texto completo (selectores y ayuda); `short`: insignia en tablas, para no estrechar columnas. */
+export const TRANSLATION_STATUS: Record<TranslationStatusValue, { label: string; short: string; tone: Tone }> = {
+  machine_reviewed_pending_client: { label: "Traducción automática pendiente de revisión", short: "Automática · por revisar", tone: "warning" },
+  client_approved: { label: "Revisada y aprobada", short: "Revisada", tone: "success" },
+  staff_written: { label: "Redactada por el equipo", short: "Del equipo", tone: "success" },
 };
 
 /** Estado de una traducción para la insignia: `null` = revisada por el equipo; `undefined` = no existe. */
-export function translationBadge(status: string | null | undefined): { label: string; tone: Tone } {
+export function translationBadge(status: string | null | undefined): { label: string; tone: Tone; hint?: string } {
   if (status === undefined) return { label: "Sin traducción", tone: "neutral" };
   if (status === null) return { label: "Revisada por el equipo", tone: "success" };
-  return TRANSLATION_STATUS[status as TranslationStatusValue] ?? { label: status, tone: "neutral" };
+  const known = TRANSLATION_STATUS[status as TranslationStatusValue];
+  return known ? { label: known.short, tone: known.tone, hint: known.label } : { label: status, tone: "neutral" };
 }
 
 export function isPendingReview(status: string | null | undefined): boolean {

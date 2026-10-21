@@ -28,7 +28,7 @@ test.afterEach(async ({ page }, info) => {
 
 test('Home prioritizes products; hero controls and featured tabs work', async ({ page }, info) => {
   await measured(info, 'Home ready', async () => { await page.goto('/es'); await expect(page.locator('#hero-title')).toBeVisible(); });
-  const positions = await page.evaluate(() => ['destinos-title', 'paquetes-title', 'enlaces-oficiales'].map(id => document.getElementById(id)!.getBoundingClientRect().top + scrollY));
+  const positions = await page.evaluate(() => ['paquetes-title', 'destinos-title', 'enlaces-oficiales'].map(id => document.getElementById(id)!.getBoundingClientRect().top + scrollY));
   expect(positions[0]).toBeLessThan(positions[1]); expect(positions[1]).toBeLessThan(positions[2]);
   const controls = page.getByRole('group', { name: 'Destinos del banner principal' });
   await measured(info, 'Select Machu Picchu banner', async () => { await controls.getByRole('button', { name: 'Mostrar Machu Picchu', exact: true }).click(); await expect(controls.getByRole('button', { name: 'Mostrar Machu Picchu', exact: true })).toHaveAttribute('aria-pressed', 'true'); });
@@ -41,11 +41,11 @@ test('Home prioritizes products; hero controls and featured tabs work', async ({
   await controls.getByRole('button', { name: 'Banner anterior', exact: true }).click();
   await expect(controls.getByRole('button', { name: 'Mostrar Lago Titicaca', exact: true })).toHaveAttribute('aria-pressed', 'true');
   const tabs = page.getByRole('tablist', { name: 'Filtrar tours destacados' });
-  for (const label of ['Todos', 'Altiplano y Titicaca', 'Machu Picchu', 'Multidestino']) await measured(info, `Featured tab ${label}`, async () => {
+  for (const label of ['Recomendados', 'Altiplano y Titicaca', 'Machu Picchu', 'Multidestino']) await measured(info, `Featured tab ${label}`, async () => {
     const tab = tabs.getByRole('tab', { name: label, exact: true }); await tab.click(); await expect(tab).toHaveAttribute('aria-selected', 'true');
   });
   await tabs.getByRole('tab', { name: 'Multidestino', exact: true }).press('Home');
-  await expect(tabs.getByRole('tab', { name: 'Todos', exact: true })).toBeFocused();
+  await expect(tabs.getByRole('tab', { name: 'Recomendados', exact: true })).toBeFocused();
   await page.screenshot({ path: info.outputPath('home-products.png'), fullPage: true });
 });
 

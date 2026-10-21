@@ -39,3 +39,7 @@ export async function updateTestimonialAction(id: string, _prev: unknown, fd: Fo
   if (!parsed.success) return invalidResult(parsed.error);
   return action(() => apiData<Testimonial>(path(id), { method: "PATCH", body: parsed.data }).then(() => null), { message: "Cambios guardados." });
 }
+
+export async function deleteTestimonialAction(id: string, _prev: unknown, _fd: FormData) {
+  return action(() => apiData<null>(path(id), { method: "DELETE" }).then(() => null), { message: "Testimonio eliminado." });
+}

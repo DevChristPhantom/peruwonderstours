@@ -86,3 +86,14 @@ export async function PATCH(request: NextRequest) {
   const body = { title: value.title, enabled: value.enabled, sortOrder: value.sortOrder, revision: value.revision, effect: value.effect, titleEmbedded: value.titleEmbedded };
   return forward(() => api<{ data: HeroBanner }>(`/admin/hero-banners/${id}`, { method: "PATCH", body }));
 }
+export async function DELETE(request: NextRequest) {
+  const denied = await authorize(true, "tours:write"); if (denied) return denied;
+  const id = request.nextUrl.searchParams.get("id") ?? "";
+  const revision = Number(request.nextUrl.searchParams.get("revision"));
+  if (!/^[a-zA-Z0-9_-]{1,80}$/.test(id)) return fail(400, { code: "invalid-id", message: "Banner inválido." });
+  if (!Number.isSafeInteger(revision) || revision < 1) return fail(400, { code: "bad-request", message: "Recarga la lista antes de eliminar." });
+  return forward(async () => {
+    await api(`/admin/hero-banners/${id}`, { method: "DELETE", body: { revision } });
+    return { data: { deleted: id } };
+  });
+}

@@ -13,7 +13,7 @@ export interface TabItem {
  * Pestañas ARIA (activación automática, flechas/Inicio/Fin). Los paneles llegan renderizados desde
  * el servidor; aquí solo se alterna su visibilidad.
  */
-export function Tabs({ items, label }: { items: TabItem[]; label: string }) {
+export function Tabs({ items, label, wrap = false }: { items: TabItem[]; label: string; wrap?: boolean }) {
   const id = useId();
   const [active, setActive] = useState(0);
   const refs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -35,7 +35,7 @@ export function Tabs({ items, label }: { items: TabItem[]; label: string }) {
 
   return (
     <div>
-      <div role="tablist" aria-label={label} className="mb-6 flex gap-2 overflow-x-auto pb-1" onKeyDown={onKeyDown}>
+      <div role="tablist" aria-label={label} className={clsx("mb-8 flex gap-2 p-1", wrap ? "flex-wrap" : "overflow-x-auto")} onKeyDown={onKeyDown}>
         {items.map((item, i) => (
           <button
             key={item.key}

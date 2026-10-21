@@ -17,7 +17,7 @@ export function PageHeader({
 }) {
   return (
     <header className="admin-page-header mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-5">
-      <div className="min-w-0">
+      <div className="min-w-0 max-w-full">
         {back ? (
           <Link href={back.href} className="mb-1 inline-flex min-h-11 items-center gap-1 text-sm text-link hover:underline">
             <ChevronLeft aria-hidden size={14} /> {back.label}
@@ -51,7 +51,7 @@ export function Section({
   return (
     <section id={id} aria-labelledby={title ? headingId : undefined} className={clsx("admin-section min-w-0 rounded-lg border border-border bg-surface", className)}>
       {title ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-5">
+        <div className="admin-section-heading flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-5">
           <div>
             <h2 id={headingId} className="text-base font-semibold">
               {title}
@@ -89,5 +89,5 @@ export function KeyValues({ items, columns = 2 }: { items: [React.ReactNode, Rea
 }
 
 export function EmptyState({ children }: { children: React.ReactNode }) {
-  return <p className="rounded-sm border border-dashed border-border-strong p-6 text-center text-sm text-foreground-muted">{children}</p>;
+  return <p className="rounded-lg border border-dashed border-border-strong bg-surface-muted p-6 text-center text-sm leading-relaxed text-foreground-muted">{children}</p>;
 }

@@ -30,9 +30,9 @@ export async function PhotoGallery({ tours }: { tours: TourSummary[] }) {
     .slice(0, 5);
   if (!photos.length) return null;
   return (
-    <section className="pwt-section" aria-labelledby="photo-gallery-title">
+    <section className={`pwt-section ${s.section}`} aria-labelledby="photo-gallery-title">
       <div className="pwt-container">
-        <div className="mb-8 max-w-2xl">
+        <div className="mb-8 max-w-2xl" data-reveal-scene="up">
           <p className="text-sm font-medium uppercase tracking-[.16em] text-primary">
             {t('eyebrow')}
           </p>
@@ -47,6 +47,7 @@ export async function PhotoGallery({ tours }: { tours: TourSummary[] }) {
               key={tour.key}
               className={index === 0 ? s.featured : undefined}
               lang={tour.fallback ? 'es-PE' : undefined}
+              data-reveal-scene={index === 0 ? 'left' : 'up'}
             >
               <Link href={tour.path} className={s.card}>
                 <Image

@@ -31,6 +31,17 @@ describe('private hero banner repository', () => {
     expect(results.map((item) => item.status)).toEqual(['fulfilled', 'rejected']);
     expect((await service.list()).find((item) => item.id === first.id)).toMatchObject({ title: 'Updated', enabled: false, revision: 2 });
   });
+  it('removes a banner and its private files only with the current revision', async () => {
+    const record = await service.upload(html, 'motion.html', 'Machu Picchu');
+    await service.patch(record.id, { enabled: true, revision: 1 });
+    await expect(service.remove(record.id, 1)).rejects.toMatchObject({ kind: 'conflict' });
+    expect(await service.list()).toHaveLength(1);
+    await service.remove(record.id, 2);
+    expect(await service.list()).toEqual([]);
+    await expect(readFile(join(directory, '.hero-banners', `${record.id}.html`))).rejects.toMatchObject({ code: 'ENOENT' });
+    await expect(service.remove(record.id, 2)).rejects.toMatchObject({ kind: 'not_found' });
+    await expect(service.remove('../manifest', 1)).rejects.toMatchObject({ kind: 'not_found' });
+  });
   it('rejects traversal, invalid UTF-8, fragments, wrong extensions and oversized input', async () => {
     await expect(service.document('../manifest')).rejects.toMatchObject({ kind: 'not_found' });
     for (const [buffer, filename] of [[Buffer.from([0xff, 0xfe]), 'a.html'], [Buffer.from('<html></html>'), 'a.html'], [html, 'a.svg'], [Buffer.alloc(HERO_BANNER_MAX_BYTES + 1), 'a.html']] as const) {

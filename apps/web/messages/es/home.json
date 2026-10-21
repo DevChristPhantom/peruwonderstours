@@ -4,7 +4,6 @@
     "title": "Viaja por el Perú con quienes lo conocen",
     "lead": "Tours al Lago Titicaca, Machu Picchu, el Colca y la costa sur con guías locales, salidas confirmadas y reserva con adelanto.",
     "imageAlt": "Islas flotantes de los Uros en el Lago Titicaca, Puno",
-    "scroll": "Desliza para descubrir",
     "banners": "Destinos del banner principal",
     "previousBanner": "Banner anterior",
     "nextBanner": "Banner siguiente",
@@ -13,12 +12,14 @@
     "pauseBanner": "Pausar animación y carrusel"
   },
   "featured": {
+    "eyebrow": "Encuentra tu próximo viaje",
+    "intro": "Compara itinerarios, duración y precios. Elige una experiencia para consultar sus detalles y fechas disponibles.",
     "title": "Tours destacados",
     "viewAll": "Ver los {count} tours",
     "tabsLabel": "Filtrar tours destacados",
     "oneDayLink": "Ver tours de un día",
     "groups": {
-      "all": "Todos",
+      "all": "Recomendados",
       "altiplano": "Altiplano y Titicaca",
       "machuPicchu": "Machu Picchu",
       "multi": "Multidestino"
@@ -27,6 +28,8 @@
     "emptyGroup": "Aún no hay tours en este grupo."
   },
   "destinations": {
+    "eyebrow": "Elige dónde empezar",
+    "intro": "Explora los tours de cada destino y encuentra la ruta que va contigo.",
     "title": "Destinos",
     "viewAll": "Ver todos los destinos",
     "explore": "Explorar tours",

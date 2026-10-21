@@ -39,6 +39,8 @@ const schema = z.object({
     .enum(["true", "false"])
     .default("false")
     .transform((v) => v === "true"),
+  /** Secreto compartido con el panel para refrescar la caché al instante (`POST /api/revalidate`). Sin él, el endpoint queda apagado. */
+  REVALIDATE_SECRET: z.string().min(32).optional(),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 })
   // H-19: en producción el BFF solo habla con la API por HTTPS (los tokens viajan en cabeceras).

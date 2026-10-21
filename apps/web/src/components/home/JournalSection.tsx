@@ -7,6 +7,7 @@ import { localePath } from '@/i18n/paths';
 import type { Locale } from '@/i18n/routing';
 import { JOURNAL_TOPICS, type JournalTopic } from '@/lib/content/journal-topics';
 import type { CatalogImage } from '@/lib/catalog/types';
+import s from './EditorialMotion.module.css';
 
 const icons = { historias: Feather, leyendas: BookOpen, guias: Compass };
 const images = {
@@ -27,13 +28,13 @@ export async function JournalSection({
   return (
     <section
       aria-labelledby="journal-title"
-      className="border-y border-border bg-surface-muted py-14 md:py-20"
+      className={`${s.section} border-y border-border bg-surface-muted py-14 md:py-20`}
     >
       <div className="pwt-container">
         <p className="text-sm font-medium uppercase tracking-[.16em] text-primary">
           {t('eyebrow')}
         </p>
-        <div className="mt-3 flex flex-wrap items-end justify-between gap-5">
+        <div className="mt-3 flex flex-wrap items-end justify-between gap-5" data-reveal-scene="up">
           <div className="max-w-2xl">
             <h2 id="journal-title" className="font-display text-h2 font-medium">
               {t('title')}
@@ -46,13 +47,13 @@ export async function JournalSection({
           </Link>
         </div>
         <ul className="mt-8 grid gap-5 md:grid-cols-3">
-          {JOURNAL_TOPICS.map((topic) => {
+          {JOURNAL_TOPICS.map((topic, index) => {
             const Icon = icons[topic];
             return (
-              <li key={topic}>
+              <li key={topic} data-reveal-scene={index === 0 ? 'left' : index === 2 ? 'right' : 'up'}>
                 <Link
                   href={`${blog}?tema=${topic}`}
-                  className="group relative flex min-h-72 overflow-hidden rounded-lg bg-foreground text-white no-underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+                  className={`${s.card} group relative flex min-h-72 overflow-hidden rounded-lg bg-foreground text-white no-underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring`}
                 >
                   <Image
                     src={photos?.[topic]?.src ?? images[topic]}
@@ -63,11 +64,11 @@ export async function JournalSection({
                     className="object-cover opacity-65 transition-transform duration-500 [@media(hover:hover)_and_(pointer:fine)_and_(prefers-reduced-motion:no-preference)]:group-hover:scale-105 motion-reduce:transition-none"
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/35 to-black/10" />
-                  <div className="relative flex w-full flex-col justify-end p-6">
+                  <div className={`${s.body} relative flex w-full flex-col justify-end p-6`}>
                     <Icon aria-hidden size={24} strokeWidth={1.6} />
                     <h3 className="mt-4 text-h3 font-medium">{t(`${topic}.title`)}</h3>
                     <p className="mt-2 text-sm text-white/90">{t(`${topic}.description`)}</p>
-                    <span className="mt-4 inline-flex items-center gap-2 text-sm font-medium">
+                    <span className={`${s.action} mt-4 inline-flex items-center gap-2 text-sm font-medium`}>
                       {t('explore')}
                       <ArrowUpRight aria-hidden size={16} />
                     </span>

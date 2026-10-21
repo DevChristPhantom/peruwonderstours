@@ -133,6 +133,20 @@ export class HeroBannersService {
       return updated;
     });
   }
+  /** Elimina el banner (manifiesto y archivos). Exige la revisión vigente para no borrar cambios ajenos. */
+  async remove(id: string, revision: number): Promise<void> {
+    this.checkId(id);
+    await this.serialize(async () => {
+      const records = await this.manifest();
+      const record = records.find((item) => item.id === id);
+      if (!record) throw new NotFoundError('hero-banner-not-found', 'Banner no encontrado.');
+      if (revision !== record.revision) throw new ConflictError('banner-revision-conflict', 'El banner cambió. Actualiza la lista antes de eliminar.');
+      await this.save(records.filter((item) => item.id !== id));
+      // El manifiesto ya no lo referencia: los archivos huérfanos se borran sin bloquear la respuesta.
+      await unlink(resolve(this.directory, `${id}.html`)).catch(() => undefined);
+      await unlink(resolve(this.directory, `${id}.poster`)).catch(() => undefined);
+    });
+  }
   async document(id: string): Promise<Buffer> {
     this.checkId(id);
     const record = (await this.list(true)).find((item) => item.id === id);
@@ -147,9 +161,10 @@ export class HeroBannersService {
     // scripts and CSS are retained; only identical copies of the extracted URI change.
     return Buffer.from(html.split(embedded).join(`/api/hero-banners/${id}/poster`), 'utf8');
   }
-  async poster(id: string): Promise<{ buffer: Buffer; mime: string }> {
+  /** Imagen del banner. Público: solo activos; panel (`includeInactive`): también los inactivos. */
+  async poster(id: string, includeInactive = false): Promise<{ buffer: Buffer; mime: string }> {
     this.checkId(id);
-    const record = (await this.list(true)).find((item) => item.id === id);
+    const record = (await this.list(!includeInactive)).find((item) => item.id === id);
     if (!record?.hasPoster || !record.posterMime) throw new NotFoundError('hero-banner-poster-not-found', 'Imagen de banner no encontrada.');
     return { buffer: await readFile(resolve(this.directory, `${id}.poster`)), mime: record.posterMime };
   }

@@ -42,7 +42,7 @@ export async function WhyUsSection({
           }
         >
           {photo ? (
-            <figure className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface-muted lg:aspect-[4/5]">
+            <figure data-reveal-scene="up" className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface-muted lg:aspect-[4/5]">
               <Image
                 src={photo.src}
                 alt={photo.alt}
@@ -80,8 +80,10 @@ export async function WhyUsSection({
               data-reveal-stagger
             >
               {reasons.map(({ icon: Icon, key }) => (
-                <li key={key}>
-                  <Icon aria-hidden size={24} strokeWidth={1.5} className="text-primary" />
+                <li key={key} className="rounded-xl border border-border bg-surface p-5">
+                  <span className="inline-flex size-12 items-center justify-center rounded-full bg-surface-muted text-primary">
+                    <Icon aria-hidden size={22} strokeWidth={1.5} />
+                  </span>
                   <h3 className="mt-3 text-h4 font-medium">{t(`reasons.${key}.title`)}</h3>
                   <p className="mt-1 text-foreground-muted">{t(`reasons.${key}.text`)}</p>
                 </li>

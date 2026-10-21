@@ -73,6 +73,59 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible();
       await expect.poll(() => page.locator("aside").getByRole("img", { name: "peruwonderstours.com", exact: true }).evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
     });
+    await measured("Desktop menu search handles accents, empty results and clear focus", async () => {
+      const navigation = page.locator("aside nav");
+      const search = navigation.getByRole("searchbox", { name: "Buscar sección del panel" });
+      await search.fill("CATEGORIAS");
+      await expect(navigation.getByRole("link", { name: "Categorías", exact: true })).toBeVisible();
+      await expect(navigation.getByRole("link")).toHaveCount(1);
+      await search.fill("categorías");
+      await expect(navigation.getByRole("link", { name: "Categorías", exact: true })).toBeVisible();
+      await search.fill("sin-coincidencias-fixture");
+      await expect(navigation.getByRole("link")).toHaveCount(0);
+      await expect(navigation.getByRole("status")).toContainText("No hay coincidencias");
+      await navigation.getByRole("button", { name: "Limpiar búsqueda de secciones" }).click();
+      await expect(search).toHaveValue("");
+      await expect(search).toBeFocused();
+      await expect(navigation.getByRole("link", { name: "Tablero", exact: true })).toHaveAttribute("aria-current", "page");
+    });
+    await measured("Dashboard shortcuts navigate to their administrative sections", async () => {
+      const shortcuts = page.getByRole("region", { name: "¿Qué necesitas hacer hoy?" }).getByRole("link");
+      await expect(shortcuts).toHaveCount(4);
+      const paths = await shortcuts.evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")!));
+      for (const path of paths) {
+        await page.getByRole("region", { name: "¿Qué necesitas hacer hoy?" }).locator(`a[href="${path}"]`).click();
+        await expect(page).toHaveURL(new URL(path, origin).href);
+        await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible();
+        await expect(page.getByRole("main").getByText(/No se pudo cargar/)).toHaveCount(0);
+        await page.locator("aside nav").getByRole("link", { name: "Tablero", exact: true }).click();
+        await expect(page).toHaveURL(`${origin}/`);
+        await expect(page.getByRole("region", { name: "¿Qué necesitas hacer hoy?" })).toBeVisible();
+      }
+    });
+    for (const width of [390, 768, 1280]) await measured(`Dashboard layout and menu at ${width}px`, async () => {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(page.getByRole("main").getByRole("heading", { level: 1, name: "Tablero", exact: true })).toBeVisible();
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+      if (width < 1024) {
+        const disclosure = page.locator("header details");
+        const summary = disclosure.locator("summary");
+        await summary.click();
+        await expect(disclosure).toHaveAttribute("open", "");
+        await disclosure.getByRole("searchbox", { name: "Buscar sección del panel" }).fill("tablero");
+        await expect(disclosure.getByRole("link")).toHaveCount(1);
+        await disclosure.getByRole("link", { name: "Tablero", exact: true }).click();
+        await expect(disclosure).not.toHaveAttribute("open", "");
+        await expect(summary).toBeFocused();
+        await expect(page).toHaveURL(`${origin}/`);
+        await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+      }
+      if (width === 390 || width === 1280) {
+        const screenshot = info.outputPath(`admin-dashboard-${width}.png`);
+        await page.screenshot({ path: screenshot, fullPage: true });
+        await info.attach(`admin-dashboard-${width}`, { path: screenshot, contentType: "image/png" });
+      }
+    });
     const links = await page.locator("aside nav a").evaluateAll((nodes) => nodes.map((node) => ({ path: node.getAttribute("href")!, label: node.textContent!.trim() })));
     expect(links.length).toBeGreaterThanOrEqual(16);
     for (const item of links) await measured(`Navigation: ${item.label}`, async () => {

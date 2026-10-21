@@ -21,7 +21,7 @@ import { can, load, requireSession } from "@/lib/auth/guard";
 import { formatDateTime } from "@/lib/format";
 import { TOUR_STATUS, TOUR_TYPE, label } from "@/lib/labels";
 
-import { addMediaAction, deleteMediaAction, deleteTranslationAction, publishTourAction, setCoverAction } from "../actions";
+import { addMediaAction, archiveTourAction, deleteMediaAction, deleteTranslationAction, publishTourAction, setCoverAction } from "../actions";
 
 export const metadata: Metadata = { title: "Editar tour" };
 
@@ -73,7 +73,8 @@ export default async function TourDetailPage({ params, searchParams }: PageProps
         }
         actions={
           canPublish ? (
-            t.status === "published" ? (
+            <div className="flex flex-wrap gap-2">
+            {t.status === "published" ? (
               <ActionForm action={publishTourAction.bind(null, t.id, t.version, false)} confirm="¿Despublicar? El tour dejará de verse en el sitio.">
                 <SubmitButton variant="danger">Despublicar</SubmitButton>
               </ActionForm>
@@ -83,7 +84,16 @@ export default async function TourDetailPage({ params, searchParams }: PageProps
                   Publicar
                 </SubmitButton>
               </ActionForm>
-            )
+            )}
+              <ActionForm
+                action={archiveTourAction.bind(null, t.id, t.version)}
+                confirm={`¿Eliminar «${t.slug}» del sitio? Se archiva: deja de verse y ya no se podrá editar. Si tiene reservas activas con viaje futuro, el sistema no lo permitirá.`}
+              >
+                <SubmitButton variant="danger" pendingLabel="Eliminando…">
+                  Eliminar
+                </SubmitButton>
+              </ActionForm>
+            </div>
           ) : null
         }
       />

@@ -4,7 +4,12 @@ import { TRANSLATION_STATUS, TRANSLATION_STATUS_VALUES, translationBadge } from 
 /** Insignia del estado de una traducción (metadato del panel; no se publica en el sitio). */
 export function TranslationStatusBadge({ status }: { status: string | null | undefined }) {
   const b = translationBadge(status);
-  return <Badge tone={b.tone}>{b.label}</Badge>;
+  return (
+    <span title={b.hint} className="whitespace-nowrap">
+      <Badge tone={b.tone}>{b.label}</Badge>
+      {b.hint ? <span className="sr-only"> ({b.hint})</span> : null}
+    </span>
+  );
 }
 
 /**
