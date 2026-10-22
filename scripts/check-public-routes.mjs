@@ -43,7 +43,7 @@ for (let attempt = 0; attempt < 30; attempt++) {
 }
 assert.ok(ready, "Preview server did not become ready");
 
-// Native banners expose images; uploaded scripts are never served by the web.
+// Native banners expose images/video; uploaded scripts are never served by the web.
 for (const id of ["builtin-titicaca", "builtin-machu-picchu"]) {
   const document = await fetch(new URL(`/api/hero-banners/${id}/document`, origin));
   assert.equal(document.status, 404, `${id}: executable document exposed`);
@@ -52,6 +52,12 @@ for (const image of ["titicaca-0.webp", "machu-picchu-0.webp"]) {
   const result = await fetch(new URL(`/hero-motion/${image}`, origin));
   assert.equal(result.status, 200, `${image}: image unavailable`);
   assert.ok(result.headers.get("content-type")?.startsWith("image/"));
+}
+for (const video of ["peru-wonders.mp4", "peru-wonders-720.mp4"]) {
+  const result = await fetch(new URL(`/hero-video/${video}`, origin), { headers: { Range: "bytes=0-1023" } });
+  assert.equal(result.status, 206, `${video}: range delivery unavailable`);
+  assert.equal((await result.arrayBuffer()).byteLength, 1024, `${video}: invalid range bytes`);
+  assert.ok(result.headers.get("content-type")?.startsWith("video/mp4"));
 }
 
 for (const locale of ["es", "en", "pt"]) {
@@ -64,7 +70,8 @@ for (const locale of ["es", "en", "pt"]) {
   for (const language of ["es-PE", "en", "pt-BR", "x-default"]) {
     assert.ok(html.includes(`hrefLang="${language}"`) || html.includes(`hreflang="${language}"`), `${locale}: missing ${language} alternate`);
   }
-  assert.ok(html.includes("nativeScene"), `${locale}: native hero missing`);
+  assert.ok(html.includes('data-effect="video"') && html.includes('<video') && html.includes('preload="none"'), `${locale}: progressive video hero missing`);
+  assert.ok(html.includes('/hero-video/peru-wonders-poster.webp'), `${locale}: video poster missing`);
   assert.ok(!html.includes("<iframe"), `${locale}: legacy hero frame still rendered`);
   const productPosition = html.indexOf('id="paquetes-title"');
   const resourcesPosition = html.indexOf('id="enlaces-oficiales"');
