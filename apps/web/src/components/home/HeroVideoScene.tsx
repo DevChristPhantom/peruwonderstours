@@ -3,10 +3,14 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import s from "./Hero.module.css";
 
+/** Narrow screens get the lighter 720p file when the scene has one (1080p ≈ 32 MB). */
+const MOBILE_QUERY = "(max-width: 900px)";
+
 /** Fetch only the current video, after motion preferences are known. The poster is the LCP. */
-export function HeroVideoScene({ source, poster, playing, loop, onEnded, onBlocked }: {
-  source: string; poster?: string; playing: boolean; loop: boolean; onEnded: () => void; onBlocked: () => void;
+export function HeroVideoScene({ source: desktopSource, mobileSource, poster, playing, loop, onEnded, onBlocked }: {
+  source: string; mobileSource?: string; poster?: string; playing: boolean; loop: boolean; onEnded: () => void; onBlocked: () => void;
 }) {
+  const source = mobileSource && typeof window !== "undefined" && window.matchMedia(MOBILE_QUERY).matches ? mobileSource : desktopSource;
   const video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     const element = video.current;

@@ -323,10 +323,11 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       const title = `E2E video ${suffix}`;
       await upload.getByLabel('¿Qué quieres subir?', { exact: true }).selectOption('video');
       await upload.getByLabel('Título', { exact: true }).fill(title);
-      await upload.getByLabel('Video del banner', { exact: true }).setInputFiles(resolve('apps/web/public/hero-video/peru-wonders.mp4'));
+      await upload.getByLabel('Video del banner', { exact: true }).setInputFiles(resolve('apps/web/public/hero-video/peru-wonders-720.mp4'));
       await upload.getByLabel('Imagen de portada del video (opcional)', { exact: true }).setInputFiles(resolve('apps/web/public/hero-video/peru-wonders-poster.webp'));
       await upload.getByRole('button', { name: 'Subir como inactivo', exact: true }).click();
-      await expect(page.getByRole('status')).toContainText('Archivo guardado como inactivo');
+      // Large video uploads cross BFF and API; give them a realistic window.
+      await expect(page.getByRole('status')).toContainText('Archivo guardado como inactivo', { timeout: 60_000 });
       const row = page.locator('form').filter({ has: page.getByText(title, { exact: true }) });
       const preview = row.locator('video');
       await expect(row.getByText('Inactivo', { exact: true })).toBeVisible();

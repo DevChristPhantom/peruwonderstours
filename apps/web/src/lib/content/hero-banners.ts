@@ -1,9 +1,9 @@
 import "server-only";
 import { env } from "@/lib/env";
 
-export interface HeroBannerScene { id: string; title: string; poster: string | null; effect: "none" | "water" | "clouds"; titleEmbedded?: boolean; video?: string }
+export interface HeroBannerScene { id: string; title: string; poster: string | null; effect: "none" | "water" | "clouds"; titleEmbedded?: boolean; video?: string; videoMobile?: string }
 export const BUILTIN_HERO_BANNERS: HeroBannerScene[] = [
-  { id: "builtin-video", title: "Peru Wonders Tours", effect: "none", poster: "/hero-video/peru-wonders-poster.webp", video: "/hero-video/peru-wonders.mp4" },
+  { id: "builtin-video", title: "Peru Wonders Tours", effect: "none", poster: "/hero-video/peru-wonders-poster.webp", video: "/hero-video/peru-wonders.mp4", videoMobile: "/hero-video/peru-wonders-720.mp4" },
 ];
 
 /** Seed builds work offline; API-managed banners refresh independently of the catalog. */

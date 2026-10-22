@@ -15,6 +15,12 @@ El cliente reemplaza las fotos con efectos por su video MP4. Se conserva el cont
 - Se detectó mediante HTTP real que el serializador global convertía StreamableFile en JSON; se conserva esta instancia y se prueba el flujo con el interceptor real.
 - Preview local: nuevo video activo, cuatro banners anteriores desactivados sin borrar sus archivos. Manifiesto anterior respaldado fuera del repositorio.
 
+## Revisión 2026-10-22 (pedido del cliente)
+
+- Se cortan los primeros 6 s (el video abre en el título «PERU») y se sube la calidad: se reencoda desde el original 1920×1080 recortando las franjas a 1920×816 (antes 1280×544 reescalado). Escritorio: H.264 CRF 22 con tope 2,6 Mb/s, 113 s, 32.061.460 bytes. Móvil (≤ 900 px): variante 1280×544 a 1,3 Mb/s, 15.778.947 bytes (`peru-wonders-720.mp4`, campo `videoMobile`). Portada WebP 1920×816 desde el primer cuadro.
+- Bug corregido: `proxy.ts` del admin hace que Next.js limite el cuerpo de la petición a 10 MB; toda subida de video mayor quedaba en «Procesando…». `experimental.proxyClientMaxBodySize = "52mb"` (video 50 MiB + portada + campos). Verificado: subida de 30,6 MB desde el panel, bytes idénticos (sha256) en la web, rangos 206/416.
+- Los banners subidos al admin tienen prioridad sobre el video integrado: para ver el nuevo video en un entorno con banners propios, desactivar o reemplazar el banner subido.
+
 ## Validación
 
 Tipos y lint web/admin/API aprobados; 40 pruebas web y 14 admin aprobadas. Build web webpack: 261 páginas generadas. Pruebas API de video y regresión del serializador y navegador CI se registran al concluir su ejecución. No acredita producción, pasarela real ni SMTP.

@@ -64,7 +64,7 @@ export function HeroMotion({ scenes, fallback }: { scenes: HeroBannerScene[]; fa
   };
   const poster = scene?.poster ?? fallback?.src;
   return <div ref={root} className={s.motionRoot}>
-    {scene?.video ? <HeroVideoScene key={`${scene.id}:${visit}`} source={scene.video} poster={poster} playing={videoPlaying} loop={scenes.length === 1} onEnded={() => { if (videoPlaying && scenes.length > 1) select(index + 1); }} onBlocked={playbackBlocked} />
+    {scene?.video ? <HeroVideoScene key={`${scene.id}:${visit}`} source={scene.video} mobileSource={scene.videoMobile} poster={poster} playing={videoPlaying} loop={scenes.length === 1} onEnded={() => { if (videoPlaying && scenes.length > 1) select(index + 1); }} onBlocked={playbackBlocked} />
       : <NativeHeroScene key={`${scene?.id ?? "fallback"}:${visit}`} scene={scene} image={poster} alt={scene?.title ?? fallback?.alt ?? ""} active={running} />}
     {scene && (scenes.length > 1 || motionAllowed || scene.video) ? <div className={s.controls} style={{ "--hero-interval": `${INTERVAL_MS}ms` } as React.CSSProperties}
       onPointerEnter={(event) => { if (event.pointerType === "mouse") setHold(true); }} onPointerLeave={() => setHold(false)}
