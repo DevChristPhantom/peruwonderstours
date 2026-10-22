@@ -78,7 +78,8 @@
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(to bottom, rgba(6, 10, 12, 0.35) 0%, rgba(6, 10, 12, 0) 22%),
+    /* Top scrim keeps the white nav legible over bright skies and clouds in the 2K footage. */
+    linear-gradient(to bottom, rgba(6, 10, 12, 0.6) 0%, rgba(6, 10, 12, 0.32) 9%, rgba(6, 10, 12, 0) 24%),
     linear-gradient(to top, rgba(6, 9, 11, 0.8) 0%, rgba(6, 9, 11, 0.25) 30%, rgba(6, 9, 11, 0) 55%);
 }
 
