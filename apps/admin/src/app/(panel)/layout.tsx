@@ -45,7 +45,7 @@ export default async function PanelLayout({ children }: LayoutProps<"/">) {
 
   return (
     <div className="admin-shell min-h-dvh lg:grid lg:grid-cols-[252px_minmax(0,1fr)]">
-      <aside className="hidden border-r border-border bg-surface lg:sticky lg:top-0 lg:flex lg:h-dvh lg:flex-col">
+      <aside className="admin-sidebar hidden border-r border-border bg-surface lg:sticky lg:top-0 lg:flex lg:h-dvh lg:flex-col">
         <div className="border-b border-border px-5 py-6">
           <Link href="/" className="block text-sm font-semibold text-foreground no-underline">
             <Image src="/brand/peruwonderstours-dorado.png" alt="peruwonderstours.com" width={2171} height={724} sizes="212px" className="block h-auto w-full max-w-[212px]" preload />
@@ -53,6 +53,10 @@ export default async function PanelLayout({ children }: LayoutProps<"/">) {
           </Link>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-5">{nav}</div>
+        <div className="border-t border-border px-5 py-4 text-xs text-foreground-muted">
+          <p className="font-semibold text-foreground">PeruWondersTours</p>
+          <p className="mt-1">Tu equipo, tus viajes, en un solo lugar.</p>
+        </div>
       </aside>
 
       <div className="min-w-0">

@@ -107,28 +107,26 @@ test('Tour itinerary and FAQ reveal useful content with mouse and keyboard', asy
   await expect.poll(() => answer.evaluate(element => element.getBoundingClientRect().height)).toBeLessThan(1);
 });
 
-test('Native banner mouse motion, water drawing and reduced-motion preference work', async ({ page }) => {
+test('Video hero honors reduced motion, explicit playback and viewport pause', async ({ page }, info) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const videoRequests: string[] = [];
+  page.on('request', request => { if (/\.mp4(?:\?|$)|\/hero-banners\/[^/]+\/video/.test(request.url())) videoRequests.push(request.url()); });
   await page.goto('/es');
-  const controls=page.getByRole('group',{name:'Destinos del banner principal',exact:true});
-  await controls.getByRole('button',{name:'Mostrar Lago Titicaca',exact:true}).click();
-  const water=page.locator('[data-effect="water"]');
-  await expect(water).toHaveAttribute('data-active','true');
-  const rect=(await water.boundingBox())!;
-  await page.mouse.move(rect.x+rect.width*.2,rect.y+rect.height*.58);
-  await page.mouse.move(rect.x+rect.width*.8,rect.y+rect.height*.58);
-  await expect.poll(()=>water.locator('canvas').evaluate(canvas=>{
-    const context=(canvas as HTMLCanvasElement).getContext('2d')!;
-    return context.getImageData(0,0,(canvas as HTMLCanvasElement).width,(canvas as HTMLCanvasElement).height).data.some((value,index)=>index%4===3&&value>0);
-  })).toBe(true);
-  await expect.poll(()=>water.locator('canvas').locator('..').evaluate(scene=>{
-    const photo=scene.firstElementChild as HTMLElement;
-    return new DOMMatrixReadOnly(getComputedStyle(photo).transform).m41;
-  })).toBeLessThan(-1);
-  await controls.getByRole('button',{name:'Mostrar Machu Picchu',exact:true}).click();
-  await expect(page.locator('[data-effect="clouds"] i')).toHaveCount(3);
-  await controls.getByRole('button',{name:'Mostrar Lago Titicaca',exact:true}).click();
-  await expect(water).toHaveAttribute('data-active','true');
-  await page.emulateMedia({reducedMotion:'reduce'});
-  await expect(water).toHaveAttribute('data-active','false');
-  await expect(controls.getByRole('button',{name:'Pausar animación y carrusel',exact:true})).toHaveCount(0);
+  const video = page.locator('[data-effect="video"] video');
+  const controls = page.getByRole('group', { name: 'Destinos del banner principal', exact: true });
+  await expect(controls.getByRole('button', { name: 'Reproducir animación y carrusel', exact: true })).toBeVisible();
+  await expect(video).not.toHaveAttribute('src', /.+/);
+  await expect(video).toHaveAttribute('poster', /peru-wonders-poster\.webp/);
+  expect(videoRequests).toEqual([]);
+  await controls.getByRole('button', { name: 'Reproducir animación y carrusel', exact: true }).click();
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => !element.paused && element.readyState >= 2)).toBe(true);
+  await controls.getByRole('button', { name: 'Pausar animación y carrusel', exact: true }).click();
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.paused)).toBe(true);
+  await page.screenshot({ path: info.outputPath('hero-reduced-motion-manual-pause.png') });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await controls.getByRole('button', { name: 'Reproducir animación y carrusel', exact: true }).click();
+  await page.locator('#enlaces-oficiales').scrollIntoViewIfNeeded();
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.paused)).toBe(true);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => !element.paused)).toBe(true);
 });

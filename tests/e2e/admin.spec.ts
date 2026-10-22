@@ -1,4 +1,5 @@
 import { createHmac } from "node:crypto";
+import { resolve } from "node:path";
 import { test, expect } from "@playwright/test";
 
 const origin = process.env.E2E_ADMIN_BASE_URL ?? "http://127.0.0.1:3102";
@@ -72,6 +73,59 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       await expect(page).toHaveURL(`${origin}/`);
       await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible();
       await expect.poll(() => page.locator("aside").getByRole("img", { name: "peruwonderstours.com", exact: true }).evaluate((image: HTMLImageElement) => image.naturalWidth)).toBeGreaterThan(0);
+    });
+    await measured("Desktop menu search handles accents, empty results and clear focus", async () => {
+      const navigation = page.locator("aside nav");
+      const search = navigation.getByRole("searchbox", { name: "Buscar sección del panel" });
+      await search.fill("CATEGORIAS");
+      await expect(navigation.getByRole("link", { name: "Categorías", exact: true })).toBeVisible();
+      await expect(navigation.getByRole("link")).toHaveCount(1);
+      await search.fill("categorías");
+      await expect(navigation.getByRole("link", { name: "Categorías", exact: true })).toBeVisible();
+      await search.fill("sin-coincidencias-fixture");
+      await expect(navigation.getByRole("link")).toHaveCount(0);
+      await expect(navigation.getByRole("status")).toContainText("No hay coincidencias");
+      await navigation.getByRole("button", { name: "Limpiar búsqueda de secciones" }).click();
+      await expect(search).toHaveValue("");
+      await expect(search).toBeFocused();
+      await expect(navigation.getByRole("link", { name: "Tablero", exact: true })).toHaveAttribute("aria-current", "page");
+    });
+    await measured("Dashboard shortcuts navigate to their administrative sections", async () => {
+      const shortcuts = page.getByRole("region", { name: "¿Qué necesitas hacer hoy?" }).getByRole("link");
+      await expect(shortcuts).toHaveCount(4);
+      const paths = await shortcuts.evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")!));
+      for (const path of paths) {
+        await page.getByRole("region", { name: "¿Qué necesitas hacer hoy?" }).locator(`a[href="${path}"]`).click();
+        await expect(page).toHaveURL(new URL(path, origin).href);
+        await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible();
+        await expect(page.getByRole("main").getByText(/No se pudo cargar/)).toHaveCount(0);
+        await page.locator("aside nav").getByRole("link", { name: "Tablero", exact: true }).click();
+        await expect(page).toHaveURL(`${origin}/`);
+        await expect(page.getByRole("region", { name: "¿Qué necesitas hacer hoy?" })).toBeVisible();
+      }
+    });
+    for (const width of [390, 768, 1280]) await measured(`Dashboard layout and menu at ${width}px`, async () => {
+      await page.setViewportSize({ width, height: 900 });
+      await expect(page.getByRole("main").getByRole("heading", { level: 1, name: "Tablero", exact: true })).toBeVisible();
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+      if (width < 1024) {
+        const disclosure = page.locator("header details");
+        const summary = disclosure.locator("summary");
+        await summary.click();
+        await expect(disclosure).toHaveAttribute("open", "");
+        await disclosure.getByRole("searchbox", { name: "Buscar sección del panel" }).fill("tablero");
+        await expect(disclosure.getByRole("link")).toHaveCount(1);
+        await disclosure.getByRole("link", { name: "Tablero", exact: true }).click();
+        await expect(disclosure).not.toHaveAttribute("open", "");
+        await expect(summary).toBeFocused();
+        await expect(page).toHaveURL(`${origin}/`);
+        await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+      }
+      if (width === 390 || width === 1280) {
+        const screenshot = info.outputPath(`admin-dashboard-${width}.png`);
+        await page.screenshot({ path: screenshot, fullPage: true });
+        await info.attach(`admin-dashboard-${width}`, { path: screenshot, contentType: "image/png" });
+      }
     });
     const links = await page.locator("aside nav a").evaluateAll((nodes) => nodes.map((node) => ({ path: node.getAttribute("href")!, label: node.textContent!.trim() })));
     expect(links.length).toBeGreaterThanOrEqual(16);
@@ -231,9 +285,91 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       await page.getByRole("button", { name: "Recargar", exact: true }).click();
       await expect(row.getByLabel("Orden", { exact: true })).toHaveValue("7");
       await expect(row.getByLabel("La imagen ya contiene el título")).toBeChecked();
+      const publicPage = await page.context().newPage();
+      const webOrigin = process.env.E2E_WEB_BASE_URL ?? "http://localhost:3100";
+      try {
+        await expect.poll(async () => {
+          await publicPage.goto(`${webOrigin}/es`);
+          return publicPage.locator('[data-effect="water"]').count();
+        }, { timeout: 30000, intervals: [1000] }).toBe(1);
+        const water = publicPage.locator('[data-effect="water"]');
+        await expect(water).toHaveAttribute('data-active', 'true');
+        const rect = (await water.boundingBox())!;
+        await publicPage.mouse.move(rect.x + rect.width * .2, rect.y + rect.height * .58);
+        await publicPage.mouse.move(rect.x + rect.width * .8, rect.y + rect.height * .58);
+        await expect.poll(() => water.locator('canvas').evaluate((canvas: HTMLCanvasElement) =>
+          canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.height).data.some((value, index) => index % 4 === 3 && value > 0)
+        )).toBe(true);
+        await expect.poll(() => water.locator('canvas').locator('..').evaluate(scene =>
+          new DOMMatrixReadOnly(getComputedStyle(scene.firstElementChild!).transform).m41
+        )).toBeLessThan(-1);
+        await publicPage.emulateMedia({ reducedMotion: 'reduce' });
+        await expect(water).toHaveAttribute('data-active', 'false');
+        await publicPage.emulateMedia({ reducedMotion: 'no-preference' });
+        await row.getByLabel('Efecto', { exact: true }).selectOption('clouds');
+        await row.getByRole('button', { name: 'Guardar cambios' }).click();
+        await expect(page.getByRole('status')).toContainText('Banner actualizado');
+        await expect.poll(async () => {
+          await publicPage.reload();
+          return publicPage.locator('[data-effect="clouds"] i').count();
+        }, { timeout: 30000, intervals: [1000] }).toBe(3);
+      } finally { await publicPage.close(); }
       await row.getByLabel("Mostrar en portada").uncheck();
       await row.getByRole("button", { name: "Guardar cambios" }).click();
       await expect(row.getByText("Inactivo", { exact: true })).toBeVisible();
+    });
+    await measured("Upload MP4 with poster, inspect private and public ranges, activate and deactivate", async () => {
+      const upload = page.locator('form').filter({ has: page.getByRole('button', { name: 'Subir como inactivo', exact: true }) });
+      const title = `E2E video ${suffix}`;
+      await upload.getByLabel('¿Qué quieres subir?', { exact: true }).selectOption('video');
+      await upload.getByLabel('Título', { exact: true }).fill(title);
+      await upload.getByLabel('Video del banner', { exact: true }).setInputFiles(resolve('apps/web/public/hero-video/peru-wonders.mp4'));
+      await upload.getByLabel('Imagen de portada del video (opcional)', { exact: true }).setInputFiles(resolve('apps/web/public/hero-video/peru-wonders-poster.webp'));
+      await upload.getByRole('button', { name: 'Subir como inactivo', exact: true }).click();
+      await expect(page.getByRole('status')).toContainText('Archivo guardado como inactivo');
+      const row = page.locator('form').filter({ has: page.getByText(title, { exact: true }) });
+      const preview = row.locator('video');
+      await expect(row.getByText('Inactivo', { exact: true })).toBeVisible();
+      await expect.poll(() => preview.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(1);
+      const privateUrl = new URL((await preview.getAttribute('src'))!, origin);
+      const id = privateUrl.searchParams.get('id')!;
+      const range = await page.request.get(privateUrl.href, { headers: { Range: 'bytes=0-1023' } });
+      expect(range.status()).toBe(206);
+      expect(range.headers()['content-type']).toContain('video/mp4');
+      expect(range.headers()['content-range']).toMatch(/^bytes 0-1023\/\d+$/);
+      expect((await range.body()).byteLength).toBe(1024);
+      await preview.evaluate((video: HTMLVideoElement) => video.play());
+      await expect.poll(() => preview.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0);
+      await preview.evaluate((video: HTMLVideoElement) => video.pause());
+      await page.screenshot({ path: info.outputPath('admin-video-preview.png'), fullPage: true });
+      await row.getByLabel('Mostrar en portada').check();
+      await row.getByRole('button', { name: 'Guardar cambios' }).click();
+      await expect(row.getByText('Activo', { exact: true })).toBeVisible();
+      const webOrigin = process.env.E2E_WEB_BASE_URL ?? 'http://localhost:3100';
+      const publicPage = await page.context().newPage();
+      try {
+        await expect.poll(async () => {
+          await publicPage.goto(`${webOrigin}/es`);
+          if (await publicPage.locator('[data-effect="video"] video').count() === 0) return 0;
+          await expect(publicPage.locator('[data-effect="video"] video')).toHaveAttribute('src', /.+/);
+          return publicPage.locator(`[data-effect="video"] video[src*="${id}"]`).count();
+        }, { timeout: 30000, intervals: [1000] }).toBe(1);
+        const active = publicPage.locator('[data-effect="video"] video');
+        await expect.poll(() => active.evaluate((video: HTMLVideoElement) => !video.paused && video.readyState >= 2)).toBe(true);
+        const publicRange = await publicPage.request.get(`${webOrigin}/api/hero-banners/${id}/video`, { headers: { Range: 'bytes=0-1023' } });
+        expect(publicRange.status()).toBe(206);
+        expect(publicRange.headers()['content-range']).toMatch(/^bytes 0-1023\/\d+$/);
+        expect((await publicRange.body()).byteLength).toBe(1024);
+        await publicPage.screenshot({ path: info.outputPath('hero-admin-uploaded-video.png') });
+        await row.getByLabel('Mostrar en portada').uncheck();
+        await row.getByRole('button', { name: 'Guardar cambios' }).click();
+        await expect(row.getByText('Inactivo', { exact: true })).toBeVisible();
+        await expect.poll(async () => {
+          await publicPage.reload();
+          return publicPage.locator('[data-effect="none"] img').count();
+        }, { timeout: 30000, intervals: [1000] }).toBe(1);
+        await expect(publicPage.locator('[data-effect="video"] video')).toHaveCount(0);
+      } finally { await publicPage.close(); }
     });
     await measured("Logout revokes browser access", async () => {
       await page.getByRole("button", { name: "Salir", exact: true }).click();

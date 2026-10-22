@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowDownLeft, ArrowUpRight, CalendarDays, CircleDollarSign, Clock3, Map, PanelsTopLeft, ReceiptText, Wallet, type LucideIcon } from 'lucide-react';
 
 import { ActionForm, SubmitButton } from "@/components/forms/ActionForm";
 import { Badge } from "@/components/ui/Badge";
@@ -29,12 +30,15 @@ function Totals({ values, empty = "S/ 0.00" }: { values: MoneyTotal[]; empty?: s
   );
 }
 
-function Kpi({ label, children, hint }: { label: string; children: React.ReactNode; hint?: string }) {
+function Kpi({ label, children, hint, icon: Icon }: { label: string; children: React.ReactNode; hint?: string; icon: LucideIcon }) {
   return (
-    <div className="rounded-md border border-border bg-surface p-3">
-      <p className="text-xs text-foreground-muted">{label}</p>
-      <div className="mt-1 text-lg font-semibold tabular-nums">{children}</div>
-      {hint ? <p className="mt-0.5 text-xs text-foreground-muted">{hint}</p> : null}
+    <div className="admin-kpi">
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-medium text-foreground-muted">{label}</p>
+        <span className="admin-kpi-icon"><Icon aria-hidden size={18} strokeWidth={1.7} /></span>
+      </div>
+      <div className="mt-3 break-words text-xl font-semibold tracking-tight tabular-nums xl:text-2xl">{children}</div>
+      {hint ? <p className="mt-2 text-xs leading-relaxed text-foreground-muted">{hint}</p> : null}
     </div>
   );
 }
@@ -65,6 +69,12 @@ export default async function DashboardPage() {
   // movimiento (ventas, cupos retenidos o ventas cerradas); el detalle completo está en Salidas.
   const busyDepartures = d.upcomingDepartures.filter((dep) => dep.booked + dep.held > 0 || dep.isClosed);
   const shownDepartures = (busyDepartures.length ? busyDepartures : d.upcomingDepartures).slice(0, 12);
+  const shortcuts = ([
+    { href: '/reservas', label: 'Reservas', description: 'Consulta viajeros y el estado de sus viajes.', icon: ReceiptText, permission: 'bookings:read' },
+    { href: '/tours', label: 'Tours', description: 'Revisa itinerarios, fotos y publicaciones.', icon: Map, permission: 'tours:read' },
+    { href: '/salidas', label: 'Salidas y cupos', description: 'Organiza fechas y disponibilidad.', icon: CalendarDays, permission: 'departures:read' },
+    { href: '/banners', label: 'Banners de inicio', description: 'Actualiza las imágenes de la portada.', icon: PanelsTopLeft, permission: 'tours:read' },
+  ] as const).filter(item => can(session, item.permission));
 
   return (
     <>
@@ -82,17 +92,31 @@ export default async function DashboardPage() {
         }
       />
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Kpi label="Ventas de hoy" hint="Cobros exitosos (n.º de pagos)">
+      {shortcuts.length > 0 ? <section aria-labelledby="quick-actions-title" className="mb-6">
+        <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+          <h2 id="quick-actions-title" className="text-sm font-semibold">¿Qué necesitas hacer hoy?</h2>
+          <p className="text-xs text-foreground-muted">Accesos rápidos</p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          {shortcuts.map(({ href, label, description, icon: Icon }) => <Link key={href} href={href} className="admin-shortcut">
+            <span className="admin-shortcut-icon"><Icon aria-hidden size={20} strokeWidth={1.7} /></span>
+            <span className="min-w-0 flex-1"><span className="block text-sm font-semibold">{label}</span><span className="mt-1 block text-xs leading-relaxed text-foreground-muted">{description}</span></span>
+            <ArrowUpRight aria-hidden size={16} className="shrink-0 text-foreground-muted" />
+          </Link>)}
+        </div>
+      </section> : null}
+
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        <Kpi icon={CircleDollarSign} label="Ventas de hoy" hint="Cobros exitosos (n.º de pagos)">
           <Totals values={d.sales.today} />
         </Kpi>
-        <Kpi label="Ventas del mes" hint="Adelantos, totales y saldos">
+        <Kpi icon={Wallet} label="Ventas del mes" hint="Adelantos, totales y saldos">
           <Totals values={d.sales.month} />
         </Kpi>
-        <Kpi label="Reembolsos del mes">
+        <Kpi icon={ArrowDownLeft} label="Reembolsos del mes">
           <Totals values={d.sales.refundsMonth} />
         </Kpi>
-        <Kpi label="Saldos vencidos" hint="Reservas con adelanto y saldo impago">
+        <Kpi icon={Clock3} label="Saldos vencidos" hint="Reservas con adelanto y saldo impago">
           <Totals values={d.balances.overdue} />
         </Kpi>
       </div>

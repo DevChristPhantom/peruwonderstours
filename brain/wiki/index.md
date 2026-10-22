@@ -15,6 +15,8 @@ This catalog is updated by completed knowledge operations.
 
 ## Concepts
 
+- [[decisions/ADR-0029-interfaz-operativa-admin]] — búsqueda de secciones, accesos por permisos y diseño operativo del panel.
+
 - [[decisions/ADR-0028-logos-y-paisaje-footer]] — logos locales informativos y paisaje de cierre solicitado.
 
 - [[decisions/ADR-0027-jerarquia-y-tarjetas-home]] — tours primero, filtros de portada y tarjetas con acción visible.
@@ -77,3 +79,5 @@ This catalog is updated by completed knowledge operations.
 - [[decisions/ADR-0009-recursos-oficiales-y-reclamaciones]] — recursos visuales, WhatsApp y Libro de Reclamaciones.
 
 - [[decisions/ADR-0010-prioridad-comercial-y-pruebas]] — jerarquía comercial y controles probados en CI aislado.
+
+- [[decisions/ADR-0030-banner-video-administrable]] — MP4 propio, portada, administración y streaming eficiente.

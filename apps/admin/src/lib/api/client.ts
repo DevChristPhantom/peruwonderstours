@@ -48,6 +48,8 @@ export class NoSessionError extends ApiError {
 type Query = Record<string, string | number | boolean | undefined | null>;
 
 export interface ApiOptions {
+  /** Larger private media uploads may take longer; normal requests retain their configured timeout. */
+  timeoutMs?: number;
   method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
   body?: unknown;
   /** Cuerpo multipart (subida de medios); excluyente con `body`. */
@@ -83,7 +85,7 @@ async function send(path: string, options: ApiOptions, accessToken: string | nul
       // Con FormData, fetch arma el `content-type` multipart con su boundary.
       body: options.form ?? (options.body !== undefined ? JSON.stringify(options.body) : undefined),
       cache: "no-store",
-      signal: AbortSignal.timeout(env().ADMIN_API_TIMEOUT_MS),
+      signal: AbortSignal.timeout(options.timeoutMs === undefined ? env().ADMIN_API_TIMEOUT_MS : Math.max(500, Math.min(120_000, options.timeoutMs))),
     });
   } catch {
     throw new ApiError(0, "api-unavailable", null);

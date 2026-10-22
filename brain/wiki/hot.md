@@ -31,6 +31,10 @@ tags:
 
 ## Recent Changes
 
+- 2026-10-22: video propio optimizado y administrable para el banner; MP4/portada, streaming por rangos y pausa accesible. Fotos anteriores preservadas e inactivas en preview. Ver [[decisions/ADR-0030-banner-video-administrable]].
+
+- 2026-10-21: interfaz operativa admin: búsqueda de menú, accesos por permisos, KPI y superficies/tablas/campos más legibles; 14 pruebas, tipos, lint y build aprobados. Manual v0.4. Ver [[decisions/ADR-0029-interfaz-operativa-admin]].
+
 - 2026-10-19: seis logos locales en recursos oficiales y franja original de montañas/caminantes al pie. Tipos/lint, XML y siete medios HTTP 200. Ver [[decisions/ADR-0028-logos-y-paisaje-footer]].
 
 - 2026-10-19: jerarquía de portada con tours primero, filtros visibles en móvil, subtítulos ES/EN/PT y CTA de itinerario/fechas en tarjetas. Tipos/lint y HTTP en tres idiomas aprobados; navegador pendiente. Ver [[decisions/ADR-0027-jerarquia-y-tarjetas-home]].
