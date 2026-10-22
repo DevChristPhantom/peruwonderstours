@@ -26,7 +26,7 @@ import { publicWebImageOrigin, securityHeaders } from "@/lib/security-headers";
 
 // El optimizador de Next lee el logo público sin la cookie de la página.
 // Permitir solo este archivo; el resto del panel conserva su autenticación.
-const PUBLIC_PATHS = [/^\/login(\/|$)/, /^\/auth\//, /^\/brand\/(?:peruwonderstours-dorado\.png|admin-machu-picchu\.webp|admin-machu-amanecer\.webp)$/];
+const PUBLIC_PATHS = [/^\/login(\/|$)/, /^\/auth\//, /^\/brand\/(?:peruwonderstours-logo-color\.png|admin-machu-picchu\.webp|admin-machu-amanecer\.webp)$/];
 
 /** Origen de los medios subidos (en desarrollo es http://localhost:3001, que `https:` no cubre). */
 function mediaOrigin(): string {

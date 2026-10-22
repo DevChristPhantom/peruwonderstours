@@ -41,7 +41,7 @@ export function pageMetadata({
   index?: boolean;
 }): Metadata {
   const path = paths[locale];
-  const shareImage = absoluteUrl(image || '/brand/peruwonderstours-dorado.png');
+  const shareImage = absoluteUrl(image || '/brand/peruwonderstours-logo-color.png');
   return {
     title,
     description,

@@ -38,7 +38,7 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
   let draftId = "";
   try {
     await measured("Password and MFA login", async () => {
-      const logoResponse = await page.request.get(`${origin}/brand/peruwonderstours-dorado.png`, { maxRedirects: 0 });
+      const logoResponse = await page.request.get(`${origin}/brand/peruwonderstours-logo-color.png`, { maxRedirects: 0 });
       expect(logoResponse.status()).toBe(200);
       expect(logoResponse.headers()["content-type"]).toContain("image/png");
       const protectedResponse = await page.request.get(`${origin}/reservas`, { maxRedirects: 0 });

@@ -64,7 +64,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
       <section className="auth-access" aria-label="Acceso del personal">
         <div className="auth-access-inner">
           <div className="auth-card">
-            <div className="auth-brand"><Image src="/brand/peruwonderstours-dorado.png" alt="peruwonderstours.com" width={2171} height={724} sizes="(min-width: 1024px) 380px, 260px" className="auth-logo" preload /></div>
+            <div className="auth-brand"><Image src="/brand/peruwonderstours-logo-color.png" alt="peruwonderstours.com" width={1200} height={207} sizes="(min-width: 1024px) 380px, 260px" className="auth-logo" preload /></div>
             <h1 className="auth-mobile-title">Panel de administración</h1>
             <LoginFlow initial={initial} next={volver} notice={notice} />
             <p className="auth-security"><ShieldCheck aria-hidden size={19} strokeWidth={1.7} /><span>Acceso exclusivo del personal.<br />Toda actividad queda registrada.</span></p>
