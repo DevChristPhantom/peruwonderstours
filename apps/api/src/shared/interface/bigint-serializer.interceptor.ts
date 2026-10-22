@@ -1,4 +1,4 @@
-import { Injectable, Logger, type CallHandler, type ExecutionContext, type NestInterceptor } from '@nestjs/common';
+import { Injectable, Logger, StreamableFile, type CallHandler, type ExecutionContext, type NestInterceptor } from '@nestjs/common';
 import { map, type Observable } from 'rxjs';
 
 const MAX_SAFE = BigInt(Number.MAX_SAFE_INTEGER);
@@ -18,6 +18,9 @@ export function toJsonSafe(value: unknown, depth = 0): unknown {
     return value.toString();
   }
   if (value === null || typeof value !== 'object') return value;
+  // Nest must receive the original streaming response, not its enumerable
+  // internals. Traversing it both breaks binary responses and touches live IO.
+  if (value instanceof StreamableFile) return value;
   if (value instanceof Date) return value;
   if (Buffer.isBuffer(value)) return value;
   const withToJson = value as { toJSON?: () => unknown };

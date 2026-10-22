@@ -157,4 +157,6 @@ export interface NavMedia {
   discover: { key: string; title: string; description: string; href: string; image: CatalogImage | null }[];
   journeys: { key: string; title: string; href: string; image: CatalogImage | null }[];
   regions: { key: string; label: string; href: string }[];
+  /** Enlace directo del menú principal a la categoría de paquetes turísticos (ruta del idioma). */
+  packagesHref: string;
 }

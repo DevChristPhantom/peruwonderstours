@@ -1,7 +1,7 @@
 "use client";
 
 import { GitCompareArrows, X } from "lucide-react";
-import Link from "next/link";
+import Link from "@/components/ui/IntentLink";
 import { useLocale, useTranslations } from "next-intl";
 
 import { usePathname } from "@/i18n/navigation";

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/ui/IntentLink";
 import type { ReactNode } from "react";
 import { catalogImageSource } from "@/lib/catalog/image-source";
 

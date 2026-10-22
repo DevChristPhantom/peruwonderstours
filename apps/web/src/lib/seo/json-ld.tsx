@@ -40,7 +40,7 @@ export function organizationJsonLd(): JsonLdObject {
     "@id": absoluteUrl('/#organization'),
     name: SITE.name,
     url: SITE.url,
-    logo: absoluteUrl('/brand/peruwonderstours-dorado.png'),
+    logo: absoluteUrl('/brand/peruwonderstours-logo-color.png'),
     ...(SITE.legal.email ? { email: SITE.legal.email } : {}),
     telephone: SITE.whatsapp.display.replace(/[^+\d]/g, ''),
     ...(SITE.legal.address ? { address: { '@type': 'PostalAddress', streetAddress: SITE.legal.address, addressLocality: 'Puno', addressCountry: 'PE' } } : {}),

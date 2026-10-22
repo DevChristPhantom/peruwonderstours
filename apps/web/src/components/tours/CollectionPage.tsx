@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "@/components/ui/IntentLink";
 import { getTranslations } from "next-intl/server";
 
 import type { CatalogImage, TourSummary } from "@/lib/catalog/types";

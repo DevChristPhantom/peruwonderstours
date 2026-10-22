@@ -31,15 +31,18 @@ test('Home prioritizes products; hero controls and featured tabs work', async ({
   const positions = await page.evaluate(() => ['paquetes-title', 'destinos-title', 'enlaces-oficiales'].map(id => document.getElementById(id)!.getBoundingClientRect().top + scrollY));
   expect(positions[0]).toBeLessThan(positions[1]); expect(positions[1]).toBeLessThan(positions[2]);
   const controls = page.getByRole('group', { name: 'Destinos del banner principal' });
-  await measured(info, 'Select Machu Picchu banner', async () => { await controls.getByRole('button', { name: 'Mostrar Machu Picchu', exact: true }).click(); await expect(controls.getByRole('button', { name: 'Mostrar Machu Picchu', exact: true })).toHaveAttribute('aria-pressed', 'true'); });
+  const video = page.locator('[data-effect="video"] video');
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => !element.paused && element.readyState >= 2)).toBe(true);
+  await expect(video).toHaveAttribute('playsinline', '');
+  await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.muted)).toBe(true);
   await measured(info, 'Pause and resume banner', async () => {
     await controls.getByRole('button', { name: 'Pausar animación y carrusel', exact: true }).click();
-    await expect(page.locator('[data-effect][data-active="false"]').first()).toBeVisible();
+    await expect.poll(() => video.evaluate((element: HTMLVideoElement) => element.paused)).toBe(true);
     await controls.getByRole('button', { name: 'Reproducir animación y carrusel', exact: true }).click();
-    await expect(page.locator('[data-effect][data-active="true"]').first()).toBeVisible();
+    await expect.poll(() => video.evaluate((element: HTMLVideoElement) => !element.paused)).toBe(true);
   });
-  await controls.getByRole('button', { name: 'Banner anterior', exact: true }).click();
-  await expect(controls.getByRole('button', { name: 'Mostrar Lago Titicaca', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(controls.getByRole('button', { name: 'Banner anterior', exact: true })).toHaveCount(0);
+  await page.screenshot({ path: info.outputPath('hero-video-playing.png') });
   const tabs = page.getByRole('tablist', { name: 'Filtrar tours destacados' });
   for (const label of ['Recomendados', 'Altiplano y Titicaca', 'Machu Picchu', 'Multidestino']) await measured(info, `Featured tab ${label}`, async () => {
     const tab = tabs.getByRole('tab', { name: label, exact: true }); await tab.click(); await expect(tab).toHaveAttribute('aria-selected', 'true');

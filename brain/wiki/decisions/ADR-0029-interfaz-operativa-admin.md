@@ -15,6 +15,8 @@ Mejorar navegación y legibilidad del panel sin cambiar inicio de sesión, MFA, 
 
 ## Evidencia de ejecución
 
+- CI commit `61fd05b3e7eff5c25824858dab36a6753738ab28`: Quality checks [39664337025](https://github.com/DevChristPhantom/peruwonderstours/actions/runs/39664337025) aprobado; navegador [39664337060](https://github.com/DevChristPhantom/peruwonderstours/actions/runs/39664337060): 28 aprobadas, 0 fallidas/omitidas, 2,9 min. Incluye menú, accesos rápidos, dashboard 390/768/1280 px, CRUD de catálogo, acceso/MFA, operaciones financieras de ensayo, usuarios, web pública y compra sandbox. No prueba todas las combinaciones de permisos ni servicios reales.
+
 - TypeScript y ESLint dirigido aprobados.
 - 14 pruebas existentes de administrador aprobadas, 0 omitidas.
 - Build Next webpack en .next-demo aprobado (compilación 21.9 s); no interrumpe servidor de desarrollo.

@@ -386,7 +386,7 @@ export function TourExplorer({ tours, cards, destinations, categories, suggestio
         {results.length ? (
           <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {results.map((t) => (
-              <li key={t.slug}>{cards[t.slug]}</li>
+              <li key={t.slug} className="pwt-defer-card">{cards[t.slug]}</li>
             ))}
           </ul>
         ) : (

@@ -30,7 +30,7 @@ const metadata = load('../src/lib/seo/metadata.ts', {
 test('organization publishes confirmed contact and owner logo without invented tax IDs or ratings', () => {
   const agency = jsonLd.organizationJsonLd();
   assert.equal(agency['@id'], 'https://peruwonderstours.com/#organization');
-  assert.equal(agency.logo, 'https://peruwonderstours.com/brand/peruwonderstours-dorado.png');
+  assert.equal(agency.logo, 'https://peruwonderstours.com/brand/peruwonderstours-logo-color.png');
   assert.equal(agency.email, 'jorgechaveztourt@gmail.com');
   assert.equal(agency.telephone, '+51924278597');
   assert.equal(agency.address.streetAddress, site.SITE.legal.address);
@@ -53,7 +53,7 @@ test('a tour price is not misrepresented as confirmed stock or availability', ()
 
 test('public metadata has matching social cards, a real logo fallback and large image previews', () => {
   const page = metadata.pageMetadata({ locale: 'pt', title: 'Passeios', description: 'Viagens pelo Peru', paths: { es: '/es/tours', en: '/en/tours', pt: '/pt/tours' } });
-  assert.equal(page.openGraph.images[0].url, site.absoluteUrl('/brand/peruwonderstours-dorado.png'));
+  assert.equal(page.openGraph.images[0].url, site.absoluteUrl('/brand/peruwonderstours-logo-color.png'));
   assert.equal(page.twitter.images[0].url, page.openGraph.images[0].url);
   assert.equal(page.twitter.title, 'Passeios');
   assert.equal(page.twitter.description, page.description);

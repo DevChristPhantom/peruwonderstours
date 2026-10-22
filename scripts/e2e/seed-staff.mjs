@@ -1,5 +1,4 @@
 import { randomUUID } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
 import { createPrismaClient } from '../../apps/api/dist/persistence/prisma/prisma-client.js';
 import { AesGcmPiiCipher } from '../../apps/api/dist/shared/infrastructure/aes-gcm-pii-cipher.js';
 import { Argon2PasswordHasher } from '../../apps/api/dist/modules/identity/infrastructure/security-adapters.js';
@@ -29,14 +28,7 @@ try {
     mfaSecretEnc: Buffer.from(cipher.encrypt(secret, `users:mfa_secret_enc:${id}`)),
     mfaEnabledAt: new Date(), mustChangePassword: false,
   } });
-  const scenes = [
-    { file: 'titicaca-0.webp', title: 'Lago Titicaca', effect: 'water', titleEmbedded: false },
-    { file: 'machu-picchu-0.webp', title: 'Machu Picchu', effect: 'clouds', titleEmbedded: true },
-  ];
-  for (const [sortOrder, scene] of scenes.entries()) {
-    const image = await readFile(new URL(`../../apps/web/public/hero-motion/${scene.file}`, import.meta.url));
-    const record = await banners.upload(image, scene.file, scene.title, scene.effect, scene.titleEmbedded);
-    await banners.patch(record.id, { revision: record.revision, enabled: true, sortOrder });
-  }
-  console.log('Isolated browser fixtures created: staff MFA and two active native hero scenes.');
+  // ADR-0030: the default home hero is the client's built-in video, shown while no banner
+  // is configured. Banner storage stays empty; admin tests create and remove their own.
+  console.log('Isolated browser fixtures created: staff MFA; hero uses the built-in video (no banners configured).');
 } finally { await prisma.$disconnect(); }

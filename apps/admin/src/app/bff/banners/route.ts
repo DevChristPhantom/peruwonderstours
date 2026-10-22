@@ -4,7 +4,7 @@ import { toUserError, type UserError } from "@/lib/api/errors";
 import { assertSameOrigin, can } from "@/lib/auth/guard";
 import { getSession } from "@/lib/session/server";
 import type { Permission } from "@/lib/auth/permissions";
-import { BANNER_MAX_BYTES, BANNER_EFFECTS, validBannerFile, type BannerEffect, type HeroBanner } from "@/components/banners/types";
+import { BANNER_MAX_BYTES, BANNER_VIDEO_MAX_BYTES, BANNER_EFFECTS, validBannerFile, validBannerPoster, type BannerEffect, type HeroBanner } from "@/components/banners/types";
 
 export const dynamic = "force-dynamic";
 const noStore = { "Cache-Control": "no-store" };
@@ -53,16 +53,18 @@ export async function POST(request: NextRequest) {
   if (!contentType.startsWith("multipart/form-data;")) return fail(400, { code: "invalid-file", message: "Adjunta una imagen para el banner." });
   let form: FormData;
   try {
-    const bytes = await bounded(request, BANNER_MAX_BYTES + 64 * 1024);
+    const bytes = await bounded(request, BANNER_VIDEO_MAX_BYTES + BANNER_MAX_BYTES + 64 * 1024);
     form = await new Response(bytes, { headers: { "Content-Type": contentType } }).formData();
   } catch (error) {
-    return fail(error instanceof Error && error.message === "payload-too-large" ? 413 : 400, { code: "invalid-file", message: "No se pudo leer el archivo. El máximo es 16 MB." });
+    return fail(error instanceof Error && error.message === "payload-too-large" ? 413 : 400, { code: "invalid-file", message: "No se pudo leer el archivo. Video: máximo 50 MB; imagen de portada: máximo 16 MB." });
   }
   const file = form.get("file");
   const title = form.get("title");
   const effect = form.get("effect") ?? "none";
   const titleEmbedded = form.get("titleEmbedded") ?? "false";
-  if (!(file instanceof File) || !validBannerFile(file)) return fail(400, { code: "invalid-file", message: "Selecciona PNG, JPEG, WebP, AVIF o HTML de hasta 16 MB." });
+  const poster = form.get("poster");
+  if (!(file instanceof File) || !validBannerFile(file)) return fail(400, { code: "invalid-file", message: "Selecciona una imagen de hasta 16 MB o un video MP4 de hasta 50 MB." });
+  if ((poster !== null && !(poster instanceof File)) || (poster instanceof File && poster.size > 0 && !validBannerPoster(poster))) return fail(400, { code: "invalid-poster", message: "La portada debe ser PNG, JPEG o WebP de hasta 16 MB." });
   if (typeof effect !== "string" || !BANNER_EFFECTS.includes(effect as BannerEffect)) return fail(400, { code: "invalid-effect", message: "Selecciona un efecto disponible." });
   if (titleEmbedded !== "true" && titleEmbedded !== "false") return fail(400, { code: "invalid-title-embedded", message: "Indica si la imagen ya contiene el título." });
   if (typeof title !== "string" || !title.trim() || title.trim().length > 120) return fail(400, { code: "invalid-title", message: "Escribe un título de 1 a 120 caracteres." });
@@ -71,7 +73,8 @@ export async function POST(request: NextRequest) {
   outgoing.set("title", title.trim());
   outgoing.set("effect", effect);
   outgoing.set("titleEmbedded", titleEmbedded);
-  return forward(() => api<{ data: HeroBanner }>("/admin/hero-banners", { method: "POST", form: outgoing }), 201);
+  if (poster instanceof File && poster.size > 0) outgoing.set("poster", poster, poster.name.replace(/[^\w.-]/g, "_").slice(0, 120));
+  return forward(() => api<{ data: HeroBanner }>("/admin/hero-banners", { method: "POST", form: outgoing, timeoutMs: 120_000 }), 201);
 }
 export async function PATCH(request: NextRequest) {
   const denied = await authorize(true, "tours:write"); if (denied) return denied;

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Link from "@/components/ui/IntentLink";
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 

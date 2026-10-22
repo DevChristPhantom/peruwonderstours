@@ -134,9 +134,10 @@ export const getSearchOptions = cache(async (locale: Locale): Promise<SearchOpti
  * TODO(UX): reemplazar por fotos elegidas por el cliente (alt descriptivo verificado).
  */
 export const getNavMedia = cache(async (locale: Locale): Promise<NavMedia> => {
-  const [tours, destinations, t] = await Promise.all([
+  const [tours, destinations, categories, t] = await Promise.all([
     getAllTours(locale),
     getDestinations(locale),
+    getCategories(locale),
     getTranslations({ locale, namespace: "nav.media" }),
   ]);
   const img = (key: string, alt: string) => {
@@ -144,7 +145,8 @@ export const getNavMedia = cache(async (locale: Locale): Promise<NavMedia> => {
     return tour?.image ? { src: tour.image.src, alt } : null;
   };
   const dest = (key: string) => destinations.find((d) => d.key === key)?.path ?? destinationPath(locale, key);
-  const cat = (key: string) => categoryPath(locale, key);
+  // Ruta real de la categoría en el idioma (slug traducido); si no existe, la ruta por clave.
+  const cat = (key: string) => categories.find((c) => c.key === key)?.path ?? categoryPath(locale, key);
   const puno = destinations.find((d) => d.key === "tours-en-puno");
   return {
     heroImage: puno?.bannerImage
@@ -201,5 +203,6 @@ export const getNavMedia = cache(async (locale: Locale): Promise<NavMedia> => {
       { key: "ica", label: "Ica-Paracas", href: dest("tours-en-ica-paracas") },
       { key: "lima", label: "Lima", href: dest("tours-en-lima") },
     ],
+    packagesHref: cat("paquetes-turisticos-en-peru"),
   };
 });

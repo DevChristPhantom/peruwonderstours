@@ -48,7 +48,7 @@ export default async function PanelLayout({ children }: LayoutProps<"/">) {
       <aside className="admin-sidebar hidden border-r border-border bg-surface lg:sticky lg:top-0 lg:flex lg:h-dvh lg:flex-col">
         <div className="border-b border-border px-5 py-6">
           <Link href="/" className="block text-sm font-semibold text-foreground no-underline">
-            <Image src="/brand/peruwonderstours-dorado.png" alt="peruwonderstours.com" width={2171} height={724} sizes="212px" className="block h-auto w-full max-w-[212px]" preload />
+            <Image src="/brand/peruwonderstours-logo-color.png" alt="peruwonderstours.com" width={1200} height={207} sizes="212px" className="block h-auto w-full max-w-[212px]" preload />
             <span className="mt-1 block text-xs font-normal text-foreground-muted">Panel de administración</span>
           </Link>
         </div>

@@ -79,3 +79,5 @@ This catalog is updated by completed knowledge operations.
 - [[decisions/ADR-0009-recursos-oficiales-y-reclamaciones]] — recursos visuales, WhatsApp y Libro de Reclamaciones.
 
 - [[decisions/ADR-0010-prioridad-comercial-y-pruebas]] — jerarquía comercial y controles probados en CI aislado.
+
+- [[decisions/ADR-0030-banner-video-administrable]] — MP4 propio, portada, administración y streaming eficiente.

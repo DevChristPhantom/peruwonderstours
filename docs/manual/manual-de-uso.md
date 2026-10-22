@@ -250,9 +250,24 @@ Evita cambiar el **Slug (URL)** de un artículo que ya compartiste. Esa es la di
 
 Si aparece un aviso de que otra persona modificó el artículo, vuelve a abrirlo y compara la información antes de repetir tu cambio.
 
-## 6. Cambiar una imagen del banner principal
+## 6. Cambiar el video o la imagen del banner principal
 
-El banner es la imagen grande que aparece al inicio de la página. Puede tener efectos de agua o nubes.
+El banner es el fondo grande que aparece al inicio de la página. Ahora muestra el video entregado por la agencia, sin sonido. También admite imágenes con efectos de agua o nubes.
+
+### Cambiar el video, paso a paso
+
+1. En el menú del panel, pulsa **Banners de inicio**.
+2. En **Subir un banner**, abre **¿Qué quieres subir?** y elige **Video MP4**.
+3. En **Título**, escribe un nombre para reconocerlo, por ejemplo `Video de Perú - temporada nueva`.
+4. Pulsa **Video del banner** y selecciona el archivo `.mp4` de tu computadora. El máximo es **50 MB**. Se recomienda formato H.264 y horizontal; los videos cortos y ligeros cargan mejor. El sistema no comprime automáticamente los próximos archivos que subas.
+5. Si tienes una foto de ese video, selecciónala en **Imagen de portada del video (opcional)**. Aparecerá mientras comienza el video o cuando el visitante haya elegido reducir el movimiento. Acepta PNG, JPEG o WebP, hasta **16 MB**. Si no la adjuntas, la web usa su imagen de respaldo.
+6. Pulsa **Subir como inactivo**. Espera el mensaje **Archivo guardado como inactivo**; no cierres la pestaña durante la subida.
+7. Busca el nuevo archivo en **Banners guardados** y pulsa el botón de reproducción de su vista previa. Si el navegador no puede reproducirlo, utiliza un MP4 H.264 antes de activarlo.
+8. Marca **Mostrar en portada**, coloca **Orden** en `0` y pulsa **Guardar cambios**.
+9. Busca el video o las fotos anteriores, desmarca **Mostrar en portada** y pulsa **Guardar cambios** en cada uno. Así solo se muestra el nuevo video. No necesitas borrar los archivos anteriores.
+10. Abre la página pública y recárgala. Si aún ves el banner anterior, espera unos 15 segundos y vuelve a recargar.
+
+El visitante puede pausar y continuar el video. Se pausa cuando el banner queda fuera de pantalla o cambia de pestaña. Si hay varios banners activos, el video termina antes de pasar al siguiente; si es el único, se repite. Si todos los banners guardados están desactivados, aparece una imagen de respaldo sin reproducir videos.
 
 ### A. Subir la imagen
 
@@ -273,7 +288,7 @@ Admite imágenes PNG, JPEG, WebP o AVIF, hasta **16 MB**. Subirlo como inactivo 
 3. En **Orden**, escribe el lugar en el que debe aparecer: por ejemplo, `1` antes que `2`.
 4. Marca **Mostrar en portada**.
 5. Pulsa **Guardar cambios**.
-6. Abre la web y revisa el banner. Usa las flechas del carrusel para encontrarlo.
+6. Abre la web y revisa el banner. Si hay varios activos, usa las flechas del carrusel para encontrarlo.
 
 **Para retirarlo sin perderlo:** desmarca **Mostrar en portada** y pulsa **Guardar cambios**.
 

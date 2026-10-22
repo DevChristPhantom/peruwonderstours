@@ -74,7 +74,7 @@ for (const locale of ["es", "en", "pt"]) {
   assert.ok(html.includes("complaints-book.webp"), `${locale}: complaints notice missing`);
   assert.ok(html.includes("peruwonderstours"), `${locale}: site brand missing`);
   assert.ok(html.includes("51924278597"), `${locale}: confirmed WhatsApp missing`);
-  assert.ok(html.includes("peruwonderstours-dorado.png"), `${locale}: owner logo missing`);
+  assert.ok(html.includes("peruwonderstours-logo-negativo.png"), `${locale}: owner logo missing`);
   const contacts = { es: "/es/contactenos", en: "/en/contact", pt: "/pt/contato" };
   const contact = await response(contacts[locale]);
   assert.ok(contact.includes("mailto:jorgechaveztourt@gmail.com"), `${locale}: confirmed contact email missing`);
@@ -89,7 +89,7 @@ for (const path of ["/es/carrito", "/en/cart", "/pt/carrinho", "/es/checkout", "
   assert.match(html, /<meta name="robots" content="[^"]*noindex/, `${path}: missing noindex`);
   assert.ok(!sitemap.includes(`<loc>https://peruwonderstours.com${path}</loc>`), `${path}: personal page in sitemap`);
 }
-for (const asset of ["/icons/whatsapp.svg", "/icons/rune/receipt.svg", "/official/complaints-book.webp", "/brand/peruwonderstours-dorado.png"]) {
+for (const asset of ["/icons/whatsapp.svg", "/icons/rune/receipt.svg", "/official/complaints-book.webp", "/brand/peruwonderstours-logo-negativo.png", "/brand/peruwonderstours-logo-color.png"]) {
   const image = await fetch(new URL(asset, origin));
   assert.equal(image.status, 200, `${asset}: visual asset unavailable`);
   assert.ok(image.headers.get("content-type")?.startsWith("image/"), `${asset}: unexpected content type`);
