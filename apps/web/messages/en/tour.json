@@ -6,6 +6,7 @@
   "sectionsNav": "Tour sections",
   "sections": {
     "summary": "Overview",
+    "place": "About the place",
     "itinerary": "Itinerary",
     "includes": "What's included",
     "beforeTravel": "Before you go",
@@ -24,5 +25,12 @@
   "policiesText": "See payment deadlines, changes and refunds in our <link>payment conditions</link>.",
   "faqTitle": "Frequently asked questions",
   "bookingAside": "Booking",
-  "related": "Related tours"
+  "related": "Related tours",
+  "place": {
+    "title": "About the place",
+    "titleMany": "Places on this trip",
+    "primary": "Main destination",
+    "cta": "See tours in {name}",
+    "imageAlt": "View of {name}"
+  }
 }

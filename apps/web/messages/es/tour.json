@@ -6,6 +6,7 @@
   "sectionsNav": "Secciones del tour",
   "sections": {
     "summary": "Resumen",
+    "place": "Sobre el lugar",
     "itinerary": "Itinerario",
     "includes": "Qué incluye",
     "beforeTravel": "Antes de viajar",
@@ -24,5 +25,12 @@
   "policiesText": "Revisa los plazos de pago, cambios y reembolsos en nuestras <link>condiciones de pago</link>.",
   "faqTitle": "Preguntas frecuentes",
   "bookingAside": "Reserva",
-  "related": "Tours relacionados"
+  "related": "Tours relacionados",
+  "place": {
+    "title": "Sobre el lugar",
+    "titleMany": "Los lugares de este viaje",
+    "primary": "Destino principal",
+    "cta": "Ver tours en {name}",
+    "imageAlt": "Vista de {name}"
+  }
 }

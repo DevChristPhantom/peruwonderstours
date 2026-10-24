@@ -309,10 +309,13 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
         await row.getByLabel('Efecto', { exact: true }).selectOption('clouds');
         await row.getByRole('button', { name: 'Guardar cambios' }).click();
         await expect(page.getByRole('status')).toContainText('Banner actualizado');
+        // The cloud layers mount after hydration and the motion check (~1-2 s): give each reload time before counting.
+        const clouds = publicPage.locator('[data-effect="clouds"] i');
         await expect.poll(async () => {
           await publicPage.reload();
-          return publicPage.locator('[data-effect="clouds"] i').count();
-        }, { timeout: 30000, intervals: [1000] }).toBe(3);
+          await clouds.first().waitFor({ timeout: 5000 }).catch(() => undefined);
+          return clouds.count();
+        }, { timeout: 45000, intervals: [1000] }).toBe(3);
       } finally { await publicPage.close(); }
       await row.getByLabel("Mostrar en portada").uncheck();
       await row.getByRole("button", { name: "Guardar cambios" }).click();

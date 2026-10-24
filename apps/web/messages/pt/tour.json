@@ -6,6 +6,7 @@
   "sectionsNav": "Seções do passeio",
   "sections": {
     "summary": "Resumo",
+    "place": "Sobre o lugar",
     "itinerary": "Roteiro",
     "includes": "O que está incluído",
     "beforeTravel": "Antes de viajar",
@@ -24,5 +25,12 @@
   "policiesText": "Confira os prazos de pagamento, alterações e reembolsos nas nossas <link>condições de pagamento</link>.",
   "faqTitle": "Perguntas frequentes",
   "bookingAside": "Reserva",
-  "related": "Passeios relacionados"
+  "related": "Passeios relacionados",
+  "place": {
+    "title": "Sobre o lugar",
+    "titleMany": "Os lugares desta viagem",
+    "primary": "Destino principal",
+    "cta": "Ver passeios em {name}",
+    "imageAlt": "Vista de {name}"
+  }
 }

@@ -6,6 +6,7 @@ import { ActionForm, SubmitButton } from "@/components/forms/ActionForm";
 import { Field } from "@/components/forms/Field";
 import { TranslationStatusBadge } from "@/components/content/TranslationStatus";
 import { ImageUploader } from "@/components/media/ImageUploader";
+import { TourDestinationsForm } from "@/components/tours/TourDestinationsForm";
 import { TourFieldsForm } from "@/components/tours/TourFieldsForm";
 import { TabLinks } from "@/components/ui/TabLinks";
 import { mediaUrl } from "@/lib/media";
@@ -15,6 +16,7 @@ import { Badge } from "@/components/ui/Badge";
 import { ErrorPanel } from "@/components/ui/ErrorPanel";
 import { EmptyState, PageHeader, Section } from "@/components/ui/Layout";
 import { apiData } from "@/lib/api/client";
+import type { TaxonomyItem } from "@/lib/api/content-types";
 import { fieldLabel } from "@/lib/api/errors";
 import type { TourDetail } from "@/lib/api/types";
 import { can, load, requireSession } from "@/lib/auth/guard";
@@ -30,7 +32,10 @@ export default async function TourDetailPage({ params, searchParams }: PageProps
   const [{ id }, sp] = await Promise.all([params, searchParams]);
   const lang = sp.idioma === "pt" ? "pt" : sp.idioma === "en" ? "en" : "es";
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
-  const result = await load(() => apiData<TourDetail>(`/admin/tours/${id}`));
+  const [result, destinationsResult] = await Promise.all([
+    load(() => apiData<TourDetail>(`/admin/tours/${id}`)),
+    load(() => apiData<TaxonomyItem[]>("/admin/destinations")),
+  ]);
   if (!result.ok) {
     return (
       <>
@@ -153,6 +158,18 @@ export default async function TourDetailPage({ params, searchParams }: PageProps
 
         <Section title="Datos generales" id="datos">
           <TourFieldsForm tour={t} readOnly={!canWrite} />
+        </Section>
+
+        <Section
+          title="Destinos y lugares"
+          id="destinos"
+          description="Elige dónde se realiza el tour. La ficha pública muestra «Sobre el lugar» con el texto de cada destino, y el tour aparece al filtrar por ese destino."
+        >
+          {destinationsResult.ok ? (
+            <TourDestinationsForm tour={t} destinations={destinationsResult.data} readOnly={!canWrite} />
+          ) : (
+            <ErrorPanel error={destinationsResult.error} />
+          )}
         </Section>
 
         <Section title="Imágenes" id="imagenes" description="Sube la imagen (JPEG, PNG, WebP o AVIF, máx. 8 MB) o pega una URL https. Publicar exige una portada.">

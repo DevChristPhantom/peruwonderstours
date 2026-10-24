@@ -24,9 +24,12 @@
       "peru-express-lima-cusco-5-days",
       "andean-routes-essential-peru-8-days",
       "ancient-peru-andean-legacy-10-days",
-      "southern-peru-coast-essentials-14-days"
+      "southern-peru-coast-essentials-14-days",
+      "best-of-peru-5-days",
+      "magical-peru-cusco-lima-6-days",
+      "dream-peru-andes-incas-8-days"
     ],
-    "description": "Book the best tours and trips in Cusco: Machu Picchu, the Inca Trail, the Sacred Valley, Salkantay and more, at the best price!",
+    "description": "The former capital of the Inca Empire, Cusco is a city where Inca culture and colonial heritage blend on every street of its historic center. At 3,399 m (11,152 ft) above sea level, it is the gateway to the Sacred Valley and Machu Picchu, one of the New 7 Wonders of the World. Resting on your first day is recommended to adjust to the altitude.",
     "cardImage": "https://www.andeanperutours.com/images/cities/sm/69289724-126060618745285-6861872528201368441-n-1766248271.jpg",
     "translationStatus": "machine_reviewed_pending_client"
   },
@@ -53,7 +56,7 @@
       "ancient-peru-andean-legacy-10-days",
       "southern-peru-coast-essentials-14-days"
     ],
-    "description": "Today, Arequipa is one of Peru’s most populous cities and one of its leading tourist destinations, standing out for its impressive monuments.",
+    "description": "Known as the White City, Arequipa owes its glow to sillar, the white volcanic stone used to build its churches and monasteries, such as Santa Catalina. Its historic center, a UNESCO World Heritage Site, sits at the foot of the Misti volcano and is the starting point for trips to the Colca Canyon.",
     "cardImage": "https://www.andeanperutours.com/images/cities/sm/mirador-yanahuara-1625087231.jpg",
     "translationStatus": "machine_reviewed_pending_client"
   },
@@ -68,7 +71,7 @@
     "tourSlugs": [
       "southern-peru-coast-essentials-14-days"
     ],
-    "description": "Enjoy your vacation with us! All-inclusive Ica – Paracas tour packages. Visit the city of Ica, the Paracas National Reserve and the Huacachina Oasis.",
+    "description": "On Peru's southern coast, Ica and Paracas bring desert and sea together: the Paracas National Reserve and the marine wildlife of the Ballestas Islands, the Huacachina Oasis, with buggy rides and sandboarding, and the mysteries of the Nazca Lines.",
     "cardImage": "https://www.andeanperutours.com/images/cities/sm/saveclipapp-446115389-1101675260892783-3016599930400644429-n-1766248299.jpg",
     "translationStatus": "machine_reviewed_pending_client"
   },
@@ -84,9 +87,12 @@
       "peru-express-lima-cusco-5-days",
       "andean-routes-essential-peru-8-days",
       "ancient-peru-andean-legacy-10-days",
-      "southern-peru-coast-essentials-14-days"
+      "southern-peru-coast-essentials-14-days",
+      "best-of-peru-5-days",
+      "magical-peru-cusco-lima-6-days",
+      "dream-peru-andes-incas-8-days"
     ],
-    "description": "Lima is one of the most fascinating cities in Latin America. Whether you’re staying for a while or just stopping over on your way to Machu Picchu, there are tours in Lima you shouldn’t miss.",
+    "description": "Known as the City of Kings, Lima brings together its colonial past and a cosmopolitan present. Its Historic Center, a UNESCO World Heritage Site, preserves the Plaza Mayor and its colonial balconies, while Miraflores overlooks the Pacific Ocean. It is also the culinary capital of South America.",
     "cardImage": "https://www.andeanperutours.com/images/cities/sm/pachacamac-2-1625083128.jpg",
     "translationStatus": "machine_reviewed_pending_client"
   },
@@ -111,9 +117,10 @@
       "titicaca-culture-uros-llachon-taquile-3-days",
       "andean-routes-essential-peru-8-days",
       "ancient-peru-andean-legacy-10-days",
-      "southern-peru-coast-essentials-14-days"
+      "southern-peru-coast-essentials-14-days",
+      "dream-peru-andes-incas-8-days"
     ],
-    "description": "Explore Puno and Lake Titicaca. We offer tours to the Uros, Taquile and Amantaní islands and the region’s archaeological sites with expert guides. Quality and culture.",
+    "description": "On the shores of Lake Titicaca, the highest navigable lake in the world, Puno is the heart of Aymara and Quechua identity in the Peruvian Altiplano. From its port, boats sail to the floating Uros islands, built from totora reeds, and to Taquile and Amantaní, where local communities keep their ancestral traditions alive.",
     "cardImage": "https://www.andeanperutours.com/images/cities/sm/saveclipapp-281813272-575966233845843-6151745336466195975-n-1766248192.jpg",
     "translationStatus": "machine_reviewed_pending_client"
   }

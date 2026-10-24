@@ -2244,7 +2244,10 @@
     "metaTitle": "Tour Perú: Lima, Cusco, Machu Picchu y Valle Sagrado | Viaje Inca",
     "metaDescription": "Descubre lo mejor del Perú con un tour único que incluye Lima, Cusco, Machu Picchu y el Valle Sagrado.",
     "destinations": null,
-    "destinationSlugs": [],
+    "destinationSlugs": [
+      "cuzco",
+      "tours-en-lima"
+    ],
     "categorySlugs": [
       "paquetes-turisticos-en-peru",
       "tours-a-machu-picchu"
@@ -2405,7 +2408,11 @@
     "metaTitle": "Viaje a Perú: Lima, Cusco, Machu Picchu, Valle Sagrado y Lago Titicaca",
     "metaDescription": "Descubre el Perú en 8 días: Lima virreinal, Cusco imperial, Machu Picchu, el Valle Sagrado y el mítico Lago Titicaca. Un viaje inolvidable con cultura, historia, gastronomía y experiencias únicas pensadas para viajeros de España y Latinoamérica.",
     "destinations": null,
-    "destinationSlugs": [],
+    "destinationSlugs": [
+      "cuzco",
+      "tours-en-lima",
+      "tours-en-puno"
+    ],
     "categorySlugs": [
       "paquetes-turisticos-en-peru",
       "tours-a-machu-picchu"
@@ -2892,7 +2899,10 @@
     "metaTitle": "Perú Fantástico 06 días / 05 noches",
     "metaDescription": "Vive una experiencia única en Perú, donde cada rincón te transportará a una historia milenaria. Comienza tu aventura en la vibrante Lima, la Ciudad de los Reyes, y adéntrate en la riqueza cultural de Cusco, cuna del Imperio Inca.",
     "destinations": null,
-    "destinationSlugs": [],
+    "destinationSlugs": [
+      "cuzco",
+      "tours-en-lima"
+    ],
     "categorySlugs": [
       "paquetes-turisticos-en-peru",
       "tours-a-machu-picchu"

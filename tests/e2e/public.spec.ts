@@ -221,6 +221,22 @@ test('Tour photo gallery supports next, previous, Escape and focus restoration',
   await expect(gallery).toBeHidden();await expect(opener).toBeFocused();
 });
 
+test('Tours describe the places they visit, linked from the section index and to each destination', async ({ page }, info) => {
+  await measured(info,'Single-destination tour shows its place',async()=>{
+    await page.goto(tourPath);
+    const place=page.getByRole('region',{name:'Sobre el lugar'});
+    await expect(place).toContainText('Lago Titicaca');
+    await expect(page.getByRole('navigation',{name:'Secciones del tour'}).getByRole('link',{name:'Sobre el lugar'})).toHaveAttribute('href','#sobre-el-lugar');
+    await expect(place.getByRole('link',{name:'Ver tours en Puno'})).toHaveAttribute('href',/\/es\/destinos\//);
+  });
+  await measured(info,'Multi-destination package lists every place, main one first',async()=>{
+    await page.goto('/es/tours/peru-de-ensueno-andes-incas-8d-7n');
+    const places=page.getByRole('region',{name:'Los lugares de este viaje'});
+    await expect(places.getByRole('heading',{level:3})).toHaveText(['Cuzco','Lima','Puno']);
+    await expect(places.getByText('Destino principal')).toHaveCount(1);
+  });
+});
+
 test('Catalog photography stays after products and works across languages and screen sizes', async ({ page }, info) => {
   test.setTimeout(240_000);
   const routes = [

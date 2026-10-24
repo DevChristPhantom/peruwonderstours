@@ -10,6 +10,7 @@ import { BookingPanel, type BookableTour } from "@/components/tours/BookingPanel
 import { MobileBookingBar } from "@/components/tours/MobileBookingBar";
 import { TourCard } from "@/components/tours/TourCard";
 import { TourGallery } from "@/components/tours/TourGallery";
+import { TourPlaces } from "@/components/tours/TourPlaces";
 import { Accordion } from "@/components/ui/Accordion";
 import { FavoriteButton } from "@/components/wishlist/FavoriteButton";
 import { Link } from "@/i18n/navigation";
@@ -66,7 +67,10 @@ export default async function TourPage({ params }: PageProps<"/[locale]/tours/[s
     getTranslations("units"),
     getTranslations("common"),
   ]);
-  const primaryDestination = destinations.find((d) => tour.destinationSlugs.includes(d.key));
+  // En el orden del tour: el destino principal va primero.
+  const tourDestinations = tour.destinationSlugs.map((key) => destinations.find((d) => d.key === key)).filter((d) => d !== undefined);
+  const primaryDestination = tourDestinations[0];
+  const hasPlaces = tourDestinations.some((d) => d.description?.trim());
   const places = tour.destinationNames.length ? tour.destinationNames.join(", ") : tc("severalDestinations");
   const multiDay = (tour.durationDays ?? 1) > 1 && tour.itinerary.length > 1;
   const altitudeNotes = tour.destinationSlugs.map((d) => ALTITUDE_KEYS[d]).filter(Boolean).map((k) => t(`altitude.${k}`));
@@ -90,6 +94,7 @@ export default async function TourPage({ params }: PageProps<"/[locale]/tours/[s
 
   const sections = [
     { id: "resumen", label: t("sections.summary") },
+    { id: "sobre-el-lugar", label: t("sections.place"), show: hasPlaces },
     { id: "itinerario", label: t("sections.itinerary"), show: tour.itinerary.length > 0 },
     { id: "incluye", label: t("sections.includes"), show: tour.includes.length + tour.notIncludes.length > 0 },
     { id: "antes-de-viajar", label: t("sections.beforeTravel") },
@@ -195,6 +200,8 @@ export default async function TourPage({ params }: PageProps<"/[locale]/tours/[s
               </ul>
             ) : null}
           </section>
+
+          <TourPlaces id="sobre-el-lugar" destinations={tourDestinations} />
 
           {/* Reserva en flujo para móvil/tablet (en desktop va en la columna lateral). */}
           <div className="lg:hidden" lang={locale}>

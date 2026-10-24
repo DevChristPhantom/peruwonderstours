@@ -46,6 +46,19 @@ export async function updateTourAction(id: string, version: number, input: TourF
   return action(() => apiData<TourDetail>(tourPath(id), { method: "PATCH", body: { ...parsed.data, version } }).then((t) => ({ version: t.version })));
 }
 
+/** Destinos del tour: alimentan «Sobre el lugar», el filtro por destino y las páginas de destino del sitio. */
+export async function updateTourDestinationsAction(id: string, version: number, _prev: unknown, fd: FormData) {
+  const ids = [...new Set(fd.getAll("destinationIds").map(String).filter((v) => UUID.test(v)))];
+  const chosen = str(fd, "primaryDestinationId");
+  const primary = ids.includes(chosen) ? chosen : (ids[0] ?? null);
+  // El principal va primero: la API usa el orden para `sortOrder`.
+  const ordered = primary ? [primary, ...ids.filter((v) => v !== primary)] : ids;
+  return action(
+    () => apiData<TourDetail>(tourPath(id), { method: "PATCH", body: { destinationIds: ordered, primaryDestinationId: primary, version } }).then(() => null),
+    { message: ordered.length ? "Destinos guardados: el sitio ya muestra «Sobre el lugar» con estos destinos." : "Destinos quitados." },
+  );
+}
+
 export async function saveTranslationAction(id: string, version: number, locale: "es" | "en" | "pt", input: TranslationFormInput) {
   if (locale !== "es" && locale !== "en" && locale !== "pt") throw new Error("Idioma inválido");
   const parsed = translationSchema.safeParse(input);
