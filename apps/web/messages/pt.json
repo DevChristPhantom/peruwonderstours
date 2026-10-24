@@ -770,7 +770,7 @@
     "legal": {
       "businessName": "Razão social",
       "ruc": "RUC",
-      "rucExample": "{number} (exemplo; RUC real pendente)",
+      "fiscalAddress": "Domicílio fiscal",
       "mincetur": "Registro MINCETUR",
       "office": "Escritório",
       "email": "E-mail"

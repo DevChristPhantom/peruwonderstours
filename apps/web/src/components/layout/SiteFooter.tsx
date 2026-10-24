@@ -64,7 +64,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
   const [t, tc, locale] = await Promise.all([getTranslations("footer"), getTranslations("common"), getLocale()]);
   const { legal } = SITE;
   const pending = tc("pending");
-  const rucDisplay = legal.ruc ?? t("legal.rucExample", { number: legal.rucExample });
+  const rucDisplay = legal.ruc ?? pending;
   const year = new Date().getFullYear();
 
   if (variant === "minimal") {
@@ -117,6 +117,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
             <ul className="mt-4 space-y-1 text-sm">
               <LegalItem label={t("legal.businessName")} value={legal.businessName} pending={pending} />
               <LegalItem label={t("legal.ruc")} value={rucDisplay} pending={pending} />
+              <LegalItem label={t("legal.fiscalAddress")} value={legal.fiscalAddress} pending={pending} />
               <LegalItem label={t("legal.mincetur")} value={legal.minceturRegistry} pending={pending} />
               <LegalItem label={t("legal.office")} value={legal.address} pending={pending} />
             </ul>

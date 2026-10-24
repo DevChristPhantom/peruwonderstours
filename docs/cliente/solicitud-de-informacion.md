@@ -11,9 +11,11 @@ datos. Están ordenados por prioridad. Puedes respondernos por partes.
    - precio para peruanos y para extranjeros, si es diferente;
    - moneda (soles o dólares) y temporadas (alta y baja), si cambian los precios.
 2. **Datos legales de la empresa:**
-   - **RUC** (la web antigua muestra 20000000000, que no es real), razón social, nombre
-     comercial y domicilio fiscal. En la web antigua también aparece "TURINET CUZCO EIRL":
-     ¿qué empresa es la que va a vender?
+   - ✅ **Recibido el 2026-10-24 (Consulta RUC de SUNAT):** RUC 20616102339, PERU WONDERS
+     TOURS S.A.C., activo y habido, domicilio fiscal Jr. Amauta Mza. X Lote 15, Urb. Tepro
+     (C.P. Salcedo), Puno. Ya figura en el pie de página, el Libro de Reclamaciones y los datos
+     para Google. Pendiente: SUNAT aún no lo muestra como emisor electrónico; confirmar con el
+     contador cómo se emitirán boletas y facturas de las ventas en línea.
    - Constancia de inscripción en el **Directorio Nacional de MINCETUR** (número y fecha), la
      clasificación de la agencia y el archivo del distintivo.
    - **Declaración Jurada ESNNA** firmada y el afiche ESNNA vigente.
@@ -125,6 +127,8 @@ solo es válida con el pago total". Necesitamos que nos confirmes:
     expórtalos desde el OTM.
 46. **Dirección de la oficina de Puno:** la web antigua dice "Calle N 500", que parece un dato
     de relleno. ¿Cuál es la dirección exacta? Es obligatoria en el Libro de Reclamaciones.
+    El domicilio fiscal (Jr. Amauta, Urb. Tepro, Salcedo) ya se muestra; si la oficina de
+    atención es la misma, se puede usar en lugar de «Calle N 500».
 
 ---
 *Los borradores de Política de Privacidad, Términos y Condiciones, Política de Cancelación y

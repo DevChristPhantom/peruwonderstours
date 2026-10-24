@@ -32,13 +32,15 @@ export function breadcrumbJsonLd(crumbs: Crumb[]): JsonLdObject {
   };
 }
 
-/** Agencia con datos confirmados; nunca incluye registros, RUC o reseñas de ejemplo. */
+/** Agencia con datos confirmados (razón social y RUC de SUNAT); nunca incluye registros o reseñas de ejemplo. */
 export function organizationJsonLd(): JsonLdObject {
   return {
     "@context": "https://schema.org",
     "@type": "TravelAgency",
     "@id": absoluteUrl('/#organization'),
     name: SITE.name,
+    ...(SITE.legal.businessName ? { legalName: SITE.legal.businessName } : {}),
+    ...(SITE.legal.ruc ? { taxID: SITE.legal.ruc } : {}),
     url: SITE.url,
     logo: absoluteUrl('/brand/peruwonderstours-logo-color.png'),
     ...(SITE.legal.email ? { email: SITE.legal.email } : {}),

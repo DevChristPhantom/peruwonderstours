@@ -770,7 +770,7 @@
     "legal": {
       "businessName": "Company name",
       "ruc": "Tax ID (RUC)",
-      "rucExample": "{number} (example; actual tax ID pending)",
+      "fiscalAddress": "Registered address",
       "mincetur": "MINCETUR registration",
       "office": "Office",
       "email": "Email"

@@ -9,12 +9,12 @@ export const SITE = {
   name: "peruwonderstours",
   url: "https://peruwonderstours.com",
   legal: {
-    /** PENDIENTE(cliente): razón social (el sitio viejo muestra datos inconsistentes). */
-    businessName: null as string | null,
-    /** PENDIENTE(cliente): RUC real. El sitio viejo muestra el placeholder 20000000000: NO usarlo. */
-    ruc: null as string | null,
-    /** Ejemplo solicitado para la vista previa; no es la identidad fiscal de la agencia. */
-    rucExample: "20000000000",
+    /** Razón social según la Consulta RUC de SUNAT (enviada por el cliente el 2026-10-24). */
+    businessName: "PERU WONDERS TOURS S.A.C." as string | null,
+    /** RUC activo y habido (SUNAT, consulta del 2026-10-24). */
+    ruc: "20616102339" as string | null,
+    /** Domicilio fiscal registrado en SUNAT (obligatorio junto al RUC en la web). */
+    fiscalAddress: "Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno - Puno - Puno" as string | null,
     /** PENDIENTE(cliente): n.º de registro de agencia MINCETUR/GERCETUR. */
     minceturRegistry: null as string | null,
     /** Dirección confirmada por el propietario el 2026-10-14. */

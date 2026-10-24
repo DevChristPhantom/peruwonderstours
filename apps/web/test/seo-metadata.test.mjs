@@ -27,7 +27,7 @@ const metadata = load('../src/lib/seo/metadata.ts', {
   '@/i18n/routing': { HREFLANG: { es: 'es-PE', en: 'en', pt: 'pt-BR' }, OG_LOCALE: { es: 'es_PE', en: 'en_US', pt: 'pt_BR' }, routing: { locales: ['es', 'en', 'pt'], defaultLocale: 'es' } },
 });
 
-test('organization publishes confirmed contact and owner logo without invented tax IDs or ratings', () => {
+test('organization publishes confirmed contact, SUNAT identity and owner logo without invented ratings', () => {
   const agency = jsonLd.organizationJsonLd();
   assert.equal(agency['@id'], 'https://peruwonderstours.com/#organization');
   assert.equal(agency.logo, 'https://peruwonderstours.com/brand/peruwonderstours-logo-color.png');
@@ -36,9 +36,10 @@ test('organization publishes confirmed contact and owner logo without invented t
   assert.equal(agency.address.streetAddress, site.SITE.legal.address);
   assert.equal(agency.address.addressCountry, 'PE');
   assert.equal('aggregateRating' in agency, false);
-  assert.equal('taxID' in agency, false);
+  assert.equal(agency.legalName, 'PERU WONDERS TOURS S.A.C.');
+  assert.equal(agency.taxID, '20616102339');
   assert.equal('vatID' in agency, false);
-  assert.equal(JSON.stringify(agency).includes(site.SITE.legal.rucExample), false);
+  assert.equal(JSON.stringify(agency).includes('20000000000'), false);
 });
 
 test('a tour price is not misrepresented as confirmed stock or availability', () => {
