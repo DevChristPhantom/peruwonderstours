@@ -14,6 +14,7 @@ import { FavoriteButton } from "@/components/wishlist/FavoriteButton";
 import { localePath } from "@/i18n/paths";
 import type { Locale } from "@/i18n/routing";
 import { getTour, type Tour } from "@/lib/catalog";
+import { isDifficultyLevel } from "@/lib/catalog/difficulty";
 import { durationText } from "@/lib/i18n/units";
 import { alternatesFor, pageMetadata } from "@/lib/seo/metadata";
 import { parseSharedSlugs } from "@/lib/wishlist/share";
@@ -74,7 +75,7 @@ export default async function ComparePage({ params, searchParams }: PageProps<"/
     { label: t("rows.price"), render: (tour) => <PriceTag pricing={tour.pricing} policy={tour.paymentPolicy} /> },
     { label: t("rows.duration"), render: (tour) => durationText(tu, tour.durationDays, tour.durationNights) },
     { label: t("rows.destinations"), render: (tour) => (tour.destinationNames.length ? tour.destinationNames.join(", ") : tc("severalDestinations")) },
-    { label: t("rows.difficulty"), render: (tour) => tour.difficulty ?? pending },
+    { label: t("rows.difficulty"), render: (tour) => (isDifficultyLevel(tour.difficulty) ? tc(`difficultyLevels.${tour.difficulty}`) : (tour.difficulty ?? pending)) },
     { label: t("rows.minPax"), render: (tour) => tour.minPax },
     { label: t("rows.includes"), render: (tour) => <ItemList items={tour.includes} icon="check" empty={pending} more={more} /> },
     { label: t("rows.notIncludes"), render: (tour) => <ItemList items={tour.notIncludes} icon="x" empty={pending} more={more} /> },

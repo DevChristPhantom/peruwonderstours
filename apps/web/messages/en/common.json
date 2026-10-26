@@ -10,5 +10,11 @@
   "logoHome": "peruwonderstours, go to home page",
   "pending": "To be confirmed",
   "whatsappUs": "Message us on WhatsApp",
-  "skipToContent": "Skip to main content"
+  "skipToContent": "Skip to main content",
+  "difficultyLevels": {
+    "easy": "Easy",
+    "moderate": "Moderate",
+    "challenging": "Challenging",
+    "extreme": "Extreme"
+  }
 }

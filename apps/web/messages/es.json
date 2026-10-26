@@ -464,7 +464,13 @@
     "logoHome": "peruwonderstours, ir al inicio",
     "pending": "Por confirmar",
     "whatsappUs": "Escríbenos por WhatsApp",
-    "skipToContent": "Saltar al contenido principal"
+    "skipToContent": "Saltar al contenido principal",
+    "difficultyLevels": {
+      "easy": "Fácil",
+      "moderate": "Moderada",
+      "challenging": "Exigente",
+      "extreme": "Extrema"
+    }
   },
   "compare": {
     "toggle": "Comparar",

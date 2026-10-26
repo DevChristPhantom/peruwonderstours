@@ -82,8 +82,11 @@ export async function TourCard({
             {tc("fallbackNotice")}
           </p>
         ) : null}
-        <div className="mt-auto flex flex-wrap items-end justify-between gap-3 border-t border-border pt-4">
-          <PriceTag pricing={tour.pricing} policy={tour.paymentPolicy} />
+        {/* Sin wrap: «Comparar» queda siempre a la derecha y alineado entre tarjetas; el precio usa el ancho restante. */}
+        <div className="mt-auto flex items-end justify-between gap-3 border-t border-border pt-4">
+          <div className="min-w-0">
+            <PriceTag pricing={tour.pricing} policy={tour.paymentPolicy} />
+          </div>
           {showCompare ? <CompareToggle slug={tour.key} title={tour.shortTitle} className="shrink-0" /> : null}
         </div>
         <span aria-hidden="true" className="mt-1 inline-flex min-h-11 items-center justify-between gap-3 rounded-lg bg-primary px-4 text-sm font-medium text-on-primary">

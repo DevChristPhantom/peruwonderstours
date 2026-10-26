@@ -17,6 +17,7 @@ import { Link } from "@/i18n/navigation";
 import { localePath } from "@/i18n/paths";
 import { routing, type Locale } from "@/i18n/routing";
 import { getAllTours, getDestinations, getRelatedTours, getTour } from "@/lib/catalog";
+import { isDifficultyLevel } from "@/lib/catalog/difficulty";
 import { durationText } from "@/lib/i18n/units";
 import { faqJsonLd, JsonLd, touristTripJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -134,7 +135,7 @@ export default async function TourPage({ params }: PageProps<"/[locale]/tours/[s
               {tc("fallbackNotice")}
             </p>
           ) : null}
-          <h1 lang={contentLang} className="font-display text-display-xl font-normal">
+          <h1 lang={contentLang} className="font-display text-h1 font-medium">
             {tour.title}
           </h1>
           <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-foreground-muted">
@@ -153,7 +154,7 @@ export default async function TourPage({ params }: PageProps<"/[locale]/tours/[s
             {tour.difficulty ? (
               <li className="inline-flex items-center gap-2">
                 <Gauge aria-hidden size={20} strokeWidth={1.5} />
-                {t("difficulty", { value: tour.difficulty })}
+                {t("difficulty", { value: isDifficultyLevel(tour.difficulty) ? tc(`difficultyLevels.${tour.difficulty}`) : tour.difficulty })}
               </li>
             ) : null}
           </ul>

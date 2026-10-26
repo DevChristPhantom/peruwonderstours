@@ -138,7 +138,7 @@ export async function FinalCta({ photo }: { photo?: CatalogImage | null } = {}) 
   const t = await getTranslations('home.finalCta');
   return (
     <section
-      className="relative isolate overflow-hidden bg-primary py-20 text-on-primary md:py-28 [&_:focus-visible]:outline-on-primary"
+      className="pwt-section relative isolate overflow-hidden bg-primary text-on-primary [&_:focus-visible]:outline-on-primary"
       aria-labelledby="cta-title"
     >
       {photo ? (

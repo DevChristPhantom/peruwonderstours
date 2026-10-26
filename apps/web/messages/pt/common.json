@@ -10,5 +10,11 @@
   "logoHome": "peruwonderstours, ir para o início",
   "pending": "A confirmar",
   "whatsappUs": "Fale conosco pelo WhatsApp",
-  "skipToContent": "Pular para o conteúdo principal"
+  "skipToContent": "Pular para o conteúdo principal",
+  "difficultyLevels": {
+    "easy": "Fácil",
+    "moderate": "Moderada",
+    "challenging": "Exigente",
+    "extreme": "Extrema"
+  }
 }

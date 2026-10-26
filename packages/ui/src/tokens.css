@@ -176,7 +176,8 @@
   --pwt-space-20: 5rem;
   --pwt-space-24: 6rem;
   --pwt-space-32: 8rem;
-  --pwt-section-y: clamp(4rem, 2.5rem + 6vw, 8rem);
+  /* Ritmo vertical de las secciones: 64 px en móvil → 96 px máx. (≈90 px a 1440). Una sola medida para todo el sitio. */
+  --pwt-section-y: clamp(4rem, 2.5rem + 3.5vw, 6rem);
   --pwt-gutter: clamp(16px, 3.4vw, 52px);
   --pwt-header-gutter: clamp(20px, 3.4vw, 52px);
   --pwt-header-height: 76px;

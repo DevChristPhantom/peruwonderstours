@@ -81,7 +81,10 @@ const nextConfig = {
   // Monorepo pnpm: la raíz incluye data/seed y packages/ui.
   outputFileTracingRoot: path.join(configDirectory, "../.."),
   // 404 de URLs sin idioma (app/global-not-found.tsx): el layout raíz vive en app/[locale].
-  experimental: { globalNotFound: true },
+  // Opcionales para compilar en equipos cargados (demo local): menos hilos y más tiempo por página.
+  // Sin las variables se usan los valores por defecto de Next (producción).
+  experimental: { globalNotFound: true, ...(Number(process.env.PWT_BUILD_CPUS) > 0 ? { cpus: Number(process.env.PWT_BUILD_CPUS) } : {}) },
+  ...(Number(process.env.PWT_STATIC_TIMEOUT) > 0 ? { staticPageGenerationTimeout: Number(process.env.PWT_STATIC_TIMEOUT) } : {}),
   // L1: los borradores legales se incrustan en el build (ver src/lib/legal/documents.ts).
   env: legalDocumentsEnv(),
   images: {

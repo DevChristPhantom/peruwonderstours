@@ -9,8 +9,8 @@
 .shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, transparent 20%, rgb(0 0 0 / .12) 40%, rgb(0 0 0 / .82) 100%); }
 .caption { position: relative; align-self: flex-end; width: 100%; padding: clamp(1rem, 2vw, 2rem); }
 .place { font-size: .7rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #f7dfaa; }
-.title { margin-top: .5rem; font-family: var(--font-display), Georgia, serif; font-size: clamp(1.05rem, 1.8vw, 1.6rem); line-height: 1.2; text-wrap: balance; }
-.featured .title { font-size: clamp(1.7rem, 3vw, 2.8rem); }
+.title { margin-top: .5rem; font-family: var(--font-display), Georgia, serif; font-size: clamp(1rem, .85rem + .45vw, 1.25rem); line-height: 1.25; text-wrap: balance; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.featured .title { font-size: clamp(1.5rem, 1rem + 1.6vw, 2.25rem); line-height: 1.15; }
 .action { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-top: 1.2rem; font-size: .8rem; font-weight: 500; }
 .caption::before { content: ''; position: absolute; inset: -1rem 0 0; z-index: -1; background: linear-gradient(0deg, rgb(5 32 40 / .92), rgb(5 32 40 / .6) 65%, transparent); opacity: 0; transition: opacity 150ms ease; }
 .caption { isolation: isolate; }

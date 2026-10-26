@@ -28,7 +28,7 @@ export async function JournalSection({
   return (
     <section
       aria-labelledby="journal-title"
-      className={`${s.section} border-y border-border bg-surface-muted py-14 md:py-20`}
+      className={`${s.section} pwt-section border-y border-border bg-surface-muted`}
     >
       <div className="pwt-container">
         <p className="text-sm font-medium uppercase tracking-[.16em] text-primary">
