@@ -19,6 +19,18 @@
     "cookies": {
       "title": "Cookie policy",
       "description": "Which cookies this website uses, what they are for and how you can manage them."
+    },
+    "promociones": {
+      "title": "Promotions and events terms",
+      "description": "Validity, availability, prices and conditions of our promotions, events and advertising."
+    },
+    "resenas": {
+      "title": "Reviews policy",
+      "description": "How we publish and moderate traveler reviews."
+    },
+    "esnna": {
+      "title": "Child protection (ESNNA)",
+      "description": "Our commitment against the sexual exploitation of children and adolescents in tourism."
     }
   }
 }

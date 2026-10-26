@@ -10,13 +10,13 @@
 
 ## 1. ¿Quién es responsable de tus datos?
 
-[POR CONFIRMAR: razón social], con RUC [POR CONFIRMAR: RUC], nombre comercial peruwonderstours,
+PERU WONDERS TOURS S.A.C., con RUC 20616102339, nombre comercial peruwonderstours,
 agencia de viajes y turismo inscrita en el Directorio Nacional de Prestadores de Servicios
 Turísticos Calificados con constancia N.º [POR CONFIRMAR: número], con domicilio en
-[POR CONFIRMAR: dirección completa], Puno, Perú (en adelante, "nosotros").
+Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Perú (en adelante, "nosotros").
 
-Contacto de privacidad: [POR CONFIRMAR: correo de privacidad, p. ej. privacidad@peruwonderstours.com]
-· Teléfono: [POR CONFIRMAR: teléfono].
+Contacto de privacidad: jorgechaveztourt@gmail.com
+· Teléfono: +51 924 278 597 (WhatsApp).
 [POR CONFIRMAR: si se designa Oficial de Datos Personales, su nombre o cargo y contacto].
 
 ## 2. ¿Qué datos tratamos?
@@ -101,7 +101,7 @@ Puedes ejercer gratuitamente tus derechos de **información, acceso (incluida la
 rectificación, actualización, inclusión, cancelación o supresión, oposición** y a no ser objeto de
 decisiones automatizadas, así como **revocar** tu consentimiento en cualquier momento.
 
-Cómo: escribe a [POR CONFIRMAR: correo de privacidad] o usa el formulario de tu cuenta
+Cómo: escribe a jorgechaveztourt@gmail.com o usa el formulario de tu cuenta
 [POR CONFIRMAR: ruta], indicando tus nombres, documento que acredite tu identidad (o la de tu
 representante), tu pedido concreto, un correo o domicilio para responderte y, si corresponde,
 documentos de sustento.

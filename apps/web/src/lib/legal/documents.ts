@@ -21,12 +21,18 @@ const RAW_DOCUMENTS = {
   privacidad: process.env.PWT_LEGAL_PRIVACIDAD,
   cancelacion: process.env.PWT_LEGAL_CANCELACION,
   cookies: process.env.PWT_LEGAL_COOKIES,
+  promociones: process.env.PWT_LEGAL_PROMOCIONES,
+  resenas: process.env.PWT_LEGAL_RESENAS,
+  esnna: process.env.PWT_LEGAL_ESNNA,
 };
 const PORTUGUESE_DOCUMENTS = {
   terminos: process.env.PWT_LEGAL_PT_TERMINOS,
   privacidad: process.env.PWT_LEGAL_PT_PRIVACIDAD,
   cancelacion: process.env.PWT_LEGAL_PT_CANCELACION,
   cookies: process.env.PWT_LEGAL_PT_COOKIES,
+  promociones: process.env.PWT_LEGAL_PT_PROMOCIONES,
+  resenas: process.env.PWT_LEGAL_PT_RESENAS,
+  esnna: process.env.PWT_LEGAL_PT_ESNNA,
 };
 
 export const LEGAL_DOCUMENTS = {
@@ -34,6 +40,9 @@ export const LEGAL_DOCUMENTS = {
   privacidad: "politica-de-privacidad.md",
   cancelacion: "politica-de-cancelacion-y-reembolso.md",
   cookies: "politica-de-cookies.md",
+  promociones: "politica-de-promociones.md",
+  resenas: "politica-de-resenas.md",
+  esnna: "prevencion-esnna.md",
 } as const;
 
 export type LegalDocumentKey = keyof typeof LEGAL_DOCUMENTS;

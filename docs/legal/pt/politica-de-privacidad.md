@@ -8,9 +8,9 @@
 
 ## 1. Quem é responsável pelos seus dados?
 
-[A CONFIRMAR: razão social], com RUC [A CONFIRMAR: RUC], nome comercial peruwonderstours, agência de viagens e turismo inscrita no Diretório Nacional de Prestadores de Serviços Turísticos Qualificados com certificado nº [A CONFIRMAR: número], com sede em [A CONFIRMAR: endereço completo], Puno, Peru (doravante, "nós").
+PERU WONDERS TOURS S.A.C., com RUC 20616102339, nome comercial peruwonderstours, agência de viagens e turismo inscrita no Diretório Nacional de Prestadores de Serviços Turísticos Qualificados com certificado nº [A CONFIRMAR: número], com sede em [A CONFIRMAR: endereço completo], Puno, Peru (doravante, "nós").
 
-Contato de privacidade: [A CONFIRMAR: e-mail de privacidade, por exemplo, privacidad@peruwonderstours.com] · Telefone: [A CONFIRMAR: telefone]. [A CONFIRMAR: se houver designação de um Oficial de Dados Pessoais, informar nome ou cargo e contato].
+Contato de privacidade: jorgechaveztourt@gmail.com · Telefone: +51 924 278 597 (WhatsApp). [A CONFIRMAR: se houver designação de um Oficial de Dados Pessoais, informar nome ou cargo e contato].
 
 ## 2. Quais dados tratamos?
 
@@ -76,7 +76,7 @@ Nos bancos de dados pessoais de nossa titularidade inscritos no Registro Naciona
 
 Você pode exercer gratuitamente seus direitos de **informação, acesso (incluindo portabilidade), retificação, atualização, inclusão, cancelamento ou exclusão, oposição** e de não ser objeto de decisões automatizadas, bem como **revogar** seu consentimento a qualquer momento.
 
-Como: escreva para [A CONFIRMAR: e-mail de privacidade] ou use o formulário da sua conta [A CONFIRMAR: caminho], informando seu nome, documento que comprove sua identidade (ou a do representante), a solicitação específica, um e-mail ou endereço para resposta e, se for o caso, os documentos de apoio.
+Como: escreva para jorgechaveztourt@gmail.com ou use o formulário da sua conta [A CONFIRMAR: caminho], informando seu nome, documento que comprove sua identidade (ou a do representante), a solicitação específica, um e-mail ou endereço para resposta e, se for o caso, os documentos de apoio.
 
 Prazos máximos de resposta (dias úteis): informação, 8; acesso, 20; retificação, cancelamento ou oposição, 10. Os prazos de acesso e dos demais direitos (exceto informação) podem ser prorrogados uma única vez por igual período, com comunicação do motivo.
 

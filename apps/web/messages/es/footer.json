@@ -43,7 +43,10 @@
     "terms": "Términos y condiciones",
     "payments": "Condiciones de pago",
     "privacy": "Protección de datos personales",
-    "cookies": "Política de cookies"
+    "cookies": "Política de cookies",
+    "promotions": "Promociones y eventos",
+    "reviewsPolicy": "Política de reseñas",
+    "esnna": "Prevención ESNNA"
   },
   "hours": "Lunes a sábado, 09:00 a 19:00 (hora de Perú)",
   "whatsapp": "WhatsApp {number}",

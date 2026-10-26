@@ -84,11 +84,13 @@
       "whatsapp": "Fazer orçamento pelo WhatsApp"
     },
     "whatsappNote": "Respondemos pelo WhatsApp",
-    "imageAlt": "Imagem do evento {title}"
+    "imageAlt": "Imagem do evento {title}",
+    "conditions": "Condições das promoções"
   },
   "promoPopup": {
     "label": "Anúncio",
     "close": "Fechar anúncio",
-    "later": "Agora não"
+    "later": "Agora não",
+    "conditions": "Condições das promoções"
   }
 }

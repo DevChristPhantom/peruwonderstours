@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { buttonClass } from "@/components/ui/button-styles";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import Link from "@/components/ui/IntentLink";
+import { localePath } from "@/i18n/paths";
 import { INTL_LOCALE, type Locale } from "@/i18n/routing";
 import type { Promotion } from "@/lib/content/promotions";
 
@@ -105,6 +106,11 @@ export async function PromotionsSection({ promotions, locale }: { promotions: Pr
             </ul>
           ) : null}
         </div>
+        <p className="mt-4 text-sm text-foreground-muted">
+          <Link href={localePath(locale, "/politicas/promociones")} className="pwt-link">
+            {t("conditions")}
+          </Link>
+        </p>
       </div>
     </section>
   );

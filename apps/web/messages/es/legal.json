@@ -19,6 +19,18 @@
     "cookies": {
       "title": "Política de cookies",
       "description": "Qué cookies usa este sitio, para qué sirven y cómo puedes gestionarlas."
+    },
+    "promociones": {
+      "title": "Condiciones de promociones y eventos",
+      "description": "Vigencia, cupos, precios y condiciones de nuestras promociones, eventos y publicidad."
+    },
+    "resenas": {
+      "title": "Política de reseñas y testimonios",
+      "description": "Cómo publicamos y moderamos las opiniones de los viajeros."
+    },
+    "esnna": {
+      "title": "Prevención de la ESNNA",
+      "description": "Nuestro compromiso contra la explotación sexual de niñas, niños y adolescentes en el turismo."
     }
   }
 }

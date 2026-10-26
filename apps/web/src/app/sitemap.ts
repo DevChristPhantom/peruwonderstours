@@ -48,6 +48,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...entries(alternatesFor("/politicas/proteccion-de-datos-personales"), 0.3, "monthly"),
     ...entries(alternatesFor("/politicas/terminos-y-condiciones"), 0.3, "monthly"),
     ...entries(alternatesFor("/politicas/cookies"), 0.3, "monthly"),
+    ...entries(alternatesFor("/politicas/promociones"), 0.3, "monthly"),
+    ...entries(alternatesFor("/politicas/resenas"), 0.3, "monthly"),
+    ...entries(alternatesFor("/politicas/esnna"), 0.3, "monthly"),
     ...entries(alternatesFor("/libro-de-reclamaciones"), 0.3, "monthly"),
   ];
 }

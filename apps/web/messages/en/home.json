@@ -84,11 +84,13 @@
       "whatsapp": "Get a quote on WhatsApp"
     },
     "whatsappNote": "We reply on WhatsApp",
-    "imageAlt": "Image of the event {title}"
+    "imageAlt": "Image of the event {title}",
+    "conditions": "Promotion terms"
   },
   "promoPopup": {
     "label": "Announcement",
     "close": "Close announcement",
-    "later": "Not now"
+    "later": "Not now",
+    "conditions": "Promotion terms"
   }
 }

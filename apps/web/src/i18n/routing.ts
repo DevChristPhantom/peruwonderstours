@@ -47,6 +47,8 @@ export const routing = defineRouting({
     },
     "/politicas/cookies": { es: "/politicas/cookies", en: "/policies/cookies", pt: "/politicas/cookies" },
     "/politicas/esnna": { es: "/politicas/esnna", en: "/policies/child-protection", pt: "/politicas/protecao-infantil" },
+    "/politicas/promociones": { es: "/politicas/promociones", en: "/policies/promotions", pt: "/politicas/promocoes" },
+    "/politicas/resenas": { es: "/politicas/resenas", en: "/policies/reviews", pt: "/politicas/avaliacoes" },
     "/favoritos": { es: "/favoritos", en: "/favorites", pt: "/favoritos" },
     "/mi-viaje": { es: "/mi-viaje", en: "/my-trip", pt: "/minha-viagem" },
     "/comparar": { es: "/comparar", en: "/compare", pt: "/comparar" },

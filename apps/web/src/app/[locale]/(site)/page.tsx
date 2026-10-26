@@ -11,6 +11,7 @@ import { eventDateRange, PromotionsSection } from '@/components/home/PromotionsS
 import { FinalCta, TestimonialsSection, WhyUsSection } from '@/components/home/HomeSections';
 import { TrustStrip } from '@/components/layout/TrustStrip';
 import { SearchBar } from '@/components/search/SearchBar';
+import { localePath } from '@/i18n/paths';
 import type { Locale } from '@/i18n/routing';
 import {
   getAllTours,
@@ -138,7 +139,8 @@ export default async function HomePage({ params }: PageProps<'/[locale]'>) {
             cta: { ...popup.cta, label: popup.cta.label || th(`cta.${popup.cta.kind}`) },
             fallback: popup.fallback,
           }}
-          labels={{ label: tp('label'), close: tp('close'), later: tp('later') }}
+          labels={{ label: tp('label'), close: tp('close'), later: tp('later'), conditions: tp('conditions') }}
+          conditionsHref={localePath(locale, '/politicas/promociones')}
         />
       ) : null}
     </>

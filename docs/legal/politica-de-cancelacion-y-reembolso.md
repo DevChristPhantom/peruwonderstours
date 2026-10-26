@@ -23,9 +23,9 @@
 
 Última actualización: [POR CONFIRMAR: fecha] · Versión [POR CONFIRMAR: versión]
 
-Proveedor: [POR CONFIRMAR: razón social], RUC [POR CONFIRMAR: RUC], "peruwonderstours",
-[POR CONFIRMAR: dirección], Puno, Perú. Contacto: [POR CONFIRMAR: correo de reservas] ·
-[POR CONFIRMAR: teléfono/WhatsApp].
+Proveedor: PERU WONDERS TOURS S.A.C., RUC 20616102339, "peruwonderstours",
+Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Perú. Contacto: jorgechaveztourt@gmail.com ·
++51 924 278 597 (WhatsApp).
 
 Esta política forma parte de los Términos y Condiciones y se acepta antes de pagar. La versión
 aceptada se guarda con tu reserva y se envía en tu correo de confirmación.
@@ -50,7 +50,7 @@ aceptada se guarda con tu reserva y se envía en tu correo de confirmación.
 ## 2. Cancelación por el cliente
 
 Puedes cancelar desde [POR CONFIRMAR: "Mi cuenta" / enlace en el correo] o escribiendo a
-[POR CONFIRMAR: correo], es decir, por el mismo medio que usaste para reservar. Contamos los
+jorgechaveztourt@gmail.com, es decir, por el mismo medio que usaste para reservar. Contamos los
 plazos desde la recepción de tu solicitud hasta la fecha de inicio del primer servicio.
 
 | Anticipación | Penalidad / reembolso |

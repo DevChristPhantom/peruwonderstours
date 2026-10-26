@@ -49,10 +49,16 @@ function legalDocumentsEnv() {
     PWT_LEGAL_PRIVACIDAD: read("politica-de-privacidad.md"),
     PWT_LEGAL_CANCELACION: read("politica-de-cancelacion-y-reembolso.md"),
     PWT_LEGAL_COOKIES: read("politica-de-cookies.md"),
+    PWT_LEGAL_PROMOCIONES: read("politica-de-promociones.md"),
+    PWT_LEGAL_RESENAS: read("politica-de-resenas.md"),
+    PWT_LEGAL_ESNNA: read("prevencion-esnna.md"),
     PWT_LEGAL_PT_TERMINOS: read("pt/terminos-y-condiciones.md"),
     PWT_LEGAL_PT_PRIVACIDAD: read("pt/politica-de-privacidad.md"),
     PWT_LEGAL_PT_CANCELACION: read("pt/politica-de-cancelacion-y-reembolso.md"),
     PWT_LEGAL_PT_COOKIES: read("pt/politica-de-cookies.md"),
+    PWT_LEGAL_PT_PROMOCIONES: read("pt/politica-de-promociones.md"),
+    PWT_LEGAL_PT_RESENAS: read("pt/politica-de-resenas.md"),
+    PWT_LEGAL_PT_ESNNA: read("pt/prevencion-esnna.md"),
   };
 }
 

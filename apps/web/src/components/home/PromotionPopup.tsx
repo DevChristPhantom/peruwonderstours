@@ -46,7 +46,15 @@ function remember(revision: string) {
  * foco atrapado, Escape y restauración del foco). Móvil: tarjeta inferior no modal que no tapa la
  * página (guía de Google sobre intersticiales intrusivos en móviles).
  */
-export function PromotionPopup({ promotion, labels }: { promotion: PopupPromotion; labels: { label: string; close: string; later: string } }) {
+export function PromotionPopup({
+  promotion,
+  labels,
+  conditionsHref,
+}: {
+  promotion: PopupPromotion;
+  labels: { label: string; close: string; later: string; conditions: string };
+  conditionsHref: string;
+}) {
   const ref = useRef<HTMLDialogElement>(null);
   const [mobile, setMobile] = useState(false);
   /** «pending»: ya tiene sus clases de móvil/escritorio; se abre después de pintarlas (sin saltos de scroll). */
@@ -156,6 +164,11 @@ export function PromotionPopup({ promotion, labels }: { promotion: PopupPromotio
               </button>
             ) : null}
           </div>
+          {!mobile ? (
+            <Link href={conditionsHref} onClick={close} className="pwt-link text-xs text-foreground-muted">
+              {labels.conditions}
+            </Link>
+          ) : null}
         </div>
       </div>
       <button

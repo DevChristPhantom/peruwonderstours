@@ -8,11 +8,11 @@
 
 ## 1. Identificação do fornecedor
 
-- Razão social: [A CONFIRMAR: razão social]
+- Razão social: PERU WONDERS TOURS S.A.C.
 - Nome comercial: peruwonderstours
-- RUC: [A CONFIRMAR: RUC]
-- Endereço: [A CONFIRMAR: endereço], Puno, Peru
-- Telefone / WhatsApp: [A CONFIRMAR: telefone] · E-mail: [A CONFIRMAR: e-mail]
+- RUC: 20616102339
+- Endereço: Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Peru
+- Telefone / WhatsApp: +51 924 278 597 (WhatsApp) · E-mail: jorgechaveztourt@gmail.com
 - Agência de Viagens e Turismo inscrita no Diretório Nacional de Prestadores de Serviços Turísticos Qualificados, certificado nº [A CONFIRMAR: número], classificação [A CONFIRMAR: varejista / atacadista / operadora de turismo].
 
 ## 2. Aceitação

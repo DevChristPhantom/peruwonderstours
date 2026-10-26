@@ -84,11 +84,13 @@
       "whatsapp": "Cotizar por WhatsApp"
     },
     "whatsappNote": "Te respondemos por WhatsApp",
-    "imageAlt": "Imagen del evento {title}"
+    "imageAlt": "Imagen del evento {title}",
+    "conditions": "Condiciones de las promociones"
   },
   "promoPopup": {
     "label": "Anuncio",
     "close": "Cerrar anuncio",
-    "later": "Ahora no"
+    "later": "Ahora no",
+    "conditions": "Condiciones de las promociones"
   }
 }

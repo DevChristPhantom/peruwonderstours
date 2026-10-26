@@ -11,7 +11,7 @@ import { AndesSkyline } from "./AndesSkyline";
 import { BrandLogo } from "./BrandLogo";
 
 type Href = ComponentProps<typeof Link>["href"];
-type LinkKey = "allTours" | "tourTypes" | "about" | "blog" | "reviews" | "contact" | "myBookings" | "myBooking" | "complaintStatus" | "favorites" | "terms" | "payments" | "privacy" | "cookies";
+type LinkKey = "allTours" | "tourTypes" | "about" | "blog" | "reviews" | "contact" | "myBookings" | "myBooking" | "complaintStatus" | "favorites" | "terms" | "payments" | "privacy" | "cookies" | "promotions" | "reviewsPolicy" | "esnna";
 
 /** Slug por idioma (data/seed/en/_slug-map.json) para enlazar sin el salto 308 entre idiomas. */
 const DESTINATIONS = [
@@ -29,6 +29,9 @@ const LEGAL: [Href, LinkKey][] = [
   ["/politicas/condiciones-de-pago", "payments"],
   ["/politicas/proteccion-de-datos-personales", "privacy"],
   ["/politicas/cookies", "cookies"],
+  ["/politicas/promociones", "promotions"],
+  ["/politicas/resenas", "reviewsPolicy"],
+  ["/politicas/esnna", "esnna"],
 ];
 
 const linkClass = "inline-flex min-h-11 items-center hover:text-white md:min-h-9";

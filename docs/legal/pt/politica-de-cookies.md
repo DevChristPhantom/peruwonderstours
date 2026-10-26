@@ -1,51 +1,50 @@
 # RASCUNHO — requer revisão de um assessor jurídico
 
-> Versão do rascunho: 0.1 (2026-10-07). No Peru não há uma norma específica sobre cookies; aplica-se a Lei 29733 e seu Regulamento (D.S. 016-2024-JUS) quando os cookies tratam dados pessoais. Análise: `brain/wiki/normativa/proteccion-de-datos.md`. A tabela de cookies deve ser gerada a partir do inventário real do site antes da publicação.
+> Versão do rascunho: 0.2 (2026-10-26). No Peru não há uma norma específica sobre cookies; aplica-se a Lei 29733 e seu Regulamento (D.S. 016-2024-JUS) quando os cookies tratam dados pessoais. Análise: `brain/wiki/normativa/proteccion-de-datos.md`. A tabela da seção 4 é o inventário real do site em 2026-10-26: apenas cookies e armazenamento estritamente necessários ou pedidos pelo próprio visitante; não há análise, publicidade nem recursos de terceiros. Se no futuro forem adicionadas análise ou publicidade, antes de ativá-las é preciso implementar o aviso de consentimento e atualizar esta política.
 
 # Política de Cookies da peruwonderstours
 
-Última atualização: [A CONFIRMAR: data] · Versão [A CONFIRMAR: versão]
+Última atualização: 26 de outubro de 2026 · Versão 0.2
 
 ## 1. O que são cookies?
 
-São pequenos arquivos que o site salva no seu navegador para lembrar informações entre visitas ou páginas. Também usamos tecnologias semelhantes (armazenamento local, pixels). Nesta política, chamamos todas elas de "cookies".
+São pequenos arquivos que o site salva no seu navegador para lembrar informações entre páginas ou visitas. Também usamos o armazenamento local do navegador (localStorage e sessionStorage), que funciona de forma parecida, mas não é enviado aos nossos servidores. Nesta política, chamamos tudo isso de "cookies".
 
 ## 2. Responsável
 
-[A CONFIRMAR: razão social], RUC [A CONFIRMAR: RUC], endereço [A CONFIRMAR: endereço]. Contato: [A CONFIRMAR: e-mail de privacidade]. Mais detalhes na Política de Privacidade.
+PERU WONDERS TOURS S.A.C., RUC 20616102339, endereço Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Peru. Contato: jorgechaveztourt@gmail.com. Mais detalhes na Política de Privacidade.
 
-## 3. Tipos de cookies que usamos
+## 3. Quais cookies usamos
 
-| Categoria | Para que serve | Precisa do seu consentimento? |
-|---|---|---|
-| Estritamente necessários | Manter sua sessão, seu carrinho e o bloqueio temporário de vagas, segurança (prevenção de fraudes e ataques), lembrar sua escolha de cookies e idioma | Não; sem eles o site não funciona |
-| Analíticos | Medir visitas e uso do site para melhorá-lo | Sim |
-| Personalização | Lembrar destinos vistos para fazer sugestões | Sim |
-| Publicitários | Mostrar anúncios dos nossos passeios em outros sites e medir campanhas | Sim |
+**Usamos apenas cookies estritamente necessários** para o site funcionar (seu carrinho, sua reserva, sua sessão e o Livro de Reclamações) e armazenamento local para lembrar o que você mesmo escolhe (favoritos, comparador, anúncios que você fechou). **Não usamos cookies de análise, personalização ou publicidade, nem cookies de terceiros**, e o site não carrega fontes, vídeos ou imagens de outras empresas. Por isso não mostramos um aviso para aceitar ou recusar cookies: não há nenhum opcional.
 
-Os cookies não necessários **ficam desativados** até que você os aceite.
+## 4. Detalhe dos cookies e do armazenamento
 
-## 4. Detalhes dos cookies
+| Nome | Tipo | Para que serve | Duração |
+|---|---|---|---|
+| `pwt_cart` | Cookie próprio, necessário | Identifica seu carrinho e o bloqueio temporário de vagas durante a compra | 7 dias |
+| `pwt_checkout_attempt` | Cookie próprio, necessário | Evita cobranças duplicadas se você recarregar a página de pagamento | 30 minutos |
+| `pwt_bk_<código>` | Cookie próprio, necessário | Dá acesso à reserva feita neste navegador | 30 dias |
+| `pwt_pay_<código>` | Cookie próprio, necessário | Protege a etapa de pagamento contra tentativas repetidas | 10 minutos |
+| `pwt_lr_<código>` | Cookie próprio, necessário | Permite consultar a reclamação registrada no Livro de Reclamações | 30 dias |
+| `pwt_customer` | Cookie próprio, necessário | Mantém aberta sua sessão de "Minhas reservas" se você entrar | Até 30 dias ou até você sair |
+| `pwt-cart` | Armazenamento local | Lembra os passeios que você adicionou ao carrinho | Até você esvaziar o carrinho |
+| `pwt-favorites` | Armazenamento local | Guarda seus passeios favoritos | Até você removê-los |
+| `pwt-promo-cerrado` | Armazenamento local | Lembra que você fechou o anúncio de um evento, para não mostrá-lo de novo por 24 horas | 24 horas |
+| `pwt-compare`, `pwt-trip-ack`, `pwt-checkout-draft` | Armazenamento de sessão | Comparador, avisos já lidos e rascunho dos seus dados durante a reserva (sem número de documento) | Até você fechar a aba |
 
-[A CONFIRMAR: preencher com o inventário técnico do site em produção]
+Os cookies próprios são enviados apenas à peruwonderstours, são `HttpOnly` e `Secure` quando o site funciona com https, e não contêm seu nome nem seus dados de pagamento.
 
-| Nome | Fornecedor (próprio/terceiro e país) | Categoria | Finalidade | Duração |
-|---|---|---|---|---|
-| [ex.: `pwt_session`] | Próprio | Necessário | Sessão do usuário | [sessão] |
-| [ex.: `pwt_cart`] | Próprio | Necessário | Identificador opaco do carrinho | [dias] |
-| [ex.: `pwt_consent`] | Próprio | Necessário | Salva sua escolha de cookies e a versão correspondente | [12 meses] |
-| [ex.: `_ga`] | [Terceiro, país] | Analítico | Estatísticas de uso | [conforme o fornecedor] |
+Quando você paga, o formulário de pagamento é o do gateway autorizado, no site dele. Essa empresa pode usar seus próprios cookies conforme a política dela, que será mostrada nesse momento.
 
-## 5. Como aceitar, recusar ou alterar sua escolha
+## 5. Como apagá-los ou bloqueá-los
 
-- Ao entrar, você verá um aviso com os botões **"Aceitar todos"**, **"Recusar todos"** e **"Configurar"**. Recusar é tão fácil quanto aceitar.
-- Você pode alterar sua escolha quando quiser pelo link **"Configurar cookies"** no rodapé. Retirar o consentimento não afeta o uso anterior.
-- Também pode apagar ou bloquear cookies no navegador; se bloquear os necessários, o carrinho e o pagamento poderão não funcionar.
+Você pode apagar ou bloquear cookies e o armazenamento local nas configurações do navegador. Se bloquear os cookies necessários, o carrinho, o pagamento e o acesso à sua reserva podem não funcionar.
 
 ## 6. Transferências internacionais
 
-Alguns cookies de terceiros enviam dados para servidores fora do Peru ([A CONFIRMAR: países e fornecedores]). Eles só são ativados se você os aceitar.
+Os cookies próprios e o armazenamento local não enviam dados a terceiros. Os dados que você envia ao reservar são tratados conforme a Política de Privacidade, incluindo o país onde ficam nossos servidores.
 
 ## 7. Alterações
 
-Se adicionarmos cookies de uma nova categoria ou finalidade, pediremos sua escolha novamente.
+Se no futuro usarmos cookies de outro tipo (por exemplo, para medir visitas), pediremos sua permissão antes com um aviso para aceitá-los ou recusá-los, e atualizaremos esta política.

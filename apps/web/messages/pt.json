@@ -802,7 +802,10 @@
       "terms": "Termos e condições",
       "payments": "Condições de pagamento",
       "privacy": "Proteção de dados pessoais",
-      "cookies": "Política de cookies"
+      "cookies": "Política de cookies",
+      "promotions": "Promoções e eventos",
+      "reviewsPolicy": "Política de avaliações",
+      "esnna": "Prevenção ESNNA"
     },
     "hours": "De segunda a sábado, das 09:00 às 19:00 (horário do Peru)",
     "whatsapp": "WhatsApp {number}",
@@ -978,12 +981,14 @@
         "whatsapp": "Fazer orçamento pelo WhatsApp"
       },
       "whatsappNote": "Respondemos pelo WhatsApp",
-      "imageAlt": "Imagem do evento {title}"
+      "imageAlt": "Imagem do evento {title}",
+      "conditions": "Condições das promoções"
     },
     "promoPopup": {
       "label": "Anúncio",
       "close": "Fechar anúncio",
-      "later": "Agora não"
+      "later": "Agora não",
+      "conditions": "Condições das promoções"
     }
   },
   "journal": {
@@ -1039,6 +1044,18 @@
       "cookies": {
         "title": "Política de cookies",
         "description": "Quais cookies este site usa, para que servem e como você pode gerenciá-los."
+      },
+      "promociones": {
+        "title": "Condições de promoções e eventos",
+        "description": "Validade, vagas, preços e condições das nossas promoções, eventos e publicidade."
+      },
+      "resenas": {
+        "title": "Política de avaliações",
+        "description": "Como publicamos e moderamos as opiniões dos viajantes."
+      },
+      "esnna": {
+        "title": "Prevenção da ESNNA",
+        "description": "Nosso compromisso contra a exploração sexual de crianças e adolescentes no turismo."
       }
     }
   },
