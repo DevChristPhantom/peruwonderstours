@@ -22,6 +22,7 @@ const NAV: (NavItem & { perm?: Permission })[] = [
   { key: "categorias", href: "/categorias", label: "Categorías", perm: "content:read" },
   { key: "blog", href: "/blog", label: "Blog", perm: "content:read" },
   { key: "banners", href: "/banners", label: "Banners de inicio", perm: "tours:read" },
+  { key: "eventos", href: "/eventos", label: "Eventos y promociones", perm: "content:read" },
   { key: "testimonios", href: "/testimonios", label: "Testimonios", perm: "content:read" },
   { key: "privacidad", href: "/privacidad", label: "Protección de datos", perm: "privacy:read" },
   { key: "auditoria", href: "/auditoria", label: "Auditoría", perm: "audit:read" },

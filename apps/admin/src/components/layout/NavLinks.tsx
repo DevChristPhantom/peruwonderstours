@@ -10,6 +10,7 @@ import {
   PanelsTopLeft,
   Map,
   MapPin,
+  Megaphone,
   MessageSquareQuote,
   Newspaper,
   ReceiptText,
@@ -30,6 +31,7 @@ import { useId, useRef, useState } from 'react';
 export type NavKey =
   | "tablero"
   | "banners"
+  | "eventos"
   | "reservas"
   | "pagos-manuales"
   | "tours"
@@ -49,6 +51,7 @@ export type NavKey =
 const ICONS: Record<NavKey, LucideIcon> = {
   tablero: Gauge,
   banners: PanelsTopLeft,
+  eventos: Megaphone,
   reservas: ReceiptText,
   "pagos-manuales": Wallet,
   tours: Map,
@@ -76,7 +79,7 @@ export interface NavItem {
 const NAV_GROUP: Record<NavKey, string> = {
   tablero: "Operación", reservas: "Operación", "pagos-manuales": "Operación", reclamos: "Operación", contacto: "Operación",
   tours: "Catálogo", precios: "Catálogo", salidas: "Catálogo", destinos: "Catálogo", categorias: "Catálogo",
-  blog: "Contenido", testimonios: "Contenido", banners: "Contenido",
+  blog: "Contenido", testimonios: "Contenido", banners: "Contenido", eventos: "Contenido",
   privacidad: "Administración", auditoria: "Administración", usuarios: "Administración", cuenta: "Administración",
 };
 

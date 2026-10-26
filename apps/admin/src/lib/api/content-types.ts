@@ -196,3 +196,35 @@ export interface AuditEntry {
   requestId: string | null;
   ip: string | null;
 }
+
+/* ---------------------------------------------------------------- Eventos y promociones */
+export type PromotionCtaKind = "tour" | "page" | "whatsapp";
+
+export interface PromotionTranslation {
+  locale: ContentLocale;
+  title: string;
+  eyebrow: string | null;
+  summary: string;
+  ctaLabel: string | null;
+  whatsappMessage: string | null;
+  translationStatus: TranslationStatus | null;
+}
+
+export interface Promotion {
+  id: string;
+  status: "draft" | "published" | "archived";
+  startsAt: string | null;
+  endsAt: string | null;
+  eventStartsOn: string | null;
+  eventEndsOn: string | null;
+  coverStorageKey: string | null;
+  ctaKind: PromotionCtaKind;
+  tourId: string | null;
+  tourSlug: string | null;
+  ctaPath: string | null;
+  showPopup: boolean;
+  sortOrder: number;
+  version: number;
+  updatedAt: string;
+  translations: PromotionTranslation[];
+}

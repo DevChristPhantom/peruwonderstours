@@ -14,6 +14,7 @@ const TAGS_BY_PATH: [RegExp, string[]][] = [
   [/^\/admin\/blog-posts(\/|$)/, ["content"]],
   [/^\/admin\/testimonials(\/|$)/, ["content", "testimonials"]],
   [/^\/admin\/hero-banners(\/|$)/, ["hero-banners"]],
+  [/^\/admin\/promotions(\/|$)/, ["promotions"]],
 ];
 
 export function publicTagsFor(path: string): string[] {

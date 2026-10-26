@@ -119,7 +119,7 @@ export function resolveMediaUrl(keyOrUrl: string | null | undefined, base: strin
 
 export const MEDIA_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"] as const;
 export const MEDIA_MAX_BYTES = 8 * 1024 * 1024;
-export const MEDIA_FOLDERS = ["tours", "destinations", "categories", "blog"] as const;
+export const MEDIA_FOLDERS = ["tours", "destinations", "categories", "blog", "promotions"] as const;
 export type MediaFolder = (typeof MEDIA_FOLDERS)[number];
 
 /** Validación previa a la subida (la API vuelve a validar por magic bytes). */

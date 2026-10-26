@@ -513,6 +513,7 @@ model Tour {
   cartItems    CartItem[]
   bookingItems BookingItem[]
   testimonials Testimonial[]
+  promotions   Promotion[]
 
   // Listado público: publicados no borrados por categoría.
   @@index([categoryId, status], where: raw("deleted_at IS NULL"))
@@ -1530,6 +1531,60 @@ model BlogPostTranslation {
   @@unique([locale, slug])
   @@index([searchText(ops: raw("gin_trgm_ops"))], type: Gin)
   @@map("blog_post_translations")
+}
+
+/// Evento o campaña destacada (p. ej. la Festividad de la Candelaria): sección «Lo más relevante»
+/// y anuncio emergente de la home. Visible solo si está publicada y dentro de su ventana.
+model Promotion {
+  id              String            @id @default(uuid(7)) @db.Uuid
+  status          PublicationStatus @default(draft)
+  /// Ventana de difusión (null = sin límite). Fuera de ella no se muestra.
+  startsAt        DateTime?         @map("starts_at") @db.Timestamptz(6)
+  endsAt          DateTime?         @map("ends_at") @db.Timestamptz(6)
+  /// Fechas del evento que se anuncian (día calendario de Lima).
+  eventStartsOn   DateTime?         @map("event_starts_on") @db.Date
+  eventEndsOn     DateTime?         @map("event_ends_on") @db.Date
+  coverStorageKey String?           @map("cover_storage_key")
+  /// Destino del botón: tour (paquete del catálogo), page (ruta interna del sitio) o whatsapp. CHECK en la migración.
+  ctaKind         String            @default("whatsapp") @map("cta_kind") @db.VarChar(20)
+  tourId          String?           @map("tour_id") @db.Uuid
+  /// Ruta interna sin idioma (p. ej. /destinos/tours-en-puno). Nunca una URL externa.
+  ctaPath         String?           @map("cta_path") @db.VarChar(300)
+  /// Anuncio emergente en la home: se muestra el primero publicado y vigente con esta opción.
+  showPopup       Boolean           @default(false) @map("show_popup")
+  sortOrder       Int               @default(0) @map("sort_order")
+  /// Bloqueo optimista del backoffice.
+  version         Int               @default(0)
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime          @updatedAt @map("updated_at") @db.Timestamptz(6)
+  deletedAt       DateTime?         @map("deleted_at") @db.Timestamptz(6)
+
+  tour         Tour?                  @relation(fields: [tourId], references: [id], onDelete: SetNull)
+  translations PromotionTranslation[]
+
+  @@index([status, sortOrder])
+  @@map("promotions")
+}
+
+model PromotionTranslation {
+  id                String   @id @default(uuid(7)) @db.Uuid
+  promotionId       String   @map("promotion_id") @db.Uuid
+  locale            Locale
+  title             String   @db.VarChar(120)
+  /// Línea corta sobre el título (lugar y fecha, p. ej. «Puno · febrero»).
+  eyebrow           String?  @db.VarChar(80)
+  summary           String   @db.VarChar(400)
+  ctaLabel          String?  @map("cta_label") @db.VarChar(60)
+  /// Mensaje que se precarga en WhatsApp cuando el botón es de WhatsApp.
+  whatsappMessage   String?  @map("whatsapp_message") @db.VarChar(300)
+  translationStatus String?  @map("translation_status") @db.VarChar(40)
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  promotion Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+
+  @@unique([promotionId, locale])
+  @@map("promotion_translations")
 }
 
 /// Testimonio con moderación. Solo se publica si `status = approved` y hay

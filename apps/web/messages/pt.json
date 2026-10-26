@@ -967,6 +967,23 @@
       "title": "Lugares que ficam com você",
       "intro": "Do azul do Titicaca às montanhas de Cusco: encontre a paisagem da sua próxima viagem.",
       "openTour": "Ver experiência"
+    },
+    "highlights": {
+      "title": "Destaques",
+      "description": "Festas, temporadas e datas especiais para planejar sua viagem com antecedência.",
+      "eventDate": "Data do evento",
+      "cta": {
+        "tour": "Ver o pacote",
+        "page": "Saiba mais",
+        "whatsapp": "Fazer orçamento pelo WhatsApp"
+      },
+      "whatsappNote": "Respondemos pelo WhatsApp",
+      "imageAlt": "Imagem do evento {title}"
+    },
+    "promoPopup": {
+      "label": "Anúncio",
+      "close": "Fechar anúncio",
+      "later": "Agora não"
     }
   },
   "journal": {

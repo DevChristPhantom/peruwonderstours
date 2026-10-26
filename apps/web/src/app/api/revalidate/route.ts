@@ -14,7 +14,7 @@ import { env } from "@/lib/env";
  * - Secreto comparado en tiempo constante; solo se aceptan los tags conocidos.
  * - `expire: 0`: la siguiente visita trae datos nuevos (sin servir la copia vieja).
  */
-const ALLOWED_TAGS = new Set(["catalog", "departures", "content", "testimonials", "hero-banners"]);
+const ALLOWED_TAGS = new Set(["catalog", "departures", "content", "testimonials", "hero-banners", "promotions"]);
 
 function sameSecret(given: string, expected: string): boolean {
   const a = createHash("sha256").update(given).digest();

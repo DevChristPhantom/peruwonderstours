@@ -15,7 +15,7 @@ interface UploadedImageFile {
   mimetype: string;
 }
 
-const PREFIXES = ['tours', 'destinations', 'categories', 'blog', 'uploads'] as const;
+const PREFIXES = ['tours', 'destinations', 'categories', 'blog', 'promotions', 'uploads'] as const;
 
 @ApiTags('admin: medios')
 @Controller('admin/media')

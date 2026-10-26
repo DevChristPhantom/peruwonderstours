@@ -211,6 +211,17 @@
   animation: pwt-rise 500ms var(--pwt-ease-out) 100ms both;
 }
 
+/* Anuncio emergente del evento destacado (PromotionPopup): entrada suave, sin movimiento si se pide. */
+@keyframes pwt-promo-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  dialog.pwt-promo[open] {
+    animation: pwt-promo-in 360ms var(--pwt-ease-out) both;
+  }
+}
+
 /* Cambio de paso del checkout: crossfade + x ±24 px, sin filtros de pintura. */
 @keyframes pwt-step-forward {
   from { opacity: 0; transform: translateX(24px); }

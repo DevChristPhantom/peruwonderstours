@@ -6,6 +6,8 @@ import { FeaturedTours, type FeaturedGroup } from '@/components/home/FeaturedTou
 import { Hero } from '@/components/home/Hero';
 import { JournalSection } from '@/components/home/JournalSection';
 import { PhotoGallery } from '@/components/home/PhotoGallery';
+import { PromotionPopup } from '@/components/home/PromotionPopup';
+import { eventDateRange, PromotionsSection } from '@/components/home/PromotionsSection';
 import { FinalCta, TestimonialsSection, WhyUsSection } from '@/components/home/HomeSections';
 import { TrustStrip } from '@/components/layout/TrustStrip';
 import { SearchBar } from '@/components/search/SearchBar';
@@ -17,6 +19,7 @@ import {
   getNavMedia,
   getSearchOptions,
 } from '@/lib/catalog';
+import { getPromotions } from '@/lib/content/promotions';
 import { getTestimonials } from '@/lib/content/testimonials';
 import { JsonLd, organizationJsonLd } from '@/lib/seo/json-ld';
 import { alternatesFor, pageMetadata } from '@/lib/seo/metadata';
@@ -38,7 +41,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]'>): Prom
 export default async function HomePage({ params }: PageProps<'/[locale]'>) {
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
-  const [media, destinations, allTours, featured, searchOptions, testimonials, t] =
+  const [media, destinations, allTours, featured, searchOptions, testimonials, promotions, t, th, tp] =
     await Promise.all([
       getNavMedia(locale),
       getDestinations(locale),
@@ -46,8 +49,13 @@ export default async function HomePage({ params }: PageProps<'/[locale]'>) {
       getFeaturedTours(locale, 5),
       getSearchOptions(locale),
       getTestimonials(locale),
+      getPromotions(locale),
       getTranslations('home.featured'),
+      getTranslations('home.highlights'),
+      getTranslations('home.promoPopup'),
     ]);
+  // Anuncio emergente: el primer evento vigente marcado para mostrarse al entrar.
+  const popup = promotions.find((p) => p.showPopup);
 
   const groups: FeaturedGroup[] = [
     { key: 'todos', label: t('groups.all'), tours: featured, emptyText: t('emptyFeatured') },
@@ -98,6 +106,7 @@ export default async function HomePage({ params }: PageProps<'/[locale]'>) {
       <div className="pwt-container">
         <SearchBar options={searchOptions} />
       </div>
+      <PromotionsSection promotions={promotions} locale={locale} />
       <FeaturedTours groups={groups} totalTours={allTours.length} locale={locale} />
       <DestinationsSection destinations={destinations} locale={locale} />
       <PhotoGallery tours={allTours} />
@@ -117,6 +126,21 @@ export default async function HomePage({ params }: PageProps<'/[locale]'>) {
       />
       <FinalCta photo={photo('full-day-machu-picchu-esencia-ciudadela')} />
       <TrustStrip locale={locale} />
+      {popup ? (
+        <PromotionPopup
+          promotion={{
+            revision: popup.revision,
+            title: popup.title,
+            eyebrow: popup.eyebrow,
+            summary: popup.summary,
+            dates: eventDateRange(locale, popup.eventStartsOn, popup.eventEndsOn),
+            image: popup.image,
+            cta: { ...popup.cta, label: popup.cta.label || th(`cta.${popup.cta.kind}`) },
+            fallback: popup.fallback,
+          }}
+          labels={{ label: tp('label'), close: tp('close'), later: tp('later') }}
+        />
+      ) : null}
     </>
   );
 }

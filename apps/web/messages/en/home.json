@@ -73,5 +73,22 @@
     "title": "Places that stay with you",
     "intro": "From the blue waters of Titicaca to the mountains of Cusco: find the landscape for your next journey.",
     "openTour": "Explore this trip"
+  },
+  "highlights": {
+    "title": "Highlights",
+    "description": "Festivals, seasons and special dates to plan your trip in time.",
+    "eventDate": "Event date",
+    "cta": {
+      "tour": "See the package",
+      "page": "Learn more",
+      "whatsapp": "Get a quote on WhatsApp"
+    },
+    "whatsappNote": "We reply on WhatsApp",
+    "imageAlt": "Image of the event {title}"
+  },
+  "promoPopup": {
+    "label": "Announcement",
+    "close": "Close announcement",
+    "later": "Not now"
   }
 }

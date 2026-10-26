@@ -967,6 +967,23 @@
       "title": "Lugares que se quedan contigo",
       "intro": "Del azul del Titicaca a las montañas de Cusco: encuentra el paisaje de tu próximo viaje.",
       "openTour": "Ver experiencia"
+    },
+    "highlights": {
+      "title": "Lo más relevante",
+      "description": "Fiestas, temporadas y fechas especiales para planear tu viaje a tiempo.",
+      "eventDate": "Fecha del evento",
+      "cta": {
+        "tour": "Ver el paquete",
+        "page": "Ver más",
+        "whatsapp": "Cotizar por WhatsApp"
+      },
+      "whatsappNote": "Te respondemos por WhatsApp",
+      "imageAlt": "Imagen del evento {title}"
+    },
+    "promoPopup": {
+      "label": "Anuncio",
+      "close": "Cerrar anuncio",
+      "later": "Ahora no"
     }
   },
   "journal": {

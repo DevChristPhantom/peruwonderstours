@@ -18,6 +18,7 @@ import { BackofficeModule } from './modules/backoffice/backoffice.module.js';
 import { IdentityModule } from './modules/identity/identity.module.js';
 import { NotificationsModule } from './modules/notifications/notifications.module.js';
 import { PrivacyModule } from './modules/privacy/privacy.module.js';
+import { PromotionsModule } from './modules/promotions/promotions.module.js';
 import { PersistenceModule } from './persistence/persistence.module.js';
 import { throttlerOptions } from './shared/interface/throttling.js';
 
@@ -43,6 +44,7 @@ import { throttlerOptions } from './shared/interface/throttling.js';
     AccessModule,
     MediaModule,
     ContentModule,
+    PromotionsModule,
   ],
   // Rate limiting global (429 problem+json vía ProblemDetailsFilter).
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
