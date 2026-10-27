@@ -9,7 +9,7 @@ import { localePath } from '@/i18n/paths';
 import type { Locale } from '@/i18n/routing';
 import type { PublicTestimonial } from '@/lib/content/testimonials';
 import type { CatalogImage } from '@/lib/catalog/types';
-import { SITE, whatsappHref } from '@/lib/site';
+import { whatsappHref } from '@/lib/site';
 
 import { TestimonialCard } from './TestimonialCard';
 
@@ -163,7 +163,7 @@ export async function FinalCta({ photo }: { photo?: CatalogImage | null } = {}) 
         </div>
         <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
           <a
-            href={whatsappHref(t('whatsappMessage', { name: SITE.name }))}
+            href={whatsappHref(t('whatsappMessage'))}
             target="_blank"
             rel="noopener noreferrer"
             className={buttonClass('inverse', 'lg')}

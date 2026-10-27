@@ -824,7 +824,8 @@
     "paymentsText": "Tarjetas Visa y Mastercard, y transferencia bancaria.",
     "esnna": "{name} rechaza la explotación sexual de niñas, niños y adolescentes. Si conoces algún caso, denúncialo a la Línea 100.",
     "copyright": "© {year} {name}. Todos los derechos reservados.",
-    "whatsappHelp": "¿Planeamos tu viaje?"
+    "whatsappHelp": "¿Planeamos tu viaje?",
+    "whatsappMessage": "Hola Peru Wonders Tours, quiero información para planear mi viaje."
   },
   "formErrors": {
     "firstNameRequired": "Escribe tus nombres.",
@@ -968,7 +969,7 @@
       "title": "¿Listo para tu próximo viaje?",
       "text": "Cuéntanos qué quieres conocer y armamos contigo el itinerario ideal.",
       "whatsapp": "Planear por WhatsApp",
-      "whatsappMessage": "Hola {name}, quiero planear un viaje por el Perú.",
+      "whatsappMessage": "Hola Peru Wonders Tours, quiero planear un viaje por el Perú.",
       "packages": "Ver paquetes"
     },
     "gallery": {

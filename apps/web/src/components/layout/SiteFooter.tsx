@@ -128,7 +128,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
               <Clock aria-hidden size={18} strokeWidth={1.5} className="mt-0.5 shrink-0" />
               {t("hours")}
             </p>
-            <a href={whatsappHref()} target="_blank" rel="noopener noreferrer" className={`${linkClass} gap-2 text-sm`}>
+            <a href={whatsappHref(t("whatsappMessage"))} target="_blank" rel="noopener noreferrer" className={`${linkClass} gap-2 text-sm`}>
               <MessageCircle aria-hidden size={18} strokeWidth={1.5} />
               {t("whatsapp", { number: SITE.whatsapp.display })}
             </a>
