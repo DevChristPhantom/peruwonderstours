@@ -7,9 +7,9 @@ import { useForm, useWatch } from "react-hook-form";
 
 import { Link } from "@/i18n/navigation";
 import { COUNTRY_ISO } from "@/lib/checkout/api-checkout";
-import { contactSchema, COUNTRIES, PHONE_COUNTRIES, type ContactValues } from "@/lib/checkout/schemas";
+import { contactSchema, COUNTRIES, COUNTRY_PHONE, PHONE_COUNTRIES, type ContactValues } from "@/lib/checkout/schemas";
 import { buttonClass } from "@/components/ui/button-styles";
-import { ErrorSummary, fieldId, flattenErrors, SelectField, TextField } from "./form-fields";
+import { ErrorSummary, fieldId, flattenErrors, inputClass, SelectField, TextField, useErrorText } from "./form-fields";
 
 /** Regiones ISO de cada código telefónico (el nombre se muestra en el idioma de la página). */
 const PHONE_REGIONS: Record<string, string[]> = {
@@ -51,6 +51,8 @@ export const EMPTY_CONTACT: ContactValues = {
   businessName: "",
   marketingEmail: false,
   marketingWhatsapp: false,
+  hotel: "",
+  notes: "",
 };
 
 export function ContactStep({
@@ -72,16 +74,38 @@ export function ContactStep({
     country: t("countryShort"),
     ruc: "RUC",
     businessName: t("businessName"),
+    hotel: t("hotel"),
+    notes: t("notes"),
   };
   const summaryRef = useRef<HTMLDivElement>(null);
+  const errorText = useErrorText();
   const {
     register,
     handleSubmit,
     control,
+    setValue,
+    getFieldState,
     formState: { errors, submitCount },
   } = useForm<ContactValues>({ resolver: zodResolver(contactSchema), defaultValues, mode: "onBlur" });
   const receipt = useWatch({ control, name: "receipt" });
+  const country = useWatch({ control, name: "country" });
   const flat = flattenErrors(errors);
+  // Boleta o factura solo aplica en Perú (la factura exige RUC); fuera del Perú siempre es boleta.
+  const peru = country === "Perú";
+
+  // País y código telefónico se completan uno con el otro mientras la persona no haya tocado el segundo.
+  const syncPhone = (next: string) => {
+    if (!getFieldState("phoneCountry").isDirty && COUNTRY_PHONE[next]) setValue("phoneCountry", COUNTRY_PHONE[next]);
+    if (next !== "Perú") setValue("receipt", "boleta");
+  };
+  const syncCountry = (code: string) => {
+    if (getFieldState("country").isDirty) return;
+    const match = Object.entries(COUNTRY_PHONE).find(([, c]) => c === code)?.[0];
+    if (match) {
+      setValue("country", match);
+      if (match !== "Perú") setValue("receipt", "boleta");
+    }
+  };
 
   return (
     <form
@@ -118,7 +142,12 @@ export function ContactStep({
             {...register("email")}
           />
         </div>
-        <SelectField path="phoneCountry" label={t("phoneCountry")} autoComplete="tel-country-code" {...register("phoneCountry")}>
+        <SelectField
+          path="phoneCountry"
+          label={t("phoneCountry")}
+          autoComplete="tel-country-code"
+          {...register("phoneCountry", { onChange: (e: { target: { value: string } }) => syncCountry(e.target.value) })}
+        >
           {PHONE_COUNTRIES.map((p) => (
             <option key={p.code} value={p.code}>
               {`${(PHONE_REGIONS[p.code] ?? []).map((iso) => countryName(iso, p.label)).join(" / ") || p.label} (${p.code})`}
@@ -135,7 +164,13 @@ export function ContactStep({
           {...register("phone")}
         />
         <div className="md:col-span-2">
-          <SelectField path="country" label={t("country")} autoComplete="country-name" error={errors.country?.message} {...register("country")}>
+          <SelectField
+            path="country"
+            label={t("country")}
+            autoComplete="country-name"
+            error={errors.country?.message}
+            {...register("country", { onChange: (e: { target: { value: string } }) => syncPhone(e.target.value) })}
+          >
             {COUNTRIES.map((c) => (
               <option key={c} value={c}>
                 {COUNTRY_ISO[c] ? countryName(COUNTRY_ISO[c], c) : t("otherCountry")}
@@ -145,18 +180,20 @@ export function ContactStep({
         </div>
       </div>
 
-      <fieldset className="mt-6">
-        <legend className="text-sm font-medium">{t("receipt")}</legend>
-        <div className="mt-2 flex flex-wrap gap-3">
-          {(["boleta", "factura"] as const).map((value) => (
-            <label key={value} className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md border border-border-strong px-4 has-[:checked]:border-primary">
-              <input type="radio" value={value} {...register("receipt")} />
-              {t(value)}
-            </label>
-          ))}
-        </div>
-      </fieldset>
-      {receipt === "factura" ? (
+      {peru ? (
+        <fieldset className="mt-6">
+          <legend className="text-sm font-medium">{t("receipt")}</legend>
+          <div className="mt-2 flex flex-wrap gap-3">
+            {(["boleta", "factura"] as const).map((value) => (
+              <label key={value} className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md border border-border-strong px-4 has-[:checked]:border-primary">
+                <input type="radio" value={value} {...register("receipt")} />
+                {t(value)}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      ) : null}
+      {peru && receipt === "factura" ? (
         <div className="mt-4 grid gap-5 md:grid-cols-2">
           <TextField path="ruc" label="RUC" inputMode="numeric" maxLength={11} error={errors.ruc?.message} {...register("ruc")} />
           <TextField
@@ -168,6 +205,34 @@ export function ContactStep({
           />
         </div>
       ) : null}
+
+      {/* Opcionales para operaciones: plegados para no alargar el formulario. */}
+      <details className="mt-6 rounded-md border border-border" open={!!(defaultValues.hotel || defaultValues.notes)}>
+        <summary className="flex min-h-12 cursor-pointer items-center px-4 text-sm font-medium">
+          {t("extrasTitle")} <span className="ml-1 font-normal text-foreground-muted">{t("optional")}</span>
+        </summary>
+        <div className="grid gap-5 border-t border-border p-4">
+          <TextField path="hotel" label={t("hotel")} optional autoComplete="off" error={errors.hotel?.message} {...register("hotel")} />
+          <div>
+            <label htmlFor={fieldId("notes")} className="block text-sm font-medium">
+              {t("notes")} <span className="font-normal text-foreground-muted">{t("optional")}</span>
+            </label>
+            <textarea
+              id={fieldId("notes")}
+              rows={3}
+              className={`${inputClass} py-3`}
+              aria-invalid={!!errors.notes}
+              aria-describedby={errors.notes ? `${fieldId("notes")}-error` : undefined}
+              {...register("notes")}
+            />
+            {errors.notes ? (
+              <p id={`${fieldId("notes")}-error`} className="mt-1 text-sm text-danger">
+                {errorText(errors.notes.message)}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </details>
 
       {/* Datos para la reserva: solo se INFORMA (Ley 29733 art. 18), sin casilla de consentimiento. */}
       <div className="mt-8 rounded-md bg-surface-muted p-4 text-sm" id="aviso-privacidad">

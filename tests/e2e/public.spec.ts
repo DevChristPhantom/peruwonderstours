@@ -103,14 +103,14 @@ test('Date, booking, cart edit/remove/undo and checkout validation work', async 
   await page.getByRole('button', { name: 'Deshacer', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Editar', exact: true }).first()).toBeVisible();
   await measured(info, 'Open checkout', async () => { await page.getByRole('link', { name: 'Continuar con la reserva', exact: true }).first().click(); await expect(page.getByRole('heading', { name: 'Tus datos', exact: true })).toBeVisible(); });
-  await page.getByRole('button', { name: 'Continuar a viajeros', exact: true }).click();
+  await page.getByRole('button', { name: 'Continuar al pago', exact: true }).click();
   await expect(page.getByRole('alert').first()).toBeVisible();
   await page.getByLabel('Nombres', { exact: true }).fill('Viajero'); await page.getByLabel('Apellidos', { exact: true }).fill('Prueba');
   await page.getByLabel('Correo electrónico', { exact: true }).fill('traveler@peruwonderstours.test');
   await page.getByLabel('Celular (WhatsApp)', { exact: true }).fill('924278597');
   await page.getByLabel('País de residencia', { exact: true }).selectOption('Perú');
-  await measured(info, 'Validated contact advances to travelers', async () => { await page.getByRole('button', { name: 'Continuar a viajeros', exact: true }).click(); await expect(page.getByRole('button', { name: 'Continuar al pago', exact: true })).toBeVisible(); });
-  await page.screenshot({ path: info.outputPath('checkout-travelers.png'), fullPage: true });
+  await measured(info, 'Validated contact advances to payment', async () => { await page.getByRole('button', { name: 'Continuar al pago', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Pago', exact: true })).toBeVisible(); });
+  await page.screenshot({ path: info.outputPath('checkout-payment.png'), fullPage: true });
 });
 
 test('Official resource controls, WhatsApp destination and complaint access work', async ({ page }, info) => {
@@ -123,8 +123,10 @@ test('Official resource controls, WhatsApp destination and complaint access work
     const rect=image.getBoundingClientRect();return rect.right>0&&rect.left<document.documentElement.clientWidth;
   }).every(image=>(image as HTMLImageElement).complete&&(image as HTMLImageElement).naturalWidth>0))).toBe(true);
   await resources.screenshot({path:info.outputPath('official-resources-loaded.png')});
-  const wa = page.locator('a[href="https://wa.me/51924278597"]').filter({ has: page.locator('img[src="/icons/whatsapp.svg"]') });
+  const wa = page.locator('a[href^="https://wa.me/51924278597"]').filter({ has: page.locator('img[src="/icons/whatsapp.svg"]') });
   await expect(wa).toHaveAttribute('target', '_blank'); await expect(wa).toHaveAccessibleName(/WhatsApp/);
+  // The floating button opens the chat with a greeting instead of an empty message.
+  expect(new URL((await wa.getAttribute('href'))!).searchParams.get('text')).toBe('Hola Peru Wonders Tours, quiero información para planear mi viaje.');
   await page.goto('/es/libro-de-reclamaciones'); await expect(page.locator('main h1')).toContainText('Libro de Reclamaciones');
   await page.getByRole('link', { name: "Consultar mi reclamo", exact: true }).first().click(); await expect(page).toHaveURL(/\/consulta/);
   await expect(page.getByRole('textbox').first()).toBeVisible();

@@ -8,7 +8,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { computePaymentPlan, type PaymentOption } from "@/lib/checkout/payment-plan";
 import type { CheckoutQuote, PlaceResult } from "@/lib/checkout/api-checkout";
-import type { ContactValues, TravelersValues } from "@/lib/checkout/schemas";
+import { COUNTRY_PHONE, guessCountry, type ContactValues } from "@/lib/checkout/schemas";
 import { todayInLima } from "@/lib/format";
 import { PAYMENTS_MODE } from "@/lib/payments/types";
 import { useCartHydrated, useCartStore } from "@/stores/cart-store";
@@ -23,21 +23,19 @@ import { buttonClass } from "@/components/ui/button-styles";
 import { ContactStep, EMPTY_CONTACT } from "./ContactStep";
 import { PaymentStep } from "./PaymentStep";
 import { QuoteSummary } from "./QuoteSummary";
-import { buildTravelerDefaults, TravelersStep } from "./TravelersStep";
 
-type Step = 1 | 2 | 3;
-const STEPS: { n: Step; key: "contact" | "travelers" | "payment" }[] = [
+// Dos pasos: cada pantalla extra es un punto donde el cliente abandona. Los datos de cada viajero
+// (nombres y documentos para boletos de terceros) se coordinan después de reservar.
+type Step = 1 | 2;
+const STEPS: { n: Step; key: "contact" | "payment" }[] = [
   { n: 1, key: "contact" },
-  { n: 2, key: "travelers" },
-  { n: 3, key: "payment" },
+  { n: 2, key: "payment" },
 ];
 
 const DRAFT_KEY = "pwt-checkout-draft";
 
 interface Draft {
   contact: ContactValues | null;
-  /** Sin números de documento (minimización de datos). */
-  travelers: TravelersValues | null;
 }
 
 function loadDraft(): Draft {
@@ -47,23 +45,19 @@ function loadDraft(): Draft {
   } catch {
     /* borrador corrupto: se ignora */
   }
-  return { contact: null, travelers: null };
+  return { contact: null };
 }
 
 function saveDraft(draft: Draft) {
-  const safe: Draft = {
-    contact: draft.contact,
-    travelers: draft.travelers
-      ? {
-          ...draft.travelers,
-          lines: draft.travelers.lines.map((l) => ({
-            ...l,
-            travelers: l.travelers.map((t) => ({ ...t, docNumber: "" })),
-          })),
-        }
-      : null,
-  };
-  safeSessionStorage.setItem(DRAFT_KEY, JSON.stringify(safe));
+  safeSessionStorage.setItem(DRAFT_KEY, JSON.stringify({ contact: draft.contact }));
+}
+
+/** Primera vez: país y código telefónico según el idioma del navegador (se pueden cambiar). */
+function initialContact(saved: ContactValues | null): ContactValues {
+  if (saved) return { ...EMPTY_CONTACT, ...saved };
+  const country = typeof navigator === "undefined" ? null : guessCountry(navigator.languages ?? [navigator.language]);
+  if (!country) return EMPTY_CONTACT;
+  return { ...EMPTY_CONTACT, country, phoneCountry: COUNTRY_PHONE[country] ?? EMPTY_CONTACT.phoneCountry, receipt: "boleta" };
 }
 
 function StepIndicator({ step, maxReached, onGo }: { step: Step; maxReached: Step; onGo: (s: Step) => void }) {
@@ -71,10 +65,10 @@ function StepIndicator({ step, maxReached, onGo }: { step: Step; maxReached: Ste
   return (
     <nav aria-label={t("stepsLabel")} className="mb-8">
       <p className="mb-2 text-sm text-foreground-muted md:hidden">
-        {t("stepOf", { step, total: 3 })} · {t(`steps.${STEPS[step - 1].key}`)}
+        {t("stepOf", { step, total: STEPS.length })} · {t(`steps.${STEPS[step - 1].key}`)}
       </p>
       <div className="h-1 overflow-hidden rounded-pill bg-surface-muted md:hidden" aria-hidden="true">
-        <div className="h-full origin-left bg-primary transition-transform duration-500 motion-reduce:transition-none" style={{ transform: `scaleX(${step / 3})` }} />
+        <div className="h-full origin-left bg-primary transition-transform duration-500 motion-reduce:transition-none" style={{ transform: `scaleX(${step / STEPS.length})` }} />
       </div>
       <ol className="hidden items-center gap-3 md:flex">
         {STEPS.map(({ n, key }, i) => {
@@ -133,7 +127,7 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
   const [direction, setDirection] = useState<1 | -1>(1);
   // El borrador vive en sessionStorage: en el servidor se usa vacío (se muestra un skeleton igual).
   const [draft, setDraft] = useState<Draft>(() =>
-    typeof window === "undefined" ? { contact: null, travelers: null } : loadDraft(),
+    typeof window === "undefined" ? { contact: null } : loadDraft(),
   );
   const isClient = useIsClient();
   const [option, setOption] = useState<PaymentOption>("deposit");
@@ -147,7 +141,7 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
       return;
     }
     headingRef.current?.focus();
-    announce(t("stepAnnounce", { step, total: 3, label: t(`steps.${STEPS[step - 1].key}`) }));
+    announce(t("stepAnnounce", { step, total: STEPS.length, label: t(`steps.${STEPS[step - 1].key}`) }));
   }, [step, announce, t]);
 
   const today = useMemo(() => todayInLima(), []);
@@ -204,7 +198,7 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
   };
 
   // Se fusiona con los valores por defecto: borradores antiguos pueden no tener campos nuevos.
-  const contact: ContactValues = { ...EMPTY_CONTACT, ...draft.contact };
+  const contact = initialContact(draft.contact);
 
   return (
     <div className="pwt-container py-8 md:py-12">
@@ -236,24 +230,10 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
                 headingRef={headingRef}
                 defaultValues={contact}
                 onSubmit={(values) => {
-                  const next = { ...draft, contact: values };
+                  const next = { contact: values };
                   setDraft(next);
                   saveDraft(next);
                   go(2);
-                }}
-              />
-            ) : step === 2 ? (
-              <TravelersStep
-                headingRef={headingRef}
-                lines={lines}
-                contact={contact}
-                defaultValues={buildTravelerDefaults(lines, contact, draft.travelers, t("travelers.peruvian"))}
-                onBack={() => go(1)}
-                onSubmit={(values) => {
-                  const next = { ...draft, travelers: values };
-                  setDraft(next);
-                  saveDraft(next);
-                  go(3);
                 }}
               />
             ) : (
@@ -261,13 +241,11 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
                 headingRef={headingRef}
                 lines={lines}
                 contact={contact}
-                travelers={draft.travelers}
                 option={option}
                 onOptionChange={setOption}
                 onQuote={setQuote}
                 cardFeePercent={cardFeePercent}
                 onBackToContact={() => go(1)}
-                onBackToTravelers={() => go(2)}
                 onPaid={onPaid}
               />
             )}
@@ -276,7 +254,7 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
 
         <aside className="hidden lg:block" aria-label={t("summaryLabel")}>
           <div className="sticky top-24">
-            {step === 3 && quote ? (
+            {step === 2 && quote ? (
               <QuoteSummary quote={quote} option={option}>
                 <Link href="/carrito" className="pwt-link mt-4 inline-flex min-h-11 items-center text-sm">
                   {t("editCart")}

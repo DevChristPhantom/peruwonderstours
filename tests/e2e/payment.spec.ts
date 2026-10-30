@@ -34,18 +34,9 @@ for (const outcome of ["approved", "pending", "rejected"] as const) test(`checko
       await page.getByLabel("Correo electrónico", { exact: true }).fill("sandbox-payment@peruwonderstours.test");
       await page.getByLabel("Celular (WhatsApp)", { exact: true }).fill("900000002");
       await page.getByLabel("País de residencia", { exact: true }).selectOption("Perú");
-      await page.getByRole("button", { name: "Continuar a viajeros", exact: true }).click();
-      await expect(page.getByRole("button", { name: "Continuar al pago", exact: true })).toBeVisible();
-    });
-    await measured("Validate traveler records and prepare payment", async () => {
-      const names = page.getByLabel("Nombres y apellidos", { exact: true });
-      const count = await names.count(); expect(count).toBeGreaterThan(0);
-      for (let index = 0; index < count; index++) {
-        await names.nth(index).fill(`Viajero Fixture ${index + 1}`);
-        await page.getByLabel("Número de documento", { exact: true }).nth(index).fill(String(12345670 + index));
-        await page.getByLabel("Nacionalidad", { exact: true }).nth(index).fill("Peruana");
-      }
       await page.getByRole("button", { name: "Continuar al pago", exact: true }).click();
+    });
+    await measured("Prepare payment", async () => {
       // Critical guard: no payment click until the actual sandbox widget is present.
       await expect(page.getByText("Modo sandbox: pago simulado, no se realizará ningún cobro", { exact: true })).toBeVisible();
       await expect(page.getByRole("radio", { name: "Aprobado", exact: true })).toBeChecked();

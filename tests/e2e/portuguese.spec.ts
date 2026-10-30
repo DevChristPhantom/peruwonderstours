@@ -67,7 +67,7 @@ test('Portuguese departure selection, cart and checkout retain Brazilian form la
   await page.getByRole('link', { name: 'Continuar com a reserva', exact: true }).first().click();
   await expect(page).toHaveURL(/\/pt\/checkout/);
   await expect(page.getByRole('heading', { name: 'Seus dados', exact: true })).toBeVisible();
-  await page.getByRole('button', { name: 'Continuar para viajantes', exact: true }).click();
+  await page.getByRole('button', { name: 'Continuar para pagamento', exact: true }).click();
   await expect(page.getByRole('alert').first()).toBeVisible();
   await page.getByLabel('Nome', { exact: true }).fill('Viajante');
   await page.getByLabel('Sobrenome', { exact: true }).fill('Teste Brasil');
@@ -75,8 +75,8 @@ test('Portuguese departure selection, cart and checkout retain Brazilian form la
   await page.getByLabel('Código do país', { exact: true }).selectOption('+55');
   await page.getByLabel('Celular (WhatsApp)', { exact: true }).fill('11999990001');
   await page.getByLabel('País de residência', { exact: true }).selectOption({ label: 'Brasil' });
-  await page.getByRole('button', { name: 'Continuar para viajantes', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Continuar para pagamento', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Continuar para pagamento', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Pagamento', exact: true })).toBeVisible();
   // Stop before payment: this verifies the translated flow without creating a charge.
 });
 

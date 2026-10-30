@@ -264,7 +264,6 @@
     "stepOf": "Step {step} of {total}",
     "steps": {
       "contact": "Your details",
-      "travelers": "Travelers",
       "payment": "Payment"
     },
     "stepDone": "(completed)",
@@ -310,30 +309,11 @@
       "marketingHint": "(optional, you can unsubscribe at any time)",
       "marketingEmail": "I want to receive offers and news by email.",
       "marketingWhatsapp": "I want to receive offers and news on WhatsApp.",
-      "next": "Continue to travelers"
-    },
-    "travelers": {
-      "peruvian": "Peruvian",
-      "title": "Travelers",
-      "intro": "Details of each person, exactly as they appear on their document.",
-      "exactDocs": "Machu Picchu and train tickets are issued with the exact name and document. Check them carefully.",
-      "useContact": "Use my details for traveler 1 ({name})",
-      "booker": "the person booking",
-      "traveler": "Traveler {n}",
-      "fullName": "Full name",
-      "docType": "Document type",
-      "docTypes": {
-        "dni": "DNI (Peruvian ID)",
-        "pasaporte": "Passport",
-        "ce": "Foreigner ID card (CE)"
-      },
-      "docNumber": "Document number",
-      "nationality": "Nationality",
+      "next": "Continue to payment",
+      "extrasTitle": "Pickup hotel and special needs",
       "hotel": "Hotel for pickup",
       "notes": "Special needs or dietary requirements",
-      "optional": "(optional)",
-      "back": "Back to your details",
-      "next": "Continue to payment"
+      "optional": "(optional)"
     },
     "payment": {
       "announceBlocked": "Some tours in your cart cannot be booked. Check the notices.",
@@ -397,8 +377,6 @@
       "cardFeeNote": "{percent}% fee on the amount to pay",
       "contact": "Contact:",
       "edit": "Edit",
-      "travelers": "Travelers:",
-      "tourCount": "{count, plural, one {# tour} other {# tours}}",
       "cancellationTitle": "Cancellation policy (summary)",
       "cancellation1": "Cancellations at least 20 business days ahead: costs of services already issued are deducted.",
       "cancellation2": "Train tickets, Machu Picchu entrance and flights are non-refundable once issued.",
@@ -409,7 +387,8 @@
       "processing": "Processing your payment…",
       "secureNote": "Secure payment · You will receive your electronic receipt by email",
       "payHelp": "Trouble paying? Help on WhatsApp",
-      "whatsappStep": "payment"
+      "whatsappStep": "payment",
+      "travelerDocsLater": "Travelers: after booking we will ask you by WhatsApp or email for each traveler’s exact name and document to issue the tickets."
     },
     "hold": {
       "minutesLeft": "{count, plural, one {# minute left to complete the payment.} other {# minutes left to complete the payment.}}",

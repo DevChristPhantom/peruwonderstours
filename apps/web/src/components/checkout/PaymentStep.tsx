@@ -17,7 +17,7 @@ import type { CartLine } from "@/lib/cart/types";
 import type { ActionResult, CheckoutQuote, PlaceResult, PlanView } from "@/lib/checkout/api-checkout";
 import { checkoutPhoneE164 } from "@/lib/checkout/api-checkout";
 import { lineTotalCents, type PaymentOption } from "@/lib/checkout/payment-plan";
-import { paymentStepSchema, type ContactValues, type PaymentStepValues, type TravelersValues } from "@/lib/checkout/schemas";
+import { paymentStepSchema, type ContactValues, type PaymentStepValues } from "@/lib/checkout/schemas";
 import type { PaymentMethod, PaymentRequest, PaymentWidgetHandle } from "@/lib/payments/types";
 import { cartHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
 import { useUiStore } from "@/stores/ui-store";
@@ -37,15 +37,17 @@ const METHODS: { value: PaymentMethod; icon: typeof CreditCard }[] = [
   { value: "yape", icon: Smartphone },
   { value: "pagoefectivo", icon: Landmark },
 ];
+// En Perú se paga sobre todo con Yape: va primero y elegido; el turista extranjero ve primero la tarjeta.
+const METHODS_PERU = [METHODS[1], METHODS[0], METHODS[2]];
 
 /**
  * Notas para la reserva: hotel, necesidades y bebés (la API no tiene tipo de pasajero "bebé").
  * Las lee el equipo de operaciones de la agencia: van siempre en español (no son texto de la UI).
  */
-function buildNotes(lines: CartLine[], travelers: TravelersValues | null): string | undefined {
+function buildNotes(lines: CartLine[], contact: ContactValues): string | undefined {
   const parts: string[] = [];
-  if (travelers?.hotel) parts.push(`Hotel para el recojo: ${travelers.hotel}`);
-  if (travelers?.notes) parts.push(`Necesidades especiales: ${travelers.notes}`);
+  if (contact.hotel) parts.push(`Hotel para el recojo: ${contact.hotel}`);
+  if (contact.notes) parts.push(`Necesidades especiales: ${contact.notes}`);
   for (const l of lines) {
     if (l.travelers.infants > 0) parts.push(`${l.title} (${l.date}): ${l.travelers.infants} bebé(s) de 0 a 2 años, sin costo.`);
   }
@@ -55,24 +57,20 @@ function buildNotes(lines: CartLine[], travelers: TravelersValues | null): strin
 export function PaymentStep({
   lines,
   contact,
-  travelers,
   option,
   onOptionChange,
   onQuote,
   onBackToContact,
-  onBackToTravelers,
   onPaid,
   headingRef,
   cardFeePercent,
 }: {
   lines: CartLine[];
   contact: ContactValues;
-  travelers: TravelersValues | null;
   option: PaymentOption;
   onOptionChange: (o: PaymentOption) => void;
   onQuote: (quote: CheckoutQuote | null) => void;
   onBackToContact: () => void;
-  onBackToTravelers: () => void;
   onPaid: (result: PlaceResult) => void;
   headingRef: Ref<HTMLHeadingElement>;
   /** Comisión por tarjeta (RN-03). null = no configurada → no se muestra ni se menciona. */
@@ -138,7 +136,7 @@ export function PaymentStep({
     formState: { errors, submitCount },
   } = useForm<PaymentStepValues>({
     resolver: zodResolver(paymentStepSchema),
-    defaultValues: { option, method: "card", terms: false, ackPrice: false },
+    defaultValues: { option, method: contact.country === "Perú" ? "yape" : "card", terms: false, ackPrice: false },
     mode: "onBlur",
   });
   const method = useWatch({ control, name: "method" });
@@ -162,7 +160,7 @@ export function PaymentStep({
           phone: checkoutPhoneE164(contact.phoneCountry, contact.phone),
           marketingEmail: contact.marketingEmail, marketingWhatsapp: contact.marketingWhatsapp,
         },
-        notes: buildNotes(lines, travelers),
+        notes: buildNotes(lines, contact),
         acceptTerms: values.terms,
         // La casilla final incluye el acuse de lectura de la Política de privacidad (informativo, no consentimiento).
         acceptPrivacy: values.terms,
@@ -188,6 +186,8 @@ export function PaymentStep({
   });
 
   const blocking = quote?.issues.filter((i) => i.blocking) ?? [];
+  // Boletos de tren, Machu Picchu o sobrevuelos se emiten con nombre y documento exactos de cada viajero.
+  const needsTravelerDocs = lines.some((l) => l.paymentPolicy.fullPaymentReason === "third-party-tickets");
   const canPay = !!quote && !!plan && quote.canCheckout && blocking.length === 0 && !expired;
 
   const request: PaymentRequest | null =
@@ -451,7 +451,7 @@ export function PaymentStep({
         <fieldset className="mt-8">
           <legend className="text-h4 font-medium">{t("method")}</legend>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
-            {METHODS.map(({ value, icon: Icon }) => (
+            {(contact.country === "Perú" ? METHODS_PERU : METHODS).map(({ value, icon: Icon }) => (
               <label
                 key={value}
                 className="flex cursor-pointer flex-col gap-1 rounded-lg border-2 border-border p-3 has-[:checked]:border-primary has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring"
@@ -485,14 +485,7 @@ export function PaymentStep({
               {t("edit")}
             </button>
           </div>
-          <div className="mt-2 flex justify-between gap-4">
-            <p>
-              <span className="font-medium">{t("travelers")}</span> {t("tourCount", { count: lines.length })}
-            </p>
-            <button type="button" className="pwt-link shrink-0" onClick={onBackToTravelers}>
-              {t("edit")}
-            </button>
-          </div>
+          {needsTravelerDocs ? <p className="mt-2 text-foreground-muted">{t("travelerDocsLater")}</p> : null}
         </div>
 
         <div className="rounded-lg bg-surface-muted p-4 text-sm">

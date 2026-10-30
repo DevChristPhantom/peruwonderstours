@@ -32,6 +32,36 @@ export const COUNTRIES = [
   "Otro país",
 ] as const;
 
+/** Código telefónico de cada país de la lista: al elegir uno se completa el otro. */
+export const COUNTRY_PHONE: Record<string, string> = {
+  Perú: "+51",
+  Argentina: "+54",
+  Bolivia: "+591",
+  Brasil: "+55",
+  Chile: "+56",
+  Colombia: "+57",
+  Ecuador: "+593",
+  España: "+34",
+  "Estados Unidos": "+1",
+  México: "+52",
+};
+
+const REGION_COUNTRY: Record<string, (typeof COUNTRIES)[number]> = {
+  PE: "Perú", AR: "Argentina", BO: "Bolivia", BR: "Brasil", CL: "Chile", CO: "Colombia",
+  EC: "Ecuador", US: "Estados Unidos", MX: "México",
+};
+
+/**
+ * País probable según el idioma principal del navegador ("en-US" → Estados Unidos, "pt-BR" → Brasil);
+ * null si no se puede saber. "es-ES" no cuenta: es el español por defecto de muchos navegadores
+ * en Latinoamérica, así que el cliente peruano seguiría viendo Perú.
+ */
+export function guessCountry(languages: readonly string[]): (typeof COUNTRIES)[number] | null {
+  const region = languages[0]?.split("-")[1]?.toUpperCase();
+  if (!region || region === "ES") return null;
+  return REGION_COUNTRY[region] ?? null;
+}
+
 export const contactSchema = z
   .object({
     firstName: z.string().trim().min(1, "firstNameRequired"),
@@ -50,6 +80,9 @@ export const contactSchema = z
      */
     marketingEmail: z.boolean(),
     marketingWhatsapp: z.boolean(),
+    /** Datos para operaciones (opcionales): llegan a la reserva como notas del cliente. */
+    hotel: z.string().trim().max(200, "maxChars|200").optional(),
+    notes: z.string().trim().max(500, "maxChars|500").optional(),
   })
   .superRefine((v, ctx) => {
     const digits = v.phone.replace(/\D/g, "");
@@ -72,40 +105,6 @@ export const contactSchema = z
   });
 
 export type ContactValues = z.infer<typeof contactSchema>;
-
-export const DOC_TYPES = [
-  { value: "dni", label: "DNI" },
-  { value: "pasaporte", label: "Pasaporte" },
-  { value: "ce", label: "Carné de extranjería" },
-] as const;
-
-export const travelerSchema = z
-  .object({
-    fullName: z.string().trim().min(3, "travelerFullName"),
-    docType: z.enum(["dni", "pasaporte", "ce"]),
-    docNumber: z.string().trim(),
-    nationality: z.string().trim().min(2, "nationalityRequired"),
-  })
-  .superRefine((v, ctx) => {
-    const ok = v.docType === "dni" ? /^\d{8}$/.test(v.docNumber) : /^[A-Za-z0-9]{5,15}$/.test(v.docNumber);
-    if (!ok) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["docNumber"],
-        message: v.docType === "dni" ? "dniInvalid" : "docInvalid",
-      });
-    }
-  });
-
-export const travelersSchema = z.object({
-  useContactForFirst: z.boolean(),
-  lines: z.array(z.object({ lineId: z.string(), travelers: z.array(travelerSchema) })),
-  hotel: z.string().trim().max(200).optional(),
-  notes: z.string().trim().max(500, "maxChars|500").optional(),
-});
-
-export type TravelersValues = z.infer<typeof travelersSchema>;
-export type TravelerValues = z.infer<typeof travelerSchema>;
 
 export const paymentStepSchema = z.object({
   option: z.enum(["deposit", "full"]),

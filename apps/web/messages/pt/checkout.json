@@ -1,7 +1,10 @@
 {
   "stepsLabel": "Etapas do pagamento",
   "stepOf": "Etapa {step} de {total}",
-  "steps": { "contact": "Seus dados", "travelers": "Viajantes", "payment": "Pagamento" },
+  "steps": {
+    "contact": "Seus dados",
+    "payment": "Pagamento"
+  },
   "stepDone": "(concluído)",
   "stepAnnounce": "Etapa {step} de {total}: {label}.",
   "loading": "Carregando pagamento…",
@@ -15,7 +18,11 @@
   "editCart": "Editar carrinho",
   "pricesConfirmed": "Preços e vagas confirmados agora.",
   "dueOnShort": "vence em {date}",
-  "header": { "home": "peruwonderstours, início", "leaveConfirm": "Sair do pagamento? Seu carrinho será salvo.", "secure": "Pagamento seguro" },
+  "header": {
+    "home": "peruwonderstours, início",
+    "leaveConfirm": "Sair do pagamento? Seu carrinho será salvo.",
+    "secure": "Pagamento seguro"
+  },
   "contact": {
     "title": "Seus dados",
     "intro": "Dados da pessoa responsável pela reserva. Enviaremos a confirmação para você.",
@@ -41,26 +48,11 @@
     "marketingHint": "(opcional; você pode cancelar a inscrição quando quiser)",
     "marketingEmail": "Quero receber ofertas e novidades por e-mail.",
     "marketingWhatsapp": "Quero receber ofertas e novidades pelo WhatsApp.",
-    "next": "Continuar para viajantes"
-  },
-  "travelers": {
-    "peruvian": "Peruana",
-    "title": "Viajantes",
-    "intro": "Dados de cada pessoa, exatamente como constam no documento.",
-    "exactDocs": "Os ingressos de Machu Picchu e as passagens de trem são emitidos com o nome e o documento exatos. Confira com atenção.",
-    "useContact": "Usar meus dados para o viajante 1 ({name})",
-    "booker": "responsável pela reserva",
-    "traveler": "Viajante {n}",
-    "fullName": "Nome completo",
-    "docType": "Tipo de documento",
-    "docTypes": { "dni": "DNI", "pasaporte": "Passaporte", "ce": "Carnê de estrangeiro (Peru)" },
-    "docNumber": "Número do documento",
-    "nationality": "Nacionalidade",
+    "next": "Continuar para pagamento",
+    "extrasTitle": "Hotel para o traslado e necessidades especiais",
     "hotel": "Hotel para o traslado de saída",
     "notes": "Necessidades especiais ou alimentação",
-    "optional": "(opcional)",
-    "back": "Voltar para seus dados",
-    "next": "Continuar para pagamento"
+    "optional": "(opcional)"
   },
   "payment": {
     "announceBlocked": "Há passeios no seu carrinho que não podem ser reservados. Confira os avisos.",
@@ -108,15 +100,22 @@
     "howToPayBalance": "Como pagar o saldo: na página da sua reserva, usando o link que enviaremos por e-mail e WhatsApp.",
     "method": "Forma de pagamento",
     "methods": {
-      "card": { "label": "Cartão", "note": "Visa, Mastercard, Amex, Diners" },
-      "yape": { "label": "Yape", "note": "Pagamento pelo celular" },
-      "pagoefectivo": { "label": "PagoEfectivo", "note": "Internet banking ou agentes (código CIP de 24 h)" }
+      "card": {
+        "label": "Cartão",
+        "note": "Visa, Mastercard, Amex, Diners"
+      },
+      "yape": {
+        "label": "Yape",
+        "note": "Pagamento pelo celular"
+      },
+      "pagoefectivo": {
+        "label": "PagoEfectivo",
+        "note": "Internet banking ou agentes (código CIP de 24 h)"
+      }
     },
     "cardFeeNote": "Taxa de {percent} % sobre o valor a pagar",
     "contact": "Contato:",
     "edit": "Editar",
-    "travelers": "Viajantes:",
-    "tourCount": "{count, plural, one {# passeio} other {# passeios}}",
     "cancellationTitle": "Política de cancelamento (resumo)",
     "cancellation1": "Cancelamentos com pelo menos 20 dias úteis de antecedência: serão descontados os custos dos serviços já emitidos.",
     "cancellation2": "Passagens de trem, ingressos para Machu Picchu e sobrevoos não são reembolsáveis após a emissão.",
@@ -127,7 +126,8 @@
     "processing": "Processando seu pagamento…",
     "secureNote": "Pagamento seguro · Você receberá seu comprovante eletrônico por e-mail",
     "payHelp": "Problemas para pagar? Ajuda pelo WhatsApp",
-    "whatsappStep": "pagamento"
+    "whatsappStep": "pagamento",
+    "travelerDocsLater": "Viajantes: depois da reserva, pediremos por WhatsApp ou e-mail o nome e o documento exatos de cada viajante para emitir os ingressos."
   },
   "hold": {
     "minutesLeft": "{count, plural, one {Resta # minuto para concluir o pagamento.} other {Restam # minutos para concluir o pagamento.}}",
@@ -149,7 +149,12 @@
     "succeeded": "Pagamento registrado. Atualizamos sua reserva.",
     "pending": "Pagamento aguardando confirmação.",
     "connectionError": "Não foi possível conectar ao sistema de pagamentos. Nenhum valor foi cobrado; tente novamente.",
-    "kind": { "deposit": "Pagar a entrada", "full": "Pagar o total", "balance": "Pagar o saldo", "now": "Pagar agora" },
+    "kind": {
+      "deposit": "Pagar a entrada",
+      "full": "Pagar o total",
+      "balance": "Pagar o saldo",
+      "now": "Pagar agora"
+    },
     "description": "Reserva {code}"
   },
   "metaTitle": "Pagamento",

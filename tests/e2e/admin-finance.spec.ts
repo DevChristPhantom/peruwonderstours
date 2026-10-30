@@ -45,14 +45,6 @@ test("admin finance: record and void own simulated payment, then cancel own book
       await page.getByLabel("Correo electrónico", { exact: true }).fill(`finance-${suffix}@peruwonderstours.test`);
       await page.getByLabel("Celular (WhatsApp)", { exact: true }).fill("900000003");
       await page.getByLabel("País de residencia", { exact: true }).selectOption("Perú");
-      await page.getByRole("button", { name: "Continuar a viajeros", exact: true }).click();
-      const names = page.getByLabel("Nombres y apellidos", { exact: true });
-      await expect(names.first()).toBeVisible();
-      for (let index = 0; index < await names.count(); index++) {
-        await names.nth(index).fill(`Finanzas Fixture ${index + 1}`);
-        await page.getByLabel("Número de documento", { exact: true }).nth(index).fill(String(12345680 + index));
-        await page.getByLabel("Nacionalidad", { exact: true }).nth(index).fill("Peruana");
-      }
       await page.getByRole("button", { name: "Continuar al pago", exact: true }).click();
       await expect(page.getByText("Modo sandbox: pago simulado, no se realizará ningún cobro", { exact: true })).toBeVisible();
       // A pending online collection correctly prevents simultaneous manual payments.

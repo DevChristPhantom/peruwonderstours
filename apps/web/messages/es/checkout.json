@@ -3,7 +3,6 @@
   "stepOf": "Paso {step} de {total}",
   "steps": {
     "contact": "Tus datos",
-    "travelers": "Viajeros",
     "payment": "Pago"
   },
   "stepDone": "(completado)",
@@ -49,30 +48,11 @@
     "marketingHint": "(opcional, puedes darte de baja cuando quieras)",
     "marketingEmail": "Quiero recibir ofertas y novedades por correo.",
     "marketingWhatsapp": "Quiero recibir ofertas y novedades por WhatsApp.",
-    "next": "Continuar a viajeros"
-  },
-  "travelers": {
-    "peruvian": "Peruana",
-    "title": "Viajeros",
-    "intro": "Datos de cada persona, tal como figuran en su documento.",
-    "exactDocs": "Los boletos de Machu Picchu y tren se emiten con el nombre y documento exactos. Revísalos bien.",
-    "useContact": "Usar mis datos para el viajero 1 ({name})",
-    "booker": "quien reserva",
-    "traveler": "Viajero {n}",
-    "fullName": "Nombres y apellidos",
-    "docType": "Tipo de documento",
-    "docTypes": {
-      "dni": "DNI",
-      "pasaporte": "Pasaporte",
-      "ce": "Carné de extranjería"
-    },
-    "docNumber": "Número de documento",
-    "nationality": "Nacionalidad",
+    "next": "Continuar al pago",
+    "extrasTitle": "Hotel para el recojo y necesidades especiales",
     "hotel": "Hotel para el recojo",
     "notes": "Necesidades especiales o alimentación",
-    "optional": "(opcional)",
-    "back": "Volver a tus datos",
-    "next": "Continuar al pago"
+    "optional": "(opcional)"
   },
   "payment": {
     "announceBlocked": "Hay tours de tu carrito que no se pueden reservar. Revisa los avisos.",
@@ -136,8 +116,6 @@
     "cardFeeNote": "Comisión de {percent} % sobre el monto a pagar",
     "contact": "Contacto:",
     "edit": "Editar",
-    "travelers": "Viajeros:",
-    "tourCount": "{count, plural, one {# tour} other {# tours}}",
     "cancellationTitle": "Política de cancelación (resumen)",
     "cancellation1": "Cancelaciones con al menos 20 días hábiles: se descuentan gastos de servicios ya emitidos.",
     "cancellation2": "Boletos de tren, ingreso a Machu Picchu y sobrevuelos no son reembolsables una vez emitidos.",
@@ -148,7 +126,8 @@
     "processing": "Procesando tu pago…",
     "secureNote": "Pago seguro · Recibirás tu comprobante electrónico por correo",
     "payHelp": "¿Problemas para pagar? Ayuda por WhatsApp",
-    "whatsappStep": "pago"
+    "whatsappStep": "pago",
+    "travelerDocsLater": "Viajeros: después de reservar te pediremos por WhatsApp o correo los nombres y documentos exactos de cada viajero para emitir los boletos."
   },
   "hold": {
     "minutesLeft": "{count, plural, one {Queda # minuto para completar el pago.} other {Quedan # minutos para completar el pago.}}",
