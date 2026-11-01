@@ -73,7 +73,7 @@ export function presentPayment(payment: Payment) {
 
 function toStringRecord(value: Record<string, unknown> | undefined): Record<string, string> {
   const entries = Object.entries(value ?? {});
-  if (entries.length > 20 || entries.some(([k, v]) => typeof v !== 'string' || k.length > 64 || v.length > 4096)) {
+  if (entries.length > 20 || entries.some(([k, v]) => typeof v !== 'string' || k.length > 64 || v.length > 8192)) {
     throw new DomainError('invalid-confirmation', 'La confirmación debe ser un objeto de hasta 20 textos.', 'validation');
   }
   return Object.fromEntries(entries) as Record<string, string>;
@@ -97,6 +97,8 @@ export class NextActionDto {
   @ApiProperty({ enum: ['redirect', 'sdk', 'none'] }) type: string;
   @ApiPropertyOptional({ description: 'Solo type=redirect.' }) url?: string;
   @ApiPropertyOptional({ description: 'Solo type=sdk.' }) token?: string;
+  @ApiPropertyOptional({ description: 'Solo type=sdk: configuración pública del SDK (Izipay: scriptUrl, keyRSA, transactionId, orderNumber...).', type: 'object', additionalProperties: { type: 'string' } })
+  params?: Record<string, string>;
 }
 
 export class CreatedPaymentDto {

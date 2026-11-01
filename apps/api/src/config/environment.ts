@@ -46,6 +46,23 @@ export class EnvironmentVariables {
   @MinLength(10)
   DATABASE_URL?: string;
 
+  /**
+   * Conexiones máximas del pool `pg` por proceso. 20 rindió ~30 % más que el default de `pg` (10)
+   * con 25 peticiones simultáneas; con N instancias, N × este valor debe caber en `max_connections`.
+   */
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  DATABASE_POOL_MAX = 20;
+
+  /** Segundos que la API reutiliza destinos y categorías del catálogo público (0 = sin caché). */
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @Max(600)
+  CATALOG_CACHE_SECONDS = 30;
+
   @IsString()
   SEED_DATA_DIR = '../../data/seed';
 
@@ -101,8 +118,8 @@ export class EnvironmentVariables {
   @IsUrl({ require_tld: false, require_protocol: true })
   PROBLEM_TYPE_BASE_URL = 'https://peruwonderstours.com/problems';
 
-  @IsIn(['sandbox'])
-  PAYMENT_GATEWAY = 'sandbox' as const;
+  @IsIn(['sandbox', 'izipay'])
+  PAYMENT_GATEWAY: 'sandbox' | 'izipay' = 'sandbox';
 
   @ValidateIf((env: EnvironmentVariables) => env.PAYMENT_GATEWAY === 'sandbox')
   @IsString()
@@ -111,6 +128,38 @@ export class EnvironmentVariables {
 
   @IsUrl({ require_tld: false, require_protocol: true })
   SANDBOX_CHECKOUT_BASE_URL = 'http://localhost:3001/api/v1/sandbox/checkout';
+
+  // --- Izipay (PAYMENT_GATEWAY=izipay). Claves del panel de Izipay > Credenciales. ---
+  /** `sandbox` = ambiente de integración (sin cobros reales); `production` cobra de verdad. */
+  @IsIn(['sandbox', 'production'])
+  IZIPAY_ENV: 'sandbox' | 'production' = 'sandbox';
+
+  @ValidateIf((env: EnvironmentVariables) => env.PAYMENT_GATEWAY === 'izipay')
+  @Matches(/^\d{1,15}$/)
+  IZIPAY_MERCHANT_CODE?: string;
+
+  /** «Clave API»: autentica la creación de tokens de sesión. Secreta. */
+  @ValidateIf((env: EnvironmentVariables) => env.PAYMENT_GATEWAY === 'izipay')
+  @IsString()
+  @MinLength(16)
+  IZIPAY_API_KEY?: string;
+
+  /** «keyRSA»: la usa el SDK en el navegador (pública). */
+  @ValidateIf((env: EnvironmentVariables) => env.PAYMENT_GATEWAY === 'izipay')
+  @IsString()
+  @MinLength(16)
+  IZIPAY_RSA_PUBLIC_KEY?: string;
+
+  /** «claveHash»: firma HMAC-SHA256 de las respuestas y la IPN. Secreta. */
+  @ValidateIf((env: EnvironmentVariables) => env.PAYMENT_GATEWAY === 'izipay')
+  @IsString()
+  @MinLength(16)
+  IZIPAY_HASH_KEY?: string;
+
+  /** URL pública de `POST /api/v1/payments/webhooks/izipay` (Izipay no llega a localhost). */
+  @ValidateIf((env: EnvironmentVariables) => env.PAYMENT_GATEWAY === 'izipay')
+  @IsUrl({ require_tld: false, require_protocol: true })
+  IZIPAY_IPN_URL?: string;
 
   @Type(() => Number)
   @IsInt()
@@ -462,6 +511,8 @@ export function validateEnvironment(config: Record<string, unknown>): Environmen
     if (env.DATA_SOURCE !== 'prisma') messages.push('DATA_SOURCE debe ser "prisma" en producción.');
     if (env.DEMO_PRICING) messages.push('DEMO_PRICING no se permite en producción.');
     if (env.PAYMENT_GATEWAY === 'sandbox') messages.push('La pasarela sandbox no se permite en producción.');
+    if (env.PAYMENT_GATEWAY === 'izipay' && env.IZIPAY_ENV !== 'production') messages.push('IZIPAY_ENV debe ser "production" en producción (el ambiente de integración no cobra).');
+    if (env.PAYMENT_GATEWAY === 'izipay' && !env.IZIPAY_IPN_URL?.startsWith('https://')) messages.push('IZIPAY_IPN_URL debe usar https en producción.');
     if (!env.PII_ENCRYPTION_KEY) messages.push('PII_ENCRYPTION_KEY es obligatoria en producción.');
     if (!/^\d{11}$/.test(env.PROVIDER_RUC)) messages.push('PROVIDER_RUC debe tener 11 dígitos en producción.');
     for (const key of ['PROVIDER_LEGAL_NAME', 'ESTABLISHMENT_ADDRESS'] as const) {

@@ -14,6 +14,7 @@ import type { Locale } from "@/i18n/routing";
 import { getBookingByCode, type Booking, type BookingStatus } from "@/lib/api/bookings";
 import { BOOKING_CODE_RE, readBookingToken } from "@/lib/checkout/session";
 import { formatFor } from "@/lib/format";
+import { env } from "@/lib/env";
 import { PAYMENTS_MODE } from "@/lib/payments/types";
 import { SITE } from "@/lib/site";
 import { bookingHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
@@ -219,6 +220,7 @@ export default async function BookingPage({ params }: PageProps<"/[locale]/reser
                   currency={booking.currency}
                   kind={booking.nextPayment.kind}
                   holdExpiresAt={unpaidHold ? booking.holdExpiresAt : null}
+                  provider={env.PAYMENT_PROVIDER}
                 />
               </div>
             ) : null}

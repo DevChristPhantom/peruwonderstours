@@ -5,6 +5,7 @@ import type { UnitOfWork } from '../../shared/application/unit-of-work.js';
 import type { Clock, IdGenerator } from '../../shared/domain/ports.js';
 import { PaymentUseCases } from './application/payment.use-cases.js';
 import type { PaymentGatewayRegistry } from './domain/payment-gateway.js';
+import { IzipayPaymentGateway } from './infrastructure/izipay-payment-gateway.js';
 import { SandboxPaymentGateway, StaticPaymentGatewayRegistry } from './infrastructure/sandbox-payment-gateway.js';
 import { PaymentsController } from './interface/payments.controller.js';
 
@@ -56,8 +57,13 @@ export class PaymentReconciliationScheduler implements OnApplicationBootstrap, O
       provide: PAYMENT_GATEWAY_REGISTRY,
       inject: [APP_SETTINGS, CLOCK],
       useFactory: (settings: AppSettings, clock: Clock): PaymentGatewayRegistry => {
-        // Adaptadores reales (Izipay/Niubiz/Mercado Pago/Culqi) se registran aquí cuando exista el ADR de pasarela.
-        const sandbox = new SandboxPaymentGateway(settings.sandbox, clock);
+        // El sandbox sigue registrado si tiene secreto: pagos sandbox previos se pueden consultar/reembolsar.
+        const sandbox = settings.sandbox.webhookSecret ? new SandboxPaymentGateway(settings.sandbox, clock) : null;
+        if (settings.paymentGateway === 'izipay') {
+          const izipay = new IzipayPaymentGateway(settings.izipay!, clock);
+          return new StaticPaymentGatewayRegistry(sandbox ? [izipay, sandbox] : [izipay], izipay);
+        }
+        if (!sandbox) throw new Error('SANDBOX_WEBHOOK_SECRET es obligatoria con PAYMENT_GATEWAY=sandbox.');
         return new StaticPaymentGatewayRegistry([sandbox], sandbox);
       },
     },

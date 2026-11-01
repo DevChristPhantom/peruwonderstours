@@ -12,6 +12,7 @@ import type {
   InventoryRepository,
   Page,
   TourListing,
+  TourRef,
   TourSearchCriteria,
 } from '../domain/catalog.repository.js';
 import { Departure, type InventoryHold } from '../domain/departure.js';
@@ -127,8 +128,39 @@ function mapRate(row: Prisma.RateGetPayload<{ include: { season: true } }>): Rat
 
 const PUBLISHED: Prisma.TourWhereInput = { status: 'published', deletedAt: null };
 
+export interface CatalogRepositoryOptions {
+  /**
+   * Caché en memoria de destinos y categorías (cambian poco y los pide cada ficha de tour).
+   * Solo para la instancia pública compartida; 0 = sin caché (transacciones, admin).
+   */
+  taxonomyCacheMs?: number;
+  now?: () => number;
+}
+
+const TOUR_REF_SELECT = { id: true, slug: true, status: true, bookingCutoffHours: true } satisfies Prisma.TourSelect;
+
 export class PrismaCatalogRepository implements CatalogRepository {
-  constructor(private readonly db: PrismaTx) {}
+  private readonly cache = new Map<string, { expiresAt: number; value: Promise<unknown> }>();
+
+  constructor(
+    private readonly db: PrismaTx,
+    private readonly options: CatalogRepositoryOptions = {},
+  ) {}
+
+  /** Comparte la misma consulta en vuelo entre peticiones simultáneas; un error no queda en caché. */
+  private cached<T>(key: string, load: () => Promise<T>): Promise<T> {
+    const ttl = this.options.taxonomyCacheMs ?? 0;
+    if (ttl <= 0) return load();
+    const now = (this.options.now ?? Date.now)();
+    const hit = this.cache.get(key);
+    if (hit && hit.expiresAt > now) return hit.value as Promise<T>;
+    const value = load();
+    this.cache.set(key, { expiresAt: now + ttl, value });
+    value.catch(() => {
+      if (this.cache.get(key)?.value === value) this.cache.delete(key);
+    });
+    return value;
+  }
 
   /**
    * Filtros estructurales en SQL; texto con FTS `es_unaccent` + `word_similarity` (pg_trgm);
@@ -238,6 +270,14 @@ export class PrismaCatalogRepository implements CatalogRepository {
     return row ? mapTourRow(row) : null;
   }
 
+  async findTourRefBySlug(slug: string, locale: Locale): Promise<TourRef | null> {
+    const row =
+      (await this.db.tour.findFirst({ where: { slug, deletedAt: null }, select: TOUR_REF_SELECT })) ??
+      (await this.db.tour.findFirst({ where: { deletedAt: null, translations: { some: { locale, slug } } }, select: TOUR_REF_SELECT })) ??
+      (await this.db.tour.findFirst({ where: { deletedAt: null, translations: { some: { slug } } }, select: TOUR_REF_SELECT }));
+    return row ? { id: row.id, slug: row.slug, status: row.status, bookingCutoffHours: row.bookingCutoffHours } : null;
+  }
+
   async findTourById(id: string): Promise<Tour | null> {
     const row = await this.db.tour.findFirst({ where: { id, deletedAt: null }, include: TOUR_INCLUDE });
     return row ? mapTourRow(row) : null;
@@ -248,7 +288,11 @@ export class PrismaCatalogRepository implements CatalogRepository {
     return rows.map(mapRate);
   }
 
-  async listDestinations(): Promise<Destination[]> {
+  listDestinations(): Promise<Destination[]> {
+    return this.cached('destinations', () => this.loadDestinations());
+  }
+
+  private async loadDestinations(): Promise<Destination[]> {
     const rows = await this.db.destination.findMany({ where: { deletedAt: null }, include: { translations: true } });
     return rows.map((d) => ({
       id: d.id,
@@ -261,7 +305,11 @@ export class PrismaCatalogRepository implements CatalogRepository {
     }));
   }
 
-  async listCategories(): Promise<Category[]> {
+  listCategories(): Promise<Category[]> {
+    return this.cached('categories', () => this.loadCategories());
+  }
+
+  private async loadCategories(): Promise<Category[]> {
     const rows = await this.db.category.findMany({ where: { deletedAt: null }, include: { translations: true } });
     return rows.map((c) => ({
       id: c.id,
@@ -272,6 +320,7 @@ export class PrismaCatalogRepository implements CatalogRepository {
     }));
   }
 
+  /** Sin caché: los conteos cambian al publicar y los menús deben reflejarlo de inmediato. */
   async countPublishedTours(): Promise<{ byDestination: Map<string, number>; byCategory: Map<string, number> }> {
     // Public reads can use independent pool connections. Prisma still serializes these
     // when this repository is bound to a single interactive transaction connection.

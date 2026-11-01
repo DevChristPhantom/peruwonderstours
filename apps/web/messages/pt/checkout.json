@@ -145,6 +145,44 @@
     "rejected": "Recusado",
     "pending": "Pendente (CIP)"
   },
+  "izipay": {
+    "holderLegend": "Dados do titular do pagamento",
+    "holderIntro": "A Izipay os solicita para validar o pagamento com {method}. Ao tocar em Pagar, abrirá a janela segura para inserir o cartão ou o Yape.",
+    "firstName": "Nome do titular",
+    "lastName": "Sobrenome do titular",
+    "phone": "Celular",
+    "phoneHint": "Com código do país, p. ex. +55 11 91234 5678.",
+    "country": "País",
+    "countryPlaceholder": "Escolha seu país",
+    "documentType": "Tipo de documento",
+    "documentTypes": {
+      "DNI": "DNI (documento peruano)",
+      "CE": "Carteira de estrangeiro (CE)",
+      "PASAPORTE": "Passaporte",
+      "OTROS": "Outro"
+    },
+    "document": "Número do documento",
+    "street": "Endereço de cobrança",
+    "city": "Cidade",
+    "state": "Região ou estado",
+    "postalCode": "CEP / código postal",
+    "postalCodeHint": "Somente números (o CEP sem hífen). Se o seu tiver letras, escreva 00000.",
+    "errors": {
+      "firstName": "Escreva o nome (somente letras).",
+      "lastName": "Escreva o sobrenome (somente letras).",
+      "phone": "Escreva o celular com código do país (7 a 15 dígitos).",
+      "country": "Escolha seu país.",
+      "document": "Confira o número: DNI tem 8 dígitos; passaporte ou outro, de 8 a 12 letras ou números.",
+      "street": "Escreva o endereço (5 a 40 caracteres).",
+      "city": "Escreva a cidade (sem números).",
+      "state": "Escreva a região ou estado (sem números).",
+      "postalCode": "Escreva de 5 a 10 números."
+    },
+    "secure": "A Izipay processa o pagamento; a peruwonderstours não vê nem guarda os dados do seu cartão.",
+    "opening": "Abrindo a janela de pagamento da Izipay…",
+    "loadFailed": "Não foi possível abrir a janela de pagamento da Izipay. Verifique sua conexão ou desative o bloqueador de anúncios e tente novamente. Nenhum valor foi cobrado.",
+    "notCompleted": "O pagamento não foi concluído na Izipay. Sua reserva continua salva: você pode tentar novamente."
+  },
   "payBooking": {
     "succeeded": "Pagamento registrado. Atualizamos sua reserva.",
     "pending": "Pagamento aguardando confirmação.",

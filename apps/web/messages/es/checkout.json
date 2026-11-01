@@ -145,6 +145,44 @@
     "rejected": "Rechazado",
     "pending": "Pendiente (CIP)"
   },
+  "izipay": {
+    "holderLegend": "Datos del titular del pago",
+    "holderIntro": "Izipay los pide para validar el pago con {method}. Al pulsar Pagar se abrirá su ventana segura para ingresar la tarjeta o Yape.",
+    "firstName": "Nombres del titular",
+    "lastName": "Apellidos del titular",
+    "phone": "Celular",
+    "phoneHint": "Con código de país, p. ej. +51 987 654 321.",
+    "country": "País",
+    "countryPlaceholder": "Elige tu país",
+    "documentType": "Tipo de documento",
+    "documentTypes": {
+      "DNI": "DNI",
+      "CE": "Carné de extranjería",
+      "PASAPORTE": "Pasaporte",
+      "OTROS": "Otro"
+    },
+    "document": "Número de documento",
+    "street": "Dirección de facturación",
+    "city": "Ciudad",
+    "state": "Región o estado",
+    "postalCode": "Código postal",
+    "postalCodeHint": "Solo números. Si el tuyo tiene letras, escribe 00000.",
+    "errors": {
+      "firstName": "Escribe los nombres (solo letras).",
+      "lastName": "Escribe los apellidos (solo letras).",
+      "phone": "Escribe el celular con código de país (7 a 15 dígitos).",
+      "country": "Elige tu país.",
+      "document": "Revisa el número: DNI de 8 dígitos; pasaporte u otro de 8 a 12 letras o números.",
+      "street": "Escribe la dirección (5 a 40 caracteres).",
+      "city": "Escribe la ciudad (sin números).",
+      "state": "Escribe la región o estado (sin números).",
+      "postalCode": "Escribe de 5 a 10 números."
+    },
+    "secure": "Izipay procesa el pago; peruwonderstours no ve ni guarda los datos de tu tarjeta.",
+    "opening": "Abriendo la ventana de pago de Izipay…",
+    "loadFailed": "No pudimos abrir la ventana de pago de Izipay. Revisa tu conexión o desactiva el bloqueador de anuncios e intenta de nuevo. No se te cobró nada.",
+    "notCompleted": "No se completó el pago en Izipay. Tu reserva sigue guardada: puedes intentar de nuevo."
+  },
   "payBooking": {
     "succeeded": "Pago registrado. Actualizamos tu reserva.",
     "pending": "Pago pendiente de confirmación.",

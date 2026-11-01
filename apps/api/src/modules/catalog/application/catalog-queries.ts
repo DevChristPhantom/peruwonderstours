@@ -156,7 +156,8 @@ export class CatalogQueries {
   }
 
   async listDepartures(slug: string, from: CalendarDate | undefined, to: CalendarDate | undefined, currency: CurrencyCode = 'PEN'): Promise<DepartureAvailability[]> {
-    const tour = await this.catalog.findTourBySlug(slug, 'es');
+    // Solo id, estado y corte: el calendario no necesita traducciones, fotos ni destinos.
+    const tour = await this.catalog.findTourRefBySlug(slug, 'es');
     if (!tour || !isTourPublished(tour)) throw new TourNotFoundError(slug);
     const today = this.today();
     const start = from && from > today ? from : today;

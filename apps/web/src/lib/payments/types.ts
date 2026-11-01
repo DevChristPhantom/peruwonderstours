@@ -31,14 +31,54 @@ export interface PaymentRequest {
 /** Resultado que el SANDBOX pide simular a la pasarela simulada de la API. */
 export type SimulatedOutcome = "approved" | "rejected" | "pending";
 
+/** Pasarela activa (variable de servidor `PAYMENT_PROVIDER`; debe coincidir con la de la API). */
+export type PaymentProvider = "sandbox" | "izipay";
+
+/** Datos del titular que exige el formulario de Izipay (no son datos de tarjeta). */
+export interface CardHolder {
+  documentType: "DNI" | "CE" | "PASAPORTE" | "OTROS";
+  document: string;
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+}
+
+/** Comprador, cuando la página no lo conoce (pago desde la reserva: la API no expone datos personales). */
+export interface PaymentBuyer {
+  firstName: string;
+  lastName: string;
+  /** Con código de país, solo dígitos o E.164. */
+  phone: string;
+  /** ISO 3166-1 alfa-2. */
+  country: string;
+}
+
 export interface ProviderConfirmation {
   simulate: SimulatedOutcome;
+  /** Solo Izipay. */
+  holder?: CardHolder;
+  /** Solo Izipay con `askBuyer`. */
+  buyer?: PaymentBuyer;
 }
 
 export interface PaymentWidgetHandle {
-  /** Recoge la confirmación del formulario del proveedor (nunca datos de tarjeta). */
-  collect(): Promise<ProviderConfirmation>;
+  /** Recoge la confirmación del formulario (nunca datos de tarjeta); null si falta corregir algo. */
+  collect(): Promise<ProviderConfirmation | null>;
 }
+
+/** El cobro quedó creado y espera el formulario del proveedor en el navegador. */
+export interface ProviderAction {
+  provider: "izipay";
+  paymentId: string;
+  /** Token de sesión de un solo uso (15 min). */
+  token: string;
+  /** Configuración pública del SDK que entrega la API (scriptUrl, keyRSA, transactionId, orderNumber...). */
+  params: Record<string, string>;
+}
+
+/** Resultado de confirmar el formulario del proveedor. `open`: el viajero no terminó de pagar. */
+export type ProviderPaymentOutcome = "succeeded" | "pending" | "failed" | "open";
 
 export interface PaymentWidgetProps {
   request: PaymentRequest;

@@ -34,3 +34,51 @@ describe('Published taxonomy counts', () => {
     await expect(repository.countPublishedTours()).rejects.toBe(error);
   });
 });
+
+describe('Public taxonomy cache', () => {
+  const destinationRow = { id: 'd1', slug: 'puno', parentId: null, status: 'published', sortOrder: 0, coverStorageKey: null, translations: [] };
+  const categoryRow = { id: 'c1', slug: 'aventura', sortOrder: 0, coverStorageKey: null, translations: [] };
+
+  it('reuses destinations and categories within the TTL and shares one in-flight read between concurrent requests', async () => {
+    let now = 1_000;
+    const destinations = vi.fn().mockResolvedValue([destinationRow]);
+    const categories = vi.fn().mockResolvedValue([categoryRow]);
+    const repository = new PrismaCatalogRepository({ destination: { findMany: destinations }, category: { findMany: categories } } as unknown as PrismaTx, {
+      taxonomyCacheMs: 30_000,
+      now: () => now,
+    });
+    const [a, b] = await Promise.all([repository.listDestinations(), repository.listDestinations()]);
+    expect(a).toEqual(b);
+    await repository.listCategories();
+    await repository.listCategories();
+    expect(destinations).toHaveBeenCalledTimes(1);
+    expect(categories).toHaveBeenCalledTimes(1);
+    now += 30_001;
+    await repository.listDestinations();
+    expect(destinations).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not cache failures, and is off by default (transactions and admin reads stay fresh)', async () => {
+    const error = new Error('fixture database read unavailable');
+    const destinations = vi.fn().mockRejectedValueOnce(error).mockResolvedValue([destinationRow]);
+    const cached = new PrismaCatalogRepository({ destination: { findMany: destinations } } as unknown as PrismaTx, { taxonomyCacheMs: 30_000 });
+    await expect(cached.listDestinations()).rejects.toBe(error);
+    expect((await cached.listDestinations())[0]?.id).toBe('d1');
+
+    const fresh = vi.fn().mockResolvedValue([categoryRow]);
+    const uncached = new PrismaCatalogRepository({ category: { findMany: fresh } } as unknown as PrismaTx);
+    await uncached.listCategories();
+    await uncached.listCategories();
+    expect(fresh).toHaveBeenCalledTimes(2);
+  });
+
+  it('reads only the calendar fields of a tour for departures', async () => {
+    const findFirst = vi.fn().mockResolvedValueOnce(null).mockResolvedValueOnce({ id: 't1', slug: 'uros', status: 'published', bookingCutoffHours: 24 });
+    const repository = new PrismaCatalogRepository({ tour: { findFirst } } as unknown as PrismaTx);
+    expect(await repository.findTourRefBySlug('uros-en', 'en')).toEqual({ id: 't1', slug: 'uros', status: 'published', bookingCutoffHours: 24 });
+    expect(findFirst).toHaveBeenNthCalledWith(2, {
+      where: { deletedAt: null, translations: { some: { locale: 'en', slug: 'uros-en' } } },
+      select: { id: true, slug: true, status: true, bookingCutoffHours: true },
+    });
+  });
+});

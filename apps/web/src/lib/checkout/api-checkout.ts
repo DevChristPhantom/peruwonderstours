@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import type { Currency } from "@/lib/catalog/types";
 import type { UserError } from "@/lib/api/problems";
+import type { ProviderAction } from "@/lib/payments/types";
 
 /**
  * Contrato entre el checkout (cliente) y sus Server Actions (BFF). Módulo puro y compartido:
@@ -99,10 +100,16 @@ export interface CheckoutQuote {
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: UserError; requote?: boolean; bookingCode?: string };
 
-export interface PlaceResult {
-  code: string;
-  payment: "succeeded" | "pending";
-}
+/** `action`: reserva creada y cobro abierto; falta el formulario del proveedor (Izipay). */
+export type PlaceResult = { code: string; payment: "succeeded" | "pending" } | { code: string; payment: "action"; action: ProviderAction };
+
+/** Respuesta firmada del formulario de Izipay; sin firma (ventana cerrada) se consulta el estado. */
+export const providerConfirmSchema = z.object({
+  code: z.string().regex(/^[A-Z0-9][A-Z0-9-]{3,39}$/),
+  paymentId: z.string().min(1).max(80).regex(/^[A-Za-z0-9_-]+$/),
+  payloadHttp: z.string().max(8192).optional(),
+  signature: z.string().max(200).optional(),
+});
 
 /** País (texto del formulario) → ISO 3166-1 alfa-2 que pide la API. */
 export const COUNTRY_ISO: Record<string, string> = {

@@ -10,7 +10,7 @@ import { computePaymentPlan, type PaymentOption } from "@/lib/checkout/payment-p
 import type { CheckoutQuote, PlaceResult } from "@/lib/checkout/api-checkout";
 import { COUNTRY_PHONE, guessCountry, type ContactValues } from "@/lib/checkout/schemas";
 import { todayInLima } from "@/lib/format";
-import { PAYMENTS_MODE } from "@/lib/payments/types";
+import { PAYMENTS_MODE, type PaymentProvider } from "@/lib/payments/types";
 import { useCartHydrated, useCartStore } from "@/stores/cart-store";
 import { useTripGate } from "@/stores/trip-store";
 import { useIsClient } from "@/hooks/useClientOnly";
@@ -112,7 +112,7 @@ function StepIndicator({ step, maxReached, onGo }: { step: Step; maxReached: Ste
   );
 }
 
-export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: number | null }) {
+export function CheckoutFlow({ cardFeePercent = null, provider = "sandbox" }: { cardFeePercent?: number | null; provider?: PaymentProvider }) {
   const t = useTranslations("checkout");
   const tc = useTranslations("cart");
   const money = useCartMoney();
@@ -245,6 +245,7 @@ export function CheckoutFlow({ cardFeePercent = null }: { cardFeePercent?: numbe
                 onOptionChange={setOption}
                 onQuote={setQuote}
                 cardFeePercent={cardFeePercent}
+                provider={provider}
                 onBackToContact={() => go(1)}
                 onPaid={onPaid}
               />

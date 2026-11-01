@@ -60,13 +60,14 @@ export async function createPersistenceBackend(settings: AppSettings, clock: Clo
   const { createPrismaClient } = await import('./prisma/prisma-client.js');
   const { PrismaUnitOfWork } = await import('./prisma/prisma-unit-of-work.js');
   const { PrismaCatalogRepository } = await import('../modules/catalog/infrastructure/prisma-catalog.repository.js');
-  const client = createPrismaClient(settings.databaseUrl!);
+  const client = createPrismaClient(settings.databaseUrl!, settings.databasePoolMax);
   await client.$connect();
   logger.log('Conectado a PostgreSQL.');
   return {
     kind: 'prisma',
     unitOfWork: new PrismaUnitOfWork(client),
-    catalog: new PrismaCatalogRepository(client),
+    // Instancia pública compartida: destinos y categorías en caché corta (las transacciones no la usan).
+    catalog: new PrismaCatalogRepository(client, { taxonomyCacheMs: settings.catalogCacheMs }),
     prisma: client,
     memory: null,
     ping: async () => {

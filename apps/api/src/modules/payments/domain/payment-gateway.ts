@@ -15,7 +15,8 @@ export interface CreateIntentInput {
 
 export type NextAction =
   | { type: 'redirect'; url: string }
-  | { type: 'sdk'; token: string }
+  /** `params`: datos no secretos que el SDK del proveedor necesita en el navegador. */
+  | { type: 'sdk'; token: string; params?: Record<string, string> }
   | { type: 'none' };
 
 export interface PaymentIntent {
@@ -27,7 +28,8 @@ export interface PaymentIntent {
 export interface ProviderPaymentState {
   providerPaymentId: string;
   status: PaymentStatus;
-  amount: Money;
+  /** null cuando el proveedor no informa monto (p. ej. un rechazo sin transacción). */
+  amount: Money | null;
   failureCode?: string | null;
   failureMessage?: string | null;
 }

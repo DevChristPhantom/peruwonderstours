@@ -2,6 +2,7 @@ import type { ConfigService } from '@nestjs/config';
 import type { BookingSettings } from '../modules/booking/application/booking.use-cases.js';
 import type { CartSettings } from '../modules/cart/application/cart.use-cases.js';
 import type { ComplaintSettings } from '../modules/complaints/application/complaint.use-cases.js';
+import type { IzipayGatewayOptions } from '../modules/payments/infrastructure/izipay-payment-gateway.js';
 import { parseRefundTiersJson, type RefundTier } from '../modules/backoffice/domain/cancellation-policy.js';
 import type { AccessSettings } from '../shared/application/access-grants.js';
 import type { DataSource, EnvironmentVariables } from './environment.js';
@@ -13,6 +14,10 @@ export interface AppSettings {
   port: number;
   dataSource: DataSource;
   databaseUrl?: string;
+  /** Conexiones máximas del pool de PostgreSQL. */
+  databasePoolMax: number;
+  /** Caché de destinos y categorías del catálogo público (ms; 0 = sin caché). */
+  catalogCacheMs: number;
   seedDataDir: string;
   demoPricing: boolean;
   corsOrigins: string[];
@@ -23,6 +28,10 @@ export interface AppSettings {
   swaggerEnabled: boolean;
   problemTypeBaseUrl: string;
   sandbox: { webhookSecret: string; checkoutBaseUrl: string; webhookToleranceSeconds: number };
+  /** Pasarela con la que se crean los cobros nuevos. */
+  paymentGateway: EnvironmentVariables['PAYMENT_GATEWAY'];
+  /** Solo con PAYMENT_GATEWAY=izipay. */
+  izipay?: IzipayGatewayOptions;
   booking: BookingSettings;
   cart: CartSettings;
   complaints: ComplaintSettings;
@@ -101,6 +110,8 @@ export function settingsFromEnvironment(env: EnvironmentVariables): AppSettings 
     port: env.PORT,
     dataSource: env.DATA_SOURCE,
     databaseUrl: env.DATABASE_URL,
+    databasePoolMax: env.DATABASE_POOL_MAX,
+    catalogCacheMs: env.CATALOG_CACHE_SECONDS * 1000,
     seedDataDir: env.SEED_DATA_DIR,
     demoPricing: env.DEMO_PRICING,
     corsOrigins: env.WEB_ORIGIN.split(',').map((o) => o.trim().replace(/\/$/, '')).filter(Boolean),
@@ -120,6 +131,19 @@ export function settingsFromEnvironment(env: EnvironmentVariables): AppSettings 
       checkoutBaseUrl: env.SANDBOX_CHECKOUT_BASE_URL,
       webhookToleranceSeconds: env.WEBHOOK_TOLERANCE_SECONDS,
     },
+    paymentGateway: env.PAYMENT_GATEWAY,
+    izipay:
+      env.PAYMENT_GATEWAY === 'izipay'
+        ? {
+            environment: env.IZIPAY_ENV,
+            merchantCode: env.IZIPAY_MERCHANT_CODE ?? '',
+            apiKey: env.IZIPAY_API_KEY ?? '',
+            rsaPublicKey: env.IZIPAY_RSA_PUBLIC_KEY ?? '',
+            hashKey: env.IZIPAY_HASH_KEY ?? '',
+            ruc: env.PROVIDER_RUC,
+            ipnUrl: env.IZIPAY_IPN_URL ?? '',
+          }
+        : undefined,
     booking: {
       policy: {
         defaultDepositPercent: env.DEPOSIT_DEFAULT_PERCENT,
@@ -201,9 +225,10 @@ export function settingsFromEnvironment(env: EnvironmentVariables): AppSettings 
 /** Lee la configuración ya validada por ConfigModule (`validateEnvironment`). */
 export function settingsFromConfigService(config: ConfigService): AppSettings {
   const keys = [
-    'NODE_ENV', 'PORT', 'DATA_SOURCE', 'DATABASE_URL', 'SEED_DATA_DIR', 'DEMO_PRICING', 'WEB_ORIGIN', 'TRUST_PROXY', 'BODY_LIMIT_KB',
+    'NODE_ENV', 'PORT', 'DATA_SOURCE', 'DATABASE_URL', 'DATABASE_POOL_MAX', 'CATALOG_CACHE_SECONDS', 'SEED_DATA_DIR', 'DEMO_PRICING', 'WEB_ORIGIN', 'TRUST_PROXY', 'BODY_LIMIT_KB',
     'THROTTLE_TTL_SECONDS', 'THROTTLE_LIMIT', 'THROTTLE_STRICT_LIMIT', 'SWAGGER_ENABLED',
     'PROBLEM_TYPE_BASE_URL', 'PAYMENT_GATEWAY', 'SANDBOX_WEBHOOK_SECRET', 'SANDBOX_CHECKOUT_BASE_URL', 'WEBHOOK_TOLERANCE_SECONDS',
+    'IZIPAY_ENV', 'IZIPAY_MERCHANT_CODE', 'IZIPAY_API_KEY', 'IZIPAY_RSA_PUBLIC_KEY', 'IZIPAY_HASH_KEY', 'IZIPAY_IPN_URL',
     'DEPOSIT_DEFAULT_PERCENT', 'BALANCE_DUE_DAYS_BEFORE_SERVICE', 'FULL_PAYMENT_WITHIN_DAYS', 'THIRD_PARTY_TICKETS_REQUIRE_FULL',
     'HOLD_TTL_MINUTES', 'CART_TTL_DAYS', 'PRICE_LOCK_MINUTES', 'IDEMPOTENCY_TTL_HOURS', 'TERMS_VERSION', 'CANCELLATION_POLICY_VERSION',
     'PROVIDER_LEGAL_NAME', 'PROVIDER_RUC', 'ESTABLISHMENT_ADDRESS', 'ESTABLISHMENT_CODE', 'COMPLAINT_CONFORMITY_TEXT_VERSION',

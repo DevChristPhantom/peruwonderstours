@@ -93,7 +93,7 @@ export interface Tour {
   destinations: TourDestinationRef[];
 }
 
-export function isTourPublished(tour: Tour): boolean {
+export function isTourPublished(tour: Pick<Tour, 'status'>): boolean {
   return tour.status === 'published';
 }
 

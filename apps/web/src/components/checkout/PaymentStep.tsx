@@ -3,11 +3,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { AlertTriangle, CreditCard, Landmark, Loader2, Lock, MessageCircle, RefreshCw, Smartphone } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type Ref } from "react";
 import { useForm, useWatch } from "react-hook-form";
 
-import { placeBookingAction, prepareCheckoutAction } from "@/app/[locale]/(checkout)/checkout/actions";
+import { confirmCheckoutPaymentAction, placeBookingAction, prepareCheckoutAction } from "@/app/[locale]/(checkout)/checkout/actions";
 import type { UserError } from "@/lib/api/problems";
 import { useFormat } from "@/hooks/useFormat";
 import { useTravelersText } from "@/hooks/useTravelersText";
@@ -15,14 +15,16 @@ import { Link } from "@/i18n/navigation";
 import { useWhatsappTools } from "@/hooks/useWhatsappTools";
 import type { CartLine } from "@/lib/cart/types";
 import type { ActionResult, CheckoutQuote, PlaceResult, PlanView } from "@/lib/checkout/api-checkout";
-import { checkoutPhoneE164 } from "@/lib/checkout/api-checkout";
+import { checkoutPhoneE164, COUNTRY_ISO } from "@/lib/checkout/api-checkout";
 import { lineTotalCents, type PaymentOption } from "@/lib/checkout/payment-plan";
 import { paymentStepSchema, type ContactValues, type PaymentStepValues } from "@/lib/checkout/schemas";
-import type { PaymentMethod, PaymentRequest, PaymentWidgetHandle } from "@/lib/payments/types";
+import { izipayConfig, openIzipayForm, type IzipayResponse } from "@/lib/payments/izipay-checkout";
+import type { PaymentMethod, PaymentProvider, PaymentRequest, PaymentWidgetHandle } from "@/lib/payments/types";
 import { cartHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
 import { useUiStore } from "@/stores/ui-store";
 import { buttonClass } from "@/components/ui/button-styles";
 import { HoldTimer } from "./HoldTimer";
+import { IzipayPaymentWidget } from "./IzipayPaymentWidget";
 import { SandboxPaymentWidget } from "./SandboxPaymentWidget";
 import { ErrorSummary, fieldId, flattenErrors, useErrorText } from "./form-fields";
 
@@ -39,6 +41,12 @@ const METHODS: { value: PaymentMethod; icon: typeof CreditCard }[] = [
 ];
 // En Perú se paga sobre todo con Yape: va primero y elegido; el turista extranjero ve primero la tarjeta.
 const METHODS_PERU = [METHODS[1], METHODS[0], METHODS[2]];
+/** Izipay cobra tarjeta y Yape; PagoEfectivo (CIP) no es parte de su formulario. */
+const forProvider = (methods: typeof METHODS, provider: PaymentProvider) =>
+  provider === "izipay" ? methods.filter((m) => m.value !== "pagoefectivo") : methods;
+
+/** Resultado final del paso de pago. `open`: el formulario de Izipay se cerró sin pagar. */
+type PayResult = ActionResult<{ code: string; payment: "succeeded" | "pending" | "open" }> | null;
 
 /**
  * Notas para la reserva: hotel, necesidades y bebés (la API no tiene tipo de pasajero "bebé").
@@ -64,6 +72,7 @@ export function PaymentStep({
   onPaid,
   headingRef,
   cardFeePercent,
+  provider,
 }: {
   lines: CartLine[];
   contact: ContactValues;
@@ -75,9 +84,13 @@ export function PaymentStep({
   headingRef: Ref<HTMLHeadingElement>;
   /** Comisión por tarjeta (RN-03). null = no configurada → no se muestra ni se menciona. */
   cardFeePercent: number | null;
+  /** Pasarela activa (variable de servidor PAYMENT_PROVIDER). */
+  provider: PaymentProvider;
 }) {
   const t = useTranslations("checkout.payment");
   const tc = useTranslations("checkout");
+  const ti = useTranslations("checkout.izipay");
+  const locale = useLocale();
   const fmt = useFormat();
   const errorText = useErrorText();
   const announce = useUiStore((s) => s.announce);
@@ -88,6 +101,9 @@ export function PaymentStep({
   const apiErrorRef = useRef<HTMLDivElement>(null);
   const [apiError, setApiError] = useState<(UserError & { bookingCode?: string }) | null>(null);
   const [expired, setExpired] = useState(false);
+  const [opening, setOpening] = useState(false);
+  // Candado síncrono: varios clics en el mismo instante llegan antes de que React deshabilite el botón.
+  const paying = useRef(false);
 
   /* ---------- 1. Revalidación de precios y cupos en la API (BFF) ---------- */
   const prepare = useMutation({
@@ -146,12 +162,13 @@ export function PaymentStep({
     if (watchedOption && watchedOption !== option) onOptionChange(watchedOption);
   }, [watchedOption, option, onOptionChange]);
 
-  /* ---------- 2. Reserva + cobro sandbox (Server Action) ---------- */
+  /* ---------- 2. Reserva + cobro (Server Action; Izipay: su pop-up y confirmación firmada) ---------- */
   const pay = useMutation({
-    mutationFn: async (values: PaymentStepValues) => {
+    mutationFn: async (values: PaymentStepValues): Promise<PayResult> => {
       if (!quote || !plan) throw new Error("No quote");
       const confirmation = widgetRef.current ? await widgetRef.current.collect() : { simulate: "approved" as const };
-      return placeBookingAction({
+      if (!confirmation) return null; // el widget ya marcó el campo a corregir
+      const placed = await placeBookingAction({
         option: effectiveOption,
         method: values.method,
         simulate: confirmation.simulate,
@@ -166,11 +183,52 @@ export function PaymentStep({
         acceptPrivacy: values.terms,
         expectedTotalCents: quote.totalCents,
       });
+      if (!placed.ok) return placed;
+      if (placed.data.payment !== "action") return { ok: true, data: { code: placed.data.code, payment: placed.data.payment } };
+
+      const { code, action } = placed.data;
+      let response: IzipayResponse;
+      setOpening(true);
+      try {
+        const config = izipayConfig(
+          action,
+          {
+            firstName: contact.firstName,
+            lastName: contact.lastName,
+            email: contact.email,
+            phone: checkoutPhoneE164(contact.phoneCountry, contact.phone),
+            country: confirmation.buyer?.country ?? COUNTRY_ISO[contact.country] ?? "PE",
+            holder: confirmation.holder!,
+          },
+          values.method,
+          locale,
+          code,
+        );
+        response = await openIzipayForm(action, config);
+      } catch {
+        return { ok: false, error: { code: "izipay-load-failed", kind: "unavailable", message: ti("loadFailed") }, bookingCode: code };
+      } finally {
+        setOpening(false);
+      }
+      const confirmed = await confirmCheckoutPaymentAction({
+        code,
+        paymentId: action.paymentId,
+        payloadHttp: response.payloadHttp,
+        signature: response.signature,
+      });
+      return confirmed.ok ? { ok: true, data: { code, payment: confirmed.data.payment } } : confirmed;
     },
     onSuccess: (res) => {
+      if (!res) return;
+      if (res.ok && res.data.payment === "open") {
+        setApiError({ code: "payment-open", kind: "other", message: ti("notCompleted"), bookingCode: res.data.code });
+        announce(ti("notCompleted"));
+        requestAnimationFrame(() => apiErrorRef.current?.focus());
+        return;
+      }
       if (res.ok) {
         setApiError(null);
-        onPaid(res.data);
+        onPaid({ code: res.data.code, payment: res.data.payment === "succeeded" ? "succeeded" : "pending" });
         return;
       }
       setApiError({ ...res.error, bookingCode: res.bookingCode });
@@ -208,7 +266,9 @@ export function PaymentStep({
       requestAnimationFrame(() => summaryRef.current?.focus());
       return;
     }
-    pay.mutate(values);
+    if (paying.current) return;
+    paying.current = true;
+    pay.mutate(values, { onSettled: () => (paying.current = false) });
   };
 
   /* ---------- Estados de carga / error de la cotización ---------- */
@@ -451,7 +511,7 @@ export function PaymentStep({
         <fieldset className="mt-8">
           <legend className="text-h4 font-medium">{t("method")}</legend>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
-            {(contact.country === "Perú" ? METHODS_PERU : METHODS).map(({ value, icon: Icon }) => (
+            {forProvider(contact.country === "Perú" ? METHODS_PERU : METHODS, provider).map(({ value, icon: Icon }) => (
               <label
                 key={value}
                 className="flex cursor-pointer flex-col gap-1 rounded-lg border-2 border-border p-3 has-[:checked]:border-primary has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring"
@@ -469,7 +529,18 @@ export function PaymentStep({
             ))}
           </div>
           <div className="mt-4">
-            <SandboxPaymentWidget ref={widgetRef} request={request} method={method} disabled={pay.isPending} />
+            {provider === "izipay" ? (
+              <IzipayPaymentWidget
+                ref={widgetRef}
+                request={request}
+                method={method}
+                disabled={pay.isPending}
+                national={contact.country === "Perú"}
+                country={COUNTRY_ISO[contact.country] ?? ""}
+              />
+            ) : (
+              <SandboxPaymentWidget ref={widgetRef} request={request} method={method} disabled={pay.isPending} />
+            )}
           </div>
         </fieldset>
       ) : null}
@@ -556,7 +627,7 @@ export function PaymentStep({
         {pay.isPending ? (
           <>
             <Loader2 aria-hidden size={20} strokeWidth={1.5} className="animate-spin motion-reduce:animate-none" />
-            {t("processing")}
+            {opening ? ti("opening") : t("processing")}
           </>
         ) : (
           payLabel

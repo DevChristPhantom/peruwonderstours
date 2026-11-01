@@ -65,7 +65,9 @@ export function proxy(request: NextRequest) {
   const localMediaOrigin = isHttpLoopback(request.nextUrl)
     ? localDemoMediaOrigin(process.env.PWT_DEMO_BUILD, process.env.PUBLIC_WEB_BASE_URL, process.env.MEDIA_PUBLIC_BASE_URL, process.env.API_BASE_URL)
     : null;
-  const policy = contentSecurityPolicy(nonce, dev, upgradeTransport, localMediaOrigin);
+  // Formulario de Izipay: sus dominios solo se permiten en las rutas con nonce (checkout y reserva).
+  const izipay = sensitive && process.env.PAYMENT_PROVIDER === "izipay";
+  const policy = contentSecurityPolicy(nonce, dev, upgradeTransport, localMediaOrigin, izipay);
   const cspHeader = reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
 
   const requestHeaders = new Headers(request.headers);

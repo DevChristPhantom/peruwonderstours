@@ -1,5 +1,7 @@
 "use server";
 
+import { revalidateTag } from "next/cache";
+
 import { checkout } from "@/lib/api/bookings";
 import { toUserError } from "@/lib/api/problems";
 import { requestLocale } from "@/lib/i18n/request-locale";
@@ -8,16 +10,19 @@ import {
   COUNTRY_ISO,
   placeInputSchema,
   prepareInputSchema,
+  providerConfirmSchema,
   type ActionResult,
   type CheckoutQuote,
   type PlaceResult,
 } from "@/lib/checkout/api-checkout";
-import { CheckoutFailure, failureFrom, payBooking, prepareQuote } from "@/lib/checkout/checkout-service";
+import { CheckoutFailure, confirmProviderPayment, failureFrom, payBooking, prepareQuote } from "@/lib/checkout/checkout-service";
+import type { ProviderPaymentOutcome } from "@/lib/payments/types";
 import {
   clearAttempt,
   clearCartSession,
   newIdempotencyKey,
   readAttempt,
+  readBookingToken,
   readCartSession,
   writeAttempt,
   writeBookingToken,
@@ -113,6 +118,8 @@ export async function placeBookingAction(raw: unknown): Promise<ActionResult<Pla
           { bookingCode: result.booking.code },
         );
       }
+      // La reserva retuvo cupos: el calendario (caché de 60 s compartida) no debe seguir ofreciéndolos.
+      if (!result.replayed) revalidateTag("departures", { expire: 0 });
       attempt = { ...attempt!, booking: { id: result.booking.id, code: result.booking.code, token: result.accessToken } };
       await writeAttempt(attempt);
       await writeBookingToken(result.booking.code, result.accessToken);
@@ -136,10 +143,38 @@ export async function placeBookingAction(raw: unknown): Promise<ActionResult<Pla
       await writeAttempt({ ...attempt!, payKey: undefined });
       throw new CheckoutFailure(toUserError("payment-rejected", undefined, locale), { bookingCode: booking.code });
     }
+    // Izipay: el cobro queda abierto con la misma clave hasta que el formulario responda.
+    if (typeof outcome === "object") return { ok: true, data: { code: booking.code, payment: "action", action: outcome } };
 
     await clearAttempt();
     return { ok: true, data: { code: booking.code, payment: outcome } };
   } catch (error) {
     return fail(error, locale);
+  }
+}
+
+/**
+ * Respuesta del formulario de Izipay → la API verifica la firma y aplica el pago.
+ * `open`: el viajero cerró el formulario sin pagar; la reserva sigue retenida y puede reintentar.
+ */
+export async function confirmCheckoutPaymentAction(raw: unknown): Promise<ActionResult<{ payment: Exclude<ProviderPaymentOutcome, "failed"> }>> {
+  const locale = await requestLocale();
+  const parsed = providerConfirmSchema.safeParse(raw);
+  if (!parsed.success) return { ok: false, error: toUserError("validation-failed", undefined, locale) };
+  const { code, paymentId, payloadHttp, signature } = parsed.data;
+  try {
+    const attempt = await readAttempt();
+    const token = (await readBookingToken(code)) ?? (attempt?.booking?.code === code ? attempt.booking.token : null);
+    if (!token) return { ok: false, error: toUserError("booking-not-found", undefined, locale) };
+    const outcome = await confirmProviderPayment({ bookingCode: code, token, paymentId, payloadHttp, signature });
+    if (outcome === "failed") {
+      if (attempt?.booking?.code === code) await writeAttempt({ ...attempt, payKey: undefined });
+      return { ok: false, error: toUserError("payment-rejected", undefined, locale), bookingCode: code };
+    }
+    if (outcome !== "open" && attempt?.booking?.code === code) await clearAttempt();
+    return { ok: true, data: { payment: outcome } };
+  } catch (error) {
+    const f = failureFrom(error, locale);
+    return { ok: false, error: f.error, bookingCode: code };
   }
 }

@@ -62,6 +62,8 @@ export interface Payment {
   id: string;
   bookingId: string;
   kind: string;
+  /** Pasarela del cobro (`sandbox`, `izipay`...). */
+  provider: string;
   status: PaymentStatus;
   method: PaymentMethod | null;
   amount: ApiMoney;
@@ -70,7 +72,7 @@ export interface Payment {
   succeededAt: string | null;
 }
 
-export type NextAction = { type: "redirect"; url: string } | { type: "sdk"; token: string } | { type: "none" };
+export type NextAction = { type: "redirect"; url: string } | { type: "sdk"; token: string; params?: Record<string, string> } | { type: "none" };
 
 export interface CheckoutInput {
   cartId: string;

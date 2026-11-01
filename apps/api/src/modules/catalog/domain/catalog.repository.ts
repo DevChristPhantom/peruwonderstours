@@ -40,11 +40,16 @@ export interface Page<T> {
   pageSize: number;
 }
 
+/** Lo mínimo de un tour para el calendario de salidas (sin traducciones, fotos ni destinos). */
+export type TourRef = Pick<Tour, 'id' | 'slug' | 'status' | 'bookingCutoffHours'>;
+
 /** Puerto de lectura del catálogo publicado. */
 export interface CatalogRepository {
   searchTours(criteria: TourSearchCriteria): Promise<Page<TourListing>>;
   /** Busca por slug canónico o por slug de la traducción en `locale`. Incluye borradores. */
   findTourBySlug(slug: string, locale: Locale): Promise<Tour | null>;
+  /** Igual que `findTourBySlug` pero solo con los campos de `TourRef` (una consulta liviana). */
+  findTourRefBySlug(slug: string, locale: Locale): Promise<TourRef | null>;
   findTourById(id: string): Promise<Tour | null>;
   findRates(tourId: string): Promise<Rate[]>;
   listDestinations(): Promise<Destination[]>;

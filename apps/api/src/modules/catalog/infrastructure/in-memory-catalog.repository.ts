@@ -5,6 +5,7 @@ import type {
   InventoryRepository,
   Page,
   TourListing,
+  TourRef,
   TourSearchCriteria,
 } from '../domain/catalog.repository.js';
 import { Departure, type InventoryHold } from '../domain/departure.js';
@@ -85,6 +86,11 @@ export class InMemoryCatalogRepository implements CatalogRepository {
       this.data.tours.find((t) => t.translations.some((tr) => tr.locale === locale && tr.slug === slug)) ??
       this.data.tours.find((t) => t.translations.some((tr) => tr.slug === slug));
     return Promise.resolve(tour ?? null);
+  }
+
+  async findTourRefBySlug(slug: string, locale: string): Promise<TourRef | null> {
+    const tour = await this.findTourBySlug(slug, locale);
+    return tour ? { id: tour.id, slug: tour.slug, status: tour.status, bookingCutoffHours: tour.bookingCutoffHours } : null;
   }
 
   findTourById(id: string): Promise<Tour | null> {

@@ -20,6 +20,7 @@ import { ApiError } from "@/lib/api/client";
 import type { Locale } from "@/i18n/routing";
 import { cartIssueMessage, toUserError, type UserError } from "@/lib/api/problems";
 import { env } from "@/lib/env";
+import type { ProviderAction, ProviderPaymentOutcome } from "@/lib/payments/types";
 
 import type { CheckoutQuote, PlanView, PrepareInput, QuoteIssue, QuoteLine } from "./api-checkout";
 import { readAttempt, readCartSession, writeCartSession, clearCartSession, clearAttempt } from "./session";
@@ -248,17 +249,29 @@ export async function prepareQuote(input: PrepareInput, locale: Locale = "es"): 
   return { ...base, plans, booking: null };
 }
 
-/** Crea el cobro de la reserva y lo confirma con la pasarela (sandbox) desde el servidor. */
+/** Único origen aceptado para el SDK de Izipay (la URL llega de la API, pero no se carga cualquier script). */
+const IZIPAY_SDK_URL = /^https:\/\/(sandbox-)?checkout\.izipay\.pe\/payments\/v1\/js\/index\.js$/;
+
+/**
+ * Crea el cobro de la reserva. Sandbox: lo confirma desde el servidor con el resultado simulado.
+ * Izipay: devuelve la acción para abrir su formulario en el navegador (`ProviderAction`).
+ */
 export async function payBooking(params: {
   bookingCode: string;
   token: string;
   payKey: string;
   method: PaymentMethod;
   simulate: "approved" | "rejected" | "pending";
-}): Promise<"succeeded" | "pending" | "failed"> {
-  const { payment } = await createPayment(params.bookingCode, params.token, params.payKey, params.method);
+}): Promise<"succeeded" | "pending" | "failed" | ProviderAction> {
+  const { payment, nextAction } = await createPayment(params.bookingCode, params.token, params.payKey, params.method);
   if (payment.status === "succeeded") return "succeeded";
   if (payment.status === "failed" || payment.status === "cancelled" || payment.status === "expired") return "failed";
+  if (nextAction.type === "sdk") {
+    if (payment.provider !== "izipay" || !nextAction.params || !IZIPAY_SDK_URL.test(nextAction.params.scriptUrl ?? "")) {
+      throw new Error(`Acción de pago no soportada (${payment.provider}).`);
+    }
+    return { provider: "izipay", paymentId: payment.id, token: nextAction.token, params: nextAction.params };
+  }
   // PagoEfectivo (CIP): el intento queda pendiente hasta que el proveedor avise por webhook.
   if (params.simulate === "pending") return "pending";
   const confirmed = await confirmPayment(params.bookingCode, payment.id, params.token, {
@@ -267,4 +280,23 @@ export async function payBooking(params: {
   if (confirmed.status === "succeeded") return "succeeded";
   if (confirmed.status === "failed" || confirmed.status === "cancelled" || confirmed.status === "expired") return "failed";
   return "pending";
+}
+
+/**
+ * Confirma en la API la respuesta firmada del formulario de Izipay (la API verifica la firma).
+ * Sin `payloadHttp`/`signature` (ventana cerrada, error de red) la API consulta el estado a Izipay.
+ */
+export async function confirmProviderPayment(params: {
+  bookingCode: string;
+  token: string;
+  paymentId: string;
+  payloadHttp?: string;
+  signature?: string;
+}): Promise<ProviderPaymentOutcome> {
+  const confirmation: Record<string, string> = params.payloadHttp && params.signature ? { payloadHttp: params.payloadHttp, signature: params.signature } : {};
+  const payment = await confirmPayment(params.bookingCode, params.paymentId, params.token, confirmation);
+  if (payment.status === "succeeded") return "succeeded";
+  if (payment.status === "failed" || payment.status === "cancelled" || payment.status === "expired") return "failed";
+  if (payment.status === "pending" || payment.status === "authorized") return "pending";
+  return "open";
 }

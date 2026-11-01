@@ -15,5 +15,5 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/checkout
 export default async function CheckoutPage() {
   // Render dinámico: la CSP con nonce (H-02) exige HTML generado por petición.
   await connection();
-  return <CheckoutFlow cardFeePercent={env.CARD_FEE_PERCENT ?? null} />;
+  return <CheckoutFlow cardFeePercent={env.CARD_FEE_PERCENT ?? null} provider={env.PAYMENT_PROVIDER} />;
 }

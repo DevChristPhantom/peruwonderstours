@@ -406,6 +406,44 @@
       "rejected": "Declined",
       "pending": "Pending (CIP)"
     },
+    "izipay": {
+      "holderLegend": "Payment holder details",
+      "holderIntro": "Izipay requires them to validate your {method} payment. When you press Pay, its secure window opens so you can enter your card or Yape.",
+      "firstName": "Holder's first name",
+      "lastName": "Holder's last name",
+      "phone": "Mobile phone",
+      "phoneHint": "With country code, e.g. +1 555 123 4567.",
+      "country": "Country",
+      "countryPlaceholder": "Choose your country",
+      "documentType": "Document type",
+      "documentTypes": {
+        "DNI": "DNI (Peruvian ID)",
+        "CE": "Foreigner ID card (CE)",
+        "PASAPORTE": "Passport",
+        "OTROS": "Other"
+      },
+      "document": "Document number",
+      "street": "Billing address",
+      "city": "City",
+      "state": "Region or state",
+      "postalCode": "Postal code",
+      "postalCodeHint": "Numbers only. If yours has letters, enter 00000.",
+      "errors": {
+        "firstName": "Enter the first name (letters only).",
+        "lastName": "Enter the last name (letters only).",
+        "phone": "Enter the mobile number with country code (7 to 15 digits).",
+        "country": "Choose your country.",
+        "document": "Check the number: DNI has 8 digits; passport or other, 8 to 12 letters or numbers.",
+        "street": "Enter the address (5 to 40 characters).",
+        "city": "Enter the city (no numbers).",
+        "state": "Enter the region or state (no numbers).",
+        "postalCode": "Enter 5 to 10 numbers."
+      },
+      "secure": "Izipay processes the payment; peruwonderstours never sees or stores your card details.",
+      "opening": "Opening the Izipay payment window…",
+      "loadFailed": "We could not open the Izipay payment window. Check your connection or turn off your ad blocker and try again. You were not charged.",
+      "notCompleted": "The payment was not completed in Izipay. Your booking is still saved: you can try again."
+    },
     "payBooking": {
       "succeeded": "Payment recorded. We updated your booking.",
       "pending": "Payment pending confirmation.",
