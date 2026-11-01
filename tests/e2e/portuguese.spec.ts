@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { firstBookableDate } from './departure';
 
 const origin = process.env.E2E_WEB_BASE_URL ?? 'http://localhost:3100';
 const api = process.env.API_BASE_URL ?? 'http://localhost:3001/api/v1';
@@ -57,7 +58,7 @@ test('Portuguese selector, search and untranslated catalog fallback remain consi
 test('Portuguese departure selection, cart and checkout retain Brazilian form labels', async ({ page }) => {
   await page.goto(`/pt/tours/${slug}`);
   const booking = page.locator('#reservar-panel');
-  const date = booking.locator('button[data-date]:not([aria-disabled="true"])').first();
+  const date = await firstBookableDate(booking);
   await expect(date).toBeVisible();
   await date.click();
   await booking.getByRole('button', { name: 'Adicionar ao carrinho', exact: true }).click();

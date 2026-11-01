@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { firstBookableDate } from "./departure";
 
 const origin = process.env.E2E_WEB_BASE_URL ?? "http://localhost:3100";
 if (!process.env.CI || !["localhost", "127.0.0.1"].includes(new URL(origin).hostname)) throw new Error("Payments browser checks require disposable CI servers.");
@@ -23,7 +24,7 @@ for (const outcome of ["approved", "pending", "rejected"] as const) test(`checko
     });
     const booking = page.locator("#reservar-panel");
     await expect(booking).toBeVisible();
-    await booking.locator('button[data-date]:not([aria-disabled="true"])').first().click();
+    await (await firstBookableDate(booking)).click();
     await booking.getByRole("button", { name: "Agregar al carrito", exact: true }).click();
     await expect(booking.getByRole("button", { name: "Agregado", exact: true })).toBeVisible();
     await page.goto(`${origin}/es/carrito`);

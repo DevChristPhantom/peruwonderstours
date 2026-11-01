@@ -1,6 +1,6 @@
 import { createHmac } from "node:crypto";
 import { resolve } from "node:path";
-import { test, expect } from "@playwright/test";
+import { test, expect, type Dialog } from "@playwright/test";
 
 const origin = process.env.E2E_ADMIN_BASE_URL ?? "http://127.0.0.1:3102";
 const local = new URL(origin);
@@ -266,115 +266,140 @@ test("admin: MFA, navigation, catalog drafts, native banners and logout", async 
       await page.reload();
       await expect(page.locator("main header").getByText("Archivado", { exact: true })).toBeVisible();
     });
-    await measured("Upload, activate, order and deactivate a native banner", async () => {
-      await page.goto(`${origin}/banners`);
-      const upload = page.locator("form").filter({ has: page.getByRole("button", { name: "Subir como inactivo" }) });
-      const title = `E2E banner ${suffix}`;
-      await upload.getByLabel("Título", { exact: true }).fill(title);
-      await upload.getByLabel("Imagen del banner").setInputFiles({ name: "fixture.png", mimeType: "image/png", buffer: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aBaoAAAAASUVORK5CYII=", "base64") });
-      await upload.getByLabel("Efecto", { exact: true }).selectOption("water");
-      await upload.getByRole("button", { name: "Subir como inactivo" }).click();
-      await expect(page.getByRole("status")).toContainText("Archivo guardado como inactivo");
-      const row = page.locator("form").filter({ has: page.getByText(title, { exact: true }) });
-      await expect(row.getByText("Inactivo", { exact: true })).toBeVisible();
-      await row.getByLabel("Mostrar en portada").check();
-      await row.getByLabel("La imagen ya contiene el título").check();
-      await row.getByLabel("Orden", { exact: true }).fill("7");
-      await row.getByRole("button", { name: "Guardar cambios" }).click();
-      await expect(row.getByText("Activo", { exact: true })).toBeVisible();
-      await page.getByRole("button", { name: "Recargar", exact: true }).click();
-      await expect(row.getByLabel("Orden", { exact: true })).toHaveValue("7");
-      await expect(row.getByLabel("La imagen ya contiene el título")).toBeChecked();
-      const publicPage = await page.context().newPage();
-      const webOrigin = process.env.E2E_WEB_BASE_URL ?? "http://localhost:3100";
-      try {
-        await expect.poll(async () => {
-          await publicPage.goto(`${webOrigin}/es`);
-          return publicPage.locator('[data-effect="water"]').count();
-        }, { timeout: 30000, intervals: [1000] }).toBe(1);
-        const water = publicPage.locator('[data-effect="water"]');
-        await expect(water).toHaveAttribute('data-active', 'true');
-        const rect = (await water.boundingBox())!;
-        await publicPage.mouse.move(rect.x + rect.width * .2, rect.y + rect.height * .58);
-        await publicPage.mouse.move(rect.x + rect.width * .8, rect.y + rect.height * .58);
-        await expect.poll(() => water.locator('canvas').evaluate((canvas: HTMLCanvasElement) =>
-          canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.height).data.some((value, index) => index % 4 === 3 && value > 0)
-        )).toBe(true);
-        await expect.poll(() => water.locator('canvas').locator('..').evaluate(scene =>
-          new DOMMatrixReadOnly(getComputedStyle(scene.firstElementChild!).transform).m41
-        )).toBeLessThan(-1);
-        await publicPage.emulateMedia({ reducedMotion: 'reduce' });
-        await expect(water).toHaveAttribute('data-active', 'false');
-        await publicPage.emulateMedia({ reducedMotion: 'no-preference' });
-        await row.getByLabel('Efecto', { exact: true }).selectOption('clouds');
-        await row.getByRole('button', { name: 'Guardar cambios' }).click();
-        await expect(page.getByRole('status')).toContainText('Banner actualizado');
-        // The cloud layers mount after hydration and the motion check (~1-2 s): give each reload time before counting.
-        const clouds = publicPage.locator('[data-effect="clouds"] i');
-        await expect.poll(async () => {
-          await publicPage.reload();
-          await clouds.first().waitFor({ timeout: 5000 }).catch(() => undefined);
-          return clouds.count();
-        }, { timeout: 45000, intervals: [1000] }).toBe(3);
-      } finally { await publicPage.close(); }
-      await row.getByLabel("Mostrar en portada").uncheck();
-      await row.getByRole("button", { name: "Guardar cambios" }).click();
-      await expect(row.getByText("Inactivo", { exact: true })).toBeVisible();
-    });
-    await measured("Upload MP4 with poster, inspect private and public ranges, activate and deactivate", async () => {
-      const upload = page.locator('form').filter({ has: page.getByRole('button', { name: 'Subir como inactivo', exact: true }) });
-      const title = `E2E video ${suffix}`;
-      await upload.getByLabel('¿Qué quieres subir?', { exact: true }).selectOption('video');
-      await upload.getByLabel('Título', { exact: true }).fill(title);
-      await upload.getByLabel('Video del banner', { exact: true }).setInputFiles(resolve('apps/web/public/hero-video/peru-wonders-720.mp4'));
-      await upload.getByLabel('Imagen de portada del video (opcional)', { exact: true }).setInputFiles(resolve('apps/web/public/hero-video/peru-wonders-poster.webp'));
-      await upload.getByRole('button', { name: 'Subir como inactivo', exact: true }).click();
-      // Large video uploads cross BFF and API; give them a realistic window.
-      await expect(page.getByRole('status')).toContainText('Archivo guardado como inactivo', { timeout: 60_000 });
-      const row = page.locator('form').filter({ has: page.getByText(title, { exact: true }) });
-      const preview = row.locator('video');
-      await expect(row.getByText('Inactivo', { exact: true })).toBeVisible();
-      await expect.poll(() => preview.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(1);
-      const privateUrl = new URL((await preview.getAttribute('src'))!, origin);
-      const id = privateUrl.searchParams.get('id')!;
-      const range = await page.request.get(privateUrl.href, { headers: { Range: 'bytes=0-1023' } });
-      expect(range.status()).toBe(206);
-      expect(range.headers()['content-type']).toContain('video/mp4');
-      expect(range.headers()['content-range']).toMatch(/^bytes 0-1023\/\d+$/);
-      expect((await range.body()).byteLength).toBe(1024);
-      await preview.evaluate((video: HTMLVideoElement) => video.play());
-      await expect.poll(() => preview.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0);
-      await preview.evaluate((video: HTMLVideoElement) => video.pause());
-      await page.screenshot({ path: info.outputPath('admin-video-preview.png'), fullPage: true });
-      await row.getByLabel('Mostrar en portada').check();
-      await row.getByRole('button', { name: 'Guardar cambios' }).click();
-      await expect(row.getByText('Activo', { exact: true })).toBeVisible();
-      const webOrigin = process.env.E2E_WEB_BASE_URL ?? 'http://localhost:3100';
-      const publicPage = await page.context().newPage();
-      try {
-        await expect.poll(async () => {
-          await publicPage.goto(`${webOrigin}/es`);
-          if (await publicPage.locator('[data-effect="video"] video').count() === 0) return 0;
-          await expect(publicPage.locator('[data-effect="video"] video')).toHaveAttribute('src', /.+/);
-          return publicPage.locator(`[data-effect="video"] video[src*="${id}"]`).count();
-        }, { timeout: 30000, intervals: [1000] }).toBe(1);
-        const active = publicPage.locator('[data-effect="video"] video');
-        await expect.poll(() => active.evaluate((video: HTMLVideoElement) => !video.paused && video.readyState >= 2)).toBe(true);
-        const publicRange = await publicPage.request.get(`${webOrigin}/api/hero-banners/${id}/video`, { headers: { Range: 'bytes=0-1023' } });
-        expect(publicRange.status()).toBe(206);
-        expect(publicRange.headers()['content-range']).toMatch(/^bytes 0-1023\/\d+$/);
-        expect((await publicRange.body()).byteLength).toBe(1024);
-        await publicPage.screenshot({ path: info.outputPath('hero-admin-uploaded-video.png') });
-        await row.getByLabel('Mostrar en portada').uncheck();
-        await row.getByRole('button', { name: 'Guardar cambios' }).click();
+    // Banners persist in the shared test DB and any row makes the public hero `configured`,
+    // replacing the default video hero for specs that run later. Always delete them again.
+    let bannerFailure: unknown;
+    try {
+      await measured("Upload, activate, order and deactivate a native banner", async () => {
+        await page.goto(`${origin}/banners`);
+        const upload = page.locator("form").filter({ has: page.getByRole("button", { name: "Subir como inactivo" }) });
+        const title = `E2E banner ${suffix}`;
+        await upload.getByLabel("Título", { exact: true }).fill(title);
+        await upload.getByLabel("Imagen del banner").setInputFiles({ name: "fixture.png", mimeType: "image/png", buffer: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aBaoAAAAASUVORK5CYII=", "base64") });
+        await upload.getByLabel("Efecto", { exact: true }).selectOption("water");
+        await upload.getByRole("button", { name: "Subir como inactivo" }).click();
+        await expect(page.getByRole("status")).toContainText("Archivo guardado como inactivo");
+        const row = page.locator("form").filter({ has: page.getByText(title, { exact: true }) });
+        await expect(row.getByText("Inactivo", { exact: true })).toBeVisible();
+        await row.getByLabel("Mostrar en portada").check();
+        await row.getByLabel("La imagen ya contiene el título").check();
+        await row.getByLabel("Orden", { exact: true }).fill("7");
+        await row.getByRole("button", { name: "Guardar cambios" }).click();
+        await expect(row.getByText("Activo", { exact: true })).toBeVisible();
+        await page.getByRole("button", { name: "Recargar", exact: true }).click();
+        await expect(row.getByLabel("Orden", { exact: true })).toHaveValue("7");
+        await expect(row.getByLabel("La imagen ya contiene el título")).toBeChecked();
+        const publicPage = await page.context().newPage();
+        const webOrigin = process.env.E2E_WEB_BASE_URL ?? "http://localhost:3100";
+        try {
+          await expect.poll(async () => {
+            await publicPage.goto(`${webOrigin}/es`);
+            return publicPage.locator('[data-effect="water"]').count();
+          }, { timeout: 30000, intervals: [1000] }).toBe(1);
+          const water = publicPage.locator('[data-effect="water"]');
+          await expect(water).toHaveAttribute('data-active', 'true');
+          const rect = (await water.boundingBox())!;
+          await publicPage.mouse.move(rect.x + rect.width * .2, rect.y + rect.height * .58);
+          await publicPage.mouse.move(rect.x + rect.width * .8, rect.y + rect.height * .58);
+          await expect.poll(() => water.locator('canvas').evaluate((canvas: HTMLCanvasElement) =>
+            canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.height).data.some((value, index) => index % 4 === 3 && value > 0)
+          )).toBe(true);
+          await expect.poll(() => water.locator('canvas').locator('..').evaluate(scene =>
+            new DOMMatrixReadOnly(getComputedStyle(scene.firstElementChild!).transform).m41
+          )).toBeLessThan(-1);
+          await publicPage.emulateMedia({ reducedMotion: 'reduce' });
+          await expect(water).toHaveAttribute('data-active', 'false');
+          await publicPage.emulateMedia({ reducedMotion: 'no-preference' });
+          await row.getByLabel('Efecto', { exact: true }).selectOption('clouds');
+          await row.getByRole('button', { name: 'Guardar cambios' }).click();
+          await expect(page.getByRole('status')).toContainText('Banner actualizado');
+          // The cloud layers mount after hydration and the motion check (~1-2 s): give each reload time before counting.
+          const clouds = publicPage.locator('[data-effect="clouds"] i');
+          await expect.poll(async () => {
+            await publicPage.reload();
+            await clouds.first().waitFor({ timeout: 5000 }).catch(() => undefined);
+            return clouds.count();
+          }, { timeout: 45000, intervals: [1000] }).toBe(3);
+        } finally { await publicPage.close(); }
+        await row.getByLabel("Mostrar en portada").uncheck();
+        await row.getByRole("button", { name: "Guardar cambios" }).click();
+        await expect(row.getByText("Inactivo", { exact: true })).toBeVisible();
+      });
+      await measured("Upload MP4 with poster, inspect private and public ranges, activate and deactivate", async () => {
+        const upload = page.locator('form').filter({ has: page.getByRole('button', { name: 'Subir como inactivo', exact: true }) });
+        const title = `E2E video ${suffix}`;
+        await upload.getByLabel('¿Qué quieres subir?', { exact: true }).selectOption('video');
+        await upload.getByLabel('Título', { exact: true }).fill(title);
+        await upload.getByLabel('Video del banner', { exact: true }).setInputFiles(resolve('apps/web/public/hero-video/peru-wonders-720.mp4'));
+        await upload.getByLabel('Imagen de portada del video (opcional)', { exact: true }).setInputFiles(resolve('apps/web/public/hero-video/peru-wonders-poster.webp'));
+        await upload.getByRole('button', { name: 'Subir como inactivo', exact: true }).click();
+        // Large video uploads cross BFF and API; give them a realistic window.
+        await expect(page.getByRole('status')).toContainText('Archivo guardado como inactivo', { timeout: 60_000 });
+        const row = page.locator('form').filter({ has: page.getByText(title, { exact: true }) });
+        const preview = row.locator('video');
         await expect(row.getByText('Inactivo', { exact: true })).toBeVisible();
-        await expect.poll(async () => {
-          await publicPage.reload();
-          return publicPage.locator('[data-effect="none"] img').count();
-        }, { timeout: 30000, intervals: [1000] }).toBe(1);
-        await expect(publicPage.locator('[data-effect="video"] video')).toHaveCount(0);
-      } finally { await publicPage.close(); }
-    });
+        await expect.poll(() => preview.evaluate((video: HTMLVideoElement) => video.readyState)).toBeGreaterThanOrEqual(1);
+        const privateUrl = new URL((await preview.getAttribute('src'))!, origin);
+        const id = privateUrl.searchParams.get('id')!;
+        const range = await page.request.get(privateUrl.href, { headers: { Range: 'bytes=0-1023' } });
+        expect(range.status()).toBe(206);
+        expect(range.headers()['content-type']).toContain('video/mp4');
+        expect(range.headers()['content-range']).toMatch(/^bytes 0-1023\/\d+$/);
+        expect((await range.body()).byteLength).toBe(1024);
+        await preview.evaluate((video: HTMLVideoElement) => video.play());
+        await expect.poll(() => preview.evaluate((video: HTMLVideoElement) => video.currentTime)).toBeGreaterThan(0);
+        await preview.evaluate((video: HTMLVideoElement) => video.pause());
+        await page.screenshot({ path: info.outputPath('admin-video-preview.png'), fullPage: true });
+        await row.getByLabel('Mostrar en portada').check();
+        await row.getByRole('button', { name: 'Guardar cambios' }).click();
+        await expect(row.getByText('Activo', { exact: true })).toBeVisible();
+        const webOrigin = process.env.E2E_WEB_BASE_URL ?? 'http://localhost:3100';
+        const publicPage = await page.context().newPage();
+        try {
+          await expect.poll(async () => {
+            await publicPage.goto(`${webOrigin}/es`);
+            if (await publicPage.locator('[data-effect="video"] video').count() === 0) return 0;
+            await expect(publicPage.locator('[data-effect="video"] video')).toHaveAttribute('src', /.+/);
+            return publicPage.locator(`[data-effect="video"] video[src*="${id}"]`).count();
+          }, { timeout: 30000, intervals: [1000] }).toBe(1);
+          const active = publicPage.locator('[data-effect="video"] video');
+          await expect.poll(() => active.evaluate((video: HTMLVideoElement) => !video.paused && video.readyState >= 2)).toBe(true);
+          const publicRange = await publicPage.request.get(`${webOrigin}/api/hero-banners/${id}/video`, { headers: { Range: 'bytes=0-1023' } });
+          expect(publicRange.status()).toBe(206);
+          expect(publicRange.headers()['content-range']).toMatch(/^bytes 0-1023\/\d+$/);
+          expect((await publicRange.body()).byteLength).toBe(1024);
+          await publicPage.screenshot({ path: info.outputPath('hero-admin-uploaded-video.png') });
+          await row.getByLabel('Mostrar en portada').uncheck();
+          await row.getByRole('button', { name: 'Guardar cambios' }).click();
+          await expect(row.getByText('Inactivo', { exact: true })).toBeVisible();
+          await expect.poll(async () => {
+            await publicPage.reload();
+            return publicPage.locator('[data-effect="none"] img').count();
+          }, { timeout: 30000, intervals: [1000] }).toBe(1);
+          await expect(publicPage.locator('[data-effect="video"] video')).toHaveCount(0);
+        } finally { await publicPage.close(); }
+      });
+    } catch (error) { bannerFailure = error; }
+    await measured("Delete E2E banners so the public hero is unconfigured again", async () => {
+      await page.goto(`${origin}/banners`);
+      const e2eTitle = /^E2E (banner|video) \d+$/;
+      const accept = (dialog: Dialog) => void dialog.accept();
+      page.on("dialog", accept);
+      try {
+        const rows = page.locator("form").filter({ has: page.getByText(e2eTitle) });
+        while (await rows.count() > 0) {
+          const title = (await rows.first().getByText(e2eTitle).first().textContent())!;
+          await rows.first().getByRole("button", { name: "Eliminar", exact: true }).click();
+          await expect(page.getByRole("status")).toContainText(`Banner «${title}» eliminado.`);
+          await expect(page.locator("form").filter({ has: page.getByText(title, { exact: true }) })).toHaveCount(0);
+        }
+      } finally { page.off("dialog", accept); }
+      const listed = await page.request.get(`${origin}/bff/banners`);
+      expect(listed.status()).toBe(200);
+      const { data } = await listed.json() as { data: { title: string }[] };
+      expect(data.filter(banner => e2eTitle.test(banner.title))).toEqual([]);
+    }).catch((error: unknown) => { if (!bannerFailure) throw error; });
+    if (bannerFailure) throw bannerFailure;
     await measured("Logout revokes browser access", async () => {
       await page.getByRole("button", { name: "Salir", exact: true }).click();
       await expect(page).toHaveURL(/\/login/);

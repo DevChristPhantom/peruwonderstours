@@ -1,4 +1,5 @@
 import { test, expect, type Page, type TestInfo } from '@playwright/test';
+import { firstBookableDate } from './departure';
 
 const origin = process.env.E2E_WEB_BASE_URL ?? 'http://localhost:3100';
 if (!process.env.CI || !['localhost', '127.0.0.1'].includes(new URL(origin).hostname)) throw new Error('Browser checks run only against disposable CI services.');
@@ -89,7 +90,7 @@ test('Date, booking, cart edit/remove/undo and checkout validation work', async 
   await booking.getByRole('button', { name: 'Agregar al carrito', exact: true }).click();
   await expect(booking.getByRole('alert')).toContainText('Elige una fecha');
   await measured(info, 'Choose available departure', async () => {
-    const date = booking.locator('button[data-date]:not([aria-disabled="true"])').first(); await expect(date).toBeVisible(); await date.click();
+    const date = await firstBookableDate(booking); await expect(date).toBeVisible(); await date.click();
     await expect(date.locator('..')).toHaveAttribute('aria-selected', 'true');
   });
   await booking.getByRole('button', { name: 'Agregar un adulto', exact: true }).click();

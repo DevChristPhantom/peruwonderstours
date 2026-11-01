@@ -1,5 +1,6 @@
 import { createHmac } from "node:crypto";
 import { test, expect } from "@playwright/test";
+import { firstBookableDate } from "./departure";
 const web = process.env.E2E_WEB_BASE_URL ?? "http://localhost:3100";
 const admin = process.env.E2E_ADMIN_BASE_URL ?? "http://localhost:3102";
 if (process.env.CI !== "true" || process.env.MAIL_TRANSPORT !== "memory" || process.env.NEXT_PUBLIC_PAYMENTS_MODE !== "sandbox"
@@ -35,7 +36,7 @@ test("admin finance: record and void own simulated payment, then cancel own book
     await measured("Create own unpaid reservation with a terminal rejected sandbox attempt", async () => {
       await page.goto(`${web}/es/tours/tour-islas-de-los-uros-y-taquile-full-day`);
       const booking = page.locator("#reservar-panel");
-      await booking.locator('button[data-date]:not([aria-disabled="true"])').first().click();
+      await (await firstBookableDate(booking)).click();
       await booking.getByRole("button", { name: "Agregar al carrito", exact: true }).click();
       await expect(booking.getByRole("button", { name: "Agregado", exact: true })).toBeVisible();
       await page.goto(`${web}/es/carrito`);

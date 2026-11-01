@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { firstBookableDate } from './departure';
 const origin = process.env.E2E_WEB_BASE_URL ?? 'http://localhost:3100';
 if (!process.env.CI || !['localhost','127.0.0.1'].includes(new URL(origin).hostname)) throw new Error('Mobile browser checks require disposable CI services.');
 
@@ -53,7 +54,7 @@ test('Mobile navigation, product hierarchy, traveler picker and static resources
       await page.locator('a[href="#reservar"]').tap();
       await expect(page).toHaveURL(/#reservar$/);
       const booking=page.locator('#reservar');
-      const date=booking.locator('button[data-date]:not([aria-disabled="true"])').first();
+      const date=await firstBookableDate(booking);
       await date.tap();
       await booking.getByRole('button',{name:'Agregar al carrito',exact:true}).tap();
       await expect(booking.getByRole('button',{name:'Agregado',exact:true})).toBeVisible();
