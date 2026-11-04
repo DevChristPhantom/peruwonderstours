@@ -1141,7 +1141,7 @@
     "whatsappMessage": "Hi Peru Wonders Tours, I opened a link on your website that doesn't work: {path}"
   },
   "price": {
-    "from": "From <amount></amount> per adult",
+    "from": "From <amount></amount> per adult",
     "fromShort": "From <amount></amount>",
     "onRequest": "Price on request",
     "toQuote": "To be quoted",

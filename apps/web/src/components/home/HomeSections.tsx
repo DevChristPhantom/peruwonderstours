@@ -76,16 +76,19 @@ export async function WhyUsSection({
               </div>
             </dl>
             <ul
-              className={`grid gap-8 sm:grid-cols-2 ${photo ? '' : 'lg:grid-cols-4'}`}
+              // md y no sm: aquí `sm` empieza en 375 px y en un celular cada tarjeta quedaba de 163 px.
+              className={`grid gap-6 md:grid-cols-2 ${photo ? '' : 'lg:grid-cols-4'}`}
               data-reveal-stagger
             >
               {reasons.map(({ icon: Icon, key }) => (
-                <li key={key} className="rounded-xl border border-border bg-surface p-5">
-                  <span className="inline-flex size-12 items-center justify-center rounded-full bg-surface-muted text-primary">
+                <li key={key} className="flex gap-4 rounded-xl border border-border bg-surface p-5 md:block">
+                  <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-full bg-surface-muted text-primary">
                     <Icon aria-hidden size={22} strokeWidth={1.5} />
                   </span>
-                  <h3 className="mt-3 text-h4 font-medium">{t(`reasons.${key}.title`)}</h3>
-                  <p className="mt-1 text-foreground-muted">{t(`reasons.${key}.text`)}</p>
+                  <div>
+                    <h3 className="text-h4 font-medium md:mt-3">{t(`reasons.${key}.title`)}</h3>
+                    <p className="mt-1 text-foreground-muted">{t(`reasons.${key}.text`)}</p>
+                  </div>
                 </li>
               ))}
             </ul>

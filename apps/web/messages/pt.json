@@ -1141,7 +1141,7 @@
     "whatsappMessage": "Olá Peru Wonders Tours, abri um link do site de vocês que não funciona: {path}"
   },
   "price": {
-    "from": "A partir de <amount></amount> por adulto",
+    "from": "A partir de <amount></amount> por adulto",
     "fromShort": "A partir de <amount></amount>",
     "onRequest": "Preço sob consulta",
     "toQuote": "Solicitar orçamento",

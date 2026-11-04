@@ -31,7 +31,8 @@ export function formatMoney(amountCents: number, currency: Currency, locale: Loc
     new Intl.NumberFormat(INTL_LOCALE[locale], { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
   ) as Intl.NumberFormat;
   const value = number.format(amountCents / 100);
-  return `${currency === "PEN" ? "S/" : "USD"} ${value}`;
+  // Espacio no separable: "S/" nunca queda al final de una línea y el monto en la siguiente.
+  return `${currency === "PEN" ? "S/" : "USD"} ${value}`;
 }
 
 /** Fecha calendario `YYYY-MM-DD` (sin hora) → mediodía en Lima para evitar saltos de día. */
