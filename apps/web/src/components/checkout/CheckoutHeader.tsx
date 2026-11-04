@@ -19,7 +19,7 @@ export function CheckoutHeader() {
             if (!window.confirm(t("leaveConfirm"))) e.preventDefault();
           }}
         >
-          <BrandLogo />
+          <span className="rounded-lg bg-[var(--pwt-hero-panel)] px-2 py-1"><BrandLogo /></span>
         </Link>
         <p className="inline-flex items-center gap-2 text-sm text-success">
           <Lock aria-hidden size={16} strokeWidth={1.5} />

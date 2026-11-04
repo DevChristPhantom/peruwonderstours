@@ -183,3 +183,7 @@ tags:
 - 2026-10-14: tarjetas de recursos oficiales con carrusel transform y bordes difuminados, pausa y acceso teclado; WhatsApp con símbolo y Libro con aviso INDECOPI Anexo III. Formularios preservados. Ver [[decisions/ADR-0009-recursos-oficiales-y-reclamaciones]].
 
 - 2026-10-14: venta priorizada en home; recursos/aviso movidos tras CTA. Suite de navegador Chromium con PostgreSQL y MFA ficticios en CI para usuario/admin, capturas y tiempos por acción. Ejecución pendiente hasta disponer de resultados. Ver [[decisions/ADR-0010-prioridad-comercial-y-pruebas]].
+
+- 2026-11-01: Logo aprobado en dos líneas (PeruWonders / Tours) integrado en BrandLogo, encabezado y pie. WebP transparente local de 55.810 bytes, 1000x209, dimensiones responsivas existentes conservadas. ESLint del componente OK; revisión independiente estática aprobada.
+
+- 2026-11-01: Logo en dos líneas extendido al login/panel admin, checkout y SEO. Fondo oscuro en superficies claras para conservar legibilidad. Builds web (270 páginas) y admin (30 páginas) OK, ESLint focalizado OK, revisión independiente aprobada. Vista 3100 reiniciada con .next-demo.

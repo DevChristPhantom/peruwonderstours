@@ -42,7 +42,7 @@ export function organizationJsonLd(): JsonLdObject {
     ...(SITE.legal.businessName ? { legalName: SITE.legal.businessName } : {}),
     ...(SITE.legal.ruc ? { taxID: SITE.legal.ruc } : {}),
     url: SITE.url,
-    logo: absoluteUrl('/brand/peruwonderstours-logo-color.png'),
+    logo: absoluteUrl('/brand/peruwonderstours-logo-share.webp'),
     ...(SITE.legal.email ? { email: SITE.legal.email } : {}),
     telephone: SITE.whatsapp.display.replace(/[^+\d]/g, ''),
     ...(SITE.legal.address ? { address: { '@type': 'PostalAddress', streetAddress: SITE.legal.address, addressLocality: 'Puno', addressCountry: 'PE' } } : {}),
