@@ -697,6 +697,7 @@
     "metaDescription": "Busca y filtra tours en Puno, Cusco, Arequipa, Ica y Lima por destino, tipo, duración y fecha de salida.",
     "itemListName": "Tours en Perú",
     "title": "Tours en Perú",
+    "loading": "Cargando tours…",
     "filtersButton": "{count, plural, =0 {Filtros} other {Filtros (#)}}",
     "formLabel": "Filtrar tours",
     "search": "Buscar",

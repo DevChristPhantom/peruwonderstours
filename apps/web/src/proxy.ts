@@ -1,7 +1,9 @@
 import createIntlMiddleware from "next-intl/middleware";
 import { NextRequest, NextResponse } from "next/server";
 
+import { bypassesMaintenance, isMaintenanceOn, MAINTENANCE_HEADERS, maintenanceHtml } from "./lib/maintenance/maintenance.mjs";
 import { contentSecurityPolicy } from "./lib/security/content-security-policy";
+import { SITE } from "./lib/site";
 import { isHttpLoopback, localDemoMediaOrigin } from "./lib/security/transport-policy.mjs";
 
 import { routing } from "./i18n/routing";
@@ -55,7 +57,16 @@ function isLocalizable(pathname: string): boolean {
   return !/\.[a-z0-9]+$/i.test(pathname);
 }
 
+/** Se arma una sola vez: solo cambia con un nuevo build. */
+let maintenancePage: string | null = null;
+
 export function proxy(request: NextRequest) {
+  // Mantenimiento planificado (lib/maintenance): 503 temporal en las páginas; API y archivos siguen.
+  if (isMaintenanceOn(process.env.MAINTENANCE_MODE) && !bypassesMaintenance(request.nextUrl.pathname)) {
+    maintenancePage ??= maintenanceHtml({ whatsappDigits: SITE.whatsapp.digits, whatsappDisplay: SITE.whatsapp.display });
+    return new NextResponse(maintenancePage, { status: 503, headers: MAINTENANCE_HEADERS });
+  }
+
   const dev = process.env.NODE_ENV !== "production";
   const reportOnly = process.env.CSP_REPORT_ONLY === "true";
   const pathname = request.nextUrl.pathname;
