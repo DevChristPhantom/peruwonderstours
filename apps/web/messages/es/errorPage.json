@@ -1,0 +1,13 @@
+{
+  "eyebrow": "Error inesperado",
+  "title": "Algo falló de nuestro lado",
+  "body": "No es tu culpa. Vuelve a intentarlo en unos segundos; si sigue igual, escríbenos y te ayudamos a reservar.",
+  "retry": "Intentar de nuevo",
+  "home": "Ir al inicio",
+  "whatsapp": "Escríbenos por WhatsApp",
+  "reference": "Código de referencia: {digest}",
+  "whatsappMessage": "Hola Peru Wonders Tours, la web me mostró un error. Código: {digest}",
+  "checkoutTitle": "No pudimos cargar el pago",
+  "checkoutBody": "Tu carrito sigue guardado en este navegador. Si ya pagaste, no vuelvas a pagar: escríbenos con el código de abajo y revisamos tu reserva.",
+  "checkoutCart": "Volver al carrito"
+}

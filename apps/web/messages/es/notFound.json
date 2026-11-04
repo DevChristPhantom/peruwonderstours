@@ -1,8 +1,15 @@
 {
   "eyebrow": "Error 404",
-  "title": "No encontramos esta página",
-  "body": "Puede que el enlace haya cambiado o que el tour ya no esté publicado. Te ayudamos a seguir explorando.",
+  "title": "Esta página se salió del mapa",
+  "body": "Puede que el enlace haya cambiado o que el tour ya no esté publicado. Busca lo que querías o mira los tours que más reservan nuestros viajeros.",
   "home": "Ir al inicio",
-  "tours": "Ver tours",
-  "contact": "Escríbenos"
+  "tours": "Ver todos los tours",
+  "contact": "Escríbenos",
+  "searchLabel": "¿Qué tour buscabas?",
+  "searchPlaceholder": "Ej.: Machu Picchu, Titicaca, Colca",
+  "searchButton": "Buscar",
+  "popular": "Los más reservados",
+  "help": "¿Llegaste aquí desde un enlace nuestro?",
+  "helpLink": "Avísanos por WhatsApp",
+  "whatsappMessage": "Hola Peru Wonders Tours, entré a un enlace de su web que no funciona: {path}"
 }

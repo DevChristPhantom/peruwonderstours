@@ -1,0 +1,13 @@
+{
+  "eyebrow": "Unexpected error",
+  "title": "Something went wrong on our side",
+  "body": "It's not your fault. Try again in a few seconds; if it keeps happening, message us and we'll help you book.",
+  "retry": "Try again",
+  "home": "Go to home page",
+  "whatsapp": "Message us on WhatsApp",
+  "reference": "Reference code: {digest}",
+  "whatsappMessage": "Hi Peru Wonders Tours, the website showed me an error. Code: {digest}",
+  "checkoutTitle": "We couldn't load the payment",
+  "checkoutBody": "Your cart is still saved in this browser. If you already paid, don't pay again: message us with the code below and we'll check your booking.",
+  "checkoutCart": "Back to cart"
+}

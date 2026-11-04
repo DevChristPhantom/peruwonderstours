@@ -1,8 +1,15 @@
 {
   "eyebrow": "Error 404",
-  "title": "We couldn't find this page",
-  "body": "The link may have changed or the tour may no longer be published. Let us help you keep exploring.",
+  "title": "This page wandered off the map",
+  "body": "The link may have changed or the tour may no longer be published. Search for what you wanted or see the tours our travelers book most.",
   "home": "Go to home page",
-  "tours": "See tours",
-  "contact": "Contact us"
+  "tours": "See all tours",
+  "contact": "Contact us",
+  "searchLabel": "Which tour were you looking for?",
+  "searchPlaceholder": "E.g. Machu Picchu, Titicaca, Colca",
+  "searchButton": "Search",
+  "popular": "Most booked",
+  "help": "Did one of our links bring you here?",
+  "helpLink": "Let us know on WhatsApp",
+  "whatsappMessage": "Hi Peru Wonders Tours, I opened a link on your website that doesn't work: {path}"
 }

@@ -679,6 +679,19 @@
     "title": "Destinos no Peru",
     "description": "Conheça Puno e o Lago Titicaca, Cusco e Machu Picchu, Arequipa e o Colca, Ica-Paracas e Lima em passeios com guias locais."
   },
+  "errorPage": {
+    "eyebrow": "Erro inesperado",
+    "title": "Algo falhou do nosso lado",
+    "body": "Não é culpa sua. Tente de novo em alguns segundos; se continuar, fale conosco e ajudamos você a reservar.",
+    "retry": "Tentar de novo",
+    "home": "Ir para o início",
+    "whatsapp": "Fale conosco pelo WhatsApp",
+    "reference": "Código de referência: {digest}",
+    "whatsappMessage": "Olá Peru Wonders Tours, o site me mostrou um erro. Código: {digest}",
+    "checkoutTitle": "Não conseguimos carregar o pagamento",
+    "checkoutBody": "Seu carrinho continua salvo neste navegador. Se você já pagou, não pague de novo: fale conosco com o código abaixo e verificamos sua reserva.",
+    "checkoutCart": "Voltar ao carrinho"
+  },
   "explorer": {
     "metaTitle": "Passeios no Peru",
     "metaDescription": "Busque e filtre passeios em Puno, Cusco, Arequipa, Ica e Lima por destino, tipo, duração e data de saída.",
@@ -1113,11 +1126,18 @@
   },
   "notFound": {
     "eyebrow": "Erro 404",
-    "title": "Não encontramos esta página",
-    "body": "O link pode ter mudado ou o passeio pode não estar mais publicado. Ajudamos você a continuar explorando.",
+    "title": "Esta página saiu do mapa",
+    "body": "O link pode ter mudado ou o passeio pode não estar mais publicado. Procure o que você queria ou veja os passeios mais reservados pelos nossos viajantes.",
     "home": "Ir para o início",
-    "tours": "Ver passeios",
-    "contact": "Fale conosco"
+    "tours": "Ver todos os passeios",
+    "contact": "Fale conosco",
+    "searchLabel": "Qual passeio você procurava?",
+    "searchPlaceholder": "Ex.: Machu Picchu, Titicaca, Colca",
+    "searchButton": "Buscar",
+    "popular": "Os mais reservados",
+    "help": "Você chegou aqui por um link nosso?",
+    "helpLink": "Avise-nos pelo WhatsApp",
+    "whatsappMessage": "Olá Peru Wonders Tours, abri um link do site de vocês que não funciona: {path}"
   },
   "price": {
     "from": "A partir de <amount></amount> por adulto",

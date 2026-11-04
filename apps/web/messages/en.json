@@ -679,6 +679,19 @@
     "title": "Destinations in Peru",
     "description": "Explore Puno and Lake Titicaca, Cusco and Machu Picchu, Arequipa and Colca, Ica-Paracas and Lima on tours led by local guides."
   },
+  "errorPage": {
+    "eyebrow": "Unexpected error",
+    "title": "Something went wrong on our side",
+    "body": "It's not your fault. Try again in a few seconds; if it keeps happening, message us and we'll help you book.",
+    "retry": "Try again",
+    "home": "Go to home page",
+    "whatsapp": "Message us on WhatsApp",
+    "reference": "Reference code: {digest}",
+    "whatsappMessage": "Hi Peru Wonders Tours, the website showed me an error. Code: {digest}",
+    "checkoutTitle": "We couldn't load the payment",
+    "checkoutBody": "Your cart is still saved in this browser. If you already paid, don't pay again: message us with the code below and we'll check your booking.",
+    "checkoutCart": "Back to cart"
+  },
   "explorer": {
     "metaTitle": "Tours in Peru",
     "metaDescription": "Search and filter tours in Puno, Cusco, Arequipa, Ica and Lima by destination, type, duration and departure date.",
@@ -1113,11 +1126,18 @@
   },
   "notFound": {
     "eyebrow": "Error 404",
-    "title": "We couldn't find this page",
-    "body": "The link may have changed or the tour may no longer be published. Let us help you keep exploring.",
+    "title": "This page wandered off the map",
+    "body": "The link may have changed or the tour may no longer be published. Search for what you wanted or see the tours our travelers book most.",
     "home": "Go to home page",
-    "tours": "See tours",
-    "contact": "Contact us"
+    "tours": "See all tours",
+    "contact": "Contact us",
+    "searchLabel": "Which tour were you looking for?",
+    "searchPlaceholder": "E.g. Machu Picchu, Titicaca, Colca",
+    "searchButton": "Search",
+    "popular": "Most booked",
+    "help": "Did one of our links bring you here?",
+    "helpLink": "Let us know on WhatsApp",
+    "whatsappMessage": "Hi Peru Wonders Tours, I opened a link on your website that doesn't work: {path}"
   },
   "price": {
     "from": "From <amount></amount> per adult",
