@@ -189,7 +189,7 @@ export function TourExplorer({ tours, cards, destinations, categories, suggestio
   };
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[280px_1fr]">
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
       <div>
         <button
           type="button"
@@ -223,7 +223,7 @@ export function TourExplorer({ tours, cards, destinations, categories, suggestio
                 onChange={(e) => setQDraft(e.target.value)}
                 placeholder={t("placeholder")}
                 aria-describedby={`${id}-q-help`}
-                className="block min-h-12 w-full min-w-0 rounded-md border border-border-strong bg-surface px-3 text-body"
+                className="block min-h-12 w-full min-w-0 rounded-md border border-border-strong bg-surface px-3 text-body placeholder:text-foreground-muted"
               />
               <button type="submit" className={buttonClass("secondary", "md", "min-h-12")}>
                 {t("search")}
@@ -384,7 +384,7 @@ export function TourExplorer({ tours, cards, destinations, categories, suggestio
         ) : null}
 
         {results.length ? (
-          <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             {results.map((t) => (
               <li key={t.slug} className="pwt-defer-card">{cards[t.slug]}</li>
             ))}
@@ -397,7 +397,7 @@ export function TourExplorer({ tours, cards, destinations, categories, suggestio
               {t("clear")}
             </button>
             <h3 className="mt-8 mb-4 text-h4 font-medium">{t("suggestions")}</h3>
-            <ul className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
               {suggestions.map((slug) => (
                 <li key={slug}>{cards[slug]}</li>
               ))}

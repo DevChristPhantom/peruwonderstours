@@ -78,6 +78,12 @@
   h4 {
     text-wrap: balance;
   }
+
+  /* Evita una palabra sola en la última línea ("S.A.C." colgando en el pie). */
+  p,
+  li {
+    text-wrap: pretty;
+  }
 }
 
 @layer components {
@@ -132,15 +138,17 @@
   }
 
   /* Rendimiento: lo que está fuera de pantalla no se maqueta ni se pinta hasta acercarse
-     (menos trabajo en móviles). `auto` recuerda el alto real tras el primer render. */
+     (menos trabajo en móviles). `auto` recuerda el alto real tras el primer render.
+     Solo el ALTO (block-size): `contain-intrinsic-size` con un valor fija también el ancho, y en una
+     grilla sin columnas definidas cada tarjeta pedía 520 px de ancho (scroll lateral en /tours a 390 px). */
   .pwt-section,
   .pwt-defer {
     content-visibility: auto;
-    contain-intrinsic-size: auto 900px;
+    contain-intrinsic-block-size: auto 900px;
   }
   .pwt-defer-card {
     content-visibility: auto;
-    contain-intrinsic-size: auto 520px;
+    contain-intrinsic-block-size: auto 520px;
   }
 
   /* Enlaces en texto corrido: siempre subrayados (MASTER §2.2 link). */
@@ -173,7 +181,8 @@
 
   /* Texto largo del seed (saltos de línea del CMS viejo). */
   .pwt-prose {
-    max-width: 70ch;
+    /* 65ch en Geist ≈ 80 caracteres reales por línea (70ch daba ~90). */
+    max-width: 65ch;
     white-space: pre-line;
   }
 

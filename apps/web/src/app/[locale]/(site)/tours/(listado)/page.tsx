@@ -31,7 +31,8 @@ export default async function ToursPage({ params }: PageProps<"/[locale]/tours">
     getTranslations("common"),
   ]);
 
-  const cards = Object.fromEntries(tours.map((tour) => [tour.key, <TourCard key={tour.key} tour={tour} />]));
+  // h2: bajo el h1 de la página no hay otra sección, así no se salta de h1 a h3.
+  const cards = Object.fromEntries(tours.map((tour) => [tour.key, <TourCard key={tour.key} tour={tour} headingLevel="h2" />]));
   const explorerTours: ExplorerTour[] = tours.map((tour) => ({
     slug: tour.key,
     destinationSlugs: tour.destinationSlugs,
