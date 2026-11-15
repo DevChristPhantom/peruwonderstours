@@ -26,8 +26,9 @@ const nextConfig = {
   poweredByHeader: false,
   experimental: {
     // proxy.ts buffers request bodies; the default 10 MB cut silently truncated banner videos
-    // (allowed up to 50 MB, BANNER_VIDEO_MAX_BYTES) and left the upload hanging. 52 MB = video + poster + fields.
-    proxyClientMaxBodySize: "52mb",
+    // Allow the complete multipart body: 50 MiB video + 16 MiB poster + fields.
+    // The authenticated BFF retains its stricter 66 MiB + 64 KiB limit.
+    proxyClientMaxBodySize: "68mb",
   },
   async headers() {
     return [{ source: "/:path*", headers: common }];
