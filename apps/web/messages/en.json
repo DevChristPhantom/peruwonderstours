@@ -1,8 +1,8 @@
 {
   "about": {
     "title": "About us",
-    "description": "Explore destinations, tours and packages in the {name} catalog. Compare options and ask about the details of your trip through Peru.",
-    "body": "With {name}, you can explore destinations, tours and packages across Peru, compare options and prepare your travel enquiry. Start with the destinations available in our catalog.",
+    "description": "PERU WONDERS TOURS is a Peruvian travel agency dedicated to creating unforgettable travel experiences throughout Peru.",
+    "body": "PERU WONDERS TOURS is a Peruvian travel agency dedicated to creating unforgettable travel experiences throughout Peru.",
     "destinationsTitle": "Destinations for your next trip",
     "destinationsDescription": "Discover the destinations in our catalog and the experiences available in each one.",
     "tourCount": "{count, plural, =0 {Ask about available options} one {# tour in the catalog} other {# tours in the catalog}}",
@@ -29,7 +29,34 @@
     "ctaTitle": "Find your next experience",
     "ctaBody": "Explore the options in the catalog or send us an enquiry to discuss the details of your trip.",
     "viewTours": "Explore tours",
-    "contact": "Contact us"
+    "contact": "Contact us",
+    "slogan": "Discover the Magic of Peru",
+    "intro": [
+      "PERU WONDERS TOURS is a Peruvian travel agency dedicated to creating unforgettable travel experiences throughout Peru.",
+      "We specialize in cultural, historical, archaeological and adventure tours, offering personalized services designed to connect travelers with the beauty, traditions and fascinating history of our country.",
+      "Our commitment is to provide quality service, personalized attention and memorable experiences, helping every traveler discover the true wonders of Peru."
+    ],
+    "missionTitle": "Our mission",
+    "mission": "To provide authentic, safe and memorable travel experiences in Peru through personalized tourism services, professional attention and a strong commitment to customer satisfaction and sustainable tourism.",
+    "visionTitle": "Our vision",
+    "vision": "To become a recognized Peruvian travel agency in the international tourism market, distinguished by the quality of our services, personalized attention and our passion for showcasing the cultural and natural treasures of Peru.",
+    "valuesTitle": "Our values",
+    "values": [
+      "Quality and excellence.",
+      "Trust and transparency.",
+      "Personalized attention.",
+      "Cultural respect.",
+      "Responsible tourism.",
+      "Customer satisfaction."
+    ],
+    "whyTitle": "Why travel with us?",
+    "why": [
+      "Personalized travel experiences.",
+      "Local knowledge and professional assistance.",
+      "Carefully organized itineraries.",
+      "Secure online booking options.",
+      "Dedicated customer support."
+    ]
   },
   "access": {
     "codeLabel": "Code",

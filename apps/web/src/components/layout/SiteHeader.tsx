@@ -375,7 +375,7 @@ export function SiteHeader({ media }: { media: NavMedia }) {
     >
       <div className={s.bar}>
         <Link href="/" className={s.logo} aria-label={tc("logoHome")}>
-          <BrandLogo alt={tc("logoAlt")} preload />
+          <BrandLogo alt={tc("logoAlt")} preload header />
         </Link>
 
         <nav

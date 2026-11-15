@@ -1,9 +1,9 @@
 import Image from "next/image";
 import s from "./BrandLogo.module.css";
 
-/** Approved two-line logo: PeruWonders above Tours, with transparent background. */
-export function BrandLogo({ alt = "", wide = false, preload = false }: { alt?: string; wide?: boolean; preload?: boolean }) {
-  return <span className={`${s.frame} ${wide ? s.wide : ""}`}>
-    <Image src="/brand/peruwonderstours-logo-two-lines.webp" alt={alt} width={1000} height={209} sizes={wide ? "260px" : "(max-width: 860px) 170px, 220px"} preload={preload} className={s.image} />
+/** Client-supplied official logo, November 2026. Preserve full artwork. */
+export function BrandLogo({ alt = "", wide = false, preload = false, header = false }: { alt?: string; wide?: boolean; preload?: boolean; header?: boolean }) {
+  return <span className={`${s.frame} ${wide ? s.wide : ""} ${header ? s.header : ""}`}>
+    <Image src={header ? "/brand/peruwonderstours-header-20261115.webp" : "/brand/peruwonderstours-logo-official-20261115.webp"} alt={alt} width={header ? 1100 : 1200} height={header ? 198 : 600} sizes={header ? "(max-width: 860px) 190px, 240px" : wide ? "260px" : "112px"} preload={preload} className={s.image} />
   </span>;
 }

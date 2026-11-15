@@ -36,7 +36,12 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/nosotro
         { name: t("title"), path: localePath(locale, "/nosotros") },
       ]} />
       <section className="mt-8 grid items-center gap-8 lg:grid-cols-2 lg:gap-12" aria-labelledby="about-title">
-        <SectionHeading id="about-title" as="h1" title={t("title")} eyebrow={SITE.name} description={t("body", { name: SITE.name })} />
+        <div>
+          <SectionHeading id="about-title" as="h1" title={t("title")} eyebrow="PERU WONDERS TOURS" description={t("slogan")} />
+          <div className="mt-6 space-y-4 leading-relaxed text-foreground-muted">
+            {(t.raw("intro") as string[]).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+          </div>
+        </div>
         {puno && punoImage ? (
           <figure className="overflow-hidden rounded-lg border border-border bg-surface" lang={puno.fallback ? "es-PE" : undefined}>
             <div className="relative aspect-[4/3]">
@@ -45,6 +50,26 @@ export default async function AboutPage({ params }: PageProps<"/[locale]/nosotro
             <figcaption className="px-5 py-3 text-sm text-foreground-muted">{puno.name}</figcaption>
           </figure>
         ) : null}
+      </section>
+      <section className="mt-12 grid gap-6 md:mt-16 md:grid-cols-2" aria-label={t("title")}>
+        {(["mission", "vision"] as const).map((key) => (
+          <article key={key} className="rounded-lg border border-border bg-surface-muted p-6 md:p-8">
+            <h2 className="font-display text-h2 font-medium">{t(`${key}Title`)}</h2>
+            <p className="mt-4 leading-relaxed text-foreground-muted">{t(key)}</p>
+          </article>
+        ))}
+      </section>
+      <section className="mt-12 md:mt-16" aria-labelledby="about-values">
+        <SectionHeading id="about-values" title={t("valuesTitle")} />
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {(t.raw("values") as string[]).map((value) => <li key={value} className="rounded-lg border border-border bg-surface p-5 font-medium">{value}</li>)}
+        </ul>
+      </section>
+      <section className="mt-12 rounded-lg border border-border bg-surface-muted p-6 md:mt-16 md:p-8" aria-labelledby="about-why">
+        <SectionHeading id="about-why" title={t("whyTitle")} />
+        <ul className="grid list-disc gap-x-10 gap-y-3 pl-5 text-foreground-muted md:grid-cols-2">
+          {(t.raw("why") as string[]).map((reason) => <li key={reason}>{reason}</li>)}
+        </ul>
       </section>
       <section className="mt-12 md:mt-16" aria-labelledby="about-destinations">
         <SectionHeading id="about-destinations" title={t("destinationsTitle")} description={t("destinationsDescription")} />

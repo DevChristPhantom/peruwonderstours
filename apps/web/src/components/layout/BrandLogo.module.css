@@ -1,4 +1,7 @@
-.frame { display: inline-block; flex-shrink: 0; width: 220px; }
+.frame { display: inline-block; flex-shrink: 0; width: 112px; overflow: hidden; border-radius: 6px; background: white; }
 .image { display: block; width: 100%; height: auto; }
 .wide { width: 260px; }
-@media (max-width: 860px) { .frame:not(.wide) { width: 170px; } }
+
+.header { width: 240px; background: transparent; border-radius: 0; overflow: visible; }
+@media (max-width: 860px) { .header { width: min(190px, calc(100vw - 226px)); } }
+

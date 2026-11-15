@@ -187,3 +187,8 @@ tags:
 - 2026-11-01: Logo aprobado en dos líneas (PeruWonders / Tours) integrado en BrandLogo, encabezado y pie. WebP transparente local de 55.810 bytes, 1000x209, dimensiones responsivas existentes conservadas. ESLint del componente OK; revisión independiente estática aprobada.
 
 - 2026-11-01: Logo en dos líneas extendido al login/panel admin, checkout y SEO. Fondo oscuro en superficies claras para conservar legibilidad. Builds web (270 páginas) y admin (30 páginas) OK, ESLint focalizado OK, revisión independiente aprobada. Vista 3100 reiniciada con .next-demo.
+
+- 2026-11-15: Logo definitivo enviado por cliente (montaña verde/sol dorado, lema Authentic Experiences in Peru) aplicado íntegro a web/admin/checkout/SEO. Archivo local WebP1200x600; cabecera112x56, pie260x130, login altura limitada. Sustituye versión de cóndor anterior.
+Validación del logo Nov15: ESLint focalizado OK; builds web270 y admin30 rutas OK; revisión independiente estática sin bloqueos.
+
+- 2026-11-15: Corrección tras feedback visual: cabecera usa adaptación horizontal transparente clara del logo oficial, 240px escritorio/190px móvil; logo íntegro conservado en pie/admin/checkout. Evita tarjeta blanca y microtexto ilegible.

@@ -64,7 +64,7 @@ function LegalItem({ label, value, pending }: { label: string; value: string | n
  * - Datos legales no confirmados → "por confirmar"; nunca se publican nombres ni correos del equipo.
  */
 export async function SiteFooter({ variant = "full" }: { variant?: "full" | "minimal" }) {
-  const [t, tc, locale] = await Promise.all([getTranslations("footer"), getTranslations("common"), getLocale()]);
+  const [t, tc, ta, locale] = await Promise.all([getTranslations("footer"), getTranslations("common"), getTranslations("about"), getLocale()]);
   const { legal } = SITE;
   const pending = tc("pending");
   const rucDisplay = legal.ruc ?? pending;
@@ -116,7 +116,9 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
             <Link href="/" className="inline-flex min-h-11 items-center" aria-label={tc("logoHome")}>
               <BrandLogo alt={tc("logoAlt")} wide />
             </Link>
-            <p className="mt-3 text-sm">{t("tagline")}</p>
+            {/* Eslogan del cliente (texto de «Nosotros»). */}
+            <p className="mt-3 font-display text-h4 font-medium text-white">{ta("slogan")}</p>
+            <p className="mt-2 text-sm">{t("tagline")}</p>
             <ul className="mt-4 space-y-1 text-sm">
               <LegalItem label={t("legal.businessName")} value={legal.businessName} pending={pending} />
               <LegalItem label={t("legal.ruc")} value={rucDisplay} pending={pending} />

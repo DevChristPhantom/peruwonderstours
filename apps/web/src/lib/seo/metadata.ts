@@ -41,7 +41,7 @@ export function pageMetadata({
   index?: boolean;
 }): Metadata {
   const path = paths[locale];
-  const shareImage = absoluteUrl(image || '/brand/peruwonderstours-logo-share.webp');
+  const shareImage = absoluteUrl(image || '/brand/peruwonderstours-logo-official-20261115.webp');
   return {
     title,
     description,

@@ -278,5 +278,6 @@
   }
 }
 
-/* White lettering in the approved logo requires a dark backing. */
-.brand-logo-surface { background: var(--pwt-hero-panel); border-radius: 10px; padding: 10px; }
+/* Preserve the official logo on its original light surface. */
+.brand-logo-surface { background: white; border-radius: 10px; padding: 0; }
+.auth-logo { width: auto; max-width: 100%; max-height: clamp(90px, 19vh, 155px); object-fit: contain; }

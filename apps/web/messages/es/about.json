@@ -1,7 +1,7 @@
 {
   "title": "Nosotros",
-  "description": "Explora el catálogo de destinos, tours y paquetes de {name}. Compara opciones y consulta los detalles de tu viaje por el Perú.",
-  "body": "En {name} puedes explorar destinos, tours y paquetes por el Perú, comparar opciones y preparar tu consulta de viaje. Empieza por los destinos disponibles en nuestro catálogo.",
+  "description": "PERU WONDERS TOURS es una agencia de viajes peruana dedicada a crear experiencias inolvidables a través de los maravillosos destinos del Perú.",
+  "body": "PERU WONDERS TOURS es una agencia de viajes peruana dedicada a crear experiencias inolvidables a través de los maravillosos destinos del Perú.",
   "destinationsTitle": "Destinos para tu próximo viaje",
   "destinationsDescription": "Descubre los destinos del catálogo y las experiencias disponibles en cada uno.",
   "tourCount": "{count, plural, =0 {Consulta las opciones disponibles} one {# tour en el catálogo} other {# tours en el catálogo}}",
@@ -9,12 +9,51 @@
   "planningTitle": "Prepara tu viaje, paso a paso",
   "planningDescription": "Encuentra opciones, revisa sus diferencias y consulta los detalles que necesitas antes de decidir.",
   "steps": {
-    "explore": { "title": "Explora", "body": "Busca tours por destino y revisa el itinerario, la duración y la información de cada experiencia.", "link": "Ver tours" },
-    "compare": { "title": "Compara", "body": "Añade las opciones que te interesan al comparador para revisar sus características en una misma página.", "link": "Abrir comparador" },
-    "consult": { "title": "Consulta", "body": "Cuéntanos qué opciones te interesan y qué dudas tienes sobre tu viaje a través del formulario de contacto.", "link": "Enviar una consulta" }
+    "explore": {
+      "title": "Explora",
+      "body": "Busca tours por destino y revisa el itinerario, la duración y la información de cada experiencia.",
+      "link": "Ver tours"
+    },
+    "compare": {
+      "title": "Compara",
+      "body": "Añade las opciones que te interesan al comparador para revisar sus características en una misma página.",
+      "link": "Abrir comparador"
+    },
+    "consult": {
+      "title": "Consulta",
+      "body": "Cuéntanos qué opciones te interesan y qué dudas tienes sobre tu viaje a través del formulario de contacto.",
+      "link": "Enviar una consulta"
+    }
   },
   "ctaTitle": "Encuentra tu próxima experiencia",
   "ctaBody": "Explora las opciones del catálogo o envíanos una consulta para revisar los detalles de tu viaje.",
   "viewTours": "Explorar tours",
-  "contact": "Contactar"
+  "contact": "Contactar",
+  "slogan": "Descubre la magia del Perú.",
+  "intro": [
+    "PERU WONDERS TOURS es una agencia de viajes peruana dedicada a crear experiencias inolvidables a través de los maravillosos destinos del Perú.",
+    "Nos especializamos en turismo cultural, histórico, arqueológico y de aventura, ofreciendo servicios personalizados que permiten a nuestros visitantes conectarse con la belleza, las tradiciones y la fascinante historia de nuestro país.",
+    "Nuestro compromiso es brindar servicios de calidad, atención personalizada y experiencias memorables, ayudando a cada viajero a descubrir las verdaderas maravillas del Perú."
+  ],
+  "missionTitle": "Nuestra misión",
+  "mission": "Brindar experiencias turísticas auténticas, seguras e inolvidables en el Perú, mediante servicios personalizados, atención profesional y un firme compromiso con la satisfacción de nuestros clientes y el turismo sostenible.",
+  "visionTitle": "Nuestra visión",
+  "vision": "Ser una agencia de viajes peruana reconocida en el mercado turístico internacional, destacándonos por la calidad de nuestros servicios, la atención personalizada y nuestra pasión por mostrar los tesoros culturales y naturales del Perú.",
+  "valuesTitle": "Nuestros valores",
+  "values": [
+    "Calidad y excelencia.",
+    "Confianza y transparencia.",
+    "Atención personalizada.",
+    "Respeto cultural.",
+    "Turismo responsable.",
+    "Satisfacción del cliente."
+  ],
+  "whyTitle": "¿Por qué viajar con nosotros?",
+  "why": [
+    "Experiencias de viaje personalizadas.",
+    "Conocimiento local y asistencia profesional.",
+    "Itinerarios cuidadosamente organizados.",
+    "Opciones de reserva y pago en línea.",
+    "Atención dedicada a nuestros viajeros."
+  ]
 }
