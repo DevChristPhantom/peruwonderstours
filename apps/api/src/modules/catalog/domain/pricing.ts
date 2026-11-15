@@ -150,11 +150,30 @@ export function quoteTour(params: {
 }
 
 /**
+ * Regla comercial (cliente, 2026-11-15): los residentes en el Perú pagan en soles con la tarifa
+ * nacional y los extranjeros en dólares con la tarifa extranjera.
+ */
+export const RESIDENCY_FOR_CURRENCY: Record<CurrencyCode, Residency> = { PEN: 'national', USD: 'foreign' };
+
+/**
+ * Tarifas de la residencia que paga en `currency` (PEN → nacional, USD → extranjera). Si el tour no
+ * tiene ninguna de esa residencia se devuelven todas, para no perder un precio cargado de otra forma.
+ */
+export function ratesForCurrency<T extends Pick<Rate, 'residency'>>(rates: readonly T[], currency: CurrencyCode): T[] {
+  const preferred = rates.filter((r) => r.residency === RESIDENCY_FOR_CURRENCY[currency]);
+  return preferred.length > 0 ? preferred : [...rates];
+}
+
+/**
  * "Precio desde" para tarjetas y ficha: menor tarifa activa de adulto (o de cualquier
- * pasajero si no hay de adulto) vigente desde `today`. Null = "Consultar precio".
+ * pasajero si no hay de adulto) vigente desde `today`, de la residencia que paga en esa moneda.
+ * Null = "Consultar precio".
  */
 export function priceFrom(rates: readonly Rate[], currency: CurrencyCode, today: CalendarDate): Money | null {
-  const usable = rates.filter((r) => r.isActive && r.currency === currency && r.validTo >= today);
+  const usable = ratesForCurrency(
+    rates.filter((r) => r.isActive && r.currency === currency && r.validTo >= today),
+    currency,
+  );
   const adults = usable.filter((r) => r.paxType === 'adult');
   const pool = adults.length > 0 ? adults : usable;
   if (pool.length === 0) return null;

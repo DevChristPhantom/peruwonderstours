@@ -5,5 +5,11 @@
   "toQuote": "A cotizar",
   "fullPayment": "Pago total al reservar",
   "depositAmount": "Reserva con {percent}% ({amount})",
-  "depositPercent": "Reserva con {percent}% de adelanto"
+  "depositPercent": "Reserva con {percent}% de adelanto",
+  "otherNational": "Residentes en el Perú: desde {amount}",
+  "otherForeign": "Extranjeros: desde {amount}",
+  "residencyLabel": "Ver precios para",
+  "residencyNational": "Residente en el Perú (S/)",
+  "residencyForeign": "Extranjero (US$)",
+  "residencyHint": "Al pagar se aplica la tarifa de tu país de residencia."
 }

@@ -87,6 +87,7 @@ export default async function TourPage({ params }: PageProps<"/[locale]/tours/[s
     durationLabel: durationText(tu, tour.durationDays, tour.durationNights),
     minPax: tour.minPax,
     pricing: tour.pricing,
+    foreignPricing: tour.foreignPricing,
     paymentPolicy: tour.paymentPolicy,
     durationDays: tour.durationDays,
     destinationSlugs: tour.destinationSlugs,
@@ -355,7 +356,7 @@ export default async function TourPage({ params }: PageProps<"/[locale]/tours/[s
         </section>
       ) : null}
 
-      <MobileBookingBar pricing={tour.pricing} />
+      <MobileBookingBar pricing={tour.pricing} foreignPricing={tour.foreignPricing} />
     </div>
   );
 }

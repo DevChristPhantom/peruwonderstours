@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { buttonClass } from "@/components/ui/button-styles";
 import { useFormat } from "@/hooks/useFormat";
 import type { TourPricing } from "@/lib/catalog/types";
+import { pricingFor, usePriceResidency } from "@/lib/pricing/residency";
 
 /** Ancla del módulo de reserva en flujo (móvil/tablet) dentro de la ficha del tour. */
 const PANEL_SELECTOR = "#reservar";
@@ -16,7 +17,9 @@ const PANEL_SELECTOR = "#reservar";
  * calendario. Se oculta mientras el módulo de reserva está en pantalla (no lo tapa) y aparece al
  * alejarse; la transición solo usa opacity/transform y respeta `prefers-reduced-motion`.
  */
-export function MobileBookingBar({ pricing }: { pricing: TourPricing | null }) {
+export function MobileBookingBar({ pricing: national, foreignPricing }: { pricing: TourPricing | null; foreignPricing: TourPricing | null }) {
+  const [residency] = usePriceResidency();
+  const { pricing } = pricingFor(residency, national, foreignPricing);
   const t = useTranslations("booking");
   const tp = useTranslations("price");
   const f = useFormat();

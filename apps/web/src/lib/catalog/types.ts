@@ -76,7 +76,10 @@ export interface TourSummary {
   difficulty: string | null;
   featured: boolean;
   image: CatalogImage | null;
+  /** Residentes en el Perú: soles, tarifa nacional. */
   pricing: TourPricing | null;
+  /** Extranjeros: dólares, tarifa extranjera (null = sin tarifa en USD cargada). */
+  foreignPricing: TourPricing | null;
   paymentPolicy: PaymentPolicy;
 }
 

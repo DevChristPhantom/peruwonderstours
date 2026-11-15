@@ -415,7 +415,9 @@
       "secureNote": "Pago seguro · Recibirás tu comprobante electrónico por correo",
       "payHelp": "¿Problemas para pagar? Ayuda por WhatsApp",
       "whatsappStep": "pago",
-      "travelerDocsLater": "Viajeros: después de reservar te pediremos por WhatsApp o correo los nombres y documentos exactos de cada viajero para emitir los boletos."
+      "travelerDocsLater": "Viajeros: después de reservar te pediremos por WhatsApp o correo los nombres y documentos exactos de cada viajero para emitir los boletos.",
+      "currencyNational": "Precios en soles (S/) con tarifa para residentes en el Perú.",
+      "currencyForeign": "Precios en dólares (US$) con tarifa para viajeros extranjeros (país: {country}). Si resides en el Perú, cambia tu país en «Tus datos»."
     },
     "hold": {
       "minutesLeft": "{count, plural, one {Queda # minuto para completar el pago.} other {Quedan # minutos para completar el pago.}}",
@@ -1182,7 +1184,13 @@
     "toQuote": "A cotizar",
     "fullPayment": "Pago total al reservar",
     "depositAmount": "Reserva con {percent}% ({amount})",
-    "depositPercent": "Reserva con {percent}% de adelanto"
+    "depositPercent": "Reserva con {percent}% de adelanto",
+    "otherNational": "Residentes en el Perú: desde {amount}",
+    "otherForeign": "Extranjeros: desde {amount}",
+    "residencyLabel": "Ver precios para",
+    "residencyNational": "Residente en el Perú (S/)",
+    "residencyForeign": "Extranjero (US$)",
+    "residencyHint": "Al pagar se aplica la tarifa de tu país de residencia."
   },
   "privacy": {
     "moreInfo": "Más información en nuestra <link>Política de protección de datos personales</link>.",

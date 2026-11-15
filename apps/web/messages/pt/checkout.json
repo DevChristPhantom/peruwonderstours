@@ -127,7 +127,9 @@
     "secureNote": "Pagamento seguro · Você receberá seu comprovante eletrônico por e-mail",
     "payHelp": "Problemas para pagar? Ajuda pelo WhatsApp",
     "whatsappStep": "pagamento",
-    "travelerDocsLater": "Viajantes: depois da reserva, pediremos por WhatsApp ou e-mail o nome e o documento exatos de cada viajante para emitir os ingressos."
+    "travelerDocsLater": "Viajantes: depois da reserva, pediremos por WhatsApp ou e-mail o nome e o documento exatos de cada viajante para emitir os ingressos.",
+    "currencyNational": "Preços em soles (S/) com a tarifa para residentes no Peru.",
+    "currencyForeign": "Preços em dólares (US$) com a tarifa para viajantes estrangeiros (país: {country}). Se você mora no Peru, altere seu país em “Seus dados”."
   },
   "hold": {
     "minutesLeft": "{count, plural, one {Resta # minuto para concluir o pagamento.} other {Restam # minutos para concluir o pagamento.}}",

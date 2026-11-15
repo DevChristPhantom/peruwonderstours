@@ -85,7 +85,7 @@ export async function TourCard({
         {/* Sin wrap: «Comparar» queda siempre a la derecha y alineado entre tarjetas; el precio usa el ancho restante. */}
         <div className="mt-auto flex items-end justify-between gap-3 border-t border-border pt-4">
           <div className="min-w-0">
-            <PriceTag pricing={tour.pricing} policy={tour.paymentPolicy} />
+            <PriceTag pricing={tour.pricing} foreignPricing={tour.foreignPricing} policy={tour.paymentPolicy} />
           </div>
           {showCompare ? <CompareToggle slug={tour.key} title={tour.shortTitle} className="shrink-0" /> : null}
         </div>

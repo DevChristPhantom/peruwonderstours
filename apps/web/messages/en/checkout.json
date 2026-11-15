@@ -127,7 +127,9 @@
     "secureNote": "Secure payment · You will receive your electronic receipt by email",
     "payHelp": "Trouble paying? Help on WhatsApp",
     "whatsappStep": "payment",
-    "travelerDocsLater": "Travelers: after booking we will ask you by WhatsApp or email for each traveler’s exact name and document to issue the tickets."
+    "travelerDocsLater": "Travelers: after booking we will ask you by WhatsApp or email for each traveler’s exact name and document to issue the tickets.",
+    "currencyNational": "Prices in soles (S/) with the rate for Peru residents.",
+    "currencyForeign": "Prices in US dollars (US$) with the rate for international travelers (country: {country}). If you live in Peru, change your country in “Your details”."
   },
   "hold": {
     "minutesLeft": "{count, plural, one {# minute left to complete the payment.} other {# minutes left to complete the payment.}}",

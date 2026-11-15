@@ -14,6 +14,7 @@ import type { CatalogImage, PaymentPolicy, TourPricing } from "@/lib/catalog/typ
 import { lineTotalCents, percentOfCentsCeil } from "@/lib/checkout/payment-plan";
 import { addDays, daysBetween } from "@/lib/format";
 import { describeTravelers } from "@/lib/i18n/units";
+import { pricingFor, usePriceResidency, type PriceResidency } from "@/lib/pricing/residency";
 import { tourHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
 import { useCartStore } from "@/stores/cart-store";
 import { useUiStore } from "@/stores/ui-store";
@@ -31,7 +32,10 @@ export interface BookableTour {
   destinationLabel: string;
   durationLabel: string;
   minPax: number;
+  /** Soles, tarifa nacional (residentes en el Perú). */
   pricing: TourPricing | null;
+  /** Dólares, tarifa extranjera. */
+  foreignPricing: TourPricing | null;
   paymentPolicy: PaymentPolicy;
   durationDays: number | null;
   destinationSlugs: string[];
@@ -80,11 +84,15 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
   }, [added]);
 
   const minDate = today ? addDays(today, 1) : undefined;
+  // Residentes en el Perú ven soles y extranjeros dólares; el cobro final lo decide el país del checkout.
+  const [residency, setResidency] = usePriceResidency();
+  const { pricing: base } = pricingFor(residency, tour.pricing, tour.foreignPricing);
+  const bothPrices = !!(tour.pricing && tour.foreignPricing);
   // Precio por fecha del calendario cuando existe (misma moneda); si no, el "desde" del catálogo.
   const pricing: TourPricing | null =
-    departure?.priceFrom && tour.pricing && departure.priceFrom.currency === tour.pricing.currency
-      ? { ...tour.pricing, adultCents: departure.priceFrom.amount }
-      : tour.pricing;
+    departure?.priceFrom && base && departure.priceFrom.currency === base.currency
+      ? { ...base, adultCents: departure.priceFrom.amount }
+      : base;
   const total = lineTotalCents(pricing, travelers);
   const fullByPolicy = tour.paymentPolicy.depositPercent >= 100;
   const closeDeparture = !!(date && today && daysBetween(today, date) <= BALANCE_DAYS);
@@ -186,6 +194,31 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
         {t("title")}
       </h2>
 
+      {bothPrices ? (
+        <fieldset className="mb-5">
+          <legend className="text-sm font-medium">{tp("residencyLabel")}</legend>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            {(["national", "foreign"] as PriceResidency[]).map((r) => (
+              <label
+                key={r}
+                className="inline-flex min-h-11 cursor-pointer items-center justify-center rounded-md border border-border-strong px-3 text-center text-sm has-[:checked]:border-primary has-[:checked]:bg-primary has-[:checked]:text-on-primary has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring"
+              >
+                <input
+                  type="radio"
+                  name={`${id}-residency`}
+                  value={r}
+                  checked={residency === r}
+                  onChange={() => setResidency(r)}
+                  className="sr-only"
+                />
+                {tp(r === "national" ? "residencyNational" : "residencyForeign")}
+              </label>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-foreground-muted">{tp("residencyHint")}</p>
+        </fieldset>
+      ) : null}
+
       <div>
         {pricing ? (
           <p className="text-sm text-foreground-muted">
@@ -208,6 +241,7 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
         {minDate ? (
           <DepartureCalendar
             tourKey={tour.slug}
+            currency={base?.currency ?? "PEN"}
             minDate={minDate}
             value={date}
             seatsNeeded={seatsNeeded}

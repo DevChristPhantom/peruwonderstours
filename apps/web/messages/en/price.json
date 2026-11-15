@@ -5,5 +5,11 @@
   "toQuote": "To be quoted",
   "fullPayment": "Full payment at booking",
   "depositAmount": "Book with {percent}% ({amount})",
-  "depositPercent": "Book with a {percent}% deposit"
+  "depositPercent": "Book with a {percent}% deposit",
+  "otherNational": "Peru residents: from {amount}",
+  "otherForeign": "International travelers: from {amount}",
+  "residencyLabel": "Show prices for",
+  "residencyNational": "Peru resident (S/)",
+  "residencyForeign": "International traveler (US$)",
+  "residencyHint": "At checkout, the rate for your country of residence applies."
 }

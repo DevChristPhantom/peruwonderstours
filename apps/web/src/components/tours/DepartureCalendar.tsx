@@ -42,14 +42,16 @@ function weekdayIndex(iso: string): number {
   return (new Date(Date.UTC(y, m - 1, d)).getUTCDay() + 6) % 7;
 }
 
-async function fetchDepartures(key: string, from: string, to: string): Promise<CalendarDeparture[] | null> {
-  const res = await fetch(`/api/departures/${encodeURIComponent(key)}?from=${from}&to=${to}`, { headers: { accept: "application/json" } });
+async function fetchDepartures(key: string, from: string, to: string, currency: "PEN" | "USD"): Promise<CalendarDeparture[] | null> {
+  const res = await fetch(`/api/departures/${encodeURIComponent(key)}?from=${from}&to=${to}&currency=${currency}`, { headers: { accept: "application/json" } });
   if (!res.ok) throw new Error(`departures ${res.status}`);
   return ((await res.json()) as { data: CalendarDeparture[] | null }).data;
 }
 
 interface DepartureCalendarProps {
   tourKey: string;
+  /** Moneda del precio por fecha: soles (residentes en el Perú) o dólares (extranjeros). */
+  currency: "PEN" | "USD";
   /** Primera fecha seleccionable (`YYYY-MM-DD`, Lima). */
   minDate: string;
   value: string;
@@ -69,7 +71,7 @@ interface DepartureCalendarProps {
  * flechas ← → ↑ ↓, Inicio/Fin de semana, RePág/AvPág de mes, Intro/Espacio para elegir. El estado de
  * cada día se comunica con texto e ícono además del color (leyenda visible, WCAG 1.4.1).
  */
-export function DepartureCalendar({ tourKey, minDate, value, onChange, seatsNeeded, describedBy, invalid, renderFallback }: DepartureCalendarProps) {
+export function DepartureCalendar({ tourKey, currency, minDate, value, onChange, seatsNeeded, describedBy, invalid, renderFallback }: DepartureCalendarProps) {
   const id = useId();
   const t = useTranslations("calendar");
   const locale = useLocale();
@@ -81,14 +83,14 @@ export function DepartureCalendar({ tourKey, minDate, value, onChange, seatsNeed
   const from = month < monthStart(minDate) ? minDate : month;
   const to = monthEnd(month);
   const query = useQuery({
-    queryKey: ["departures", tourKey, month],
-    queryFn: () => fetchDepartures(tourKey, from < minDate ? minDate : from, to),
+    queryKey: ["departures", tourKey, currency, month],
+    queryFn: () => fetchDepartures(tourKey, from < minDate ? minDate : from, to, currency),
     staleTime: 60_000,
   });
   // ¿Tiene el tour calendario en línea? Se decide con el primer mes consultado.
   const firstMonth = useQuery({
-    queryKey: ["departures", tourKey, "probe"],
-    queryFn: () => fetchDepartures(tourKey, minDate, addDays(minDate, 180)),
+    queryKey: ["departures", tourKey, currency, "probe"],
+    queryFn: () => fetchDepartures(tourKey, minDate, addDays(minDate, 180), currency),
     staleTime: 5 * 60_000,
   });
 

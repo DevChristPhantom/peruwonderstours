@@ -4,23 +4,31 @@ import { useTranslations } from "next-intl";
 
 import type { PaymentPolicy, TourPricing } from "@/lib/catalog/types";
 import { percentOfCentsCeil } from "@/lib/checkout/payment-plan";
+import { pricingFor, usePriceResidency } from "@/lib/pricing/residency";
 import { useFormat } from "@/hooks/useFormat";
 
 /**
- * Precio de tarjeta/ficha. Sin tarifa → "Precio a consultar" (seed sin precios).
- * Con tarifa → "Desde S/ X por persona" + adelanto calculado en céntimos.
+ * Precio de tarjetas, ficha y comparador. Sin tarifa → "Precio a consultar".
+ * Con tarifa → "Desde S/ X por adulto" + adelanto calculado en céntimos, en la moneda de la residencia
+ * elegida (residentes en el Perú: soles; extranjeros: dólares), y debajo el precio de la otra.
  */
 export function PriceTag({
-  pricing,
+  pricing: national,
+  foreignPricing = null,
   policy,
   size = "md",
 }: {
+  /** Soles, tarifa nacional. */
   pricing: TourPricing | null;
+  /** Dólares, tarifa extranjera. */
+  foreignPricing?: TourPricing | null;
   policy: PaymentPolicy;
   size?: "md" | "lg";
 }) {
   const t = useTranslations("price");
   const f = useFormat();
+  const [residency] = usePriceResidency();
+  const { pricing, other, shown } = pricingFor(residency, national, foreignPricing);
   const fullPayment = policy.depositPercent >= 100;
   return (
     <div className="flex flex-col gap-1">
@@ -47,6 +55,11 @@ export function PriceTag({
               })
             : t("depositPercent", { percent: policy.depositPercent })}
       </p>
+      {other ? (
+        <p className="text-xs text-foreground-muted">
+          {t(shown === "national" ? "otherForeign" : "otherNational", { amount: f.money(other.adultCents, other.currency) })}
+        </p>
+      ) : null}
     </div>
   );
 }

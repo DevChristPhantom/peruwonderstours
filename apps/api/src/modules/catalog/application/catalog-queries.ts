@@ -4,7 +4,7 @@ import type { Clock } from '../../../shared/domain/ports.js';
 import type { CurrencyCode, Money } from '../../../shared/domain/money.js';
 import type { UnitOfWork } from '../../../shared/application/unit-of-work.js';
 import type { CatalogRepository, Page, TourListing, TourSearchCriteria } from '../domain/catalog.repository.js';
-import { priceFrom, type Rate } from '../domain/pricing.js';
+import { priceFrom, ratesForCurrency, type Rate } from '../domain/pricing.js';
 import { NotFoundError } from '../../../shared/domain/domain-error.js';
 import { resolveLocalizedName, slugFor, type Category, type Destination } from '../domain/taxonomy.js';
 import { isTourPublished, resolveTourTranslation, type Locale, type Tour, type TourTranslation } from '../domain/tour.js';
@@ -107,7 +107,10 @@ export class CatalogQueries {
       translation,
       locale: resolved.locale,
       fallback: resolved.fallback,
-      rates: rates.filter((r) => r.isActive && r.currency === currency && r.validTo >= this.today()),
+      rates: ratesForCurrency(
+        rates.filter((r) => r.isActive && r.currency === currency && r.validTo >= this.today()),
+        currency,
+      ),
       priceFrom: priceFrom(rates, currency, this.today()),
       destinations: [...tour.destinations]
         .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary) || a.sortOrder - b.sortOrder)

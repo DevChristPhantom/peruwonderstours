@@ -70,6 +70,16 @@ describe('Cotización', () => {
     expect(priceFrom(ratesOf(IDS.valle), 'USD', '2028-01-01')).toBeNull();
   });
 
+  it('precio desde: soles con tarifa nacional y dólares con tarifa extranjera', () => {
+    // valle tiene PEN nacional 300.00 y PEN extranjera 450.00: en soles manda la nacional.
+    expect(priceFrom(ratesOf(IDS.valle), 'PEN', '2026-10-07')?.amount).toBe(30_000n);
+    const usdNational: Rate = { ...ratesOf(IDS.valle).find((r) => r.currency === 'USD' && r.paxType === 'adult')!, id: 'usd-nat', residency: 'national', amount: 8_000n };
+    // Una tarifa nacional en dólares más barata no rebaja el "desde" en dólares (es la del extranjero).
+    expect(priceFrom([...ratesOf(IDS.valle), usdNational], 'USD', '2026-10-07')?.amount).toBe(12_000n);
+    // Sin tarifa de esa residencia se usa la que haya, para no ocultar un precio cargado.
+    expect(priceFrom([usdNational], 'USD', '2026-10-07')?.amount).toBe(8_000n);
+  });
+
   it('fecha de fin del servicio según duración', () => {
     expect(serviceEndDate(tourById(IDS.titicaca), '2026-11-12')).toBe('2026-11-13');
     expect(serviceEndDate({ ...tourById(IDS.valle), durationDays: null } as Tour, '2026-11-12')).toBe('2026-11-12');

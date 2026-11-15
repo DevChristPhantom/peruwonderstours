@@ -23,8 +23,11 @@ export async function GET(request: Request, ctx: RouteContext<"/api/departures/[
     return NextResponse.json({ error: "invalid-request" }, { status: 400 });
   }
   const clampedTo = to > addDays(from, 180) ? addDays(from, 180) : to;
+  // Soles (residentes en el Perú) o dólares (extranjeros); cualquier otro valor usa la moneda por defecto.
+  const requested = url.searchParams.get("currency");
+  const currency = requested === "PEN" || requested === "USD" ? requested : env.CATALOG_CURRENCY;
   try {
-    const data = await getDepartures(slug, from < today ? today : from, clampedTo, env.CATALOG_CURRENCY);
+    const data = await getDepartures(slug, from < today ? today : from, clampedTo, currency);
     return NextResponse.json({ data }, { headers: { "cache-control": "private, max-age=60" } });
   } catch (error) {
     if (error instanceof ApiError && !error.unavailable) return NextResponse.json({ data: null });

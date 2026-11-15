@@ -78,6 +78,13 @@ test('Portuguese departure selection, cart and checkout retain Brazilian form la
   await page.getByLabel('País de residência', { exact: true }).selectOption({ label: 'Brasil' });
   await page.getByRole('button', { name: 'Continuar para pagamento', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Pagamento', exact: true })).toBeVisible();
+  // A Brazilian resident is quoted in US dollars with the international rate (client rule 2026-11-15).
+  await expect(page.getByText(/^Preços em dólares \(US\$\)/)).toBeVisible();
+  // Portuguese formatting: "USD 198,00".
+  await expect(page.locator('main')).toContainText(/USD\s[\d.]+,\d{2}/);
+  await expect(page.locator('main')).not.toContainText(/S\/\s[\d.,]+[.,]\d{2}/);
+  // Yape only charges in soles, so it is not offered to someone paying in dollars.
+  await expect(page.getByRole('radio', { name: /Yape/ })).toHaveCount(0);
   // Stop before payment: this verifies the translated flow without creating a charge.
 });
 

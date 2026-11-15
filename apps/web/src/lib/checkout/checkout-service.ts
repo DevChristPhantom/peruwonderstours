@@ -19,7 +19,6 @@ import {
 import { ApiError } from "@/lib/api/client";
 import type { Locale } from "@/i18n/routing";
 import { cartIssueMessage, toUserError, type UserError } from "@/lib/api/problems";
-import { env } from "@/lib/env";
 import type { ProviderAction, ProviderPaymentOutcome } from "@/lib/payments/types";
 
 import type { CheckoutQuote, PlanView, PrepareInput, QuoteIssue, QuoteLine } from "./api-checkout";
@@ -47,6 +46,15 @@ export function failureFrom(error: unknown, locale: Locale = "es"): CheckoutFail
 
 export function residencyFor(country: string): Residency {
   return country.trim().toLowerCase() === "perú" || country.trim().toLowerCase() === "peru" ? "national" : "foreign";
+}
+
+/**
+ * Regla comercial (cliente, 2026-11-15): residentes en el Perú pagan en soles (tarifa nacional) y
+ * extranjeros en dólares (tarifa extranjera). Lo decide el país del checkout, no la moneda que se
+ * estaba mirando en la ficha.
+ */
+export function currencyFor(residency: Residency): ApiCurrency {
+  return residency === "national" ? "PEN" : "USD";
 }
 
 export function orderFingerprint(input: PrepareInput, currency: ApiCurrency): string {
@@ -194,9 +202,9 @@ function quoteFromBooking(booking: Booking): CheckoutQuote {
  * Reutiliza el carrito de la cookie si el pedido no cambió; si cambió, crea uno nuevo.
  */
 export async function prepareQuote(input: PrepareInput, locale: Locale = "es"): Promise<CheckoutQuote> {
-  const currency: ApiCurrency = input.lines.find((l) => l.currency)?.currency ?? env.CATALOG_CURRENCY;
-  const fp = orderFingerprint(input, currency);
   const residency = residencyFor(input.country);
+  const currency = currencyFor(residency);
+  const fp = orderFingerprint(input, currency);
 
   // ¿Ya hay una reserva retenida para este mismo pedido (p. ej. tras un pago rechazado)?
   const attempt = await readAttempt();

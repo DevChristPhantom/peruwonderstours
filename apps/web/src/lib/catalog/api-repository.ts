@@ -3,7 +3,6 @@ import "server-only";
 import type { Locale } from "@/i18n/routing";
 import { categoryPath, destinationPath, tourPath } from "@/i18n/paths";
 import { apiJson, ApiError } from "@/lib/api/client";
-import { env } from "@/lib/env";
 
 import type { CatalogRepository } from "./repository";
 import { derivePaymentPolicy, durationBucketOf } from "./rules";
@@ -189,8 +188,14 @@ async function loadTaxonomy(locale: Locale): Promise<Taxonomy> {
 
 /* ---------- Tours por idioma, unidos por id ---------- */
 
-async function listAllCards(locale: Locale): Promise<ApiTourCard[]> {
-  const params = { locale, currency: env.CATALOG_CURRENCY, sort: "featured", pageSize: PAGE_SIZE };
+/**
+ * Precios en dos monedas (regla del cliente, 2026-11-15): soles con la tarifa nacional para residentes
+ * en el Perú y dólares con la tarifa extranjera para el resto. La API elige la residencia por moneda.
+ */
+type CatalogCurrency = "PEN" | "USD";
+
+async function listAllCards(locale: Locale, currency: CatalogCurrency = "PEN"): Promise<ApiTourCard[]> {
+  const params = { locale, currency, sort: "featured", pageSize: PAGE_SIZE };
   const first = await cached<ListEnvelope<ApiTourCard>>(`/tours?${q({ ...params, page: 1 })}`);
   const pages = first.meta?.totalPages ?? 1;
   const rest = await Promise.all(
@@ -201,13 +206,21 @@ async function listAllCards(locale: Locale): Promise<ApiTourCard[]> {
 
 interface CardEntry {
   es: ApiTourCard;
+  /** El mismo tour pedido en dólares (tarifa extranjera); undefined si la API no respondió. */
+  usd: ApiTourCard | undefined;
   text: ApiTourCard;
   fallback: boolean;
   alternates: LocalePaths;
 }
 
 async function loadCards(locale: Locale): Promise<CardEntry[]> {
-  const [es, en, pt] = await Promise.all([listAllCards("es"), listAllCards("en").catch(() => [] as ApiTourCard[]), listAllCards("pt").catch(() => [] as ApiTourCard[])]);
+  const [es, en, pt, usd] = await Promise.all([
+    listAllCards("es"),
+    listAllCards("en").catch(() => [] as ApiTourCard[]),
+    listAllCards("pt").catch(() => [] as ApiTourCard[]),
+    listAllCards("es", "USD").catch(() => [] as ApiTourCard[]),
+  ]);
+  const usdById = new Map(usd.map((c) => [c.id, c]));
   const enById = new Map(en.map((c) => [c.id, c]));
   const ptById = new Map(pt.map((c) => [c.id, c]));
   return es.map((card) => {
@@ -218,6 +231,7 @@ async function loadCards(locale: Locale): Promise<CardEntry[]> {
     const ptSlug = portuguese && !isFallback(portuguese, "pt") ? portuguese.slug : card.slug;
     return {
       es: card,
+      usd: usdById.get(card.id),
       text: locale !== "es" && translated ? translated : card,
       fallback: locale !== "es" ? isFallback(translated, locale) : false,
       alternates: { es: tourPath("es", card.slug), en: tourPath("en", enSlug), pt: tourPath("pt", ptSlug) },
@@ -279,11 +293,12 @@ function toSummary(entry: CardEntry, taxonomy: Taxonomy, locale: Locale): TourSu
     featured: es.isFeatured,
     image,
     pricing: pricingOf(es.priceFrom),
+    foreignPricing: pricingOf(entry.usd?.priceFrom ?? null),
     paymentPolicy: policyOf(categorySlugs),
   };
 }
 
-function toTour(detail: ApiTourDetail, entry: CardEntry, taxonomy: Taxonomy, locale: Locale): Tour {
+function toTour(detail: ApiTourDetail, entry: CardEntry, taxonomy: Taxonomy, locale: Locale, usdDetail: ApiTourDetail | null): Tour {
   const fallback = locale !== "es" ? isFallback(detail, locale) : false;
   const enSlug = detail.alternateLocales?.find((a) => a.locale === "en")?.slug;
   const ptSlug = detail.alternateLocales?.find((a) => a.locale === "pt")?.slug;
@@ -294,6 +309,7 @@ function toTour(detail: ApiTourDetail, entry: CardEntry, taxonomy: Taxonomy, loc
   return {
     ...summary,
     pricing: pricingOf(detail.priceFrom, detail.rates),
+    foreignPricing: usdDetail ? pricingOf(usdDetail.priceFrom, usdDetail.rates) : summary.foreignPricing,
     paymentPolicy: policyOf(summary.categorySlugs, detail.requiresTravelerDocument),
     metaTitle: detail.seo.title,
     metaDescription: cleanSeedText(detail.seo.description) ?? summary.excerpt,
@@ -373,9 +389,9 @@ async function apiTour(slug: string, locale: Locale): Promise<Tour | null> {
   const entry = cards.find((c) => c.es.slug === slug || c.alternates.en.endsWith(`/${slug}`) || c.alternates.pt.endsWith(`/${slug}`) || c.text.slug === slug);
   if (!entry) return null;
   const localSlug = entry.alternates[locale].split("/").pop()!;
-  const fetchDetail = async (s: string, lang: Locale) => {
+  const fetchDetail = async (s: string, lang: Locale, currency: CatalogCurrency = "PEN") => {
     try {
-      return (await cached<{ data: ApiTourDetail }>(`/tours/${encodeURIComponent(s)}?${q({ locale: lang, currency: env.CATALOG_CURRENCY })}`)).data;
+      return (await cached<{ data: ApiTourDetail }>(`/tours/${encodeURIComponent(s)}?${q({ locale: lang, currency })}`)).data;
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) return null;
       throw error;
@@ -388,7 +404,9 @@ async function apiTour(slug: string, locale: Locale): Promise<Tour | null> {
     detail = es ? { ...es, locale: "es", fallback: true } : null;
   }
   if (!detail) return null;
-  return toTour(detail, entry, await loadTaxonomy(locale), locale);
+  // Tarifas en dólares (extranjeros): no dependen del idioma; sin ellas se usa el "desde" del listado.
+  const usdDetail = await fetchDetail(entry.es.slug, "es", "USD").catch(() => null);
+  return toTour(detail, entry, await loadTaxonomy(locale), locale, usdDetail);
 }
 
 function findTaxon<T extends { key: string; slug: string; alternates: LocalePaths }>(list: T[], slug: string): T | null {

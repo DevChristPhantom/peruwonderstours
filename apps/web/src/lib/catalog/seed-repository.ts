@@ -156,6 +156,7 @@ function toSummary(t: SeedTour, locale: Locale): TourSummary {
     // TODO(HU-0.3): alt descriptivo por foto cuando se re-alojen las imágenes con metadatos.
     image: image(t.heroImage ?? t.images?.[0], shortTitle),
     pricing: null, // Seed sin precios: "Precio a consultar".
+    foreignPricing: null,
     paymentPolicy: derivePaymentPolicy(t.categorySlugs),
   };
 }

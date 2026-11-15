@@ -5,5 +5,11 @@
   "toQuote": "Solicitar orçamento",
   "fullPayment": "Pagamento integral na reserva",
   "depositAmount": "Reserve com {percent}% ({amount})",
-  "depositPercent": "Reserve com {percent}% de entrada"
+  "depositPercent": "Reserve com {percent}% de entrada",
+  "otherNational": "Residentes no Peru: a partir de {amount}",
+  "otherForeign": "Estrangeiros: a partir de {amount}",
+  "residencyLabel": "Ver preços para",
+  "residencyNational": "Residente no Peru (S/)",
+  "residencyForeign": "Estrangeiro (US$)",
+  "residencyHint": "No pagamento, aplica-se a tarifa do seu país de residência."
 }

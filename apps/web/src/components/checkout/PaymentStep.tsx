@@ -41,6 +41,8 @@ const METHODS: { value: PaymentMethod; icon: typeof CreditCard }[] = [
 ];
 // En Perú se paga sobre todo con Yape: va primero y elegido; el turista extranjero ve primero la tarjeta.
 const METHODS_PERU = [METHODS[1], METHODS[0], METHODS[2]];
+// El extranjero paga en dólares (`currencyFor`) y Yape solo cobra en soles: no se le ofrece.
+const METHODS_FOREIGN = METHODS.filter((m) => m.value !== "yape");
 /** Izipay cobra tarjeta y Yape; PagoEfectivo (CIP) no es parte de su formulario. */
 const forProvider = (methods: typeof METHODS, provider: PaymentProvider) =>
   provider === "izipay" ? methods.filter((m) => m.value !== "pagoefectivo") : methods;
@@ -511,7 +513,7 @@ export function PaymentStep({
         <fieldset className="mt-8">
           <legend className="text-h4 font-medium">{t("method")}</legend>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
-            {forProvider(contact.country === "Perú" ? METHODS_PERU : METHODS, provider).map(({ value, icon: Icon }) => (
+            {forProvider(contact.country === "Perú" ? METHODS_PERU : METHODS_FOREIGN, provider).map(({ value, icon: Icon }) => (
               <label
                 key={value}
                 className="flex cursor-pointer flex-col gap-1 rounded-lg border-2 border-border p-3 has-[:checked]:border-primary has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring"
@@ -556,6 +558,10 @@ export function PaymentStep({
               {t("edit")}
             </button>
           </div>
+          {/* Moneda por país (checkout-service `currencyFor`): Perú → soles, el resto → dólares. */}
+          <p className="mt-2 text-foreground-muted">
+            {t(contact.country === "Perú" ? "currencyNational" : "currencyForeign", { country: contact.country })}
+          </p>
           {needsTravelerDocs ? <p className="mt-2 text-foreground-muted">{t("travelerDocsLater")}</p> : null}
         </div>
 
