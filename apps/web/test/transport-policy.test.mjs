@@ -21,6 +21,21 @@ test('HTTP demo keeps production nonce and application protections without forci
   assert.doesNotMatch(contentSecurityPolicy(null, false, false), /unsafe-eval/);
 });
 
+test('Google Analytics origins appear only when analytics is configured', () => {
+  for (const nonce of [null, 'test-nonce']) {
+    const off = contentSecurityPolicy(nonce, false, true);
+    assert.doesNotMatch(off, /googletagmanager|google-analytics/);
+    const on = contentSecurityPolicy(nonce, false, true, null, false, true);
+    assert.match(on, /script-src [^;]*https:\/\/www\.googletagmanager\.com/);
+    assert.match(on, /connect-src [^;]*https:\/\/\*\.google-analytics\.com/);
+    assert.match(on, /img-src [^;]*https:\/\/\*\.google-analytics\.com/);
+    // Analytics never opens frames, forms or a script wildcard.
+    assert.match(on, /frame-src 'none'/);
+    assert.match(on, /form-action 'self'/);
+    assert.doesNotMatch(on, /script-src[^;]*\shttps:(\s|;|$)/);
+  }
+});
+
 test('direct demo images allow only the explicitly configured local API media origin', () => {
   assert.equal(localDemoMediaOrigin('1', 'http://localhost:4000', 'http://127.0.0.1:4002/media', 'http://localhost:3001/api/v1'), 'http://127.0.0.1:4002');
   assert.equal(localDemoMediaOrigin('1', 'http://localhost:4000', undefined, 'http://localhost:4002/api/v1'), 'http://localhost:4002');

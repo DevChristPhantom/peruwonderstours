@@ -3,6 +3,7 @@ import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { ComponentProps } from "react";
 
+import { CookieSettingsButton } from "@/components/analytics/CookieConsent";
 import { Link } from "@/i18n/navigation";
 import { SITE, whatsappHref } from "@/lib/site";
 import { SOCIAL_LINKS } from "@/lib/social";
@@ -164,6 +165,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
 
           <Column id="footer-legal" title={t("columns.legal")}>
             {LEGAL.map(item)}
+            <CookieSettingsButton className={`${linkClass} cursor-pointer text-left`} />
           </Column>
         </div>
 

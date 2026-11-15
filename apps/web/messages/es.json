@@ -702,6 +702,14 @@
     "invalidEmail": "Ingresa un correo válido.",
     "privacyRequired": "Debes aceptar la política de datos personales para enviar el mensaje."
   },
+  "cookieConsent": {
+    "title": "¿Nos ayudas a mejorar la web?",
+    "body": "Con tu permiso usamos Google Analytics para saber cuántas personas visitan la web y qué páginas usan. No lo usamos para publicidad. Si rechazas, la web funciona igual.",
+    "policy": "Política de cookies",
+    "accept": "Aceptar",
+    "reject": "Rechazar",
+    "settings": "Preferencias de cookies"
+  },
   "destinationsPage": {
     "title": "Destinos en Perú",
     "description": "Conoce Puno y el Lago Titicaca, Cusco y Machu Picchu, Arequipa y el Colca, Ica-Paracas y Lima con tours de guías locales."

@@ -5,24 +5,34 @@
  */
 const IZIPAY_ORIGINS = "https://*.izipay.pe https://*.online-metrix.net";
 
+/**
+ * Google Analytics 4 (solo con NEXT_PUBLIC_GA_ID y tras el consentimiento: lib/analytics/consent.ts).
+ * gtag.js viene de googletagmanager.com y envía las visitas a *.google-analytics.com.
+ */
+const GA_SCRIPT_ORIGIN = "https://www.googletagmanager.com";
+const GA_BEACON_ORIGINS = "https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com";
+
 export function contentSecurityPolicy(
   nonce: string | null,
   dev: boolean,
   upgradeTransport: boolean,
   localMediaOrigin: string | null = null,
   izipay = false,
+  analytics = false,
 ): string {
-  const scripts = nonce ? `'self' 'nonce-${nonce}' 'strict-dynamic'${izipay ? ` ${IZIPAY_ORIGINS}` : ""}` : `'self' 'unsafe-inline'`;
+  const ga = analytics ? ` ${GA_SCRIPT_ORIGIN}` : "";
+  const scripts = nonce ? `'self' 'nonce-${nonce}' 'strict-dynamic'${izipay ? ` ${IZIPAY_ORIGINS}` : ""}${ga}` : `'self' 'unsafe-inline'${ga}`;
   const pay = izipay ? ` ${IZIPAY_ORIGINS}` : "";
+  const beacons = analytics ? ` ${GA_BEACON_ORIGINS}` : "";
   return [
     "default-src 'self'",
     `script-src ${scripts}${dev ? " 'unsafe-eval'" : ""}`,
     nonce && !dev ? `style-src-elem 'self' 'nonce-${nonce}'${pay}` : `style-src-elem 'self' 'unsafe-inline'${pay}`,
     "style-src-attr 'unsafe-inline'",
-    `img-src 'self' data: blob:${localMediaOrigin ? ` ${localMediaOrigin}` : ""}${pay}`,
+    `img-src 'self' data: blob:${localMediaOrigin ? ` ${localMediaOrigin}` : ""}${pay}${beacons}`,
     `font-src 'self'${pay}`,
     "media-src 'self'",
-    `connect-src 'self'${dev ? " ws: wss:" : ""}${pay}`,
+    `connect-src 'self'${dev ? " ws: wss:" : ""}${pay}${beacons}`,
     // Service worker del voucher offline (/sw-voucher.js) y manifest de la reserva.
     "worker-src 'self'",
     "manifest-src 'self'",

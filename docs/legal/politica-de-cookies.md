@@ -1,17 +1,16 @@
 # BORRADOR — requiere revisión de asesor legal
 
-> Versión del borrador: 0.2 (2026-10-26). En el Perú no hay una norma específica sobre cookies; se
+> Versión del borrador: 0.3 (2026-11-15). En el Perú no hay una norma específica sobre cookies; se
 > aplica la Ley 29733 y su Reglamento (D.S. 016-2024-JUS) cuando las cookies tratan datos
 > personales. Análisis: `brain/wiki/normativa/proteccion-de-datos.md`. La tabla de la sección 4 es
-> el inventario real del sitio al 2026-10-26 (código fuente): solo cookies y almacenamiento
-> estrictamente necesarios o pedidos por el propio visitante; no hay analítica, publicidad ni
-> recursos de terceros. **Si en el futuro se agrega analítica o publicidad, antes de activarla hay
-> que implementar el aviso de consentimiento (aceptar / rechazar / configurar) y actualizar esta
-> política.**
+> el inventario real del sitio al 2026-11-15 (código fuente). Cambio de la 0.3: Google Analytics 4,
+> opcional, que solo se carga si el visitante pulsa "Aceptar" en el aviso de cookies
+> (`apps/web/src/lib/analytics/consent.ts`). **Revisar con el asesor legal la transferencia
+> internacional a Google (sección 6) y reflejarla también en la Política de Privacidad.**
 
 # Política de Cookies de peruwonderstours
 
-Última actualización: 26 de octubre de 2026 · Versión 0.2
+Última actualización: 15 de noviembre de 2026 · Versión 0.3
 
 ## 1. ¿Qué son las cookies?
 
@@ -27,11 +26,18 @@ Contacto: jorgechaveztourt@gmail.com. Más detalles en la Política de Privacida
 
 ## 3. Qué cookies usamos
 
-**Solo usamos cookies estrictamente necesarias** para que el sitio funcione (tu carrito, tu reserva,
-tu sesión y el Libro de Reclamaciones) y almacenamiento local para recordar lo que tú mismo eliges
-(favoritos, comparador, anuncios que cerraste). **No usamos cookies analíticas, de personalización
-ni publicitarias, ni cookies de terceros**, y el sitio no carga fuentes, videos ni imágenes de otras
-empresas. Por eso no te mostramos un aviso para aceptar o rechazar cookies: no hay ninguna opcional.
+Usamos **cookies estrictamente necesarias** para que el sitio funcione (tu carrito, tu reserva, tu
+sesión y el Libro de Reclamaciones) y almacenamiento local para recordar lo que tú mismo eliges
+(favoritos, comparador, anuncios que cerraste, tu decisión sobre cookies).
+
+Además, **solo si nos das tu permiso**, usamos **Google Analytics** para medir cuántas personas
+visitan el sitio y qué páginas usan. Al entrar te mostramos un aviso con dos opciones del mismo
+tamaño: "Aceptar" y "Rechazar". Mientras no aceptes, Google Analytics no se carga y no se crea
+ninguna de sus cookies. Si rechazas, el sitio funciona igual. Puedes cambiar tu decisión cuando
+quieras desde "Preferencias de cookies", al pie de cualquier página.
+
+**No usamos cookies publicitarias ni de personalización**: Google Analytics está configurado sin
+señales de Google para publicidad ni personalización de anuncios.
 
 ## 4. Detalle de cookies y almacenamiento
 
@@ -47,9 +53,13 @@ empresas. Por eso no te mostramos un aviso para aceptar o rechazar cookies: no h
 | `pwt-favorites` | Almacenamiento local | Guarda tus tours favoritos | Hasta que los quites |
 | `pwt-promo-cerrado` | Almacenamiento local | Recuerda que cerraste el anuncio de un evento, para no volver a mostrarlo en 24 horas | 24 horas |
 | `pwt-compare`, `pwt-trip-ack`, `pwt-checkout-draft` | Almacenamiento de sesión | Comparador de tours, avisos ya leídos y borrador de tus datos mientras reservas (sin número de documento) | Hasta que cierres la pestaña |
+| `pwt-cookie-consent` | Almacenamiento local, necesario | Recuerda si aceptaste o rechazaste Google Analytics, para no preguntarte en cada página | Hasta que la borres o cambies tu decisión |
+| `_ga` | Cookie analítica de Google Analytics, **opcional** (solo si aceptas) | Distingue visitantes de forma anónima para contar visitas | 2 años |
+| `_ga_<ID>` | Cookie analítica de Google Analytics, **opcional** (solo si aceptas) | Mantiene el estado de la visita para medir las páginas vistas | 2 años |
 
 Las cookies propias se envían solo a peruwonderstours, son `HttpOnly` y `Secure` cuando el sitio
-funciona con https, y no contienen tu nombre ni tus datos de pago.
+funciona con https, y no contienen tu nombre ni tus datos de pago. Las cookies de Google Analytics
+las crea el script de Google en tu navegador; si retiras tu permiso, las borramos de este sitio.
 
 Cuando pagas, el formulario de pago es el de la pasarela autorizada, en su propio sitio. Esa empresa
 puede usar sus propias cookies según su política, que te mostrará en ese momento.
@@ -62,11 +72,13 @@ funcionar.
 
 ## 6. Transferencias internacionales
 
-Las cookies propias y el almacenamiento local no envían datos a terceros. Los datos que envías al
-reservar se tratan como se explica en la Política de Privacidad, incluido el país donde se alojan
-nuestros servidores.
+Las cookies propias y el almacenamiento local no envían datos a terceros. Si aceptas Google
+Analytics, los datos de tu visita (páginas vistas, tipo de dispositivo y navegador, ubicación
+aproximada) se envían a Google LLC, que puede tratarlos en servidores fuera del Perú, incluidos los
+Estados Unidos. Los datos que envías al reservar se tratan como se explica en la Política de
+Privacidad, incluido el país donde se alojan nuestros servidores.
 
 ## 7. Cambios
 
-Si en el futuro usamos cookies de otro tipo (por ejemplo, para medir visitas), te lo pediremos antes
-con un aviso para aceptarlas o rechazarlas, y actualizaremos esta política.
+Si en el futuro usamos cookies de otro tipo (por ejemplo, publicitarias), te lo pediremos antes con
+un aviso para aceptarlas o rechazarlas, y actualizaremos esta política.

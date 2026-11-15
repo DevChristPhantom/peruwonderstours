@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { colors } from "@pwt/ui/tokens";
 
+import { CookieConsent } from "@/components/analytics/CookieConsent";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { INTL_LOCALE, OG_LOCALE, routing } from "@/i18n/routing";
 import { SITE } from "@/lib/site";
@@ -55,6 +56,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         </a>
         <NextIntlClientProvider>
           <AppProviders>{children}</AppProviders>
+          <CookieConsent />
         </NextIntlClientProvider>
       </body>
     </html>

@@ -1,10 +1,10 @@
 # RASCUNHO — requer revisão de um assessor jurídico
 
-> Versão do rascunho: 0.2 (2026-10-26). No Peru não há uma norma específica sobre cookies; aplica-se a Lei 29733 e seu Regulamento (D.S. 016-2024-JUS) quando os cookies tratam dados pessoais. Análise: `brain/wiki/normativa/proteccion-de-datos.md`. A tabela da seção 4 é o inventário real do site em 2026-10-26: apenas cookies e armazenamento estritamente necessários ou pedidos pelo próprio visitante; não há análise, publicidade nem recursos de terceiros. Se no futuro forem adicionadas análise ou publicidade, antes de ativá-las é preciso implementar o aviso de consentimento e atualizar esta política.
+> Versão do rascunho: 0.3 (2026-11-15). No Peru não há uma norma específica sobre cookies; aplica-se a Lei 29733 e seu Regulamento (D.S. 016-2024-JUS) quando os cookies tratam dados pessoais. Análise: `brain/wiki/normativa/proteccion-de-datos.md`. A tabela da seção 4 é o inventário real do site em 2026-11-15. Mudança da 0.3: Google Analytics 4, opcional, carregado apenas se o visitante clicar em "Aceitar" no aviso de cookies. Revisar com o assessor jurídico a transferência internacional ao Google (seção 6) e refleti-la também na Política de Privacidade.
 
 # Política de Cookies da peruwonderstours
 
-Última atualização: 26 de outubro de 2026 · Versão 0.2
+Última atualização: 15 de novembro de 2026 · Versão 0.3
 
 ## 1. O que são cookies?
 
@@ -16,7 +16,11 @@ PERU WONDERS TOURS S.A.C., RUC 20616102339, endereço Jr. Amauta Mza. X Lote 15,
 
 ## 3. Quais cookies usamos
 
-**Usamos apenas cookies estritamente necessários** para o site funcionar (seu carrinho, sua reserva, sua sessão e o Livro de Reclamações) e armazenamento local para lembrar o que você mesmo escolhe (favoritos, comparador, anúncios que você fechou). **Não usamos cookies de análise, personalização ou publicidade, nem cookies de terceiros**, e o site não carrega fontes, vídeos ou imagens de outras empresas. Por isso não mostramos um aviso para aceitar ou recusar cookies: não há nenhum opcional.
+Usamos **cookies estritamente necessários** para o site funcionar (seu carrinho, sua reserva, sua sessão e o Livro de Reclamações) e armazenamento local para lembrar o que você mesmo escolhe (favoritos, comparador, anúncios que você fechou, sua decisão sobre cookies).
+
+Além disso, **somente com a sua permissão**, usamos o **Google Analytics** para medir quantas pessoas visitam o site e quais páginas usam. Ao entrar, mostramos um aviso com duas opções do mesmo tamanho: "Aceitar" e "Recusar". Enquanto você não aceitar, o Google Analytics não é carregado e nenhum dos seus cookies é criado. Se recusar, o site funciona da mesma forma. Você pode mudar sua decisão quando quiser em "Preferências de cookies", no rodapé de qualquer página.
+
+**Não usamos cookies de publicidade nem de personalização**: o Google Analytics está configurado sem os sinais do Google para publicidade ou personalização de anúncios.
 
 ## 4. Detalhe dos cookies e do armazenamento
 
@@ -32,8 +36,11 @@ PERU WONDERS TOURS S.A.C., RUC 20616102339, endereço Jr. Amauta Mza. X Lote 15,
 | `pwt-favorites` | Armazenamento local | Guarda seus passeios favoritos | Até você removê-los |
 | `pwt-promo-cerrado` | Armazenamento local | Lembra que você fechou o anúncio de um evento, para não mostrá-lo de novo por 24 horas | 24 horas |
 | `pwt-compare`, `pwt-trip-ack`, `pwt-checkout-draft` | Armazenamento de sessão | Comparador, avisos já lidos e rascunho dos seus dados durante a reserva (sem número de documento) | Até você fechar a aba |
+| `pwt-cookie-consent` | Armazenamento local, necessário | Lembra se você aceitou ou recusou o Google Analytics, para não perguntar em cada página | Até você apagá-lo ou mudar sua decisão |
+| `_ga` | Cookie de análise do Google Analytics, **opcional** (somente se você aceitar) | Distingue visitantes de forma anônima para contar visitas | 2 anos |
+| `_ga_<ID>` | Cookie de análise do Google Analytics, **opcional** (somente se você aceitar) | Mantém o estado da visita para medir as páginas vistas | 2 anos |
 
-Os cookies próprios são enviados apenas à peruwonderstours, são `HttpOnly` e `Secure` quando o site funciona com https, e não contêm seu nome nem seus dados de pagamento.
+Os cookies próprios são enviados apenas à peruwonderstours, são `HttpOnly` e `Secure` quando o site funciona com https, e não contêm seu nome nem seus dados de pagamento. Os cookies do Google Analytics são criados pelo script do Google no seu navegador; se você retirar sua permissão, nós os apagamos deste site.
 
 Quando você paga, o formulário de pagamento é o do gateway autorizado, no site dele. Essa empresa pode usar seus próprios cookies conforme a política dela, que será mostrada nesse momento.
 
@@ -43,8 +50,8 @@ Você pode apagar ou bloquear cookies e o armazenamento local nas configuraçõe
 
 ## 6. Transferências internacionais
 
-Os cookies próprios e o armazenamento local não enviam dados a terceiros. Os dados que você envia ao reservar são tratados conforme a Política de Privacidade, incluindo o país onde ficam nossos servidores.
+Os cookies próprios e o armazenamento local não enviam dados a terceiros. Se você aceitar o Google Analytics, os dados da sua visita (páginas vistas, tipo de dispositivo e navegador, localização aproximada) são enviados ao Google LLC, que pode tratá-los em servidores fora do Peru, incluindo os Estados Unidos. Os dados que você envia ao reservar são tratados conforme a Política de Privacidade, incluindo o país onde ficam nossos servidores.
 
 ## 7. Alterações
 
-Se no futuro usarmos cookies de outro tipo (por exemplo, para medir visitas), pediremos sua permissão antes com um aviso para aceitá-los ou recusá-los, e atualizaremos esta política.
+Se no futuro usarmos cookies de outro tipo (por exemplo, de publicidade), pediremos sua permissão antes com um aviso para aceitá-los ou recusá-los, e atualizaremos esta política.

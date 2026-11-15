@@ -78,7 +78,8 @@ export function proxy(request: NextRequest) {
     : null;
   // Formulario de Izipay: sus dominios solo se permiten en las rutas con nonce (checkout y reserva).
   const izipay = sensitive && process.env.PAYMENT_PROVIDER === "izipay";
-  const policy = contentSecurityPolicy(nonce, dev, upgradeTransport, localMediaOrigin, izipay);
+  const analytics = Boolean(process.env.NEXT_PUBLIC_GA_ID?.trim());
+  const policy = contentSecurityPolicy(nonce, dev, upgradeTransport, localMediaOrigin, izipay, analytics);
   const cspHeader = reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy";
 
   const requestHeaders = new Headers(request.headers);
