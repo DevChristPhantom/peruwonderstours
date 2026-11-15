@@ -16,7 +16,7 @@ test('Portuguese selector, search and untranslated catalog fallback remain consi
   await page.getByRole('link', { name: 'Português', exact: true }).click();
   await expect(page).toHaveURL(/\/pt\/?$/);
   await expect(page.locator('html')).toHaveAttribute('lang', 'pt-BR');
-  await expect(page.getByRole('heading', { name: 'Viaje pelo Peru com quem conhece o país', exact: true })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Descubra a magia do Peru', exact: true })).toBeVisible();
   const search = page.getByRole('search', { name: 'Buscar passeios', exact: true });
   await search.getByRole('combobox').fill('Puno');
   await page.getByRole('option', { name: /Puno/i }).first().click();
