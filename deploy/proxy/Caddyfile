@@ -1,7 +1,8 @@
 # Caddy compartido. Configuración global + un archivo por sitio en sites/.
 {
-	# Correo para avisos de Let's Encrypt (vencimientos). Va en proxy.env: ACME_EMAIL=...
-	email {$ACME_EMAIL}
+	# Correo para Let's Encrypt: opcional. Para usarlo, descomentar y definir ACME_EMAIL en proxy.env
+	# (con la variable vacía Caddy no arranca).
+	# email {$ACME_EMAIL}
 
 	servers {
 		# Cloudflare delante (proxy naranja): se confía en sus rangos para saber la IP real del
