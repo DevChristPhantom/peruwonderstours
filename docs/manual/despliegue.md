@@ -124,6 +124,12 @@ $C up -d api web admin
 1. En la PC: commit y `git push` a la rama.
 2. En el servidor: `ssh deploy@IP_DEL_VPS` → `cd /srv/peruwonderstours/app && bash deploy/scripts/deploy.sh`
 
+   Si la conexión es inestable, lanzarlo desacoplado (sigue aunque se corte el SSH) y mirar el registro:
+   ```bash
+   setsid nohup bash deploy/scripts/deploy.sh > /srv/peruwonderstours/deploy.log 2>&1 < /dev/null &
+   tail -f /srv/peruwonderstours/deploy.log      # Ctrl+C solo deja de mirar; el despliegue sigue
+   ```
+
 Aplica migraciones, recompila y reinicia. Durante el reinicio Caddy muestra la página de mantenimiento.
 Para mantenimiento planificado con la web encendida: `MAINTENANCE_MODE=on` en `web.env` y
 `docker compose ... up -d web` (ver `docs/manual/mantenimiento.md`).
