@@ -1,11 +1,11 @@
 # peruwonderstours en Caddy. Copiar a /srv/proxy/sites/ (lo hace deploy/scripts/deploy.sh).
 # Variables en /srv/proxy/proxy.env:
-#   PWT_WEB_DOMAIN     prueba.peruwonderstours.com  (fase de pruebas)  →  peruwonderstours.com (lanzamiento)
+#   PWT_WEB_DOMAIN     peruwonderstours.com
+#   PWT_WEB_REDIRECTS  www.peruwonderstours.com, prueba.peruwonderstours.com  (redirigen al principal)
 #   PWT_ADMIN_DOMAIN   panel.peruwonderstours.com
 #   PWT_STAGING_USER / PWT_STAGING_HASH   usuario y hash de la contraseña de la fase de pruebas
 #                      (hash: docker compose exec caddy caddy hash-password)
-# Lanzamiento: cambiar PWT_WEB_DOMAIN, borrar el bloque basic_auth y el X-Robots-Tag, y activar el
-# bloque "www" del final. Ver docs/manual/despliegue.md.
+# Lanzamiento: borrar el bloque basic_auth y el X-Robots-Tag. Ver docs/manual/despliegue.md.
 
 (pwt_maintenance) {
 	# Web apagada (despliegue o caída): página estática con 503 temporal (Google no desindexa).
@@ -47,7 +47,9 @@
 	import upstream pwt-admin:3000
 }
 
-# Al lanzar: descomentar para que www redirija al dominio principal.
-# www.peruwonderstours.com {
-# 	redir https://peruwonderstours.com{uri} permanent
-# }
+# Direcciones secundarias → dominio principal (PWT_WEB_REDIRECTS en proxy.env, obligatoria, separadas
+# por coma; p. ej. "www.peruwonderstours.com, prueba.peruwonderstours.com").
+{$PWT_WEB_REDIRECTS} {
+	import common
+	redir https://{$PWT_WEB_DOMAIN}{uri} permanent
+}
