@@ -32,13 +32,20 @@ export function breadcrumbJsonLd(crumbs: Crumb[]): JsonLdObject {
   };
 }
 
-/** Agencia con datos confirmados (razón social y RUC de SUNAT); nunca incluye registros o reseñas de ejemplo. */
-export function organizationJsonLd(): JsonLdObject {
+/**
+ * Agencia con datos confirmados (razón social y RUC de SUNAT); nunca incluye registros o reseñas de ejemplo.
+ * `about`: descripción y eslogan del cliente (texto de «Nosotros») en el idioma de la página, para que
+ * buscadores y asistentes de IA describan la agencia con sus propias palabras.
+ */
+export function organizationJsonLd(about?: { description: string; slogan: string }): JsonLdObject {
   return {
     "@context": "https://schema.org",
     "@type": "TravelAgency",
     "@id": absoluteUrl('/#organization'),
     name: SITE.name,
+    alternateName: "PERU WONDERS TOURS",
+    ...(about ? { description: about.description, slogan: about.slogan } : {}),
+    knowsLanguage: ["es", "en", "pt"],
     ...(SITE.legal.businessName ? { legalName: SITE.legal.businessName } : {}),
     ...(SITE.legal.ruc ? { taxID: SITE.legal.ruc } : {}),
     url: SITE.url,
@@ -77,16 +84,31 @@ export function touristTripJsonLd(tour: Tour, locale: Locale, dayLabel: (day: nu
       })),
     },
   };
-  if (tour.pricing) {
-    data.offers = {
+  // Precio "desde" por adulto: soles (residentes en el Perú) y dólares (extranjeros), los que existan.
+  const offers = [tour.pricing, tour.foreignPricing]
+    .filter((p): p is NonNullable<typeof p> => !!p)
+    .map((p) => ({
       "@type": "Offer",
       url,
-      priceCurrency: tour.pricing.currency,
-      price: (tour.pricing.adultCents / 100).toFixed(2),
+      priceCurrency: p.currency,
+      price: (p.adultCents / 100).toFixed(2),
       seller: { "@type": "TravelAgency", '@id': absoluteUrl('/#organization'), name: SITE.name },
-    };
-  }
+    }));
+  if (offers.length) data.offers = offers.length === 1 ? offers[0] : offers;
   return data;
+}
+
+/** Sitio web (nombre e idioma): ayuda a buscadores y asistentes a asociar el dominio con la marca. */
+export function websiteJsonLd(locale: Locale): JsonLdObject {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": absoluteUrl('/#website'),
+    name: "Peru Wonders Tours",
+    url: SITE.url,
+    inLanguage: locale,
+    publisher: { '@id': absoluteUrl('/#organization') },
+  };
 }
 
 export function faqJsonLd(faqs: Faq[]): JsonLdObject | null {

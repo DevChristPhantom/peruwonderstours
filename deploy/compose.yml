@@ -67,6 +67,10 @@ services:
     image: peruwonderstours/web:latest
     restart: unless-stopped
     env_file: ${PWT_ENV_DIR:-/srv/peruwonderstours/env}/web.env
+    volumes:
+      # Fotos ya convertidas (AVIF/WebP): sin esto cada despliegue las borraba y los primeros visitantes
+      # esperaban ~1 s por foto mientras se volvían a convertir.
+      - webcache:/app/apps/web/.next/cache
     depends_on:
       api: { condition: service_healthy }
     networks:
@@ -97,3 +101,4 @@ networks:
 volumes:
   pgdata: {}
   uploads: {}
+  webcache: {}

@@ -57,6 +57,22 @@ echo "==> Refrescar la caché de la web"
   }).then((r) => { console.log("    revalidate", r.status); process.exit(r.ok ? 0 : 1); })
     .catch((e) => { console.error(e); process.exit(1); });'
 
+echo "==> Precalentar fotos (en segundo plano: home y listado de tours en los 3 idiomas)"
+# Convierte a AVIF las fotos que verán los primeros visitantes (~1 s cada una en este VPS), de 2 en 2
+# para no acaparar la CPU. Las ya convertidas quedan en el volumen webcache y se saltan al instante.
+"${C[@]}" exec -d -T web node -e '
+  const pages = ["/es", "/en", "/pt", "/es/tours", "/en/tours", "/pt/tours"];
+  (async () => {
+    const urls = new Set();
+    for (const p of pages) {
+      const html = await fetch("http://127.0.0.1:3000" + p).then((r) => r.text()).catch(() => "");
+      for (const m of html.matchAll(/\/_next\/image\?url=[^"\s,]+/g)) urls.add(m[0].replace(/&amp;/g, "&"));
+    }
+    const list = [...urls];
+    const worker = async () => { for (let u; (u = list.shift()); ) await fetch("http://127.0.0.1:3000" + u, { headers: { accept: "image/avif,image/webp,*/*" } }).then((r) => r.arrayBuffer()).catch(() => {}); };
+    await Promise.all([worker(), worker()]);
+  })();'
+
 echo "==> Limpieza de imágenes viejas"
 docker image prune -f >/dev/null
 

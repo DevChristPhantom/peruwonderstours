@@ -107,6 +107,12 @@ const nextConfig = {
   images: {
     unoptimized: localImagePreview,
     formats: ["image/avif", "image/webp"],
+    // Las fotos del catálogo y del panel tienen nombre por contenido (cambian de URL si cambian): el
+    // navegador puede guardarlas 30 días en vez de las 4 h por defecto.
+    minimumCacheTTL: 60 * 60 * 24 * 30,
+    // 5 anchos de pantalla en vez de 8: en el VPS (2 núcleos) convertir a AVIF cuesta ~1 s por foto la
+    // primera vez; menos variantes = menos conversiones y más aciertos de caché. Cubre 1x y 2x de móvil a 1920 px.
+    deviceSizes: [640, 828, 1080, 1440, 1920],
     // El catálogo archivado usa rutas locales; solo medios nuevos de la API tienen origen remoto.
     // Solo en desarrollo con la API local: Next bloquea por defecto optimizar imágenes de IPs locales.
     dangerouslyAllowLocalIP: apiIsLocal && (process.env.NODE_ENV !== "production" || process.env.PWT_DEMO_BUILD === "1"),

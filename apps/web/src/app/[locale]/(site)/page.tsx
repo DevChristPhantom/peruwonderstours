@@ -22,7 +22,7 @@ import {
 } from '@/lib/catalog';
 import { getPromotions } from '@/lib/content/promotions';
 import { getTestimonials } from '@/lib/content/testimonials';
-import { JsonLd, organizationJsonLd } from '@/lib/seo/json-ld';
+import { JsonLd, organizationJsonLd, websiteJsonLd } from '@/lib/seo/json-ld';
 import { alternatesFor, pageMetadata } from '@/lib/seo/metadata';
 import { SITE } from '@/lib/site';
 
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: PageProps<'/[locale]'>): Prom
 export default async function HomePage({ params }: PageProps<'/[locale]'>) {
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
-  const [media, destinations, allTours, featured, searchOptions, testimonials, promotions, t, th, tp] =
+  const [media, destinations, allTours, featured, searchOptions, testimonials, promotions, t, th, tp, ta] =
     await Promise.all([
       getNavMedia(locale),
       getDestinations(locale),
@@ -54,6 +54,7 @@ export default async function HomePage({ params }: PageProps<'/[locale]'>) {
       getTranslations('home.featured'),
       getTranslations('home.highlights'),
       getTranslations('home.promoPopup'),
+      getTranslations('about'),
     ]);
   // Anuncio emergente: el primer evento vigente marcado para mostrarse al entrar.
   const popup = promotions.find((p) => p.showPopup);
@@ -102,7 +103,7 @@ export default async function HomePage({ params }: PageProps<'/[locale]'>) {
 
   return (
     <>
-      <JsonLd data={organizationJsonLd()} />
+      <JsonLd data={[organizationJsonLd({ description: (ta.raw('intro') as string[]).join(' '), slogan: ta('slogan') }), websiteJsonLd(locale)]} />
       <Hero image={media.heroImage} />
       <div className="pwt-container">
         <SearchBar options={searchOptions} />

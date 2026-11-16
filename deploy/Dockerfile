@@ -66,6 +66,9 @@ WORKDIR /app
 COPY --from=web-build --chown=node:node /repo/apps/web/.next/standalone ./
 COPY --from=web-build --chown=node:node /repo/apps/web/.next/static ./apps/web/.next/static
 COPY --from=web-build --chown=node:node /repo/apps/web/public ./apps/web/public
+# Caché del optimizador de imágenes (volumen en compose.yml): debe existir y ser del usuario node para
+# que el volumen nuevo herede el dueño y las fotos convertidas sobrevivan a cada despliegue.
+RUN mkdir -p apps/web/.next/cache && chown -R node:node apps/web/.next/cache
 USER node
 EXPOSE 3000
 CMD ["node", "apps/web/server.js"]

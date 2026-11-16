@@ -52,6 +52,28 @@ test('a tour price is not misrepresented as confirmed stock or availability', ()
   assert.equal('offers' in jsonLd.touristTripJsonLd({ ...tour, pricing: null }, 'pt', () => ''), false);
 });
 
+test('residents and international travelers each get their own offer currency', () => {
+  const tour = { title: 'Tour fixture', metaDescription: 'Tour description', excerpt: '', path: '/en/tours/fixture', fallback: false, gallery: [], categorySlugs: [], itinerary: [], pricing: { adultCents: 29900, currency: 'PEN' }, foreignPricing: { adultCents: 9900, currency: 'USD' } };
+  const offers = jsonLd.touristTripJsonLd(tour, 'en', () => '').offers;
+  // The helper runs in another VM realm: compare values, not array prototypes.
+  assert.equal(JSON.stringify(offers.map((o) => [o.priceCurrency, o.price])), JSON.stringify([['PEN', '299.00'], ['USD', '99.00']]));
+  assert.equal(offers.some((o) => 'availability' in o), false);
+  // Only the dollar rate loaded: a single offer object, as before.
+  const usdOnly = jsonLd.touristTripJsonLd({ ...tour, pricing: null }, 'en', () => '').offers;
+  assert.equal(usdOnly.priceCurrency, 'USD');
+});
+
+test('the agency is described in its own words and the website names the brand', () => {
+  const agency = jsonLd.organizationJsonLd({ description: 'Agencia de viajes peruana.', slogan: 'Descubre la magia del Perú.' });
+  assert.equal(agency.description, 'Agencia de viajes peruana.');
+  assert.equal(agency.slogan, 'Descubre la magia del Perú.');
+  assert.equal(agency.knowsLanguage.join(','), 'es,en,pt');
+  assert.equal('description' in jsonLd.organizationJsonLd(), false);
+  const site = jsonLd.websiteJsonLd('es');
+  assert.equal(site['@type'], 'WebSite');
+  assert.equal(site.publisher['@id'], agency['@id']);
+});
+
 test('public metadata has matching social cards, a real logo fallback and large image previews', () => {
   const page = metadata.pageMetadata({ locale: 'pt', title: 'Passeios', description: 'Viagens pelo Peru', paths: { es: '/es/tours', en: '/en/tours', pt: '/pt/tours' } });
   assert.equal(page.openGraph.images[0].url, site.absoluteUrl('/brand/peruwonderstours-logo-official-20261115.webp'));
