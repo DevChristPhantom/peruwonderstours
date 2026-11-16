@@ -9,6 +9,8 @@ ARG NODE_IMAGE=node:24-bookworm-slim
 
 FROM ${NODE_IMAGE} AS base
 ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH CI=true NEXT_TELEMETRY_DISABLED=1
+# Prisma detecta la versión de OpenSSL de la imagen; sin el paquete solo adivina (aviso en el deploy).
+RUN apt-get update -q && apt-get install -yq --no-install-recommends openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 RUN corepack enable && corepack prepare pnpm@10.34.6 --activate
 WORKDIR /repo
 
