@@ -1,0 +1,53 @@
+# peruwonderstours en Caddy. Copiar a /srv/proxy/sites/ (lo hace deploy/scripts/deploy.sh).
+# Variables en /srv/proxy/proxy.env:
+#   PWT_WEB_DOMAIN     prueba.peruwonderstours.com  (fase de pruebas)  →  peruwonderstours.com (lanzamiento)
+#   PWT_ADMIN_DOMAIN   panel.peruwonderstours.com
+#   PWT_STAGING_USER / PWT_STAGING_HASH   usuario y hash de la contraseña de la fase de pruebas
+#                      (hash: docker compose exec caddy caddy hash-password)
+# Lanzamiento: cambiar PWT_WEB_DOMAIN, borrar el bloque basic_auth y el X-Robots-Tag, y activar el
+# bloque "www" del final. Ver docs/manual/despliegue.md.
+
+(pwt_maintenance) {
+	# Web apagada (despliegue o caída): página estática con 503 temporal (Google no desindexa).
+	handle_errors 502 503 504 {
+		root * /srv/static/peruwonderstours
+		rewrite * /mantenimiento.html
+		header Retry-After 600
+		header Cache-Control no-store
+		file_server {
+			status 503
+		}
+	}
+}
+
+{$PWT_WEB_DOMAIN} {
+	import common
+	import pwt_maintenance
+
+	# --- Solo fase de pruebas: contraseña y fuera de Google. Quitar al lanzar. ---
+	basic_auth {
+		{$PWT_STAGING_USER} {$PWT_STAGING_HASH}
+	}
+	header X-Robots-Tag "noindex, nofollow"
+	# --- fin fase de pruebas ---
+
+	# Fotos y videos subidos desde el panel (la API los sirve con caché inmutable).
+	handle /media/* {
+		import upstream pwt-api:3001
+	}
+	handle {
+		import upstream pwt-web:3000
+	}
+}
+
+{$PWT_ADMIN_DOMAIN} {
+	import common
+	import pwt_maintenance
+	header X-Robots-Tag "noindex, nofollow, noarchive"
+	import upstream pwt-admin:3000
+}
+
+# Al lanzar: descomentar para que www redirija al dominio principal.
+# www.peruwonderstours.com {
+# 	redir https://peruwonderstours.com{uri} permanent
+# }

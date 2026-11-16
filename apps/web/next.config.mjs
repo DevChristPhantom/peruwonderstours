@@ -69,6 +69,21 @@ function legalDocumentsEnv() {
 const apiOrigin = new URL(process.env.API_BASE_URL || "http://localhost:3001/api/v1");
 const apiIsLocal = ["localhost", "127.0.0.1", "[::1]"].includes(apiOrigin.hostname);
 
+/**
+ * En el servidor la API va por la red privada de Docker (`http://api:3001`), pero los medios que se
+ * suben desde el panel se publican en el dominio (`MEDIA_PUBLIC_BASE_URL`, p. ej.
+ * `https://peruwonderstours.com/media`). El optimizador de imágenes también debe aceptar ese origen
+ * (solo https y solo /media/**); sin esto, las fotos subidas en producción salían rotas.
+ */
+const mediaOrigin = (() => {
+  try {
+    const url = new URL(process.env.MEDIA_PUBLIC_BASE_URL ?? "");
+    return url.protocol === "https:" && !url.username && !url.password && url.host !== apiOrigin.host ? url : null;
+  } catch {
+    return null;
+  }
+})();
+
 // Local presentations serve the already compressed archive directly. This avoids
 // cold image conversions on Windows; public production keeps responsive optimization.
 const localImagePreview = isLocalHttpDemo(process.env.PWT_DEMO_BUILD, process.env.PUBLIC_WEB_BASE_URL);
@@ -77,6 +92,8 @@ const localImagePreview = isLocalHttpDemo(process.env.PWT_DEMO_BUILD, process.en
 const nextConfig = {
   // Compilación de demostración aislada del servidor de desarrollo que ya usa el cliente.
   distDir: process.env.PWT_DEMO_BUILD === "1" ? ".next-demo" : ".next",
+  // Imagen Docker del servidor (deploy/Dockerfile): servidor autónomo con solo lo necesario.
+  ...(process.env.PWT_STANDALONE === "1" ? { output: /** @type {const} */ ("standalone") } : {}),
   transpilePackages: ["@pwt/ui"],
   // Monorepo pnpm: la raíz incluye data/seed y packages/ui.
   outputFileTracingRoot: path.join(configDirectory, "../.."),
@@ -100,6 +117,7 @@ const nextConfig = {
         ...(apiOrigin.port ? { port: apiOrigin.port } : {}),
         pathname: "/media/**",
       },
+      ...(mediaOrigin ? [{ protocol: /** @type {const} */ ("https"), hostname: mediaOrigin.hostname, ...(mediaOrigin.port ? { port: mediaOrigin.port } : {}), pathname: "/media/**" }] : []),
     ],
   },
   async redirects() {

@@ -121,4 +121,25 @@ describe('Validación de entorno', () => {
     expect(messages({ ...prod, SWAGGER_ENABLED: 'true' })).toMatch(/SWAGGER_ENABLED debe ser false/);
     expect(validateEnvironment({ ...base }).SWAGGER_ENABLED).toBe(true); // desarrollo
   });
+
+  it('STAGING solo permite la pasarela simulada; el resto de reglas de producción sigue igual', () => {
+    const prod = { ...base, NODE_ENV: 'production', DATA_SOURCE: 'prisma', DATABASE_URL: 'postgresql://u@h/db', PAYMENT_GATEWAY: 'sandbox' };
+    const messages = (config: Record<string, unknown>) => {
+      try {
+        validateEnvironment(config);
+        return '';
+      } catch (e) {
+        return (e as Error).message;
+      }
+    };
+    expect(messages(prod)).toMatch(/pasarela sandbox no se permite/);
+    const staging = messages({ ...prod, STAGING: 'true' });
+    expect(staging).not.toMatch(/pasarela sandbox/);
+    // Las demás exigencias de producción no se relajan.
+    expect(staging).toMatch(/PII_ENCRYPTION_KEY es obligatoria/);
+    expect(staging).toMatch(/JWT_ACCESS_SECRET es obligatoria/);
+    expect(messages({ ...prod, STAGING: 'true', SWAGGER_ENABLED: 'true' })).toMatch(/SWAGGER_ENABLED debe ser false/);
+    // En pruebas nunca se cobra de verdad: Izipay solo en ambiente de integración.
+    expect(messages({ ...prod, STAGING: 'true', PAYMENT_GATEWAY: 'izipay', IZIPAY_ENV: 'production' })).toMatch(/cobraría de verdad/);
+  });
 });

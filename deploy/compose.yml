@@ -1,0 +1,99 @@
+# peruwonderstours en el VPS: base de datos, API, web y panel. El proxy compartido (Caddy) vive
+# aparte en deploy/proxy y llega a estos servicios por la red externa "proxy" con alias únicos
+# (pwt-web, pwt-admin, pwt-api), para que otros proyectos del mismo servidor no choquen.
+#
+# Variables: /srv/peruwonderstours/env/{db,api,web,admin}.env (generadas por scripts/gen-env.sh,
+# fuera del repositorio, permisos 600). Uso normal: deploy/scripts/deploy.sh.
+name: peruwonderstours
+
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "5" }
+
+services:
+  db:
+    image: postgres:16-bookworm
+    restart: unless-stopped
+    env_file: ${PWT_ENV_DIR:-/srv/peruwonderstours/env}/db.env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    mem_limit: 1g
+    logging: *logging
+
+  api:
+    build: { context: .., dockerfile: deploy/Dockerfile, target: api }
+    image: peruwonderstours/api:latest
+    restart: unless-stopped
+    env_file: ${PWT_ENV_DIR:-/srv/peruwonderstours/env}/api.env
+    environment:
+      MEDIA_LOCAL_DIR: /data/uploads
+    depends_on:
+      db: { condition: service_healthy }
+    volumes:
+      - uploads:/data/uploads
+    # Solo en el loopback del servidor: lo usa el build de la web (deploy.sh). Nunca expuesto a internet.
+    ports: ["127.0.0.1:${PWT_API_HOST_PORT:-13001}:3001"]
+    networks:
+      internal: {}
+      proxy: { aliases: [pwt-api] }
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3001/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    mem_limit: 768m
+    logging: *logging
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+      target: web
+      # Lee el catálogo real de la API durante el build (puerto de loopback de arriba).
+      network: host
+      args:
+        PUBLIC_WEB_BASE_URL: ${PWT_PUBLIC_WEB_BASE_URL:?Falta PWT_PUBLIC_WEB_BASE_URL}
+        MEDIA_PUBLIC_BASE_URL: ${PWT_MEDIA_PUBLIC_BASE_URL:?Falta PWT_MEDIA_PUBLIC_BASE_URL}
+        NEXT_PUBLIC_GA_ID: ${PWT_GA_ID:-}
+        NEXT_PUBLIC_PAYMENTS_MODE: ${PWT_PAYMENTS_MODE:-sandbox}
+        API_BASE_URL: http://127.0.0.1:${PWT_API_HOST_PORT:-13001}/api/v1
+    image: peruwonderstours/web:latest
+    restart: unless-stopped
+    env_file: ${PWT_ENV_DIR:-/srv/peruwonderstours/env}/web.env
+    depends_on:
+      api: { condition: service_healthy }
+    networks:
+      internal: {}
+      proxy: { aliases: [pwt-web] }
+    mem_limit: 768m
+    logging: *logging
+
+  admin:
+    build: { context: .., dockerfile: deploy/Dockerfile, target: admin }
+    image: peruwonderstours/admin:latest
+    restart: unless-stopped
+    env_file: ${PWT_ENV_DIR:-/srv/peruwonderstours/env}/admin.env
+    depends_on:
+      api: { condition: service_healthy }
+    networks:
+      internal: {}
+      proxy: { aliases: [pwt-admin] }
+    mem_limit: 512m
+    logging: *logging
+
+networks:
+  internal: {}
+  proxy:
+    external: true
+    name: proxy
+
+volumes:
+  pgdata: {}
+  uploads: {}

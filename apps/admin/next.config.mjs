@@ -21,6 +21,8 @@ const common = [
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   distDir: process.env.PWT_DEMO_BUILD === "1" ? ".next-demo" : ".next",
+  // Imagen Docker del servidor (deploy/Dockerfile): servidor autónomo con solo lo necesario.
+  ...(process.env.PWT_STANDALONE === "1" ? { output: /** @type {const} */ ("standalone") } : {}),
   transpilePackages: ["@pwt/ui"],
   outputFileTracingRoot: path.join(__dirname, "../.."),
   poweredByHeader: false,

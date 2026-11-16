@@ -1,0 +1,35 @@
+# Proxy compartido del VPS (un solo Caddy para todos los proyectos). Se instala una vez en
+# /srv/proxy y crea la red "proxy" a la que se unen los proyectos. Certificados HTTPS automáticos.
+# Cada sitio es un archivo en sites/*.caddy; agregar o quitar uno no toca a los demás:
+#   docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
+name: proxy
+
+services:
+  caddy:
+    image: caddy:2.10
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    env_file: ./proxy.env
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./sites:/etc/caddy/sites:ro
+      # Páginas de mantenimiento de cada proyecto (se muestran si su app está apagada).
+      - ./static:/srv/static:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [proxy]
+    mem_limit: 256m
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "5" }
+
+networks:
+  proxy:
+    name: proxy
+
+volumes:
+  caddy_data: {}
+  caddy_config: {}

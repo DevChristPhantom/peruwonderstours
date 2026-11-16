@@ -1,0 +1,25 @@
+# Contexto de deploy/Dockerfile: solo el código. Nada de dependencias locales, compilados,
+# datos de la demo ni credenciales.
+**/node_modules
+**/.next
+**/.next-demo
+**/dist
+**/.turbo
+**/*.tsbuildinfo
+**/coverage
+**/.env
+**/.env.*
+!**/.env.example
+**/*.private*
+**/*.log
+apps/api/uploads
+apps/api/.mail-outbox
+apps/api/src/generated
+.git
+.claude
+brain
+logo
+pantallasMovimientos
+playwright-report
+test-results
+tests

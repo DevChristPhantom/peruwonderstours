@@ -31,6 +31,15 @@ export class EnvironmentVariables {
   @IsIn(['development', 'test', 'production'])
   NODE_ENV: 'development' | 'test' | 'production' = 'development';
 
+  /**
+   * Servidor de pruebas previo al lanzamiento (subdominio con contraseña y noindex): se ejecuta con
+   * todas las reglas de producción salvo una, la pasarela simulada (`PAYMENT_GATEWAY=sandbox` o Izipay
+   * en ambiente de integración), para revisar el sitio sin cobrar. No tiene efecto fuera de producción.
+   */
+  @Transform(toBool)
+  @IsBoolean()
+  STAGING = false;
+
   @Type(() => Number)
   @IsInt()
   @Min(1)
@@ -510,8 +519,10 @@ export function validateEnvironment(config: Record<string, unknown>): Environmen
   if (env.NODE_ENV === 'production') {
     if (env.DATA_SOURCE !== 'prisma') messages.push('DATA_SOURCE debe ser "prisma" en producción.');
     if (env.DEMO_PRICING) messages.push('DEMO_PRICING no se permite en producción.');
-    if (env.PAYMENT_GATEWAY === 'sandbox') messages.push('La pasarela sandbox no se permite en producción.');
-    if (env.PAYMENT_GATEWAY === 'izipay' && env.IZIPAY_ENV !== 'production') messages.push('IZIPAY_ENV debe ser "production" en producción (el ambiente de integración no cobra).');
+    // STAGING: único relajamiento, la pasarela simulada (el sitio de pruebas no debe cobrar).
+    if (env.PAYMENT_GATEWAY === 'sandbox' && !env.STAGING) messages.push('La pasarela sandbox no se permite en producción.');
+    if (env.PAYMENT_GATEWAY === 'izipay' && env.IZIPAY_ENV !== 'production' && !env.STAGING) messages.push('IZIPAY_ENV debe ser "production" en producción (el ambiente de integración no cobra).');
+    if (env.STAGING && env.PAYMENT_GATEWAY === 'izipay' && env.IZIPAY_ENV === 'production') messages.push('STAGING no puede usar Izipay en ambiente "production" (cobraría de verdad en el sitio de pruebas).');
     if (env.PAYMENT_GATEWAY === 'izipay' && !env.IZIPAY_IPN_URL?.startsWith('https://')) messages.push('IZIPAY_IPN_URL debe usar https en producción.');
     if (!env.PII_ENCRYPTION_KEY) messages.push('PII_ENCRYPTION_KEY es obligatoria en producción.');
     if (!/^\d{11}$/.test(env.PROVIDER_RUC)) messages.push('PROVIDER_RUC debe tener 11 dígitos en producción.');
