@@ -150,7 +150,38 @@ compilar).
 - [ ] Precios reales en soles y en dólares cargados en el panel.
 - [ ] Textos legales revisados por el abogado (quitar el aviso de BORRADOR).
 - [ ] Pasarela real contratada: en `api.env` `PAYMENT_GATEWAY` y sus claves; en `web.env`
-      `PAYMENT_PROVIDER`; en `deploy.env` `PWT_PAYMENTS_MODE`.
+      `PAYMENT_PROVIDER`; en `deploy.env` `PWT_PAYMENTS_MODE`. Pasarela elegida: **WeTravel**
+      (ver "Activar WeTravel" abajo).
+
+### Activar WeTravel
+
+Requisitos en la cuenta de WeTravel de la agencia: cuenta verificada (banco + identidad) y plan Pro
+(la verificación regala 60 días). Cobra en soles (residentes) y dólares (extranjeros); la agencia
+recibe el depósito en su banco. Comisiones: ver la página de precios de WeTravel.
+
+1. WeTravel → Business Settings → Branding & Pro Settings → **Public API Integration → Generate API Key**.
+   La clave se ve una sola vez: no la pegues en chats ni correos.
+2. Guardarla en el servidor sin que quede en el historial (la escribe la persona dueña de la cuenta):
+   ```bash
+   cd /srv/peruwonderstours && read -rsp "Clave de WeTravel: " K && echo &&      sed -i '/^PAYMENT_GATEWAY=/d;/^WETRAVEL_/d' env/api.env &&      printf 'PAYMENT_GATEWAY=wetravel
+WETRAVEL_ENV=production
+WETRAVEL_API_KEY=%s
+' "$K" >> env/api.env && unset K
+   sed -i 's/^PAYMENT_PROVIDER=.*/PAYMENT_PROVIDER=wetravel/' env/web.env
+   ```
+   Con `STAGING=true` la API rechaza `WETRAVEL_ENV=production` (cobraría de verdad en el sitio de
+   pruebas): activar junto con el lanzamiento, o probar antes con una cuenta demo de WeTravel y
+   `WETRAVEL_ENV=sandbox`.
+3. (Opcional, recomendado) Webhook: WeTravel → Profile → Edit Profile → Webhooks: **Yes** → Manage
+   Webhooks → Add Endpoint `https://peruwonderstours.com/api/v1/payments/webhooks/wetravel`, eventos
+   `payment.created`, `payment.updated`, `transaction.created`. Copiar el **Signing Secret** (`whsec_…`)
+   a `WETRAVEL_WEBHOOK_SECRET` en `env/api.env` (mismo método que el paso 2). Sin webhook igual funciona:
+   el viajero pulsa «Ya pagué» y la conciliación revisa cada 5 minutos los pagos de más de 30 minutos.
+4. Desplegar (`deploy/scripts/deploy.sh`) y hacer **un pago real pequeño** de prueba: confirmar que la
+   reserva queda pagada. Si queda pendiente con error `amount_mismatch` en los eventos de pago, WeTravel
+   informa los montos en otra unidad: avisar al desarrollador antes de vender.
+5. Devoluciones: se hacen desde el panel de WeTravel (la API de WeTravel no las permite) y luego se
+   registran en el panel de la agencia.
 - [ ] Correo: proveedor SMTP en `api.env` (`MAIL_TRANSPORT=smtp`, `SMTP_*`, remitente del dominio).
 - [ ] `STAGING=false` en `api.env`.
 - [ ] Dominio: `PWT_WEB_DOMAIN=peruwonderstours.com` en `proxy.env`; en `sites/peruwonderstours.caddy`

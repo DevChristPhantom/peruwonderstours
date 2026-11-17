@@ -9,7 +9,7 @@ export type PaymentKind = 'deposit' | 'balance' | 'full' | 'refund';
 /**
  * Proveedores del enum `payment_provider` (incluye `sandbox`, la pasarela simulada de desarrollo).
  */
-export type PaymentProviderCode = 'izipay' | 'niubiz' | 'mercadopago' | 'culqi' | 'manual' | 'sandbox';
+export type PaymentProviderCode = 'izipay' | 'niubiz' | 'mercadopago' | 'culqi' | 'manual' | 'sandbox' | 'wetravel';
 export type PaymentMethod = 'card' | 'yape' | 'plin' | 'pagoefectivo' | 'bank_transfer' | 'cash';
 
 /** Máquina de estados de un intento de cobro ante el proveedor. */

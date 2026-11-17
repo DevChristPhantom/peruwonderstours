@@ -147,6 +147,15 @@
     "rejected": "Rechazado",
     "pending": "Pendiente (CIP)"
   },
+  "wetravel": {
+    "note": "El pago se hace en la página segura de WeTravel (tarjeta de crédito o débito). Al pulsar Pagar se prepara tu enlace de pago.",
+    "intro": "Tu enlace de pago está listo. Ábrelo, completa el pago en WeTravel y luego vuelve aquí y pulsa «Ya pagué».",
+    "open": "Abrir WeTravel y pagar",
+    "paid": "Ya pagué",
+    "checking": "Verificando tu pago…",
+    "notCompleted": "Todavía no vemos tu pago en WeTravel. Si ya pagaste, espera un minuto y vuelve a pulsar «Ya pagué»; tu reserva sigue retenida.",
+    "newTab": "(se abre en una pestaña nueva)"
+  },
   "izipay": {
     "holderLegend": "Datos del titular del pago",
     "holderIntro": "Izipay los pide para validar el pago con {method}. Al pulsar Pagar se abrirá su ventana segura para ingresar la tarjeta o Yape.",

@@ -127,8 +127,8 @@ export class EnvironmentVariables {
   @IsUrl({ require_tld: false, require_protocol: true })
   PROBLEM_TYPE_BASE_URL = 'https://peruwonderstours.com/problems';
 
-  @IsIn(['sandbox', 'izipay'])
-  PAYMENT_GATEWAY: 'sandbox' | 'izipay' = 'sandbox';
+  @IsIn(['sandbox', 'izipay', 'wetravel'])
+  PAYMENT_GATEWAY: 'sandbox' | 'izipay' | 'wetravel' = 'sandbox';
 
   @ValidateIf((env: EnvironmentVariables) => env.PAYMENT_GATEWAY === 'sandbox')
   @IsString()
@@ -169,6 +169,23 @@ export class EnvironmentVariables {
   @ValidateIf((env: EnvironmentVariables) => env.PAYMENT_GATEWAY === 'izipay')
   @IsUrl({ require_tld: false, require_protocol: true })
   IZIPAY_IPN_URL?: string;
+
+  // --- WeTravel (PAYMENT_GATEWAY=wetravel). Business Settings > Branding & Pro Settings > Public API Key. ---
+  /** `sandbox` = api.demo.wetravel.to (cuenta de pruebas de WeTravel); `production` cobra de verdad. */
+  @IsIn(['sandbox', 'production'])
+  WETRAVEL_ENV: 'sandbox' | 'production' = 'sandbox';
+
+  /** «Public API Key» de WeTravel (es un refresh token: solo sirve para pedir tokens de 1 h). Secreta. */
+  @ValidateIf((env: EnvironmentVariables) => env.PAYMENT_GATEWAY === 'wetravel')
+  @IsString()
+  @MinLength(16)
+  WETRAVEL_API_KEY?: string;
+
+  /** Secreto de firma del endpoint en «Manage Webhooks» (Svix, empieza con `whsec_`). Opcional: sin él
+   *  no se aceptan webhooks y los pagos se confirman consultando a WeTravel (botón «Ya pagué» y conciliación). */
+  @IsOptional()
+  @Matches(/^whsec_[A-Za-z0-9+/=]{16,}$/)
+  WETRAVEL_WEBHOOK_SECRET?: string;
 
   @Type(() => Number)
   @IsInt()
@@ -524,6 +541,8 @@ export function validateEnvironment(config: Record<string, unknown>): Environmen
     if (env.PAYMENT_GATEWAY === 'izipay' && env.IZIPAY_ENV !== 'production' && !env.STAGING) messages.push('IZIPAY_ENV debe ser "production" en producción (el ambiente de integración no cobra).');
     if (env.STAGING && env.PAYMENT_GATEWAY === 'izipay' && env.IZIPAY_ENV === 'production') messages.push('STAGING no puede usar Izipay en ambiente "production" (cobraría de verdad en el sitio de pruebas).');
     if (env.PAYMENT_GATEWAY === 'izipay' && !env.IZIPAY_IPN_URL?.startsWith('https://')) messages.push('IZIPAY_IPN_URL debe usar https en producción.');
+    if (env.PAYMENT_GATEWAY === 'wetravel' && env.WETRAVEL_ENV !== 'production' && !env.STAGING) messages.push('WETRAVEL_ENV debe ser "production" en producción (la cuenta demo no cobra).');
+    if (env.STAGING && env.PAYMENT_GATEWAY === 'wetravel' && env.WETRAVEL_ENV === 'production') messages.push('STAGING no puede usar WeTravel en "production" (cobraría de verdad en el sitio de pruebas).');
     if (!env.PII_ENCRYPTION_KEY) messages.push('PII_ENCRYPTION_KEY es obligatoria en producción.');
     if (!/^\d{11}$/.test(env.PROVIDER_RUC)) messages.push('PROVIDER_RUC debe tener 11 dígitos en producción.');
     for (const key of ['PROVIDER_LEGAL_NAME', 'ESTABLISHMENT_ADDRESS'] as const) {

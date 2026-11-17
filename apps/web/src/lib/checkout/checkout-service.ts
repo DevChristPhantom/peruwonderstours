@@ -257,12 +257,16 @@ export async function prepareQuote(input: PrepareInput, locale: Locale = "es"): 
   return { ...base, plans, booking: null };
 }
 
+/** Enlaces de pago aceptados de WeTravel (producción y su ambiente demo). */
+const WETRAVEL_URL = /^https:\/\/([a-z0-9-]+\.)*(wetravel\.com|wetravel\.to)(\/|$)/i;
+
 /** Único origen aceptado para el SDK de Izipay (la URL llega de la API, pero no se carga cualquier script). */
 const IZIPAY_SDK_URL = /^https:\/\/(sandbox-)?checkout\.izipay\.pe\/payments\/v1\/js\/index\.js$/;
 
 /**
  * Crea el cobro de la reserva. Sandbox: lo confirma desde el servidor con el resultado simulado.
  * Izipay: devuelve la acción para abrir su formulario en el navegador (`ProviderAction`).
+ * WeTravel: devuelve el enlace de pago; el viajero paga allí y la confirmación consulta el estado.
  */
 export async function payBooking(params: {
   bookingCode: string;
@@ -279,6 +283,10 @@ export async function payBooking(params: {
       throw new Error(`Acción de pago no soportada (${payment.provider}).`);
     }
     return { provider: "izipay", paymentId: payment.id, token: nextAction.token, params: nextAction.params };
+  }
+  if (nextAction.type === "redirect" && payment.provider === "wetravel") {
+    if (!WETRAVEL_URL.test(nextAction.url)) throw new Error("Enlace de pago de WeTravel no válido.");
+    return { provider: "wetravel", paymentId: payment.id, url: nextAction.url };
   }
   // PagoEfectivo (CIP): el intento queda pendiente hasta que el proveedor avise por webhook.
   if (params.simulate === "pending") return "pending";

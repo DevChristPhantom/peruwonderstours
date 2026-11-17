@@ -32,7 +32,7 @@ export interface PaymentRequest {
 export type SimulatedOutcome = "approved" | "rejected" | "pending";
 
 /** Pasarela activa (variable de servidor `PAYMENT_PROVIDER`; debe coincidir con la de la API). */
-export type PaymentProvider = "sandbox" | "izipay";
+export type PaymentProvider = "sandbox" | "izipay" | "wetravel";
 
 /** Datos del titular que exige el formulario de Izipay (no son datos de tarjeta). */
 export interface CardHolder {
@@ -68,7 +68,17 @@ export interface PaymentWidgetHandle {
 }
 
 /** El cobro quedó creado y espera el formulario del proveedor en el navegador. */
-export interface ProviderAction {
+export type ProviderAction = IzipayAction | WeTravelAction;
+
+/** WeTravel: el viajero paga en la página de WeTravel (nueva pestaña) y luego pulsa «Ya pagué». */
+export interface WeTravelAction {
+  provider: "wetravel";
+  paymentId: string;
+  /** Enlace de pago de un solo uso (validado: solo dominios de WeTravel). */
+  url: string;
+}
+
+export interface IzipayAction {
   provider: "izipay";
   paymentId: string;
   /** Token de sesión de un solo uso (15 min). */

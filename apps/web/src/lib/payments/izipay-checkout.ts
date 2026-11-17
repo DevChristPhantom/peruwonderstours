@@ -1,4 +1,4 @@
-import type { CardHolder, PaymentBuyer, PaymentMethod, ProviderAction } from "./types";
+import type { CardHolder, IzipayAction, PaymentBuyer, PaymentMethod } from "./types";
 
 /**
  * Formulario de Izipay (SDK web «Web Core», modalidad pop-up) en el navegador.
@@ -125,7 +125,7 @@ export interface IzipayBuyer {
 }
 
 /** `config` del SDK a partir de la acción de la API y los datos del comprador. */
-export function izipayConfig(action: ProviderAction, buyer: IzipayBuyer, method: PaymentMethod, locale: string, bookingCode: string): Record<string, unknown> {
+export function izipayConfig(action: IzipayAction, buyer: IzipayBuyer, method: PaymentMethod, locale: string, bookingCode: string): Record<string, unknown> {
   const p = action.params;
   const phone = buyer.phone.replace(/\D/g, "").slice(-15);
   return {
@@ -164,7 +164,7 @@ export function izipayConfig(action: ProviderAction, buyer: IzipayBuyer, method:
 }
 
 /** Abre el pop-up de Izipay y resuelve con su respuesta (firmada si hubo resultado de la transacción). */
-export async function openIzipayForm(action: ProviderAction, config: Record<string, unknown>): Promise<IzipayResponse> {
+export async function openIzipayForm(action: IzipayAction, config: Record<string, unknown>): Promise<IzipayResponse> {
   await loadIzipaySdk(action.params.scriptUrl ?? "");
   const Izipay = window.Izipay;
   if (!Izipay) throw new Error("izipay-sdk-missing");

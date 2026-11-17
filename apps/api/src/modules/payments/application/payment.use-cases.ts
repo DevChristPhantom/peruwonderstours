@@ -177,7 +177,7 @@ export class PaymentUseCases {
    */
   async handleWebhook(provider: string, rawBody: Buffer, headers: WebhookHeaders): Promise<WebhookResult> {
     const gateway = this.gateways.get(provider);
-    const event = gateway.verifyWebhook(rawBody, headers);
+    let event = gateway.verifyWebhook(rawBody, headers);
     const now = this.clock.now();
 
     let record: PaymentEvent;
@@ -213,6 +213,17 @@ export class PaymentUseCases {
     } catch (error) {
       if (error instanceof DuplicatePaymentEventError) return { eventId: event.eventId, status: 'duplicate', paymentId: null };
       throw error;
+    }
+
+    // Webhooks que solo avisan (WeTravel): el estado y el monto se consultan a la API del proveedor.
+    if (event.providerPaymentId && !event.status) {
+      try {
+        const state = await gateway.getStatus(event.providerPaymentId);
+        event = { ...event, status: state.status, amount: state.amount };
+      } catch (error) {
+        await this.finishEvent(record, 'failed', null, 'status_lookup_failed');
+        throw error;
+      }
     }
 
     if (!event.providerPaymentId || !event.status) {

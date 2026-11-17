@@ -19,13 +19,14 @@ import { checkoutPhoneE164, COUNTRY_ISO } from "@/lib/checkout/api-checkout";
 import { lineTotalCents, type PaymentOption } from "@/lib/checkout/payment-plan";
 import { paymentStepSchema, type ContactValues, type PaymentStepValues } from "@/lib/checkout/schemas";
 import { izipayConfig, openIzipayForm, type IzipayResponse } from "@/lib/payments/izipay-checkout";
-import type { PaymentMethod, PaymentProvider, PaymentRequest, PaymentWidgetHandle } from "@/lib/payments/types";
+import type { PaymentMethod, PaymentProvider, PaymentRequest, PaymentWidgetHandle, WeTravelAction } from "@/lib/payments/types";
 import { cartHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
 import { useUiStore } from "@/stores/ui-store";
 import { buttonClass } from "@/components/ui/button-styles";
 import { HoldTimer } from "./HoldTimer";
 import { IzipayPaymentWidget } from "./IzipayPaymentWidget";
 import { SandboxPaymentWidget } from "./SandboxPaymentWidget";
+import { WeTravelPayPanel } from "./WeTravelPayPanel";
 import { ErrorSummary, fieldId, flattenErrors, useErrorText } from "./form-fields";
 
 /** Motivos de pago completo que envía la API (`FullPaymentReason` sin `customer_choice`). */
@@ -43,9 +44,13 @@ const METHODS: { value: PaymentMethod; icon: typeof CreditCard }[] = [
 const METHODS_PERU = [METHODS[1], METHODS[0], METHODS[2]];
 // El extranjero paga en dólares (`currencyFor`) y Yape solo cobra en soles: no se le ofrece.
 const METHODS_FOREIGN = METHODS.filter((m) => m.value !== "yape");
-/** Izipay cobra tarjeta y Yape; PagoEfectivo (CIP) no es parte de su formulario. */
+/** Izipay cobra tarjeta y Yape; PagoEfectivo (CIP) no es parte de su formulario. WeTravel: solo tarjeta. */
 const forProvider = (methods: typeof METHODS, provider: PaymentProvider) =>
-  provider === "izipay" ? methods.filter((m) => m.value !== "pagoefectivo") : methods;
+  provider === "wetravel"
+    ? methods.filter((m) => m.value === "card")
+    : provider === "izipay"
+      ? methods.filter((m) => m.value !== "pagoefectivo")
+      : methods;
 
 /** Resultado final del paso de pago. `open`: el formulario de Izipay se cerró sin pagar. */
 type PayResult = ActionResult<{ code: string; payment: "succeeded" | "pending" | "open" }> | null;
@@ -92,6 +97,7 @@ export function PaymentStep({
   const t = useTranslations("checkout.payment");
   const tc = useTranslations("checkout");
   const ti = useTranslations("checkout.izipay");
+  const tw = useTranslations("checkout.wetravel");
   const locale = useLocale();
   const fmt = useFormat();
   const errorText = useErrorText();
@@ -104,6 +110,8 @@ export function PaymentStep({
   const [apiError, setApiError] = useState<(UserError & { bookingCode?: string }) | null>(null);
   const [expired, setExpired] = useState(false);
   const [opening, setOpening] = useState(false);
+  // WeTravel: reserva creada y enlace de pago listo; el viajero paga en otra pestaña y vuelve a «Ya pagué».
+  const [wetravel, setWetravel] = useState<(WeTravelAction & { code: string }) | null>(null);
   // Candado síncrono: varios clics en el mismo instante llegan antes de que React deshabilite el botón.
   const paying = useRef(false);
 
@@ -189,6 +197,10 @@ export function PaymentStep({
       if (placed.data.payment !== "action") return { ok: true, data: { code: placed.data.code, payment: placed.data.payment } };
 
       const { code, action } = placed.data;
+      if (action.provider === "wetravel") {
+        setWetravel({ ...action, code });
+        return null;
+      }
       let response: IzipayResponse;
       setOpening(true);
       try {
@@ -220,30 +232,47 @@ export function PaymentStep({
       });
       return confirmed.ok ? { ok: true, data: { code, payment: confirmed.data.payment } } : confirmed;
     },
-    onSuccess: (res) => {
-      if (!res) return;
-      if (res.ok && res.data.payment === "open") {
-        setApiError({ code: "payment-open", kind: "other", message: ti("notCompleted"), bookingCode: res.data.code });
-        announce(ti("notCompleted"));
-        requestAnimationFrame(() => apiErrorRef.current?.focus());
-        return;
-      }
-      if (res.ok) {
-        setApiError(null);
-        onPaid({ code: res.data.code, payment: res.data.payment === "succeeded" ? "succeeded" : "pending" });
-        return;
-      }
-      setApiError({ ...res.error, bookingCode: res.bookingCode });
-      announce(res.error.message);
-      requestAnimationFrame(() => apiErrorRef.current?.focus());
-      // Precio o cupo cambió: se vuelve a cotizar para mostrar los montos vigentes.
-      if (res.requote) runPrepare();
-    },
+    onSuccess: (res) => handleResult(res),
     onError: () => {
       setApiError({ code: "api-unavailable", kind: "unavailable", message: t("connectionError") });
       requestAnimationFrame(() => apiErrorRef.current?.focus());
     },
   });
+
+  // «Ya pagué» de WeTravel: la API consulta a WeTravel el estado del enlace de pago.
+  const check = useMutation({
+    mutationFn: async (link: WeTravelAction & { code: string }): Promise<PayResult> => {
+      const confirmed = await confirmCheckoutPaymentAction({ code: link.code, paymentId: link.paymentId });
+      return confirmed.ok ? { ok: true, data: { code: link.code, payment: confirmed.data.payment } } : confirmed;
+    },
+    onSuccess: (res) => handleResult(res),
+    onError: () => {
+      setApiError({ code: "api-unavailable", kind: "unavailable", message: t("connectionError") });
+      requestAnimationFrame(() => apiErrorRef.current?.focus());
+    },
+  });
+
+  function handleResult(res: PayResult) {
+    if (!res) return;
+    if (res.ok && res.data.payment === "open") {
+      const message = wetravel ? tw("notCompleted") : ti("notCompleted");
+      setApiError({ code: "payment-open", kind: "other", message, bookingCode: res.data.code });
+      announce(message);
+      requestAnimationFrame(() => apiErrorRef.current?.focus());
+      return;
+    }
+    if (res.ok) {
+      setApiError(null);
+      setWetravel(null);
+      onPaid({ code: res.data.code, payment: res.data.payment === "succeeded" ? "succeeded" : "pending" });
+      return;
+    }
+    setApiError({ ...res.error, bookingCode: res.bookingCode });
+    announce(res.error.message);
+    requestAnimationFrame(() => apiErrorRef.current?.focus());
+    // Precio o cupo cambió: se vuelve a cotizar para mostrar los montos vigentes.
+    if (res.requote) runPrepare();
+  }
 
   const blocking = quote?.issues.filter((i) => i.blocking) ?? [];
   // Boletos de tren, Machu Picchu o sobrevuelos se emiten con nombre y documento exactos de cada viajero.
@@ -531,7 +560,9 @@ export function PaymentStep({
             ))}
           </div>
           <div className="mt-4">
-            {provider === "izipay" ? (
+            {provider === "wetravel" ? (
+              <p className="text-sm text-foreground-muted">{tw("note")}</p>
+            ) : provider === "izipay" ? (
               <IzipayPaymentWidget
                 ref={widgetRef}
                 request={request}
@@ -622,23 +653,27 @@ export function PaymentStep({
         </div>
       </div>
 
-      {/* 3.4 Botón final */}
-      <button
-        id={fieldId("submit")}
-        type="submit"
-        className={buttonClass("primary", "xl", "mt-8 w-full")}
-        disabled={pay.isPending || !canPay}
-        aria-busy={pay.isPending}
-      >
-        {pay.isPending ? (
-          <>
-            <Loader2 aria-hidden size={20} strokeWidth={1.5} className="animate-spin motion-reduce:animate-none" />
-            {opening ? ti("opening") : t("processing")}
-          </>
-        ) : (
-          payLabel
-        )}
-      </button>
+      {/* 3.4 Botón final (WeTravel: enlace de pago + «Ya pagué») */}
+      {wetravel ? (
+        <WeTravelPayPanel url={wetravel.url} checking={check.isPending} onPaid={() => check.mutate(wetravel)} />
+      ) : (
+        <button
+          id={fieldId("submit")}
+          type="submit"
+          className={buttonClass("primary", "xl", "mt-8 w-full")}
+          disabled={pay.isPending || !canPay}
+          aria-busy={pay.isPending}
+        >
+          {pay.isPending ? (
+            <>
+              <Loader2 aria-hidden size={20} strokeWidth={1.5} className="animate-spin motion-reduce:animate-none" />
+              {opening ? ti("opening") : t("processing")}
+            </>
+          ) : (
+            payLabel
+          )}
+        </button>
+      )}
       <p className="mt-3 flex items-center justify-center gap-2 text-sm text-foreground-muted">
         <Lock aria-hidden size={16} strokeWidth={1.5} />
         {t("secureNote")}

@@ -20,7 +20,8 @@ import { z } from "zod";
  * - `CARD_FEE_PERCENT`: comisión por tarjeta (RN-03, p. ej. 3.5). Sin definir = no se muestra.
  *   Activarla SOLO cuando la API también la cobre (hoy no lo hace).
  * - `PAYMENT_PROVIDER`: pasarela del paso de pago, igual a `PAYMENT_GATEWAY` de la API. `sandbox`
- *   muestra el simulador; `izipay` abre el formulario de Izipay (y abre la CSP a sus dominios).
+ *   muestra el simulador; `izipay` abre el formulario de Izipay (y abre la CSP a sus dominios);
+ *   `wetravel` lleva al viajero a la página de pago de WeTravel y vuelve con «Ya pagué».
  */
 const schema = z.object({
   API_BASE_URL: z
@@ -31,7 +32,7 @@ const schema = z.object({
   CATALOG_CURRENCY: z.enum(["PEN", "USD"]).default("PEN"),
   PWT_API_TIMEOUT_MS: z.coerce.number().int().min(500).max(60_000).default(8_000),
   CARD_FEE_PERCENT: z.coerce.number().min(0).max(10).optional(),
-  PAYMENT_PROVIDER: z.enum(["sandbox", "izipay"]).default("sandbox"),
+  PAYMENT_PROVIDER: z.enum(["sandbox", "izipay", "wetravel"]).default("sandbox"),
   TRUSTED_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(0),
   /** Solo para probar `next start` en local contra la API http. Prohibido en un entorno público. */
   API_ALLOW_HTTP: z

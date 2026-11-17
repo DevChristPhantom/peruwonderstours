@@ -3,6 +3,7 @@ import type { BookingSettings } from '../modules/booking/application/booking.use
 import type { CartSettings } from '../modules/cart/application/cart.use-cases.js';
 import type { ComplaintSettings } from '../modules/complaints/application/complaint.use-cases.js';
 import type { IzipayGatewayOptions } from '../modules/payments/infrastructure/izipay-payment-gateway.js';
+import type { WeTravelGatewayOptions } from '../modules/payments/infrastructure/wetravel-payment-gateway.js';
 import { parseRefundTiersJson, type RefundTier } from '../modules/backoffice/domain/cancellation-policy.js';
 import type { AccessSettings } from '../shared/application/access-grants.js';
 import type { DataSource, EnvironmentVariables } from './environment.js';
@@ -32,6 +33,8 @@ export interface AppSettings {
   paymentGateway: EnvironmentVariables['PAYMENT_GATEWAY'];
   /** Solo con PAYMENT_GATEWAY=izipay. */
   izipay?: IzipayGatewayOptions;
+  /** Solo con PAYMENT_GATEWAY=wetravel. */
+  wetravel?: WeTravelGatewayOptions;
   booking: BookingSettings;
   cart: CartSettings;
   complaints: ComplaintSettings;
@@ -144,6 +147,15 @@ export function settingsFromEnvironment(env: EnvironmentVariables): AppSettings 
             ipnUrl: env.IZIPAY_IPN_URL ?? '',
           }
         : undefined,
+    wetravel:
+      env.PAYMENT_GATEWAY === 'wetravel'
+        ? {
+            environment: env.WETRAVEL_ENV,
+            apiKey: env.WETRAVEL_API_KEY ?? '',
+            webhookSecret: env.WETRAVEL_WEBHOOK_SECRET,
+            webhookToleranceSeconds: env.WEBHOOK_TOLERANCE_SECONDS,
+          }
+        : undefined,
     booking: {
       policy: {
         defaultDepositPercent: env.DEPOSIT_DEFAULT_PERCENT,
@@ -229,6 +241,7 @@ export function settingsFromConfigService(config: ConfigService): AppSettings {
     'THROTTLE_TTL_SECONDS', 'THROTTLE_LIMIT', 'THROTTLE_STRICT_LIMIT', 'SWAGGER_ENABLED',
     'PROBLEM_TYPE_BASE_URL', 'PAYMENT_GATEWAY', 'SANDBOX_WEBHOOK_SECRET', 'SANDBOX_CHECKOUT_BASE_URL', 'WEBHOOK_TOLERANCE_SECONDS',
     'IZIPAY_ENV', 'IZIPAY_MERCHANT_CODE', 'IZIPAY_API_KEY', 'IZIPAY_RSA_PUBLIC_KEY', 'IZIPAY_HASH_KEY', 'IZIPAY_IPN_URL',
+    'WETRAVEL_ENV', 'WETRAVEL_API_KEY', 'WETRAVEL_WEBHOOK_SECRET',
     'DEPOSIT_DEFAULT_PERCENT', 'BALANCE_DUE_DAYS_BEFORE_SERVICE', 'FULL_PAYMENT_WITHIN_DAYS', 'THIRD_PARTY_TICKETS_REQUIRE_FULL',
     'HOLD_TTL_MINUTES', 'CART_TTL_DAYS', 'PRICE_LOCK_MINUTES', 'IDEMPOTENCY_TTL_HOURS', 'TERMS_VERSION', 'CANCELLATION_POLICY_VERSION',
     'PROVIDER_LEGAL_NAME', 'PROVIDER_RUC', 'ESTABLISHMENT_ADDRESS', 'ESTABLISHMENT_CODE', 'COMPLAINT_CONFORMITY_TEXT_VERSION',

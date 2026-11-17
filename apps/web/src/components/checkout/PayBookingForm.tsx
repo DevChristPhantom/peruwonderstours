@@ -10,13 +10,14 @@ import { confirmBookingPaymentAction, payBookingAction } from "@/app/[locale]/(s
 import type { Currency } from "@/lib/catalog/types";
 import { useFormat } from "@/hooks/useFormat";
 import { izipayConfig, openIzipayForm, type IzipayResponse } from "@/lib/payments/izipay-checkout";
-import { PAYMENT_METHOD_LABEL, type PaymentMethod, type PaymentProvider, type PaymentWidgetHandle } from "@/lib/payments/types";
+import { PAYMENT_METHOD_LABEL, type PaymentMethod, type PaymentProvider, type PaymentWidgetHandle, type WeTravelAction } from "@/lib/payments/types";
 import { useUiStore } from "@/stores/ui-store";
 import { buttonClass } from "@/components/ui/button-styles";
 import { ErrorSummary } from "./form-fields";
 import { HoldTimer } from "./HoldTimer";
 import { IzipayPaymentWidget } from "./IzipayPaymentWidget";
 import { SandboxPaymentWidget } from "./SandboxPaymentWidget";
+import { WeTravelPayPanel } from "./WeTravelPayPanel";
 
 const KINDS = ["deposit", "full", "balance"] as const;
 type Kind = (typeof KINDS)[number];
@@ -42,6 +43,7 @@ export function PayBookingForm({
   const t = useTranslations("checkout.payBooking");
   const tp = useTranslations("checkout.payment");
   const ti = useTranslations("checkout.izipay");
+  const tw = useTranslations("checkout.wetravel");
   const locale = useLocale();
   const fmt = useFormat();
   const router = useRouter();
@@ -52,10 +54,14 @@ export function PayBookingForm({
   const [error, setError] = useState<string | null>(null);
   const [expired, setExpired] = useState(false);
   const [opening, setOpening] = useState(false);
+  // WeTravel: enlace de pago ya creado; el viajero paga en otra pestaña y vuelve a «Ya pagué».
+  const [wetravel, setWetravel] = useState<WeTravelAction | null>(null);
   // Candado síncrono: varios clics en el mismo instante llegan antes de que React deshabilite el botón.
   const paying = useRef(false);
-  // Izipay no ofrece PagoEfectivo (CIP) en su formulario.
-  const methods = (Object.keys(PAYMENT_METHOD_LABEL) as PaymentMethod[]).filter((m) => provider !== "izipay" || m !== "pagoefectivo");
+  // Izipay no ofrece PagoEfectivo (CIP) en su formulario; WeTravel solo cobra con tarjeta.
+  const methods = (Object.keys(PAYMENT_METHOD_LABEL) as PaymentMethod[]).filter((m) =>
+    provider === "wetravel" ? m === "card" : provider !== "izipay" || m !== "pagoefectivo",
+  );
 
   const request = {
     orderCode: code,
@@ -74,6 +80,10 @@ export function PayBookingForm({
       if (!placed.ok || placed.data.payment !== "action") return placed;
 
       const { action } = placed.data;
+      if (action.provider === "wetravel") {
+        setWetravel(action);
+        return null;
+      }
       let response: IzipayResponse;
       setOpening(true);
       try {
@@ -87,29 +97,43 @@ export function PayBookingForm({
       }
       return confirmBookingPaymentAction({ code, paymentId: action.paymentId, payloadHttp: response.payloadHttp, signature: response.signature });
     },
-    onSuccess: (res) => {
-      if (!res) return;
-      if (res.ok && (res.data.payment === "open" || res.data.payment === "action")) {
-        setError(ti("notCompleted"));
-        announce(ti("notCompleted"));
-        requestAnimationFrame(() => errorRef.current?.focus());
-        return;
-      }
-      if (res.ok) {
-        setError(null);
-        announce(res.data.payment === "succeeded" ? t("succeeded") : t("pending"));
-        router.refresh();
-        return;
-      }
-      setError(res.error.message);
-      announce(res.error.message);
-      requestAnimationFrame(() => errorRef.current?.focus());
-    },
+    onSuccess: (res) => handleResult(res),
     onError: () => {
       setError(t("connectionError"));
       requestAnimationFrame(() => errorRef.current?.focus());
     },
   });
+
+  // «Ya pagué» de WeTravel: la API consulta el estado del enlace de pago.
+  const check = useMutation({
+    mutationFn: (paymentId: string) => confirmBookingPaymentAction({ code, paymentId }),
+    onSuccess: (res) => handleResult(res),
+    onError: () => {
+      setError(t("connectionError"));
+      requestAnimationFrame(() => errorRef.current?.focus());
+    },
+  });
+
+  function handleResult(res: Awaited<ReturnType<typeof payBookingAction>> | Awaited<ReturnType<typeof confirmBookingPaymentAction>> | null) {
+    if (!res) return;
+    if (res.ok && (res.data.payment === "open" || res.data.payment === "action")) {
+      const message = wetravel ? tw("notCompleted") : ti("notCompleted");
+      setError(message);
+      announce(message);
+      requestAnimationFrame(() => errorRef.current?.focus());
+      return;
+    }
+    if (res.ok) {
+      setError(null);
+      setWetravel(null);
+      announce(res.data.payment === "succeeded" ? t("succeeded") : t("pending"));
+      router.refresh();
+      return;
+    }
+    setError(res.error.message);
+    announce(res.error.message);
+    requestAnimationFrame(() => errorRef.current?.focus());
+  }
 
   return (
     <form
@@ -150,28 +174,34 @@ export function PayBookingForm({
         </div>
       </fieldset>
       <div className="mt-4">
-        {provider === "izipay" ? (
+        {provider === "wetravel" ? (
+          <p className="text-sm text-foreground-muted">{tw("note")}</p>
+        ) : provider === "izipay" ? (
           <IzipayPaymentWidget ref={widgetRef} method={method} disabled={pay.isPending} national={false} askBuyer request={request} />
         ) : (
           <SandboxPaymentWidget ref={widgetRef} method={method} disabled={pay.isPending} request={request} />
         )}
       </div>
-      <button
-        id="f-pay-booking"
-        type="submit"
-        className={buttonClass("primary", "lg", "mt-4 w-full")}
-        disabled={pay.isPending || expired}
-        aria-busy={pay.isPending}
-      >
-        {pay.isPending ? (
-          <>
-            <Loader2 aria-hidden size={18} strokeWidth={1.5} className="animate-spin motion-reduce:animate-none" />
-            {opening ? ti("opening") : tp("processing")}
-          </>
-        ) : (
-          tp("payAmount", { amount: fmt.money(amountCents, currency) })
-        )}
-      </button>
+      {wetravel ? (
+        <WeTravelPayPanel url={wetravel.url} checking={check.isPending} onPaid={() => check.mutate(wetravel.paymentId)} />
+      ) : (
+        <button
+          id="f-pay-booking"
+          type="submit"
+          className={buttonClass("primary", "lg", "mt-4 w-full")}
+          disabled={pay.isPending || expired}
+          aria-busy={pay.isPending}
+        >
+          {pay.isPending ? (
+            <>
+              <Loader2 aria-hidden size={18} strokeWidth={1.5} className="animate-spin motion-reduce:animate-none" />
+              {opening ? ti("opening") : tp("processing")}
+            </>
+          ) : (
+            tp("payAmount", { amount: fmt.money(amountCents, currency) })
+          )}
+        </button>
+      )}
     </form>
   );
 }

@@ -435,6 +435,15 @@
       "rejected": "Declined",
       "pending": "Pending (CIP)"
     },
+    "wetravel": {
+      "note": "Payment is made on WeTravel's secure page (credit or debit card). Press Pay to prepare your payment link.",
+      "intro": "Your payment link is ready. Open it, complete the payment on WeTravel, then come back here and press “I've paid”.",
+      "open": "Open WeTravel and pay",
+      "paid": "I've paid",
+      "checking": "Checking your payment…",
+      "notCompleted": "We can't see your payment on WeTravel yet. If you already paid, wait a minute and press “I've paid” again; your booking is still on hold.",
+      "newTab": "(opens in a new tab)"
+    },
     "izipay": {
       "holderLegend": "Payment holder details",
       "holderIntro": "Izipay requires them to validate your {method} payment. When you press Pay, its secure window opens so you can enter your card or Yape.",

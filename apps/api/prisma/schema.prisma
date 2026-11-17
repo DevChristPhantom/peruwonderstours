@@ -153,6 +153,8 @@ enum PaymentProvider {
   manual
   /// Pasarela simulada (solo desarrollo/pruebas; la configuración la prohíbe en producción).
   sandbox
+  /// WeTravel (enlaces de pago; el viajero paga en la página de WeTravel).
+  wetravel
 
   @@map("payment_provider")
 }
