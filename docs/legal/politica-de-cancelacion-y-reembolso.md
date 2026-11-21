@@ -7,7 +7,7 @@
 - PERU WONDERS TOURS S.A.C., RUC 20616102339.
 - Domicilio fiscal: Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Perú.
 - Oficina: Calle N 500, Puno, Perú.
-- Contacto: jorgechaveztourt@gmail.com · +51 924 278 597 (WhatsApp).
+- Contacto: jorgechaveztourt@gmail.com · +51 989 028 802 (WhatsApp).
 
 Esta política forma parte de los Términos y Condiciones. La aceptas antes de pagar, se guarda con tu
 reserva y te la enviamos en el correo de confirmación.
@@ -31,7 +31,7 @@ reserva y te la enviamos en el correo de confirmación.
 
 ## 2. Si cancelas tu reserva
 
-**Cómo cancelar:** escríbenos a jorgechaveztourt@gmail.com o por WhatsApp al +51 924 278 597
+**Cómo cancelar:** escríbenos a jorgechaveztourt@gmail.com o por WhatsApp al +51 989 028 802
 indicando tu **código de reserva**. Te confirmamos la recepción y el monto a devolver.
 
 **Cómo se cuentan los plazos:** son **días hábiles** (de lunes a viernes, sin feriados nacionales),

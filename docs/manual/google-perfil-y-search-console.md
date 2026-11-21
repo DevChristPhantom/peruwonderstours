@@ -25,7 +25,7 @@ Antes de empezar, Jorge busca en Google Maps "Peru Wonders Tours Puno". Si ya ha
 | ¿Tiene un local que los clientes pueden visitar? | **Sí**, la oficina |
 | Dirección | Calle N 500, Puno (confirmar número, referencia y que el pin del mapa caiga en la puerta) |
 | Zona de servicio | Puno, Cusco, Arequipa, Lima, Ica |
-| Teléfono | +51 924 278 597 |
+| Teléfono | +51 989 028 802 |
 | Sitio web | `https://peruwonderstours.com` **(ponerlo el día del lanzamiento; hoy la web tiene contraseña)** |
 | Horario | Lunes a sábado, 09:00 a 19:00. Domingo cerrado |
 | Atributos | WhatsApp, "Atiende en inglés" (si es verdad), formas de pago que acepta |

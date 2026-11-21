@@ -80,7 +80,7 @@ for (const locale of ["es", "en", "pt"]) {
   assert.ok(html.includes("/icons/whatsapp.svg"), `${locale}: floating WhatsApp symbol missing`);
   assert.ok(html.includes("complaints-book.webp"), `${locale}: complaints notice missing`);
   assert.ok(html.includes("peruwonderstours"), `${locale}: site brand missing`);
-  assert.ok(html.includes("51924278597"), `${locale}: confirmed WhatsApp missing`);
+  assert.ok(html.includes("51989028802"), `${locale}: confirmed WhatsApp missing`);
   assert.ok(html.includes("peruwonderstours-logo-negativo.png"), `${locale}: owner logo missing`);
   const contacts = { es: "/es/contactenos", en: "/en/contact", pt: "/pt/contato" };
   const contact = await response(contacts[locale]);

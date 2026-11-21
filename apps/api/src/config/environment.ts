@@ -428,7 +428,7 @@ export class EnvironmentVariables {
   CONTACT_EMAIL = 'jorgechaveztourt@gmail.com';
 
   @IsString()
-  CONTACT_PHONE = '+51 924 278 597';
+  CONTACT_PHONE = '+51 989 028 802';
 
   // --- Protección de datos ---
   /** Secreto HMAC de los enlaces de baja de marketing (>= 32). Obligatorio en producción. */

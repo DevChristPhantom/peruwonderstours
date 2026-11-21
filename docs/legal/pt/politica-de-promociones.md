@@ -4,7 +4,7 @@
 
 ## 1. Quem oferece as promoções
 
-PERU WONDERS TOURS S.A.C., RUC 20616102339, domicílio fiscal Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Peru; escritório na Calle N 500, Puno, Peru. Contato: jorgechaveztourt@gmail.com · +51 924 278 597 (WhatsApp).
+PERU WONDERS TOURS S.A.C., RUC 20616102339, domicílio fiscal Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Peru; escritório na Calle N 500, Puno, Peru. Contato: jorgechaveztourt@gmail.com · +51 989 028 802 (WhatsApp).
 
 ## 2. O que estas condições abrangem
 

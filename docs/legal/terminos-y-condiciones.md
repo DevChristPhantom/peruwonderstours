@@ -14,7 +14,7 @@ paquetes turísticos que ofrecemos en él. Se aplican el Código de Protección 
 - **Actividad:** agencia de viajes y turismo
 - **Domicilio fiscal:** Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Perú
 - **Oficina de atención:** Calle N 500, Puno, Perú. Lunes a sábado, de 09:00 a 19:00 (hora de Perú)
-- **Teléfono y WhatsApp:** +51 924 278 597
+- **Teléfono y WhatsApp:** +51 989 028 802
 - **Correo:** jorgechaveztourt@gmail.com
 
 ## 2. Aceptación
@@ -100,7 +100,7 @@ sin autorización.
 
 - Puedes registrar un reclamo o una queja en nuestro **Libro de Reclamaciones virtual** (enlace al
   pie de todas las páginas). Te respondemos en un plazo máximo de **15 días hábiles**.
-- También puedes escribirnos a jorgechaveztourt@gmail.com o por WhatsApp al +51 924 278 597.
+- También puedes escribirnos a jorgechaveztourt@gmail.com o por WhatsApp al +51 989 028 802.
 - Presentar un reclamo no te impide acudir al INDECOPI ni a otras vías que la ley te reconoce.
 
 ## 11. Ley aplicable
