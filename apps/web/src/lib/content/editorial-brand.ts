@@ -10,6 +10,6 @@ export function editorialBrand(text: string): string {
       // Imported owned links point to our current site, not the retiring host.
       return `${SITE.url}${url.pathname}${url.search}${url.hash}`;
     })
-    .replace(/Andean Peru Tours Travel Agency|Andean Peru Tours|Peru Andean Tours|Peru Wonders Tours/gi, "peruwonderstours")
+    .replace(/Andean Peru Tours Travel Agency|Andean Peru Tours|Peru Andean Tours|Peru Wonders Tours/gi, "Peru Wonders Tours")
     .replace(/(?:Más de|More than)\s+30\s+(?:años de experiencia|years of experience)(?: ofreciendo| offering)?:?/gi, "");
 }

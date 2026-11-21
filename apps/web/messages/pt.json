@@ -146,7 +146,7 @@
     },
     "bookings": {
       "title": "Minhas reservas",
-      "description": "Todas as suas reservas com a peruwonderstours: situação, datas e voucher.",
+      "description": "Todas as suas reservas com a Peru Wonders Tours: situação, datas e voucher.",
       "listLabel": "Suas reservas",
       "logout": "Sair",
       "loggingOut": "Saindo…",
@@ -307,7 +307,7 @@
     "pricesConfirmed": "Preços e vagas confirmados agora.",
     "dueOnShort": "vence em {date}",
     "header": {
-      "home": "peruwonderstours, início",
+      "home": "Peru Wonders Tours, início",
       "leaveConfirm": "Sair do pagamento? Seu carrinho será salvo.",
       "secure": "Pagamento seguro"
     },
@@ -427,7 +427,7 @@
     },
     "sandbox": {
       "title": "Modo sandbox: pagamento simulado, nenhuma cobrança será realizada",
-      "text": "Aqui será exibido o formulário seguro do provedor de pagamentos para {method}. Os dados do seu cartão irão diretamente ao provedor; a peruwonderstours não os armazena.",
+      "text": "Aqui será exibido o formulário seguro do provedor de pagamentos para {method}. Os dados do seu cartão irão diretamente ao provedor; a Peru Wonders Tours não os armazena.",
       "amount": "Valor a enviar:",
       "booking": "Reserva",
       "outcome": "Resultado a simular",
@@ -483,7 +483,7 @@
         "state": "Escreva a região ou estado (sem números).",
         "postalCode": "Escreva de 5 a 10 números."
       },
-      "secure": "A Izipay processa o pagamento; a peruwonderstours não vê nem guarda os dados do seu cartão.",
+      "secure": "A Izipay processa o pagamento; a Peru Wonders Tours não vê nem guarda os dados do seu cartão.",
       "opening": "Abrindo a janela de pagamento da Izipay…",
       "loadFailed": "Não foi possível abrir a janela de pagamento da Izipay. Verifique sua conexão ou desative o bloqueador de anúncios e tente novamente. Nenhum valor foi cobrado.",
       "notCompleted": "O pagamento não foi concluído na Izipay. Sua reserva continua salva: você pode tentar novamente."
@@ -521,8 +521,8 @@
     "fallbackNotice": "Conteúdo disponível apenas em espanhol no momento.",
     "viewAllTours": "Ver todos os passeios",
     "breadcrumbs": "Caminho de navegação",
-    "logoAlt": "peruwonderstours",
-    "logoHome": "peruwonderstours, ir para o início",
+    "logoAlt": "Peru Wonders Tours",
+    "logoHome": "Peru Wonders Tours, ir para o início",
     "pending": "A confirmar",
     "whatsappUs": "Fale conosco pelo WhatsApp",
     "skipToContent": "Pular para o conteúdo principal",
@@ -1436,7 +1436,7 @@
     "ics": {
       "pickup": "Horário e local de embarque: confirmaremos pelo WhatsApp (horário de Lima).",
       "notConfirmed": "Reserva com pagamento pendente: este calendário não confirma vagas.",
-      "calendarName": "Minha viagem · peruwonderstours",
+      "calendarName": "Minha viagem · Peru Wonders Tours",
       "fileName": "minha-viagem-peruwonderstours.ics",
       "announce": "Seu calendário de viagem foi baixado."
     },
@@ -1553,7 +1553,7 @@
       "title": "{title} · Reserva {code}",
       "description": "{count, plural, one {Reserva {code} · # viajante.} other {Reserva {code} · # viajantes.}}",
       "pickup": "Horário e local de embarque: confirmaremos pelo WhatsApp (horário de Lima).",
-      "calendarName": "Reserva {code} · peruwonderstours",
+      "calendarName": "Reserva {code} · Peru Wonders Tours",
       "fileName": "reserva-{code}.ics",
       "announce": "O calendário da sua reserva foi baixado.",
       "button": "Adicionar ao calendário"

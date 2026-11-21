@@ -5,6 +5,8 @@ import type { ComponentProps } from "react";
 
 import { CookieSettingsButton } from "@/components/analytics/CookieConsent";
 import { Link } from "@/i18n/navigation";
+import { listTestimonialsSafe } from "@/lib/api/content";
+import type { Locale } from "@/i18n/routing";
 import { SITE, whatsappHref } from "@/lib/site";
 import { SOCIAL_LINKS } from "@/lib/social";
 
@@ -71,6 +73,8 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
   const rucDisplay = legal.ruc ?? pending;
   const year = new Date().getFullYear();
 
+  const hasTestimonials = variant === "full" && (await listTestimonialsSafe(locale as Locale, 1)).length > 0;
+
   if (variant === "minimal") {
     return (
       <footer className="border-t border-border bg-surface-muted">
@@ -124,7 +128,8 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
               <LegalItem label={t("legal.businessName")} value={legal.businessName} pending={pending} />
               <LegalItem label={t("legal.ruc")} value={rucDisplay} pending={pending} />
               <LegalItem label={t("legal.fiscalAddress")} value={legal.fiscalAddress} pending={pending} />
-              <LegalItem label={t("legal.mincetur")} value={legal.minceturRegistry} pending={pending} />
+              {/* Registro MINCETUR: solo se muestra cuando exista; "por confirmar" resta confianza. */}
+              {legal.minceturRegistry ? <LegalItem label={t("legal.mincetur")} value={legal.minceturRegistry} pending={pending} /> : null}
               <LegalItem label={t("legal.office")} value={legal.address} pending={pending} />
             </ul>
             <p className="mt-4 flex items-start gap-2 text-sm">
@@ -150,7 +155,8 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
           </Column>
 
           <Column id="footer-empresa" title={t("columns.company")}>
-            {COMPANY.map(item)}
+            {/* «Testimonios» se oculta mientras no haya testimonios publicados (una página vacía resta confianza). */}
+            {COMPANY.filter(([href]) => href !== "/testimonios" || hasTestimonials).map(item)}
           </Column>
 
           <Column id="footer-ayuda" title={t("columns.help")}>

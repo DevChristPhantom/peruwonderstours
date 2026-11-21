@@ -146,7 +146,7 @@
     },
     "bookings": {
       "title": "My bookings",
-      "description": "All your bookings with peruwonderstours: status, dates and voucher.",
+      "description": "All your bookings with Peru Wonders Tours: status, dates and voucher.",
       "listLabel": "Your bookings",
       "logout": "Sign out",
       "loggingOut": "Signing out…",
@@ -307,7 +307,7 @@
     "pricesConfirmed": "Prices and seats confirmed just now.",
     "dueOnShort": "due on {date}",
     "header": {
-      "home": "peruwonderstours, home",
+      "home": "Peru Wonders Tours, home",
       "leaveConfirm": "Leave checkout? Your cart is saved.",
       "secure": "Secure payment"
     },
@@ -427,7 +427,7 @@
     },
     "sandbox": {
       "title": "Sandbox mode: simulated payment, nothing will be charged",
-      "text": "The payment provider's secure form for {method} will appear here. Your card details go straight to the provider; peruwonderstours does not store them.",
+      "text": "The payment provider's secure form for {method} will appear here. Your card details go straight to the provider; Peru Wonders Tours does not store them.",
       "amount": "Amount to send:",
       "booking": "Booking",
       "outcome": "Outcome to simulate",
@@ -483,7 +483,7 @@
         "state": "Enter the region or state (no numbers).",
         "postalCode": "Enter 5 to 10 numbers."
       },
-      "secure": "Izipay processes the payment; peruwonderstours never sees or stores your card details.",
+      "secure": "Izipay processes the payment; Peru Wonders Tours never sees or stores your card details.",
       "opening": "Opening the Izipay payment window…",
       "loadFailed": "We could not open the Izipay payment window. Check your connection or turn off your ad blocker and try again. You were not charged.",
       "notCompleted": "The payment was not completed in Izipay. Your booking is still saved: you can try again."
@@ -521,8 +521,8 @@
     "fallbackNotice": "This content is only available in Spanish for now.",
     "viewAllTours": "View all tours",
     "breadcrumbs": "Breadcrumb",
-    "logoAlt": "peruwonderstours",
-    "logoHome": "peruwonderstours, go to home page",
+    "logoAlt": "Peru Wonders Tours",
+    "logoHome": "Peru Wonders Tours, go to home page",
     "pending": "To be confirmed",
     "whatsappUs": "Message us on WhatsApp",
     "skipToContent": "Skip to main content",
@@ -1092,7 +1092,7 @@
     "shareTitle": "Your journey deserves a story",
     "shareText": "Share your experience with our team. We will review it and ask your permission before publishing.",
     "shareButton": "Suggest my story",
-    "shareMessage": "Hello, I would like to suggest my travel story for the peruwonderstours journal.",
+    "shareMessage": "Hello, I would like to suggest my travel story for the Peru Wonders Tours journal.",
     "historias": {
       "title": "Traveler stories",
       "description": "Experiences shared by the people who traveled these paths."
@@ -1436,7 +1436,7 @@
     "ics": {
       "pickup": "Pickup time and place: we will confirm them on WhatsApp (Lima time).",
       "notConfirmed": "Booking pending payment: this calendar does not confirm seats.",
-      "calendarName": "My trip · peruwonderstours",
+      "calendarName": "My trip · Peru Wonders Tours",
       "fileName": "my-trip-peru-wonders-tours.ics",
       "announce": "We downloaded your trip calendar."
     },
@@ -1553,7 +1553,7 @@
       "title": "{title} · Booking {code}",
       "description": "{count, plural, one {Booking {code} · # traveler.} other {Booking {code} · # travelers.}}",
       "pickup": "Pickup time and place: we will confirm them on WhatsApp (Lima time).",
-      "calendarName": "Booking {code} · peruwonderstours",
+      "calendarName": "Booking {code} · Peru Wonders Tours",
       "fileName": "booking-{code}.ics",
       "announce": "We downloaded your booking calendar.",
       "button": "Add to calendar"

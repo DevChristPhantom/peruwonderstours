@@ -6,7 +6,7 @@
  * y docs/cliente/solicitud-de-informacion.md.
  */
 export const SITE = {
-  name: "peruwonderstours",
+  name: "Peru Wonders Tours",
   url: "https://peruwonderstours.com",
   legal: {
     /** Razón social según la Consulta RUC de SUNAT (enviada por el cliente el 2026-10-24). */

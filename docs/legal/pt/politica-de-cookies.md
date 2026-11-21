@@ -1,4 +1,4 @@
-# Política de Cookies da peruwonderstours
+# Política de Cookies da Peru Wonders Tours
 
 Última atualização: 20 de novembro de 2026 · Versão 1.0
 
@@ -36,7 +36,7 @@ Além disso, **somente com a sua permissão**, usamos o **Google Analytics** par
 | `_ga` | Cookie de análise do Google Analytics, **opcional** (somente se você aceitar) | Distingue visitantes de forma anônima para contar visitas | 2 anos |
 | `_ga_<ID>` | Cookie de análise do Google Analytics, **opcional** (somente se você aceitar) | Mantém o estado da visita para medir as páginas vistas | 2 anos |
 
-Os cookies próprios são enviados apenas à peruwonderstours, são `HttpOnly` e `Secure` quando o site funciona com https, e não contêm seu nome nem seus dados de pagamento. Os cookies do Google Analytics são criados pelo script do Google no seu navegador; se você retirar sua permissão, nós os apagamos deste site.
+Os cookies próprios são enviados apenas à Peru Wonders Tours, são `HttpOnly` e `Secure` quando o site funciona com https, e não contêm seu nome nem seus dados de pagamento. Os cookies do Google Analytics são criados pelo script do Google no seu navegador; se você retirar sua permissão, nós os apagamos deste site.
 
 Quando você paga, o formulário de pagamento é o do gateway autorizado, no site dele. Essa empresa pode usar seus próprios cookies conforme a política dela, que será mostrada nesse momento.
 

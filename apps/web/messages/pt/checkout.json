@@ -19,7 +19,7 @@
   "pricesConfirmed": "Preços e vagas confirmados agora.",
   "dueOnShort": "vence em {date}",
   "header": {
-    "home": "peruwonderstours, início",
+    "home": "Peru Wonders Tours, início",
     "leaveConfirm": "Sair do pagamento? Seu carrinho será salvo.",
     "secure": "Pagamento seguro"
   },
@@ -139,7 +139,7 @@
   },
   "sandbox": {
     "title": "Modo sandbox: pagamento simulado, nenhuma cobrança será realizada",
-    "text": "Aqui será exibido o formulário seguro do provedor de pagamentos para {method}. Os dados do seu cartão irão diretamente ao provedor; a peruwonderstours não os armazena.",
+    "text": "Aqui será exibido o formulário seguro do provedor de pagamentos para {method}. Os dados do seu cartão irão diretamente ao provedor; a Peru Wonders Tours não os armazena.",
     "amount": "Valor a enviar:",
     "booking": "Reserva",
     "outcome": "Resultado a simular",
@@ -195,7 +195,7 @@
       "state": "Escreva a região ou estado (sem números).",
       "postalCode": "Escreva de 5 a 10 números."
     },
-    "secure": "A Izipay processa o pagamento; a peruwonderstours não vê nem guarda os dados do seu cartão.",
+    "secure": "A Izipay processa o pagamento; a Peru Wonders Tours não vê nem guarda os dados do seu cartão.",
     "opening": "Abrindo a janela de pagamento da Izipay…",
     "loadFailed": "Não foi possível abrir a janela de pagamento da Izipay. Verifique sua conexão ou desative o bloqueador de anúncios e tente novamente. Nenhum valor foi cobrado.",
     "notCompleted": "O pagamento não foi concluído na Izipay. Sua reserva continua salva: você pode tentar novamente."

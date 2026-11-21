@@ -64,7 +64,7 @@
     "title": "{title} · Reserva {code}",
     "description": "{count, plural, one {Reserva {code} · # viajante.} other {Reserva {code} · # viajantes.}}",
     "pickup": "Horário e local de embarque: confirmaremos pelo WhatsApp (horário de Lima).",
-    "calendarName": "Reserva {code} · peruwonderstours",
+    "calendarName": "Reserva {code} · Peru Wonders Tours",
     "fileName": "reserva-{code}.ics",
     "announce": "O calendário da sua reserva foi baixado.",
     "button": "Adicionar ao calendário"
