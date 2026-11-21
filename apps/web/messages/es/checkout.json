@@ -147,6 +147,12 @@
     "rejected": "Rechazado",
     "pending": "Pendiente (CIP)"
   },
+  "whatsappBooking": {
+    "note": "Por ahora confirmamos las reservas por WhatsApp. Al pulsar el botón se abre un chat con tu pedido (tours, fechas, viajeros y monto) y te indicamos cómo pagar. Tu cupo queda confirmado cuando recibimos el pago.",
+    "button": "Reservar por WhatsApp",
+    "sent": "Abrimos WhatsApp con tu pedido. Envía el mensaje y te respondemos en el horario de atención.",
+    "openAgain": "Abrir WhatsApp de nuevo"
+  },
   "wetravel": {
     "note": "El pago se hace en la página segura de WeTravel (tarjeta de crédito o débito). Al pulsar Pagar se prepara tu enlace de pago.",
     "intro": "Tu enlace de pago está listo. Ábrelo, completa el pago en WeTravel y luego vuelve aquí y pulsa «Ya pagué».",

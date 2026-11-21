@@ -17,6 +17,7 @@ import {
   type Residency,
 } from "@/lib/api/carts";
 import { ApiError } from "@/lib/api/client";
+import { env } from "@/lib/env";
 import type { Locale } from "@/i18n/routing";
 import { cartIssueMessage, toUserError, type UserError } from "@/lib/api/problems";
 import type { ProviderAction, ProviderPaymentOutcome } from "@/lib/payments/types";
@@ -268,6 +269,19 @@ const IZIPAY_SDK_URL = /^https:\/\/(sandbox-)?checkout\.izipay\.pe\/payments\/v1
  * Izipay: devuelve la acción para abrir su formulario en el navegador (`ProviderAction`).
  * WeTravel: devuelve el enlace de pago; el viajero paga allí y la confirmación consulta el estado.
  */
+/**
+ * Modo sin pasarela (PAYMENT_PROVIDER=whatsapp): ninguna acción del servidor crea ni confirma cobros,
+ * aunque se la invoque directamente (las Server Actions son endpoints públicos). Evita que alguien
+ * obtenga una reserva "pagada" con el simulador del sandbox en el sitio público.
+ */
+export function onlinePaymentsEnabled(): boolean {
+  return env.PAYMENT_PROVIDER !== "whatsapp";
+}
+
+function assertOnlinePayments(): void {
+  if (!onlinePaymentsEnabled()) throw new Error("Pagos en línea desactivados (PAYMENT_PROVIDER=whatsapp).");
+}
+
 export async function payBooking(params: {
   bookingCode: string;
   token: string;
@@ -275,6 +289,7 @@ export async function payBooking(params: {
   method: PaymentMethod;
   simulate: "approved" | "rejected" | "pending";
 }): Promise<"succeeded" | "pending" | "failed" | ProviderAction> {
+  assertOnlinePayments();
   const { payment, nextAction } = await createPayment(params.bookingCode, params.token, params.payKey, params.method);
   if (payment.status === "succeeded") return "succeeded";
   if (payment.status === "failed" || payment.status === "cancelled" || payment.status === "expired") return "failed";
@@ -309,6 +324,7 @@ export async function confirmProviderPayment(params: {
   payloadHttp?: string;
   signature?: string;
 }): Promise<ProviderPaymentOutcome> {
+  assertOnlinePayments();
   const confirmation: Record<string, string> = params.payloadHttp && params.signature ? { payloadHttp: params.payloadHttp, signature: params.signature } : {};
   const payment = await confirmPayment(params.bookingCode, params.paymentId, params.token, confirmation);
   if (payment.status === "succeeded") return "succeeded";

@@ -102,7 +102,7 @@ export default async function BookingPage({ params }: PageProps<"/[locale]/reser
       data-pwt-voucher={booking.code}
       data-pwt-voucher-last-day={booking.lastServiceDate ?? booking.items.map((i) => i.travelDate).sort().at(-1) ?? undefined}
     >
-      {PAYMENTS_MODE === "sandbox" ? (
+      {PAYMENTS_MODE === "sandbox" && env.PAYMENT_PROVIDER === "sandbox" ? (
         <p className="mx-auto mb-8 max-w-[720px] rounded-md border border-dashed border-warning bg-warning-soft px-4 py-2 text-center text-sm text-warning">
           {t("sandbox")}
         </p>

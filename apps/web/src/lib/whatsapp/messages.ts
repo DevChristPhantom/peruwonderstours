@@ -20,7 +20,16 @@ export interface WhatsappTourContext {
 type Values = Record<string, string | number>;
 /** Traductor del namespace `whatsapp`. */
 export type WhatsappTranslator = (
-  key: "tourHelp" | "cartHelp" | "cartHelpStep" | "bookingHelp" | "bookingHelpStep" | "bookingQuestion" | "more",
+  key:
+    | "tourHelp"
+    | "cartHelp"
+    | "cartHelpStep"
+    | "bookingHelp"
+    | "bookingHelpStep"
+    | "bookingQuestion"
+    | "bookingRequest"
+    | "bookingRequestAmounts"
+    | "more",
   values?: Values,
 ) => string;
 
@@ -59,6 +68,17 @@ export function cartHelpMessage(
   const list = tours.slice(0, MAX_LINES).map((tour) => `- ${describeTour(tools, tour)}`);
   if (tours.length > MAX_LINES) list.push(`- ${t("more", { count: tours.length - MAX_LINES })}`);
   return [header, ...list].join("\n");
+}
+
+/** Pedido de reserva cuando no hay pasarela en línea (PAYMENT_PROVIDER=whatsapp): tours, total y monto a pagar hoy. */
+export function bookingRequestMessage(
+  tools: WhatsappTools,
+  tours: readonly WhatsappTourContext[],
+  amounts: { total: string; payNow: string },
+): string {
+  const list = tours.slice(0, MAX_LINES).map((tour) => `- ${describeTour(tools, tour)}`);
+  if (tours.length > MAX_LINES) list.push(`- ${tools.t("more", { count: tours.length - MAX_LINES })}`);
+  return [tools.t("bookingRequest"), ...list, tools.t("bookingRequestAmounts", amounts)].join("\n");
 }
 
 export function bookingHelpMessage(tools: WhatsappTools, code: string, tours: readonly WhatsappTourContext[] = []): string {

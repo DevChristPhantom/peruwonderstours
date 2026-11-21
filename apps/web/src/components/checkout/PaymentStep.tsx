@@ -20,7 +20,7 @@ import { lineTotalCents, type PaymentOption } from "@/lib/checkout/payment-plan"
 import { paymentStepSchema, type ContactValues, type PaymentStepValues } from "@/lib/checkout/schemas";
 import { izipayConfig, openIzipayForm, type IzipayResponse } from "@/lib/payments/izipay-checkout";
 import type { PaymentMethod, PaymentProvider, PaymentRequest, PaymentWidgetHandle, WeTravelAction } from "@/lib/payments/types";
-import { cartHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
+import { bookingRequestMessage, cartHelpMessage, whatsappHref } from "@/lib/whatsapp/messages";
 import { useUiStore } from "@/stores/ui-store";
 import { buttonClass } from "@/components/ui/button-styles";
 import { HoldTimer } from "./HoldTimer";
@@ -98,6 +98,7 @@ export function PaymentStep({
   const tc = useTranslations("checkout");
   const ti = useTranslations("checkout.izipay");
   const tw = useTranslations("checkout.wetravel");
+  const tb = useTranslations("checkout.whatsappBooking");
   const locale = useLocale();
   const fmt = useFormat();
   const errorText = useErrorText();
@@ -110,6 +111,7 @@ export function PaymentStep({
   const [apiError, setApiError] = useState<(UserError & { bookingCode?: string }) | null>(null);
   const [expired, setExpired] = useState(false);
   const [opening, setOpening] = useState(false);
+  const [whatsappSent, setWhatsappSent] = useState(false);
   // WeTravel: reserva creada y enlace de pago listo; el viajero paga en otra pestaña y vuelve a «Ya pagué».
   const [wetravel, setWetravel] = useState<(WeTravelAction & { code: string }) | null>(null);
   // Candado síncrono: varios clics en el mismo instante llegan antes de que React deshabilite el botón.
@@ -297,6 +299,14 @@ export function PaymentStep({
       requestAnimationFrame(() => summaryRef.current?.focus());
       return;
     }
+    // Sin pasarela (PAYMENT_PROVIDER=whatsapp): no se crea reserva ni cobro; se abre WhatsApp con el
+    // pedido (sin datos personales) y la agencia confirma y cobra por ese canal.
+    if (provider === "whatsapp") {
+      if (whatsappBookingHref) window.open(whatsappBookingHref, "_blank", "noopener,noreferrer");
+      setWhatsappSent(true);
+      announce(tb("sent"));
+      return;
+    }
     if (paying.current) return;
     paying.current = true;
     pay.mutate(values, { onSettled: () => (paying.current = false) });
@@ -357,6 +367,16 @@ export function PaymentStep({
   const cardFee = cardFeePercent && method === "card" && plan ? Math.round((plan.payNowCents * cardFeePercent) / 100) : 0;
   const payTodayCents = plan ? plan.payNowCents + cardFee : 0;
   const payLabel = plan ? t("payAmount", { amount: money(payTodayCents) }) : t("pay");
+  const whatsappBookingHref =
+    provider === "whatsapp" && plan
+      ? whatsappHref(
+          bookingRequestMessage(
+            wa,
+            lines.map((l) => ({ title: l.title, date: l.date, travelers: l.travelers })),
+            { total: money(quote.totalCents), payNow: money(plan.payNowCents) },
+          ),
+        )
+      : null;
 
   return (
     <form noValidate aria-labelledby="step-payment-title" onSubmit={(e) => handleSubmit(onValid, () => requestAnimationFrame(() => summaryRef.current?.focus()))(e)}>
@@ -537,8 +557,11 @@ export function PaymentStep({
         </div>
       ) : null}
 
-      {/* 3.2 Método de pago */}
-      {canPay && request ? (
+      {/* 3.2 Método de pago (no aplica cuando la reserva se coordina por WhatsApp) */}
+      {provider === "whatsapp" && canPay ? (
+        <p className="mt-8 rounded-md border border-border bg-surface-muted p-4 text-sm">{tb("note")}</p>
+      ) : null}
+      {canPay && request && provider !== "whatsapp" ? (
         <fieldset className="mt-8">
           <legend className="text-h4 font-medium">{t("method")}</legend>
           <div className="mt-3 grid gap-3 sm:grid-cols-3">
@@ -669,15 +692,27 @@ export function PaymentStep({
               <Loader2 aria-hidden size={20} strokeWidth={1.5} className="animate-spin motion-reduce:animate-none" />
               {opening ? ti("opening") : t("processing")}
             </>
+          ) : provider === "whatsapp" ? (
+            tb("button")
           ) : (
             payLabel
           )}
         </button>
       )}
-      <p className="mt-3 flex items-center justify-center gap-2 text-sm text-foreground-muted">
-        <Lock aria-hidden size={16} strokeWidth={1.5} />
-        {t("secureNote")}
-      </p>
+      {provider === "whatsapp" && whatsappSent && whatsappBookingHref ? (
+        <p role="status" className="mt-3 text-center text-sm">
+          {tb("sent")}{" "}
+          <a href={whatsappBookingHref} target="_blank" rel="noopener noreferrer" className="pwt-link">
+            {tb("openAgain")}
+          </a>
+        </p>
+      ) : null}
+      {provider !== "whatsapp" ? (
+        <p className="mt-3 flex items-center justify-center gap-2 text-sm text-foreground-muted">
+          <Lock aria-hidden size={16} strokeWidth={1.5} />
+          {t("secureNote")}
+        </p>
+      ) : null}
       <p className="mt-2 text-center">
         <a
           href={helpHref(quote.booking?.code ?? null)}

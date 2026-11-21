@@ -5,5 +5,7 @@
   "bookingHelp": "Hola, necesito ayuda con mi reserva {code}:",
   "bookingHelpStep": "Hola, necesito ayuda con mi reserva {code} (paso: {step}):",
   "bookingQuestion": "Hola, tengo una consulta sobre mi reserva {code}.",
-  "more": "{count, plural, one {y # tour más} other {y # tours más}}"
+  "more": "{count, plural, one {y # tour más} other {y # tours más}}",
+  "bookingRequest": "Hola, quiero reservar:",
+  "bookingRequestAmounts": "Total: {total}. Pago hoy: {payNow}. ¿Me indican cómo pagar?"
 }

@@ -32,7 +32,7 @@ export interface PaymentRequest {
 export type SimulatedOutcome = "approved" | "rejected" | "pending";
 
 /** Pasarela activa (variable de servidor `PAYMENT_PROVIDER`; debe coincidir con la de la API). */
-export type PaymentProvider = "sandbox" | "izipay" | "wetravel";
+export type PaymentProvider = "sandbox" | "izipay" | "wetravel" | "whatsapp";
 
 /** Datos del titular que exige el formulario de Izipay (no son datos de tarjeta). */
 export interface CardHolder {

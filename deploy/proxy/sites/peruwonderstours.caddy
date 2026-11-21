@@ -24,14 +24,10 @@
 	import common
 	import pwt_maintenance
 
-	# --- Solo fase de pruebas: contraseña y fuera de Google. Quitar al lanzar. ---
-	# Los webhooks de pasarelas (WeTravel) no pueden mandar la contraseña: quedan fuera (van firmados).
-	@staging_protected not path /api/v1/payments/webhooks/*
-	basic_auth @staging_protected {
-		{$PWT_STAGING_USER} {$PWT_STAGING_HASH}
-	}
-	header X-Robots-Tag "noindex, nofollow"
-	# --- fin fase de pruebas ---
+	# Sitio público desde el 2026-11-20 (sin contraseña de pruebas ni "noindex"). Para volver a cerrarlo:
+	#   @staging_protected not path /api/v1/payments/webhooks/*
+	#   basic_auth @staging_protected { {$PWT_STAGING_USER} {$PWT_STAGING_HASH} }
+	#   header X-Robots-Tag "noindex, nofollow"
 
 	# Webhooks de la pasarela de pagos (firma verificada en la API; solo POST).
 	@payment_webhooks {

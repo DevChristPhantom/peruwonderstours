@@ -202,7 +202,7 @@ export function CheckoutFlow({ cardFeePercent = null, provider = "sandbox" }: { 
 
   return (
     <div className="pwt-container py-8 md:py-12">
-      {PAYMENTS_MODE === "sandbox" ? (
+      {PAYMENTS_MODE === "sandbox" && provider === "sandbox" ? (
         <p className="mb-6 rounded-md border border-dashed border-warning bg-warning-soft px-4 py-2 text-sm text-warning">
           {t("sandboxBanner")}
         </p>

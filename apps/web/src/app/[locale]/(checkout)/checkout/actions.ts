@@ -15,7 +15,7 @@ import {
   type CheckoutQuote,
   type PlaceResult,
 } from "@/lib/checkout/api-checkout";
-import { CheckoutFailure, confirmProviderPayment, failureFrom, payBooking, prepareQuote } from "@/lib/checkout/checkout-service";
+import { CheckoutFailure, confirmProviderPayment, failureFrom, onlinePaymentsEnabled, payBooking, prepareQuote } from "@/lib/checkout/checkout-service";
 import type { ProviderPaymentOutcome } from "@/lib/payments/types";
 import {
   clearAttempt,
@@ -58,6 +58,8 @@ export async function prepareCheckoutAction(raw: unknown): Promise<ActionResult<
  */
 export async function placeBookingAction(raw: unknown): Promise<ActionResult<PlaceResult>> {
   const locale = await requestLocale();
+  // Sin pasarela en línea la reserva se pide por WhatsApp: no se crean reservas desde el sitio.
+  if (!onlinePaymentsEnabled()) return { ok: false, error: toUserError("api-unavailable", undefined, locale) };
   const parsed = placeInputSchema.safeParse(raw);
   if (!parsed.success) {
     const terms = parsed.error.issues.some((i) => i.path[0] === "acceptTerms" || i.path[0] === "acceptPrivacy");

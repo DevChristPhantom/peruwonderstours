@@ -435,6 +435,12 @@
       "rejected": "Declined",
       "pending": "Pending (CIP)"
     },
+    "whatsappBooking": {
+      "note": "For now we confirm bookings via WhatsApp. Pressing the button opens a chat with your request (tours, dates, travelers and amount) and we will tell you how to pay. Your spot is confirmed once we receive the payment.",
+      "button": "Book via WhatsApp",
+      "sent": "We opened WhatsApp with your request. Send the message and we will reply during business hours.",
+      "openAgain": "Open WhatsApp again"
+    },
     "wetravel": {
       "note": "Payment is made on WeTravel's secure page (credit or debit card). Press Pay to prepare your payment link.",
       "intro": "Your payment link is ready. Open it, complete the payment on WeTravel, then come back here and press “I've paid”.",
@@ -1560,6 +1566,8 @@
     "bookingHelp": "Hi, I need help with my booking {code}:",
     "bookingHelpStep": "Hi, I need help with my booking {code} (step: {step}):",
     "bookingQuestion": "Hi, I have a question about my booking {code}.",
-    "more": "{count, plural, one {and # more tour} other {and # more tours}}"
+    "more": "{count, plural, one {and # more tour} other {and # more tours}}",
+    "bookingRequest": "Hello, I'd like to book:",
+    "bookingRequestAmounts": "Total: {total}. Paying today: {payNow}. How can I pay?"
   }
 }

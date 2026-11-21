@@ -435,6 +435,12 @@
       "rejected": "Recusado",
       "pending": "Pendente (CIP)"
     },
+    "whatsappBooking": {
+      "note": "Por enquanto confirmamos as reservas pelo WhatsApp. Ao clicar no botão, abre-se uma conversa com o seu pedido (passeios, datas, viajantes e valor) e informamos como pagar. Sua vaga fica confirmada quando recebermos o pagamento.",
+      "button": "Reservar pelo WhatsApp",
+      "sent": "Abrimos o WhatsApp com o seu pedido. Envie a mensagem e responderemos no horário de atendimento.",
+      "openAgain": "Abrir o WhatsApp novamente"
+    },
     "wetravel": {
       "note": "O pagamento é feito na página segura da WeTravel (cartão de crédito ou débito). Ao clicar em Pagar, preparamos seu link de pagamento.",
       "intro": "Seu link de pagamento está pronto. Abra-o, conclua o pagamento na WeTravel e depois volte aqui e clique em «Já paguei».",
@@ -1560,6 +1566,8 @@
     "bookingHelp": "Olá, preciso de ajuda com minha reserva {code}:",
     "bookingHelpStep": "Olá, preciso de ajuda com minha reserva {code} (etapa: {step}):",
     "bookingQuestion": "Olá, tenho uma dúvida sobre minha reserva {code}.",
-    "more": "{count, plural, one {e mais # passeio} other {e mais # passeios}}"
+    "more": "{count, plural, one {e mais # passeio} other {e mais # passeios}}",
+    "bookingRequest": "Olá, quero reservar:",
+    "bookingRequestAmounts": "Total: {total}. Pagamento hoje: {payNow}. Como posso pagar?"
   }
 }
