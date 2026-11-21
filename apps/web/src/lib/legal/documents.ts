@@ -49,6 +49,8 @@ export type LegalDocumentKey = keyof typeof LEGAL_DOCUMENTS;
 
 export interface LegalDocument {
   title: string;
+  /** El archivo empieza con "# BORRADOR …" / "# RASCUNHO …": se muestra el aviso de borrador. */
+  draft: boolean;
   draftVersion: string | null;
   blocks: ReturnType<typeof parseMarkdown>;
 }
@@ -58,11 +60,12 @@ export function loadLegalDocument(key: LegalDocumentKey, locale: Locale = "es"):
   if (!source) throw new Error(`No se encontró docs/legal/${LEGAL_DOCUMENTS[key]} (borrador legal) al compilar.`);
   const lines = source.replace(/\r\n/g, "\n").split("\n");
   const h1 = lines.map((l, i) => (/^#\s/.test(l) ? i : -1)).filter((i) => i >= 0);
-  // Primer H1 = "BORRADOR — ..."; segundo H1 = título real del documento.
-  const start = h1.length > 1 ? h1[1] : (h1[0] ?? 0);
+  // Borrador: primer H1 = "BORRADOR — ..." y segundo H1 = título real. Versión final: un solo H1.
+  const draft = /^#\s+(BORRADOR|RASCUNHO)\b/i.test(lines[h1[0] ?? 0] ?? "");
+  const start = draft && h1.length > 1 ? h1[1] : (h1[0] ?? 0);
   const preamble = lines.slice(0, start).join("\n");
   // "Versión del borrador: 0.1 (2026-10-07)." → "0.1 (2026-10-07)"
   const version = /(?:Versión del borrador|Versão do rascunho):\s*([^)\n]*\))/.exec(preamble)?.[1]?.trim() ?? null;
   const title = lines[start]?.replace(/^#\s+/, "").trim() || "Documento legal";
-  return { title, draftVersion: version, blocks: parseMarkdown(lines.slice(start + 1).join("\n")) };
+  return { title, draft, draftVersion: draft ? version : null, blocks: parseMarkdown(lines.slice(start + 1).join("\n")) };
 }

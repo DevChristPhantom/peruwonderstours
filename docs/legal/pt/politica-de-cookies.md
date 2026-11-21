@@ -1,10 +1,6 @@
-# RASCUNHO — requer revisão de um assessor jurídico
-
-> Versão do rascunho: 0.3 (2026-11-15). No Peru não há uma norma específica sobre cookies; aplica-se a Lei 29733 e seu Regulamento (D.S. 016-2024-JUS) quando os cookies tratam dados pessoais. Análise: `brain/wiki/normativa/proteccion-de-datos.md`. A tabela da seção 4 é o inventário real do site em 2026-11-15. Mudança da 0.3: Google Analytics 4, opcional, carregado apenas se o visitante clicar em "Aceitar" no aviso de cookies. Revisar com o assessor jurídico a transferência internacional ao Google (seção 6) e refleti-la também na Política de Privacidade.
-
 # Política de Cookies da peruwonderstours
 
-Última atualização: 15 de novembro de 2026 · Versão 0.3
+Última atualização: 20 de novembro de 2026 · Versão 1.0
 
 ## 1. O que são cookies?
 
@@ -12,7 +8,7 @@ São pequenos arquivos que o site salva no seu navegador para lembrar informaç�
 
 ## 2. Responsável
 
-PERU WONDERS TOURS S.A.C., RUC 20616102339, endereço Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Peru. Contato: jorgechaveztourt@gmail.com. Mais detalhes na Política de Privacidade.
+PERU WONDERS TOURS S.A.C., RUC 20616102339, domicílio fiscal Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Peru; escritório na Calle N 500, Puno, Peru. Contato: jorgechaveztourt@gmail.com. Mais detalhes na Política de Privacidade.
 
 ## 3. Quais cookies usamos
 

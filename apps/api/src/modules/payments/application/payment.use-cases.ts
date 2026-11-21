@@ -215,10 +215,15 @@ export class PaymentUseCases {
       throw error;
     }
 
-    // Webhooks que solo avisan (WeTravel): el estado y el monto se consultan a la API del proveedor.
-    if (event.providerPaymentId && !event.status) {
+    // Webhooks que solo avisan (WeTravel): el estado y el monto se consultan a la API del proveedor,
+    // y solo si el aviso es de un cobro nuestro (un aviso sin estado de otro cobro se ignora).
+    const notifyOnly = event.providerPaymentId && !event.status;
+    const known = notifyOnly
+      ? await this.unitOfWork.run((repos) => repos.payments.findByProviderPaymentId(gateway.provider, event.providerPaymentId!))
+      : null;
+    if (notifyOnly && known) {
       try {
-        const state = await gateway.getStatus(event.providerPaymentId);
+        const state = await gateway.getStatus(known.providerPaymentId ?? event.providerPaymentId!);
         event = { ...event, status: state.status, amount: state.amount };
       } catch (error) {
         await this.finishEvent(record, 'failed', null, 'status_lookup_failed');

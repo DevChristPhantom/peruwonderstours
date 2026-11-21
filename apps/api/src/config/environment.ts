@@ -234,10 +234,10 @@ export class EnvironmentVariables {
   IDEMPOTENCY_TTL_HOURS = 24;
 
   @IsString()
-  TERMS_VERSION = '2026-10-draft';
+  TERMS_VERSION = '1.0-2026-11-20';
 
   @IsString()
-  CANCELLATION_POLICY_VERSION = '2026-10-draft';
+  CANCELLATION_POLICY_VERSION = '1.0-2026-11-20';
 
   @IsOptional()
   @IsString()
@@ -272,7 +272,7 @@ export class EnvironmentVariables {
   /** Versión de la cláusula de privacidad mostrada en el formulario. */
   @IsString()
   @Length(1, 40)
-  PRIVACY_NOTICE_VERSION = '2026-10-draft';
+  PRIVACY_NOTICE_VERSION = '1.0-2026-11-20';
 
   /** Clave maestra AES-256 (32 bytes en base64) para datos personales cifrados. Obligatoria en producción. */
   @Transform(({ value }: { value: unknown }) => (value === '' ? undefined : value))

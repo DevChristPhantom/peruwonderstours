@@ -1,102 +1,118 @@
-# BORRADOR — requiere revisión de asesor legal
-
-> Versión del borrador: 0.1 (2026-10-07). Contenidos mínimos tomados del Código de Protección y
-> Defensa del Consumidor (Ley 29571) y del Reglamento de Agencias de Viajes y Turismo
-> (D.S. 005-2020-MINCETUR, art. 22). Análisis: `brain/wiki/normativa/informacion-al-consumidor.md`.
-
 # Términos y Condiciones de Uso y Contratación
 
-Última actualización: [POR CONFIRMAR: fecha] · Versión [POR CONFIRMAR: versión]
+Última actualización: 20 de noviembre de 2026 · Versión 1.0
 
-## 1. Identificación del proveedor
+Estos términos regulan el uso del sitio peruwonderstours.com y la contratación de los tours y
+paquetes turísticos que ofrecemos en él. Se aplican el Código de Protección y Defensa del Consumidor
+(Ley 29571) y el Reglamento de Agencias de Viajes y Turismo (D.S. 005-2020-MINCETUR).
 
-- Razón social: PERU WONDERS TOURS S.A.C.
-- Nombre comercial: peruwonderstours
-- RUC: 20616102339
-- Domicilio: Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Perú
-- Teléfono / WhatsApp: +51 924 278 597 (WhatsApp) · Correo: jorgechaveztourt@gmail.com
-- Agencia de Viajes y Turismo inscrita en el Directorio Nacional de Prestadores de Servicios
-  Turísticos Calificados, constancia N.º [POR CONFIRMAR: número], clasificación
-  [POR CONFIRMAR: minorista / mayorista / operador de turismo].
+## 1. ¿Quiénes somos?
+
+- **Razón social:** PERU WONDERS TOURS S.A.C.
+- **Nombre comercial:** Peru Wonders Tours
+- **RUC:** 20616102339
+- **Actividad:** agencia de viajes y turismo
+- **Domicilio fiscal:** Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Perú
+- **Oficina de atención:** Calle N 500, Puno, Perú. Lunes a sábado, de 09:00 a 19:00 (hora de Perú)
+- **Teléfono y WhatsApp:** +51 924 278 597
+- **Correo:** jorgechaveztourt@gmail.com
 
 ## 2. Aceptación
 
-Al navegar el sitio aceptas estos términos de uso. Al reservar, aceptas además las condiciones del
-servicio elegido, la **Política de Cancelación, Cambios y Reembolsos** y declaras haber leído la
-**Política de Privacidad**. Antes de pagar podrás revisar todas estas condiciones; guardamos la
-versión que aceptaste y te la enviamos por correo.
+Puedes navegar el sitio libremente. Al reservar, aceptas estos Términos, la **Política de
+Cancelación, Cambios y Reembolsos** y declaras haber leído la **Política de Privacidad**. Antes de
+pagar ves el resumen de tu reserva con el precio total y estas condiciones. Guardamos la versión que
+aceptaste junto con tu reserva y te la enviamos en la confirmación.
 
 ## 3. Información de los servicios
 
-Cada ficha describe itinerario, qué incluye y qué no incluye, duración, punto de encuentro, idioma,
-mínimo de pasajeros, nivel de dificultad, requisitos (documentos, edad, condición física, altitud) y
-componentes no reembolsables. Las fotos son referenciales. Los horarios pueden variar por causas
-operativas de terceros (trenes, ingresos, clima); te avisaremos oportunamente.
+Cada tour o paquete tiene una ficha con su itinerario, qué incluye y qué no incluye, duración, punto
+de encuentro o recojo, idioma, número mínimo de viajeros, nivel de dificultad y requisitos
+(documentos, edad, condición física, altitud). La ficha también indica los componentes que no se
+pueden devolver una vez emitidos (por ejemplo, boletos de tren o de ingreso a Machu Picchu).
 
-## 4. Precios
+Las fotos muestran los lugares que se visitan. Los horarios pueden variar por causas que no
+controlamos (trenes, horarios de ingreso, clima, disposiciones de las autoridades); si eso pasa, te
+avisamos lo antes posible por correo o WhatsApp.
 
-- Los precios se muestran como **precio total por el servicio**, con impuestos, comisiones y cargos
-  aplicables incluidos. [POR CONFIRMAR con el contador: tratamiento de IGV para turistas no
-  domiciliados].
-- Los precios en dólares se muestran también en soles con el tipo de cambio aplicable al pago; puedes
-  pagar en cualquiera de las dos monedas [POR CONFIRMAR: monedas aceptadas].
-- Al iniciar el pago reservamos tu cupo por [POR CONFIRMAR: 15] minutos y congelamos el precio. Si el
-  precio cambió desde que agregaste el servicio al carrito, te lo mostraremos y tendrás que aceptarlo.
-- Los recargos por servicios adicionales (traslados, suplemento individual, etc.) solo se cobran si
-  se muestran antes del pago y los aceptas.
-- [POR CONFIRMAR: comisión del 3,5 % por pago con tarjeta de crédito, mostrada antes de elegir el
-  medio de pago].
+## 4. Precios y monedas
+
+- El precio que ves es el **precio total final** del servicio. Incluye los impuestos y cargos
+  aplicables. **No cobramos recargos** por el medio de pago.
+- Los **residentes en el Perú** pagan en **soles (S/)** y los **viajeros extranjeros** en **dólares
+  americanos (USD)**. El sitio te muestra la moneda que corresponde antes de pagar.
+- Si el precio de un servicio cambia después de que lo agregaste al carrito, te lo mostramos antes de
+  pagar y solo continúas si lo aceptas.
+- Al iniciar el pago reservamos tu cupo y congelamos el precio durante **15 minutos**.
+- Los servicios adicionales (traslados, suplemento individual u otros) solo se cobran si se muestran
+  antes del pago y los aceptas.
 
 ## 5. Reserva y pago
 
-- Adelanto del **50 %** para confirmar la reserva; **saldo** hasta **7 días antes** del inicio del
-  servicio; si faltan 7 días o menos, pago del 100 %. Detalle en la Política de Cancelación.
-- Medios de pago: [POR CONFIRMAR: tarjetas, Yape, Plin, PagoEfectivo, transferencia].
-  No almacenamos los datos completos de tu tarjeta.
-- Emitimos boleta o factura electrónica por cada pago.
-- La reserva se confirma por correo con un código de reserva.
+- **Adelanto:** para reservar pagas el **50 %** del precio total y tu reserva queda **confirmada**.
+- **Saldo:** el 50 % restante se paga hasta **7 días calendario antes** del inicio del primer
+  servicio. El sitio y el correo de confirmación te indican la fecha límite exacta.
+- **Pago total al reservar:**
+  - si el servicio empieza en **7 días o menos**;
+  - si el servicio incluye boletos nominativos que se compran a terceros al reservar (tren, ingreso a
+    Machu Picchu, sobrevuelo de las Líneas de Nazca). La ficha y el resumen de pago lo indican.
+- **Medios de pago:** tarjetas de crédito y débito y los demás medios que se muestran en el paso de
+  pago. Los pagos se procesan en la plataforma segura de la pasarela de pagos; **no recibimos ni
+  guardamos los datos completos de tu tarjeta**.
+- **Confirmación:** te enviamos un código de reserva y el detalle de lo pagado y de lo pendiente.
+- **Comprobante:** emitimos boleta o factura electrónica por cada pago.
+
+El detalle de saldos, cambios y cancelaciones está en la Política de Cancelación, Cambios y
+Reembolsos.
 
 ## 6. Obligaciones del viajero
 
-Proporcionar datos exactos de los viajeros (como figuran en el documento de viaje cuando el servicio
-lo exige), portar documentos vigentes, cumplir requisitos migratorios y de salud, llegar puntual,
-respetar normas de áreas naturales protegidas y sitios patrimoniales, e informar condiciones de
-salud relevantes para actividades de aventura o altura (información opcional tratada como dato
-sensible).
+- Dar datos exactos de cada viajero, tal como figuran en su documento de identidad o pasaporte cuando
+  el servicio lo exige (los boletos nominativos no se pueden corregir una vez emitidos).
+- Viajar con documentos vigentes y cumplir los requisitos migratorios y de salud.
+- Llegar puntual al punto de encuentro.
+- Respetar las normas de las áreas naturales protegidas, los sitios arqueológicos y las comunidades
+  que se visitan.
+- Informarnos de condiciones de salud relevantes para actividades de altura o aventura. Este dato es
+  opcional y lo tratamos como dato sensible.
+- Los menores de edad viajan con su padre, madre o tutor, o con la autorización que exige la ley.
 
 ## 7. Prestadores de servicios
 
-Algunos servicios los ejecutan prestadores locales (transporte, hoteles, trenes, guías). Peru
-Wonders Tours responde frente a ti por la idoneidad del servicio contratado conforme al Código de
-Protección y Defensa del Consumidor. [POR CONFIRMAR con asesor legal: alcance de responsabilidad
-según la clasificación de la agencia; no incluir exclusiones de responsabilidad por dolo o culpa,
-que serían cláusulas abusivas (art. 50.a del Código)].
+Algunos servicios los ejecutan prestadores locales con quienes trabajamos (transporte, hoteles,
+trenes, guías, restaurantes). Peru Wonders Tours responde ante ti por la idoneidad del servicio que
+contrataste, conforme al Código de Protección y Defensa del Consumidor.
 
 ## 8. Turismo responsable
 
 Rechazamos y denunciamos la explotación sexual de niñas, niños y adolescentes (ESNNA), la trata de
-personas y el tráfico ilícito de migrantes. Hemos suscrito el Código de Conducta contra la ESNNA del
-MINCETUR. Ver la página "Turismo responsable". [POR CONFIRMAR: fecha de suscripción].
+personas y el tráfico ilícito de migrantes. Conoce nuestro compromiso en la página «Compromiso contra
+la ESNNA».
 
 ## 9. Uso del sitio
 
-Se prohíbe usar el sitio para fines ilícitos, extraer contenido de forma masiva, intentar vulnerar su
-seguridad o suplantar a otras personas. El contenido (textos, fotos, marca) pertenece a
-[POR CONFIRMAR: titular] o a sus licenciantes.
+No está permitido usar el sitio para fines ilícitos, copiar su contenido de forma masiva, intentar
+vulnerar su seguridad ni hacerse pasar por otra persona. Los textos, fotos, logotipos y la marca
+Peru Wonders Tours pertenecen a PERU WONDERS TOURS S.A.C. o a sus licenciantes y no pueden usarse
+sin autorización.
 
-## 10. Reclamos y solución de controversias
+## 10. Reclamos
 
-- **Libro de Reclamaciones virtual**: enlace en la página de inicio y en el pie de todas las páginas.
-  Respondemos reclamos y quejas en un plazo máximo de **15 días hábiles**.
-- Presentar un reclamo no te impide acudir al INDECOPI ni a otras vías.
-- Estos términos se rigen por las leyes del Perú. [POR CONFIRMAR con asesor legal: no incluir
-  cláusulas que limiten el derecho del consumidor a denunciar o a elegir la vía].
+- Puedes registrar un reclamo o una queja en nuestro **Libro de Reclamaciones virtual** (enlace al
+  pie de todas las páginas). Te respondemos en un plazo máximo de **15 días hábiles**.
+- También puedes escribirnos a jorgechaveztourt@gmail.com o por WhatsApp al +51 924 278 597.
+- Presentar un reclamo no te impide acudir al INDECOPI ni a otras vías que la ley te reconoce.
 
-## 11. Datos personales y cookies
+## 11. Ley aplicable
+
+Estos términos se rigen por las leyes del Perú. Nada en ellos limita los derechos que te reconoce el
+Código de Protección y Defensa del Consumidor.
+
+## 12. Datos personales y cookies
 
 Ver la Política de Privacidad y la Política de Cookies.
 
-## 12. Cambios a estos términos
+## 13. Cambios a estos términos
 
-Publicaremos las nuevas versiones con su fecha. Las reservas ya pagadas se rigen por la versión que
-aceptaste al reservar.
+Publicamos cada nueva versión en esta página con su fecha. Las reservas ya hechas se rigen por la
+versión que aceptaste al reservar.

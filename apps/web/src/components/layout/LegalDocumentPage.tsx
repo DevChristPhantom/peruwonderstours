@@ -28,14 +28,16 @@ export async function LegalDocumentPage({ doc, crumbs, locale }: { doc: LegalDoc
           {t("spanishOnly")}
         </p>
       ) : null}
-      <div
-        role="note"
-        aria-label={t("draftLabel")}
-        className="mt-6 flex gap-3 rounded-md border-2 border-dashed border-warning bg-warning-soft px-4 py-3 text-sm text-warning"
-      >
-        <FileWarning aria-hidden size={20} strokeWidth={1.5} className="mt-0.5 shrink-0" />
-        <p>{legal.draftVersion ? t("draftWithVersion", { version: legal.draftVersion }) : t("draft")}</p>
-      </div>
+      {legal.draft ? (
+        <div
+          role="note"
+          aria-label={t("draftLabel")}
+          className="mt-6 flex gap-3 rounded-md border-2 border-dashed border-warning bg-warning-soft px-4 py-3 text-sm text-warning"
+        >
+          <FileWarning aria-hidden size={20} strokeWidth={1.5} className="mt-0.5 shrink-0" />
+          <p>{legal.draftVersion ? t("draftWithVersion", { version: legal.draftVersion }) : t("draft")}</p>
+        </div>
+      ) : null}
       <div lang={documentLanguage} className="mt-6 text-body">
         <Markdown blocks={legal.blocks} />
       </div>

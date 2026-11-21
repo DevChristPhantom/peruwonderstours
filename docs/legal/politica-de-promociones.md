@@ -1,20 +1,11 @@
-# BORRADOR — requiere revisión de asesor legal
-
-> Versión del borrador: 0.1 (2026-10-26). Marco: Código de Protección y Defensa del Consumidor
-> (Ley 29571: publicidad veraz, promociones e información de precios), Ley de Represión de la
-> Competencia Desleal (D.Leg. 1044) y prohibición de comunicaciones comerciales sin consentimiento
-> previo (Código, art. 58). Se aplica a la sección «Lo más relevante», a los anuncios de eventos y a
-> cualquier descuento del sitio. INDECOPI exige indicar la duración de cada promoción, las
-> unidades o cupos disponibles cuando sean limitados y el precio final con impuestos.
-
 # Condiciones de Promociones, Eventos y Publicidad
 
-Última actualización: 26 de octubre de 2026 · Versión 0.1
+Última actualización: 20 de noviembre de 2026 · Versión 1.0
 
 ## 1. Quién ofrece las promociones
 
-PERU WONDERS TOURS S.A.C., RUC 20616102339, domicilio Jr. Amauta Mza. X Lote 15, Urb. Tepro
-(Centro Poblado Salcedo), Puno, Perú. Contacto: jorgechaveztourt@gmail.com · +51 924 278 597
+PERU WONDERS TOURS S.A.C., RUC 20616102339, domicilio fiscal Jr. Amauta Mza. X Lote 15, Urb. Tepro
+(Centro Poblado Salcedo), Puno, Perú; oficina en Calle N 500, Puno, Perú. Contacto: jorgechaveztourt@gmail.com · +51 924 278 597
 (WhatsApp).
 
 ## 2. Qué abarcan estas condiciones
@@ -59,8 +50,7 @@ en la ficha de cada tour o paquete.
 
 Si por un error material evidente se publica un precio claramente desproporcionado, te
 informaremos antes de confirmar la reserva y podrás aceptar el precio correcto o desistir con la
-devolución total de lo pagado. [POR CONFIRMAR con asesor legal: redacción conforme al Código y a la
-jurisprudencia de INDECOPI.]
+devolución total de lo pagado.
 
 ## 7. Comunicaciones comerciales
 

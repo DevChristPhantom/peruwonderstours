@@ -1,10 +1,6 @@
-# RASCUNHO — requer revisão de um assessor jurídico
-
-> Versão do rascunho: 0.1 (2026-10-26). Marco: Código de Proteção e Defesa do Consumidor do Peru (Lei 29571), Lei de Repressão da Concorrência Desleal (D.Leg. 1044) e Lei 29733 com seu Regulamento (D.S. 016-2024-JUS). Tradução da versão em espanhol, que prevalece em caso de divergência.
-
 # Política de Avaliações e Depoimentos
 
-Última atualização: 26 de outubro de 2026 · Versão 0.1
+Última atualização: 20 de novembro de 2026 · Versão 1.0
 
 ## 1. Para que servem as avaliações
 

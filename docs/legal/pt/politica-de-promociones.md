@@ -1,14 +1,10 @@
-# RASCUNHO — requer revisão de um assessor jurídico
-
-> Versão do rascunho: 0.1 (2026-10-26). Marco: Código de Proteção e Defesa do Consumidor do Peru (Lei 29571: publicidade verdadeira, promoções e informação de preços), Lei de Repressão da Concorrência Desleal (D.Leg. 1044) e proibição de comunicações comerciais sem consentimento prévio (Código, art. 58). Tradução da versão em espanhol, que prevalece em caso de divergência.
-
 # Condições de Promoções, Eventos e Publicidade
 
-Última atualização: 26 de outubro de 2026 · Versão 0.1
+Última atualização: 20 de novembro de 2026 · Versão 1.0
 
 ## 1. Quem oferece as promoções
 
-PERU WONDERS TOURS S.A.C., RUC 20616102339, endereço Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Peru. Contato: jorgechaveztourt@gmail.com · +51 924 278 597 (WhatsApp).
+PERU WONDERS TOURS S.A.C., RUC 20616102339, domicílio fiscal Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Peru; escritório na Calle N 500, Puno, Peru. Contato: jorgechaveztourt@gmail.com · +51 924 278 597 (WhatsApp).
 
 ## 2. O que estas condições abrangem
 
@@ -35,7 +31,7 @@ As fotos e textos mostram o destino ou o evento de forma real. Quando uma imagem
 
 ## 6. Erros evidentes no preço
 
-Se, por um erro material evidente, for publicado um preço claramente desproporcional, informaremos você antes de confirmar a reserva e você poderá aceitar o preço correto ou desistir com a devolução total do valor pago. [A CONFIRMAR com assessor jurídico.]
+Se, por um erro material evidente, for publicado um preço claramente desproporcional, informaremos você antes de confirmar a reserva e você poderá aceitar o preço correto ou desistir com a devolução total do valor pago.
 
 ## 7. Comunicações comerciais
 

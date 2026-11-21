@@ -1,16 +1,6 @@
-# BORRADOR — requiere revisión de asesor legal
-
-> Versión del borrador: 0.1 (2026-10-26). Marco: Código de Protección y Defensa del Consumidor
-> (Ley 29571: información veraz y publicidad no engañosa), Ley de Represión de la Competencia
-> Desleal (D.Leg. 1044: actos de engaño) y Ley 29733 con su Reglamento (D.S. 016-2024-JUS) para los
-> datos de quien opina. Describe el flujo real del sitio: formulario «Dejar testimonio» con
-> consentimiento de publicación y moderación previa en el panel.
-> **Nota interna:** las reseñas heredadas de la web anterior son de otra empresa (agradecen a
-> «Yuri» y a «agencia turinet»); están archivadas y no deben publicarse como propias.
-
 # Política de Reseñas y Testimonios
 
-Última actualización: 26 de octubre de 2026 · Versión 0.1
+Última actualización: 20 de noviembre de 2026 · Versión 1.0
 
 ## 1. Para qué sirven las reseñas
 
