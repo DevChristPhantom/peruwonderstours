@@ -95,6 +95,8 @@ export interface Faq {
 }
 
 export interface Tour extends TourSummary {
+  /** Idiomas con traducción propia (para el hreflang de la ficha). */
+  translatedLocales?: ("es" | "en" | "pt")[];
   metaTitle: string;
   metaDescription: string;
   description: string;

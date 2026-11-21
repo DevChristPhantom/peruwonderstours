@@ -14,7 +14,8 @@ export default async function ToursLoading() {
         {t("loading")}
       </p>
       <div aria-hidden="true" className="h-4 w-40 animate-pulse rounded-md bg-surface-muted motion-reduce:animate-none" />
-      <h1 className="mt-4 mb-8 font-display text-h1 font-medium">{t("title")}</h1>
+      {/* No es h1: el esqueleto de carga queda en el HTML junto a la página real y duplicaba el h1. */}
+      <p aria-hidden className="mt-4 mb-8 font-display text-h1 font-medium">{t("title")}</p>
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
         <FiltersSkeleton />
         <div>

@@ -311,6 +311,7 @@ function toTour(detail: ApiTourDetail, entry: CardEntry, taxonomy: Taxonomy, loc
     pricing: pricingOf(detail.priceFrom, detail.rates),
     foreignPricing: usdDetail ? pricingOf(usdDetail.priceFrom, usdDetail.rates) : summary.foreignPricing,
     paymentPolicy: policyOf(summary.categorySlugs, detail.requiresTravelerDocument),
+    translatedLocales: detail.alternateLocales?.length ? detail.alternateLocales.map((a) => a.locale) : undefined,
     metaTitle: detail.seo.title,
     metaDescription: cleanSeedText(detail.seo.description) ?? summary.excerpt,
     description: cleanSeedText(detail.description) ?? "",

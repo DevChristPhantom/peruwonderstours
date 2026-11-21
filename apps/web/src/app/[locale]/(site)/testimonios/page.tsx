@@ -5,6 +5,7 @@ import { TestimonialCard } from "@/components/home/TestimonialCard";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buttonClass } from "@/components/ui/button-styles";
 import { Link } from "@/i18n/navigation";
+import { listTestimonialsSafe } from "@/lib/api/content";
 import { localePath } from "@/i18n/paths";
 import type { Locale } from "@/i18n/routing";
 import { getTestimonials } from "@/lib/content/testimonials";
@@ -15,7 +16,9 @@ export const revalidate = 3600;
 export async function generateMetadata({ params }: PageProps<"/[locale]/testimonios">): Promise<Metadata> {
   const locale = (await params).locale as Locale;
   const t = await getTranslations({ locale, namespace: "reviews" });
-  return pageMetadata({ locale, title: t("title"), description: t("description"), paths: alternatesFor("/testimonios") });
+  // Sin testimonios publicados la página está vacía: fuera de Google hasta que haya contenido real.
+  const hasTestimonials = (await listTestimonialsSafe(locale, 1)).length > 0;
+  return pageMetadata({ locale, title: t("title"), description: t("description"), paths: alternatesFor("/testimonios"), index: hasTestimonials });
 }
 
 /** Testimonios (F2): solo reales (aprobados con consentimiento y reseñas de TripAdvisor atribuidas). */

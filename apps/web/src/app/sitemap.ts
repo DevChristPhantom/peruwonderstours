@@ -6,6 +6,7 @@ import type { LocalePaths } from "@/lib/catalog/types";
 import { getBlogPosts } from "@/lib/content/blog";
 import { alternatesFor } from "@/lib/seo/metadata";
 import { absoluteUrl } from "@/lib/site";
+import { listTestimonialsSafe } from "@/lib/api/content";
 
 export const revalidate = 3600;
 
@@ -63,6 +64,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
   };
 
+  const hasTestimonials = (await listTestimonialsSafe(routing.defaultLocale, 1)).length > 0;
+
   return [
     ...entries(alternatesFor("/"), 1, "daily"),
     ...entries(alternatesFor("/tours"), 0.9, "daily"),
@@ -71,7 +74,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...entries(alternatesFor("/blog"), 0.6),
     ...collection(posts, 0.6),
     ...entries(alternatesFor("/contactenos"), 0.5, "monthly"),
-    ...entries(alternatesFor("/testimonios"), 0.5),
+    // Testimonios solo cuando haya alguno publicado (la página vacía va con noindex).
+    ...(hasTestimonials ? entries(alternatesFor("/testimonios"), 0.5) : []),
     ...collection(destinations, 0.8),
     ...collection(categories, 0.7),
     ...collection(tours, 0.8),
