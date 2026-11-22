@@ -56,7 +56,11 @@ async function videoResponse(banners: HeroBannersService, id: string, range: str
     return;
   }
   if (video.status === 206) response.setHeader('Content-Range', `bytes ${video.start}-${video.end}/${video.size}`);
-  return new StreamableFile(video.stream, { type: 'video/mp4', length: video.end - video.start + 1 });
+  // Si el navegador corta el rango a medias (habitual en <video>), Express solo hace unpipe: sin esto el
+  // FileHandle queda abierto hasta el GC (DEP0137) y con tráfico se agotan los descriptores.
+  const stream = video.stream;
+  response.once('close', () => stream.destroy());
+  return new StreamableFile(stream, { type: 'video/mp4', length: video.end - video.start + 1 });
 }
 
 @Controller('hero-banners')

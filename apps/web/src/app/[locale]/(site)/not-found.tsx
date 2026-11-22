@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 
 import { BrokenLinkReport, NotFoundSearch } from "@/components/errors/NotFoundSearch";
 import { TourCard } from "@/components/tours/TourCard";
 import { buttonClass } from "@/components/ui/button-styles";
 import { Link } from "@/i18n/navigation";
 import { localePath } from "@/i18n/paths";
-import type { Locale } from "@/i18n/routing";
 import { getFeaturedTours, type TourSummary } from "@/lib/catalog";
+import { requestLocale } from "@/lib/i18n/request-locale";
 
 // Next ya añade un noindex propio a los 404, pero sin esto también saldría el "index, follow" del layout.
 export const metadata: Metadata = { robots: { index: false } };
@@ -17,7 +17,7 @@ export const metadata: Metadata = { robots: { index: false } };
  * con la URL rota), los tours más reservados y un aviso por WhatsApp para corregir el enlace.
  */
 export default async function NotFound() {
-  const locale = (await getLocale()) as Locale;
+  const locale = await requestLocale();
   const t = await getTranslations("notFound");
   // El 404 nunca debe fallar: sin catálogo se muestra igual, solo sin sugerencias.
   const popular: TourSummary[] = await getFeaturedTours(locale, 3).catch(() => []);

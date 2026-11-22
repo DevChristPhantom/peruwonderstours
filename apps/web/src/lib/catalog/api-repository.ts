@@ -1,6 +1,6 @@
 import "server-only";
 
-import type { Locale } from "@/i18n/routing";
+import { isLocale, type Locale } from "@/i18n/routing";
 import { categoryPath, destinationPath, tourPath } from "@/i18n/paths";
 import { apiJson, ApiError } from "@/lib/api/client";
 
@@ -414,8 +414,27 @@ function findTaxon<T extends { key: string; slug: string; alternates: LocalePath
   return list.find((x) => x.key === slug || x.slug === slug || x.alternates.en.endsWith(`/${slug}`) || x.alternates.es.endsWith(`/${slug}`) || x.alternates.pt.endsWith(`/${slug}`)) ?? null;
 }
 
+/**
+ * Idioma seguro: las URLs con extensión que prueban los bots (`/wp-login.php`, `/.env`) no pasan por
+ * next-intl y llegan como "idioma" al 404, que pide tours populares. Sin esto, `alternates[locale]`
+ * es undefined y el 404 termina en 500.
+ */
+const safe = (locale: string): Locale => (isLocale(locale) ? locale : "es");
+
 export function createApiCatalogRepository(): CatalogRepository {
   const seed = seedCatalogRepository;
+  const api = createUnsafeApiCatalogRepository(seed);
+  return {
+    listTours: (l) => api.listTours(safe(l)),
+    getTour: (slug, l) => api.getTour(slug, safe(l)),
+    listDestinations: (l) => api.listDestinations(safe(l)),
+    getDestination: (slug, l) => api.getDestination(slug, safe(l)),
+    listCategories: (l) => api.listCategories(safe(l)),
+    getCategory: (slug, l) => api.getCategory(slug, safe(l)),
+  };
+}
+
+function createUnsafeApiCatalogRepository(seed: typeof seedCatalogRepository): CatalogRepository {
   return {
     listTours: (locale) => withFallback("tours", () => apiTours(locale), () => seed.listTours(locale)),
     getTour: (slug, locale) => withFallback(`tour ${slug}`, () => apiTour(slug, locale), () => seed.getTour(slug, locale)),
