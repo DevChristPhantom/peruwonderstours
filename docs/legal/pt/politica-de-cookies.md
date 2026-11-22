@@ -8,7 +8,7 @@ São pequenos arquivos que o site salva no seu navegador para lembrar informaç�
 
 ## 2. Responsável
 
-PERU WONDERS TOURS S.A.C., RUC 20616102339, domicílio fiscal Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Peru; escritório na Calle N 500, Puno, Peru. Contato: jorgechaveztourt@gmail.com. Mais detalhes na Política de Privacidade.
+PERU WONDERS TOURS S.A.C., RUC 20616102339, domicílio fiscal Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Peru; escritório na Calle N 500, Puno, Peru. Contato: reservas@peruwonderstours.com. Mais detalhes na Política de Privacidade.
 
 ## 3. Quais cookies usamos
 

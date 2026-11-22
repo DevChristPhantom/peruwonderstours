@@ -5,7 +5,7 @@
 ## 1. Quién ofrece las promociones
 
 PERU WONDERS TOURS S.A.C., RUC 20616102339, domicilio fiscal Jr. Amauta Mza. X Lote 15, Urb. Tepro
-(Centro Poblado Salcedo), Puno, Perú; oficina en Calle N 500, Puno, Perú. Contacto: jorgechaveztourt@gmail.com · +51 989 028 802
+(Centro Poblado Salcedo), Puno, Perú; oficina en Calle N 500, Puno, Perú. Contacto: reservas@peruwonderstours.com · +51 989 028 802
 (WhatsApp).
 
 ## 2. Qué abarcan estas condiciones

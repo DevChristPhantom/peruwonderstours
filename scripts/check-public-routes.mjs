@@ -84,7 +84,7 @@ for (const locale of ["es", "en", "pt"]) {
   assert.ok(html.includes("peruwonderstours-logo-negativo.png"), `${locale}: owner logo missing`);
   const contacts = { es: "/es/contactenos", en: "/en/contact", pt: "/pt/contato" };
   const contact = await response(contacts[locale]);
-  assert.ok(contact.includes("mailto:jorgechaveztourt@gmail.com"), `${locale}: confirmed contact email missing`);
+  assert.ok(contact.includes("mailto:reservas@peruwonderstours.com"), `${locale}: confirmed contact email missing`);
 }
 
 const sitemap = await response("/sitemap.xml");

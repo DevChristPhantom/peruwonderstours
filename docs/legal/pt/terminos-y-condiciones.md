@@ -17,7 +17,7 @@ Agências de Viagens e Turismo (D.S. 005-2020-MINCETUR).
 - **Escritório de atendimento:** Calle N 500, Puno, Peru. Segunda a sábado, das 09:00 às 19:00
   (horário do Peru)
 - **Telefone e WhatsApp:** +51 989 028 802
-- **E-mail:** jorgechaveztourt@gmail.com
+- **E-mail:** reservas@peruwonderstours.com
 
 ## 2. Aceitação
 
@@ -109,7 +109,7 @@ pertencem à PERU WONDERS TOURS S.A.C. ou a seus licenciantes e não podem ser u
 
 - Você pode registrar uma reclamação ou queixa no nosso **Livro de Reclamações virtual** (link no
   rodapé de todas as páginas). Respondemos em até **15 dias úteis**.
-- Você também pode nos escrever para jorgechaveztourt@gmail.com ou pelo WhatsApp +51 989 028 802.
+- Você também pode nos escrever para reservas@peruwonderstours.com ou pelo WhatsApp +51 989 028 802.
 - Registrar uma reclamação não impede que você recorra ao INDECOPI ou a outras vias que a lei lhe
   garante.
 

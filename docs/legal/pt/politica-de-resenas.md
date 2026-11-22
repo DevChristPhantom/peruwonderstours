@@ -35,7 +35,7 @@ Se mostrarmos uma opinião publicada em outra plataforma (por exemplo, Tripadvis
 
 ## 6. Seus dados e seu direito de retirá-la
 
-Usamos seus dados apenas para publicar sua avaliação e contatar você sobre ela, conforme a Política de Privacidade. Você pode pedir a correção ou a retirada da sua avaliação a qualquer momento escrevendo para jorgechaveztourt@gmail.com.
+Usamos seus dados apenas para publicar sua avaliação e contatar você sobre ela, conforme a Política de Privacidade. Você pode pedir a correção ou a retirada da sua avaliação a qualquer momento escrevendo para reservas@peruwonderstours.com.
 
 ## 7. Denunciar uma avaliação
 

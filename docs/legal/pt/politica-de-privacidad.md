@@ -13,7 +13,7 @@ Proteção de Dados Pessoais do Peru, e seu Regulamento (D.S. 016-2024-JUS).
 - Domicílio fiscal: Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Peru.
 - Escritório: Calle N 500, Puno, Peru.
 
-**Contato para assuntos de privacidade:** jorgechaveztourt@gmail.com · +51 989 028 802 (WhatsApp).
+**Contato para assuntos de privacidade:** reservas@peruwonderstours.com · +51 989 028 802 (WhatsApp).
 Essas solicitações são atendidas pela gerência da empresa.
 
 ## 2. Quais dados tratamos?
@@ -107,7 +107,7 @@ Você pode exercer gratuitamente seus direitos de:
 - não ser objeto de decisões automatizadas;
 - **retirar seu consentimento** a qualquer momento.
 
-**Como solicitar:** escreva para jorgechaveztourt@gmail.com com:
+**Como solicitar:** escreva para reservas@peruwonderstours.com com:
 
 - seu nome;
 - uma cópia do seu documento de identidade, ou do seu representante com a procuração

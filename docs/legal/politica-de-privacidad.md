@@ -13,7 +13,7 @@ a la Ley 29733, Ley de Protección de Datos Personales, y su Reglamento (D.S. 01
 - Domicilio fiscal: Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Perú.
 - Oficina: Calle N 500, Puno, Perú.
 
-**Contacto para temas de privacidad:** jorgechaveztourt@gmail.com · +51 989 028 802 (WhatsApp).
+**Contacto para temas de privacidad:** reservas@peruwonderstours.com · +51 989 028 802 (WhatsApp).
 Atiende estas solicitudes la gerencia de la empresa.
 
 ## 2. ¿Qué datos tratamos?
@@ -106,7 +106,7 @@ Puedes ejercer gratis tus derechos de:
 - no ser objeto de decisiones automatizadas;
 - **retirar tu consentimiento** en cualquier momento.
 
-**Cómo pedirlo:** escribe a jorgechaveztourt@gmail.com con:
+**Cómo pedirlo:** escribe a reservas@peruwonderstours.com con:
 
 - tus nombres;
 - una copia de tu documento de identidad, o el de tu representante con el poder correspondiente;

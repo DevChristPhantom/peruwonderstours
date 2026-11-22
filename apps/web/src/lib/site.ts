@@ -20,7 +20,7 @@ export const SITE = {
     /** Dirección confirmada por el propietario el 2026-10-14. */
     address: "Calle N 500, Puno" as string | null,
     /** Correo de contacto confirmado por el cliente; el dominio de la web es independiente. */
-    email: "jorgechaveztourt@gmail.com" as string | null,
+    email: "reservas@peruwonderstours.com" as string | null,
   },
   /**
    * WhatsApp confirmado por el cliente el 13 de octubre de 2026.

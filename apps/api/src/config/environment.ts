@@ -361,7 +361,7 @@ export class EnvironmentVariables {
 
   @IsString()
   @Length(3, 200)
-  MAIL_FROM = 'peruwonderstours <no-reply@peruwonderstours.com>';
+  MAIL_FROM = 'Peru Wonders Tours <reservas@peruwonderstours.com>';
 
   @IsOptional()
   @IsString()
@@ -425,7 +425,7 @@ export class EnvironmentVariables {
 
   /** Correo y teléfono de atención que aparecen en los correos. */
   @IsString()
-  CONTACT_EMAIL = 'jorgechaveztourt@gmail.com';
+  CONTACT_EMAIL = 'reservas@peruwonderstours.com';
 
   @IsString()
   CONTACT_PHONE = '+51 989 028 802';

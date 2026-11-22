@@ -46,7 +46,7 @@ fuente y solo usamos opiniones escritas sobre nuestra empresa.
 
 Usamos tus datos solo para publicar tu reseña y contactarte sobre ella, como explica la Política de
 Privacidad. Puedes pedir que corrijamos o retiremos tu reseña en cualquier momento escribiendo a
-jorgechaveztourt@gmail.com.
+reservas@peruwonderstours.com.
 
 ## 7. Reportar una reseña
 
