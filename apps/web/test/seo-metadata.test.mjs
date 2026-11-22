@@ -31,7 +31,7 @@ test('organization publishes confirmed contact, SUNAT identity and owner logo wi
   const agency = jsonLd.organizationJsonLd();
   assert.equal(agency['@id'], 'https://peruwonderstours.com/#organization');
   assert.equal(agency.logo, 'https://peruwonderstours.com/brand/peruwonderstours-logo-official-20261115.webp');
-  assert.equal(agency.email, 'jorgechaveztourt@gmail.com');
+  assert.equal(agency.email, 'reservas@peruwonderstours.com');
   assert.equal(agency.telephone, '+51989028802');
   assert.equal(agency.address.streetAddress, site.SITE.legal.address);
   assert.equal(agency.address.addressCountry, 'PE');
