@@ -20,3 +20,7 @@ apps/api/src/generated/
 playwright-report/
 test-results/
 peruwonderstours.com-audit/
+
+# Documentos privados para el cliente (accesos, contrato): no van al repo público
+docs/manual/manual-accesos-jorge.pdf
+docs/manual/contrato-desarrollador.pdf
