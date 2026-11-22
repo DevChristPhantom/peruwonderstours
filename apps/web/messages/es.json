@@ -142,7 +142,12 @@
       "byCodeLink": "Entra con su código",
       "alreadyIn": "Ya tienes una sesión abierta en este navegador.",
       "goToBookings": "Ir a mis reservas",
-      "loggedOut": "Cerraste sesión en este navegador."
+      "loggedOut": "Cerraste sesión en este navegador.",
+      "googleButton": "Continuar con Google",
+      "googleOr": "o recibe un enlace en tu correo",
+      "googleNoBookings": "Tu cuenta de Google está bien, pero no encontramos reservas con ese correo. Prueba con el correo que usaste al reservar.",
+      "googleFailed": "No pudimos entrar con Google. Inténtalo de nuevo o usa el enlace por correo.",
+      "googleCancelled": "Cancelaste el inicio de sesión con Google."
     },
     "bookings": {
       "title": "Mis reservas",

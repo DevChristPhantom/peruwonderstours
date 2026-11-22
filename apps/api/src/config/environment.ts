@@ -170,6 +170,18 @@ export class EnvironmentVariables {
   @IsUrl({ require_tld: false, require_protocol: true })
   IZIPAY_IPN_URL?: string;
 
+  // --- Inicio de sesión de clientes con Google (OpenID Connect). Sin las dos variables, apagado. ---
+  /** «ID de cliente» OAuth de tipo «Aplicación web» (Google Cloud › APIs y servicios › Credenciales). */
+  @IsOptional()
+  @Matches(/^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$/)
+  GOOGLE_OAUTH_CLIENT_ID?: string;
+
+  /** «Secreto del cliente» de esa credencial. Secreto: solo en api.env. */
+  @ValidateIf((env: EnvironmentVariables) => Boolean(env.GOOGLE_OAUTH_CLIENT_ID))
+  @IsString()
+  @MinLength(16)
+  GOOGLE_OAUTH_CLIENT_SECRET?: string;
+
   // --- WeTravel (PAYMENT_GATEWAY=wetravel). Business Settings > Branding & Pro Settings > Public API Key. ---
   /** `sandbox` = api.demo.wetravel.to (cuenta de pruebas de WeTravel); `production` cobra de verdad. */
   @IsIn(['sandbox', 'production'])

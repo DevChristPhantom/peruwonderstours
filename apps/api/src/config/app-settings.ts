@@ -46,6 +46,8 @@ export interface AppSettings {
   privacy: PrivacySettings;
   backoffice: { refundTiers: RefundTier[]; cancellationPolicyVersion: string };
   access: AccessSettings;
+  /** Inicio de sesión de clientes con Google; undefined = apagado. */
+  googleOAuth?: { clientId: string; clientSecret: string };
   contact: { agencyInboxEmail: string; privacyNoticeVersion: string };
   media: MediaSettings;
 }
@@ -216,6 +218,10 @@ export function settingsFromEnvironment(env: EnvironmentVariables): AppSettings 
       cancellationPolicyVersion: env.CANCELLATION_POLICY_VERSION,
     },
     backoffice: { refundTiers: parseRefundTiersJson(env.CANCELLATION_REFUND_TIERS), cancellationPolicyVersion: env.CANCELLATION_POLICY_VERSION },
+    googleOAuth:
+      env.GOOGLE_OAUTH_CLIENT_ID && env.GOOGLE_OAUTH_CLIENT_SECRET
+        ? { clientId: env.GOOGLE_OAUTH_CLIENT_ID, clientSecret: env.GOOGLE_OAUTH_CLIENT_SECRET }
+        : undefined,
     access: {
       requestedLinkTtlMinutes: env.ACCESS_LINK_TTL_MINUTES,
       emailLinkTtlHours: env.EMAIL_LINK_TTL_HOURS,
@@ -241,7 +247,7 @@ export function settingsFromConfigService(config: ConfigService): AppSettings {
     'THROTTLE_TTL_SECONDS', 'THROTTLE_LIMIT', 'THROTTLE_STRICT_LIMIT', 'SWAGGER_ENABLED',
     'PROBLEM_TYPE_BASE_URL', 'PAYMENT_GATEWAY', 'SANDBOX_WEBHOOK_SECRET', 'SANDBOX_CHECKOUT_BASE_URL', 'WEBHOOK_TOLERANCE_SECONDS',
     'IZIPAY_ENV', 'IZIPAY_MERCHANT_CODE', 'IZIPAY_API_KEY', 'IZIPAY_RSA_PUBLIC_KEY', 'IZIPAY_HASH_KEY', 'IZIPAY_IPN_URL',
-    'WETRAVEL_ENV', 'WETRAVEL_API_KEY', 'WETRAVEL_WEBHOOK_SECRET',
+    'WETRAVEL_ENV', 'WETRAVEL_API_KEY', 'WETRAVEL_WEBHOOK_SECRET', 'GOOGLE_OAUTH_CLIENT_ID', 'GOOGLE_OAUTH_CLIENT_SECRET',
     'DEPOSIT_DEFAULT_PERCENT', 'BALANCE_DUE_DAYS_BEFORE_SERVICE', 'FULL_PAYMENT_WITHIN_DAYS', 'THIRD_PARTY_TICKETS_REQUIRE_FULL',
     'HOLD_TTL_MINUTES', 'CART_TTL_DAYS', 'PRICE_LOCK_MINUTES', 'IDEMPOTENCY_TTL_HOURS', 'TERMS_VERSION', 'CANCELLATION_POLICY_VERSION',
     'PROVIDER_LEGAL_NAME', 'PROVIDER_RUC', 'ESTABLISHMENT_ADDRESS', 'ESTABLISHMENT_CODE', 'COMPLAINT_CONFORMITY_TEXT_VERSION',

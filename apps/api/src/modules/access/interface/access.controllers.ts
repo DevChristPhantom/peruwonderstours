@@ -17,13 +17,20 @@ import { IsBoolean, IsEmail, IsIn, IsOptional, IsString, Length, Matches, MaxLen
 import type { Response } from 'express';
 import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
 import type { Request } from 'express';
+import { APP_SETTINGS, type AppSettings } from '../../../config/app-settings.js';
 import { CLOCK } from '../../../shared/application/tokens.js';
 import type { Clock } from '../../../shared/domain/ports.js';
 import { CONTENT_LOCALES, type ContentLocale } from '../../../shared/domain/i18n.js';
 import { ProblemDetailsDto } from '../../../shared/interface/problem-details.dto.js';
 import { LinkThrottle, StrictThrottle } from '../../../shared/interface/throttling.js';
 import { presentBooking } from '../../booking/interface/bookings.controller.js';
+import { NotFoundError, ValidationError } from '../../../shared/domain/domain-error.js';
 import { PasswordlessAccessUseCases } from '../application/passwordless-access.use-cases.js';
+import { GoogleIdentityVerifier } from '../infrastructure/google-identity.js';
+
+export const GOOGLE_IDENTITY = Symbol('GOOGLE_IDENTITY');
+/** Ruta del BFF web que recibe la vuelta de Google; la API solo acepta esa redirect_uri. */
+export const GOOGLE_CALLBACK_PATH = '/api/auth/google/callback';
 
 /** Cabecera `X-Customer-Token`: sesión de cliente ("Mis reservas"). */
 export const CustomerToken = createParamDecorator((_data: unknown, ctx: ExecutionContext) => {
@@ -189,6 +196,64 @@ export class CustomerLoginLinkController {
     res.setHeader('Cache-Control', 'no-store');
     const r = await this.access.exchangeCustomerLink(body.token);
     return { data: { sessionToken: r.sessionToken, expiresAt: r.expiresAt, customer: presentCustomer(r.customer) } };
+  }
+}
+
+export class GoogleSignInDto {
+  @ApiProperty({ description: 'Código de autorización devuelto por Google.' })
+  @IsString()
+  @Length(10, 2048)
+  code: string;
+
+  @ApiProperty({ description: 'PKCE code_verifier (RFC 7636).' })
+  @IsString()
+  @Matches(/^[A-Za-z0-9._~-]{43,128}$/)
+  codeVerifier: string;
+
+  @ApiProperty({ example: 'https://peruwonderstours.com/api/auth/google/callback' })
+  @IsString()
+  @MaxLength(300)
+  redirectUri: string;
+
+  @ApiProperty({ description: 'nonce enviado en la autorización (anti-replay).' })
+  @IsString()
+  @Matches(/^[A-Za-z0-9_-]{22,128}$/)
+  nonce: string;
+}
+
+@ApiTags('customers')
+@Controller('customers/google')
+export class CustomerGoogleSignInController {
+  constructor(
+    @Inject(PasswordlessAccessUseCases) private readonly access: PasswordlessAccessUseCases,
+    @Inject(GOOGLE_IDENTITY) private readonly google: GoogleIdentityVerifier | null,
+    @Inject(CLOCK) private readonly clock: Clock,
+    @Inject(APP_SETTINGS) private readonly settings: AppSettings,
+  ) {}
+
+  @Post()
+  @HttpCode(200)
+  @StrictThrottle()
+  @ApiOperation({ summary: '"Continuar con Google": canjea el código (PKCE) y abre la sesión de cliente si el correo tiene reservas.' })
+  @ApiNotFoundResponse({ type: ProblemDetailsDto, description: 'google-sign-in-disabled | google-account-without-bookings' })
+  @ApiUnauthorizedResponse({ type: ProblemDetailsDto, description: 'google-sign-in-failed' })
+  async signIn(@Body() body: GoogleSignInDto, @Res({ passthrough: true }) res: Response) {
+    res.setHeader('Cache-Control', 'no-store');
+    if (!this.google) throw new NotFoundError('google-sign-in-disabled', 'El inicio de sesión con Google no está activo.');
+    if (!this.allowedRedirect(body.redirectUri)) throw new ValidationError('invalid-redirect-uri', 'redirect_uri no permitida.');
+    const identity = await this.google.exchange(body, this.clock.now());
+    const r = await this.access.signInWithVerifiedEmail(identity.email);
+    return { data: { sessionToken: r.sessionToken, expiresAt: r.expiresAt, customer: presentCustomer(r.customer) } };
+  }
+
+  /** Solo el callback del BFF en un origen de la web autorizado (WEB_ORIGIN). */
+  private allowedRedirect(uri: string): boolean {
+    try {
+      const url = new URL(uri);
+      return url.pathname === GOOGLE_CALLBACK_PATH && !url.search && !url.hash && this.settings.corsOrigins.includes(url.origin);
+    } catch {
+      return false;
+    }
   }
 }
 

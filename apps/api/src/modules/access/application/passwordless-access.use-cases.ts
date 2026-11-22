@@ -9,7 +9,7 @@ import {
 import { hashAccessToken, isWellFormedAccessToken } from '../../../shared/application/access-token.js';
 import type { TransactionalRepositories, UnitOfWork } from '../../../shared/application/unit-of-work.js';
 import { AccessLinkNotFoundError } from '../../../shared/domain/access-grant.js';
-import { UnauthorizedError } from '../../../shared/domain/domain-error.js';
+import { NotFoundError, UnauthorizedError } from '../../../shared/domain/domain-error.js';
 import type { ContentLocale } from '../../../shared/domain/i18n.js';
 import type { Clock, IdGenerator } from '../../../shared/domain/ports.js';
 import { BOOKING_CODE_PATTERN, BookingAccessNotFoundError } from '../../booking/application/booking-access.js';
@@ -17,6 +17,13 @@ import type { Booking } from '../../booking/domain/booking.js';
 import { COMPLAINT_CODE_PATTERN } from '../../complaints/domain/complaint.js';
 import type { Customer } from '../../customers/domain/customer.js';
 import { MAIL_EVENTS, outboxMessage, type MailEventType } from '../../notifications/domain/mail-events.js';
+
+/** Cuenta de Google verificada, pero ese correo no tiene reservas (no hay cliente que abrir). */
+export class GoogleAccountWithoutBookingsError extends NotFoundError {
+  constructor() {
+    super('google-account-without-bookings', 'No encontramos reservas con el correo de esa cuenta de Google.');
+  }
+}
 
 export class CustomerSessionRequiredError extends UnauthorizedError {
   constructor() {
@@ -153,6 +160,27 @@ export class PasswordlessAccessUseCases {
       const customer = await repos.customers.findById(link.subjectId);
       if (!customer) throw new CustomerSessionRequiredError();
       return { sessionToken: session.token, expiresAt: session.record.expiresAt, customer };
+    });
+  }
+
+  /**
+   * "Continuar con Google": la identidad ya viene verificada (correo confirmado por Google). Abre la
+   * misma sesión de cliente que el enlace por correo; si ese correo no tiene reservas, 404 (no se crean
+   * cuentas vacías: el cliente nace al reservar).
+   */
+  signInWithVerifiedEmail(email: string): Promise<{ sessionToken: string; expiresAt: Date; customer: Customer }> {
+    return this.uow.run(async (repos) => {
+      const now = this.clock.now();
+      const customer = await repos.customers.findByEmail(email.trim().toLowerCase());
+      if (!customer) throw new GoogleAccountWithoutBookingsError();
+      const issued = await issueAccessToken(repos, this.ids, {
+        purpose: 'customer_session',
+        subjectId: customer.id,
+        locale: customer.preferredLocale,
+        ttlMs: this.settings.customerSessionTtlDays * DAY_MS,
+        now,
+      });
+      return { sessionToken: issued.token, expiresAt: issued.record.expiresAt, customer };
     });
   }
 

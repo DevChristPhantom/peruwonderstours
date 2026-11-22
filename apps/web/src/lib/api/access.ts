@@ -76,3 +76,10 @@ export async function grantMyBookingAccess(session: string, code: string): Promi
 export async function logoutCustomer(session: string): Promise<void> {
   await apiRequest("/me/logout", { method: "POST", headers: { [CUSTOMER_HEADER]: session }, body: {} });
 }
+
+/** "Continuar con Google": la API canjea el código con PKCE, verifica la identidad y abre la sesión. */
+export async function signInWithGoogle(input: { code: string; codeVerifier: string; redirectUri: string; nonce: string }): Promise<{ sessionToken: string; expiresAt: string | null }> {
+  const res = await apiJson<{ data: { sessionToken?: string; expiresAt?: string } }>("/customers/google", { method: "POST", body: input });
+  if (!res.data.sessionToken) throw new Error("La API no devolvió la sesión del cliente.");
+  return { sessionToken: res.data.sessionToken, expiresAt: res.data.expiresAt ?? null };
+}

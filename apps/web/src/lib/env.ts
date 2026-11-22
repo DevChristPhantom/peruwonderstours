@@ -46,6 +46,11 @@ const schema = z.object({
     .transform((v) => v === "true"),
   /** Secreto compartido con el panel para refrescar la caché al instante (`POST /api/revalidate`). Sin él, el endpoint queda apagado. */
   REVALIDATE_SECRET: z.string().min(32).optional(),
+  /** «Continuar con Google» para clientes: ID de cliente OAuth (el secreto vive solo en la API). Sin él, el botón no aparece. */
+  GOOGLE_OAUTH_CLIENT_ID: z
+    .string()
+    .regex(/^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$/)
+    .optional(),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 })
   // H-19: en producción el BFF solo habla con la API por HTTPS (los tokens viajan en cabeceras).

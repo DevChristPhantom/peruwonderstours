@@ -142,7 +142,12 @@
       "byCodeLink": "Use its booking code",
       "alreadyIn": "You are already signed in on this browser.",
       "goToBookings": "Go to my bookings",
-      "loggedOut": "You signed out on this browser."
+      "loggedOut": "You signed out on this browser.",
+      "googleButton": "Continue with Google",
+      "googleOr": "or get a link by email",
+      "googleNoBookings": "Your Google account is fine, but we found no bookings with that email. Try the email you booked with.",
+      "googleFailed": "We could not sign you in with Google. Try again or use the email link.",
+      "googleCancelled": "You cancelled the Google sign-in."
     },
     "bookings": {
       "title": "My bookings",
