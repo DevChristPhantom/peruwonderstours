@@ -3,7 +3,8 @@
   "stepOf": "Etapa {step} de {total}",
   "steps": {
     "contact": "Seus dados",
-    "payment": "Pagamento"
+    "payment": "Pagamento",
+    "paymentRequest": "Confirmação"
   },
   "stepDone": "(concluído)",
   "stepAnnounce": "Etapa {step} de {total}: {label}.",
@@ -52,7 +53,8 @@
     "extrasTitle": "Hotel para o traslado e necessidades especiais",
     "hotel": "Hotel para o traslado de saída",
     "notes": "Necessidades especiais ou alimentação",
-    "optional": "(opcional)"
+    "optional": "(opcional)",
+    "nextRequest": "Continuar"
   },
   "payment": {
     "announceBlocked": "Há passeios no seu carrinho que não podem ser reservados. Confira os avisos.",
@@ -129,7 +131,13 @@
     "whatsappStep": "pagamento",
     "travelerDocsLater": "Viajantes: depois da reserva, pediremos por WhatsApp ou e-mail o nome e o documento exatos de cada viajante para emitir os ingressos.",
     "currencyNational": "Preços em soles (S/) com a tarifa para residentes no Peru.",
-    "currencyForeign": "Preços em dólares (US$) com a tarifa para viajantes estrangeiros (país: {country}). Se você mora no Peru, altere seu país em “Seus dados”."
+    "currencyForeign": "Preços em dólares (US$) com a tarifa para viajantes estrangeiros (país: {country}). Se você mora no Peru, altere seu país em “Seus dados”.",
+    "howMuchRequest": "Como prefere pagar na confirmação?",
+    "depositOptionRequest": "Sinal de {percent} % na confirmação",
+    "depositHelpRequest": "Enviamos as instruções de pagamento quando confirmarmos a disponibilidade. O saldo é pago antes da viagem.",
+    "fullOptionRequest": "Pagamento de 100 % na confirmação",
+    "fullHelpRequest": "Sem saldo pendente.",
+    "payTodayRequest": "A pagar na confirmação"
   },
   "hold": {
     "minutesLeft": "{count, plural, one {Resta # minuto para concluir o pagamento.} other {Restam # minutos para concluir o pagamento.}}",
@@ -213,5 +221,6 @@
     "description": "Reserva {code}"
   },
   "metaTitle": "Pagamento",
-  "metaDescription": "Conclua sua reserva em 3 etapas."
+  "metaDescription": "Conclua sua reserva em 3 etapas.",
+  "pageTitleRequest": "Solicitação de reserva"
 }

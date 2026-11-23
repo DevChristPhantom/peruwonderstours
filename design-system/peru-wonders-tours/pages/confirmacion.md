@@ -39,7 +39,7 @@ Comprobante: Boleta B001-000123 (PDF)  ·  se emitirá otro por el saldo
    4. "Llega un día antes a Puno para aclimatarte a la altura."
 6. **Acciones**: `secondary` "Descargar voucher (PDF)" · ghost "Imprimir" · "Crear cuenta con un clic"
    (opcional, para gestionar la reserva; contraseña o enlace mágico).
-7. **Ayuda**: "¿Necesitas cambiar algo? Escríbenos por WhatsApp +51 989 028 802" · Política de cancelación ·
+7. **Ayuda**: "¿Necesitas cambiar algo? Escríbenos por WhatsApp +51 941 598 840" · Política de cancelación ·
    Libro de Reclamaciones.
 8. Al final (sutil): "También te puede interesar" 3 tours del mismo destino.
 

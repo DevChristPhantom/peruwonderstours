@@ -3,7 +3,8 @@
   "stepOf": "Paso {step} de {total}",
   "steps": {
     "contact": "Tus datos",
-    "payment": "Pago"
+    "payment": "Pago",
+    "paymentRequest": "Confirmación"
   },
   "stepDone": "(completado)",
   "stepAnnounce": "Paso {step} de {total}: {label}.",
@@ -52,7 +53,8 @@
     "extrasTitle": "Hotel para el recojo y necesidades especiales",
     "hotel": "Hotel para el recojo",
     "notes": "Necesidades especiales o alimentación",
-    "optional": "(opcional)"
+    "optional": "(opcional)",
+    "nextRequest": "Continuar"
   },
   "payment": {
     "announceBlocked": "Hay tours de tu carrito que no se pueden reservar. Revisa los avisos.",
@@ -129,7 +131,13 @@
     "whatsappStep": "pago",
     "travelerDocsLater": "Viajeros: después de reservar te pediremos por WhatsApp o correo los nombres y documentos exactos de cada viajero para emitir los boletos.",
     "currencyNational": "Precios en soles (S/) con tarifa para residentes en el Perú.",
-    "currencyForeign": "Precios en dólares (US$) con tarifa para viajeros extranjeros (país: {country}). Si resides en el Perú, cambia tu país en «Tus datos»."
+    "currencyForeign": "Precios en dólares (US$) con tarifa para viajeros extranjeros (país: {country}). Si resides en el Perú, cambia tu país en «Tus datos».",
+    "howMuchRequest": "¿Cómo prefieres pagar al confirmar?",
+    "depositOptionRequest": "Adelanto de {percent} % al confirmar",
+    "depositHelpRequest": "Te enviamos las instrucciones de pago cuando confirmemos la disponibilidad. El saldo se paga antes de viajar.",
+    "fullOptionRequest": "Pago del 100 % al confirmar",
+    "fullHelpRequest": "Sin saldos pendientes.",
+    "payTodayRequest": "A pagar al confirmar"
   },
   "hold": {
     "minutesLeft": "{count, plural, one {Queda # minuto para completar el pago.} other {Quedan # minutos para completar el pago.}}",
@@ -213,5 +221,6 @@
     "description": "Reserva {code}"
   },
   "metaTitle": "Pago",
-  "metaDescription": "Completa tu reserva en 3 pasos."
+  "metaDescription": "Completa tu reserva en 3 pasos.",
+  "pageTitleRequest": "Solicitud de reserva"
 }

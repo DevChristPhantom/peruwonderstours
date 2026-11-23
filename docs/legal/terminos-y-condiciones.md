@@ -14,7 +14,7 @@ paquetes turísticos que ofrecemos en él. Se aplican el Código de Protección 
 - **Actividad:** agencia de viajes y turismo
 - **Domicilio fiscal:** Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Perú
 - **Oficina de atención:** Calle N 500, Puno, Perú. Lunes a sábado, de 09:00 a 19:00 (hora de Perú)
-- **Teléfono y WhatsApp:** +51 989 028 802
+- **Teléfono y WhatsApp:** +51 941 598 840
 - **Correo:** reservas@peruwonderstours.com
 
 ## 2. Aceptación
@@ -49,21 +49,15 @@ avisamos lo antes posible por correo o WhatsApp.
 
 ## 5. Reserva y pago
 
-- **Adelanto:** para reservar pagas el **50 %** del precio total y tu reserva queda **confirmada**.
-- **Saldo:** el 50 % restante se paga hasta **7 días calendario antes** del inicio del primer
-  servicio. El sitio y el correo de confirmación te indican la fecha límite exacta.
-- **Pago total al reservar:**
-  - si el servicio empieza en **7 días o menos**;
-  - si el servicio incluye boletos nominativos que se compran a terceros al reservar (tren, ingreso a
-    Machu Picchu, sobrevuelo de las Líneas de Nazca). La ficha y el resumen de pago lo indican.
-- **Medios de pago:** tarjetas de crédito y débito y los demás medios que se muestran en el paso de
-  pago. Los pagos se procesan en la plataforma segura de la pasarela de pagos; **no recibimos ni
-  guardamos los datos completos de tu tarjeta**.
-- **Confirmación:** te enviamos un código de reserva y el detalle de lo pagado y de lo pendiente.
-- **Comprobante:** emitimos boleta o factura electrónica por cada pago.
-
-El detalle de saldos, cambios y cancelaciones está en la Política de Cancelación, Cambios y
-Reembolsos.
+- **Regla general:** se paga un **adelanto del 50 %** para confirmar la reserva y el saldo antes del
+  viaje. Algunos servicios se pagan completos al reservar (salidas próximas o boletos nominativos de
+  terceros). Los plazos exactos y sus excepciones están en la **Política de Cancelación, Cambios y
+  Reembolsos**.
+- **Medios de pago:** los que se muestran en el paso de pago. Cuando el pago es con tarjeta, se procesa
+  en la plataforma segura de la pasarela; **no recibimos ni guardamos los datos completos de tu
+  tarjeta**.
+- **Confirmación y comprobante:** te enviamos un código de reserva con el detalle de lo pagado y lo
+  pendiente, y emitimos boleta o factura electrónica por cada pago.
 
 ## 6. Obligaciones del viajero
 
@@ -100,7 +94,7 @@ sin autorización.
 
 - Puedes registrar un reclamo o una queja en nuestro **Libro de Reclamaciones virtual** (enlace al
   pie de todas las páginas). Te respondemos en un plazo máximo de **15 días hábiles**.
-- También puedes escribirnos a reservas@peruwonderstours.com o por WhatsApp al +51 989 028 802.
+- También puedes escribirnos a reservas@peruwonderstours.com o por WhatsApp al +51 941 598 840.
 - Presentar un reclamo no te impide acudir al INDECOPI ni a otras vías que la ley te reconoce.
 
 ## 11. Ley aplicable

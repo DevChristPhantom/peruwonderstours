@@ -15,7 +15,7 @@ test('travel journal categories, sourced article and traveler submission work', 
   await page.goto('/es/blog?tema=historias');
   await expect(page.getByRole('heading', { name: 'Tu viaje también merece contarse', exact: true })).toBeVisible();
   const submission = page.getByRole('link', { name: 'Proponer mi historia', exact: true });
-  await expect(submission).toHaveAttribute('href', /^https:\/\/wa\.me\/51989028802\?text=/);
+  await expect(submission).toHaveAttribute('href', /^https:\/\/wa\.me\/51941598840\?text=/);
   await expect(submission).toHaveAttribute('target', '_blank');
   await page.goto('/pt/blog/taquile-arte-textil-patrimonio-vivo');
   await expect(page.locator('main h1')).toHaveText('Taquile: a tecelagem como patrimônio vivo');

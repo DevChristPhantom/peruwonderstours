@@ -440,7 +440,7 @@ export class EnvironmentVariables {
   CONTACT_EMAIL = 'reservas@peruwonderstours.com';
 
   @IsString()
-  CONTACT_PHONE = '+51 989 028 802';
+  CONTACT_PHONE = '+51 941 598 840';
 
   // --- Protección de datos ---
   /** Secreto HMAC de los enlaces de baja de marketing (>= 32). Obligatorio en producción. */

@@ -56,10 +56,12 @@ export const EMPTY_CONTACT: ContactValues = {
 };
 
 export function ContactStep({
+  request = false,
   defaultValues,
   onSubmit,
   headingRef,
 }: {
+  request?: boolean;
   defaultValues: ContactValues;
   onSubmit: (values: ContactValues) => void;
   headingRef: Ref<HTMLHeadingElement>;
@@ -266,7 +268,7 @@ export function ContactStep({
       </fieldset>
 
       <button type="submit" className={buttonClass("primary", "lg", "mt-8 w-full md:w-auto")}>
-        {t("next")}
+        {t(request ? "nextRequest" : "next")}
       </button>
     </form>
   );

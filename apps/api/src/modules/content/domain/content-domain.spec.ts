@@ -48,14 +48,14 @@ describe('Contenido: testimonios, contacto, i18n y contenido institucional', () 
     const raw = {
       aboutUs: { title: 'Quiénes somos', history: ['Historia', 'Escríbenos a gerencia@x.com'], team: { intro: ['Equipo'] }, companyData: { Gerente: 'Yuri gerencia@x.com' }, images: ['https://a/b.jpg', 'http://c'] },
       faqs: { items: [{ question: '¿Q?', answer: 'R' }, { question: '', answer: 'x' }] },
-      contact: { phones: [{ number: '+51 989 028 802', whatsapp: true }], emails: ['info@x.com'], hours: { days: 'Mon-Sat', open: '09:00', close: '19:00', timezone: 'America/Lima' } },
+      contact: { phones: [{ number: '+51 941 598 840', whatsapp: true }], emails: ['info@x.com'], hours: { days: 'Mon-Sat', open: '09:00', close: '19:00', timezone: 'America/Lima' } },
       socialLinks: [{ network: 'Facebook', url: 'https://facebook.com/x' }],
     };
     const out = curateSiteContent(raw, 'en');
     const json = JSON.stringify(out);
     expect(json).not.toMatch(/@x\.com/);
     expect(json).not.toContain('companyData');
-    expect(out).toMatchObject({ locale: 'es', fallback: true, faqs: [{ question: '¿Q?', answer: 'R' }], contact: { phones: [{ number: '+51989028802', whatsapp: true }] } });
+    expect(out).toMatchObject({ locale: 'es', fallback: true, faqs: [{ question: '¿Q?', answer: 'R' }], contact: { phones: [{ number: '+51941598840', whatsapp: true }] } });
     expect(out.about?.images).toEqual(['https://a/b.jpg']);
   });
 

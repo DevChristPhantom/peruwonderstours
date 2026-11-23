@@ -29,5 +29,10 @@
   "questions": "Questions? Message us on WhatsApp",
   "seeDates": "See dates",
   "floating": "Book",
-  "floatingHint": ": choose date and travelers,"
+  "floatingHint": ": choose date and travelers,",
+  "bookNowRequest": "Request availability",
+  "depositTodayRequest": "Deposit on confirmation: <amount></amount> ({percent}%).",
+  "depositTodayNoAmountRequest": "{percent}% deposit once availability is confirmed.",
+  "fullPolicyRequest": "This tour is paid in full once the booking is confirmed.",
+  "closeDepartureRequest": "Departures less than {days} days away are paid in full on confirmation."
 }

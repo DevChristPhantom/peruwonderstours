@@ -1,4 +1,5 @@
 import { BookOpenText, Clock, CreditCard, ExternalLink, MessageCircle } from "lucide-react";
+import { env } from "@/lib/env";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 import type { ComponentProps } from "react";
@@ -194,7 +195,7 @@ export async function SiteFooter({ variant = "full" }: { variant?: "full" | "min
             <h3 className={headingClass}>{t("payments")}</h3>
             <p className="flex items-start gap-2">
               <CreditCard aria-hidden size={18} strokeWidth={1.5} className="mt-0.5 shrink-0" />
-              {t("paymentsText")}
+              {t(env.PAYMENT_PROVIDER === "whatsapp" ? "paymentsTextRequest" : "paymentsText")}
             </p>
           </div>
           <div>

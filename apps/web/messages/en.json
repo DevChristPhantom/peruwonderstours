@@ -215,7 +215,12 @@
     "questions": "Questions? Message us on WhatsApp",
     "seeDates": "See dates",
     "floating": "Book",
-    "floatingHint": ": choose date and travelers,"
+    "floatingHint": ": choose date and travelers,",
+    "bookNowRequest": "Request availability",
+    "depositTodayRequest": "Deposit on confirmation: <amount></amount> ({percent}%).",
+    "depositTodayNoAmountRequest": "{percent}% deposit once availability is confirmed.",
+    "fullPolicyRequest": "This tour is paid in full once the booking is confirmed.",
+    "closeDepartureRequest": "Departures less than {days} days away are paid in full on confirmation."
   },
   "calendar": {
     "prevMonth": "Previous month",
@@ -290,14 +295,16 @@
     "summaryAllUnpriced": "Price on request: we will send you the exact amount before charging you.",
     "summarySomeUnpriced": "{count, plural, one {# tour priced on request: not charged today.} other {# tours priced on request: not charged today.}}",
     "whatsappStep": "cart",
-    "metaDescription": "Review your tours before booking."
+    "metaDescription": "Review your tours before booking.",
+    "payTodayRequest": "To pay on confirmation"
   },
   "checkout": {
     "stepsLabel": "Checkout steps",
     "stepOf": "Step {step} of {total}",
     "steps": {
       "contact": "Your details",
-      "payment": "Payment"
+      "payment": "Payment",
+      "paymentRequest": "Confirmation"
     },
     "stepDone": "(completed)",
     "stepAnnounce": "Step {step} of {total}: {label}.",
@@ -346,7 +353,8 @@
       "extrasTitle": "Pickup hotel and special needs",
       "hotel": "Hotel for pickup",
       "notes": "Special needs or dietary requirements",
-      "optional": "(optional)"
+      "optional": "(optional)",
+      "nextRequest": "Continue"
     },
     "payment": {
       "announceBlocked": "Some tours in your cart cannot be booked. Check the notices.",
@@ -423,7 +431,13 @@
       "whatsappStep": "payment",
       "travelerDocsLater": "Travelers: after booking we will ask you by WhatsApp or email for each traveler’s exact name and document to issue the tickets.",
       "currencyNational": "Prices in soles (S/) with the rate for Peru residents.",
-      "currencyForeign": "Prices in US dollars (US$) with the rate for international travelers (country: {country}). If you live in Peru, change your country in “Your details”."
+      "currencyForeign": "Prices in US dollars (US$) with the rate for international travelers (country: {country}). If you live in Peru, change your country in “Your details”.",
+      "howMuchRequest": "How would you like to pay on confirmation?",
+      "depositOptionRequest": "{percent} % deposit on confirmation",
+      "depositHelpRequest": "We send you the payment instructions once availability is confirmed. The balance is paid before travelling.",
+      "fullOptionRequest": "100 % payment on confirmation",
+      "fullHelpRequest": "No outstanding balance.",
+      "payTodayRequest": "To pay on confirmation"
     },
     "hold": {
       "minutesLeft": "{count, plural, one {# minute left to complete the payment.} other {# minutes left to complete the payment.}}",
@@ -507,7 +521,8 @@
       "description": "Booking {code}"
     },
     "metaTitle": "Checkout",
-    "metaDescription": "Complete your booking in 3 steps."
+    "metaDescription": "Complete your booking in 3 steps.",
+    "pageTitleRequest": "Booking request"
   },
   "collection": {
     "destinationEyebrow": "Destination",
@@ -895,7 +910,7 @@
       "complaintStatus": "Check my complaint",
       "favorites": "My favorites",
       "terms": "Terms and conditions",
-      "payments": "Payment conditions",
+      "payments": "Cancellation, changes and refunds",
       "privacy": "Personal data protection",
       "cookies": "Cookie policy",
       "promotions": "Promotions and events",
@@ -914,7 +929,8 @@
     "esnna": "{name} rejects the sexual exploitation of children and adolescents. If you know of any case, report it to Línea 100 (Peru).",
     "copyright": "© {year} {name}. All rights reserved.",
     "whatsappHelp": "Shall we plan your trip?",
-    "whatsappMessage": "Hi Peru Wonders Tours, I would like information to plan my trip."
+    "whatsappMessage": "Hi Peru Wonders Tours, I would like information to plan my trip.",
+    "paymentsTextRequest": "For now we confirm bookings via WhatsApp and send you the payment instructions (bank transfer)."
   },
   "formErrors": {
     "firstNameRequired": "Enter your first name(s).",
@@ -1134,7 +1150,7 @@
         "description": "How we process your personal data under Peruvian Law No. 29733 and how to exercise your rights."
       },
       "payments": {
-        "title": "Payment conditions",
+        "title": "Cancellation, changes and refunds",
         "description": "Deposits, balances, payment methods, changes, cancellations and refunds for your bookings."
       },
       "cookies": {
@@ -1369,7 +1385,7 @@
       "cusco": "Cusco sits at 3,400 m (11,150 ft): rest on your arrival day, stay hydrated and check with your doctor if you have a heart or respiratory condition."
     },
     "policiesTitle": "Booking and cancellation policies",
-    "policiesText": "See payment deadlines, changes and refunds in our <link>payment conditions</link>.",
+    "policiesText": "See payment deadlines, changes and refunds in our <link>cancellation, changes and refunds policy</link>.",
     "faqTitle": "Frequently asked questions",
     "bookingAside": "Booking",
     "related": "Related tours",

@@ -41,7 +41,7 @@
     "complaintStatus": "Check my complaint",
     "favorites": "My favorites",
     "terms": "Terms and conditions",
-    "payments": "Payment conditions",
+    "payments": "Cancellation, changes and refunds",
     "privacy": "Personal data protection",
     "cookies": "Cookie policy",
     "promotions": "Promotions and events",
@@ -60,5 +60,6 @@
   "esnna": "{name} rejects the sexual exploitation of children and adolescents. If you know of any case, report it to Línea 100 (Peru).",
   "copyright": "© {year} {name}. All rights reserved.",
   "whatsappHelp": "Shall we plan your trip?",
-  "whatsappMessage": "Hi Peru Wonders Tours, I would like information to plan my trip."
+  "whatsappMessage": "Hi Peru Wonders Tours, I would like information to plan my trip.",
+  "paymentsTextRequest": "For now we confirm bookings via WhatsApp and send you the payment instructions (bank transfer)."
 }

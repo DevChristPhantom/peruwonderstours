@@ -46,5 +46,6 @@
   "summaryAllUnpriced": "Precio por cotizar: te enviaremos el monto exacto antes de cobrar.",
   "summarySomeUnpriced": "{count, plural, one {# tour por cotizar: no se cobra hoy.} other {# tours por cotizar: no se cobran hoy.}}",
   "whatsappStep": "carrito",
-  "metaDescription": "Revisa tus tours antes de reservar."
+  "metaDescription": "Revisa tus tours antes de reservar.",
+  "payTodayRequest": "A pagar al confirmar"
 }

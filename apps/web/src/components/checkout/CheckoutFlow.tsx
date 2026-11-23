@@ -60,19 +60,20 @@ function initialContact(saved: ContactValues | null): ContactValues {
   return { ...EMPTY_CONTACT, country, phoneCountry: COUNTRY_PHONE[country] ?? EMPTY_CONTACT.phoneCountry, receipt: "boleta" };
 }
 
-function StepIndicator({ step, maxReached, onGo }: { step: Step; maxReached: Step; onGo: (s: Step) => void }) {
+function StepIndicator({ step, maxReached, onGo, request = false }: { step: Step; maxReached: Step; onGo: (s: Step) => void; request?: boolean }) {
   const t = useTranslations("checkout");
+  const stepLabel = (key: (typeof STEPS)[number]["key"]) => (request && key === "payment" ? t("steps.paymentRequest") : t(`steps.${key}`));
   return (
     <nav aria-label={t("stepsLabel")} className="mb-8">
       <p className="mb-2 text-sm text-foreground-muted md:hidden">
-        {t("stepOf", { step, total: STEPS.length })} · {t(`steps.${STEPS[step - 1].key}`)}
+        {t("stepOf", { step, total: STEPS.length })} · {stepLabel(STEPS[step - 1].key)}
       </p>
       <div className="h-1 overflow-hidden rounded-pill bg-surface-muted md:hidden" aria-hidden="true">
         <div className="h-full origin-left bg-primary transition-transform duration-500 motion-reduce:transition-none" style={{ transform: `scaleX(${step / STEPS.length})` }} />
       </div>
       <ol className="hidden items-center gap-3 md:flex">
         {STEPS.map(({ n, key }, i) => {
-          const label = t(`steps.${key}`);
+          const label = stepLabel(key);
           const done = n < step;
           const reachable = n <= maxReached && n !== step;
           const content = (
@@ -141,7 +142,7 @@ export function CheckoutFlow({ cardFeePercent = null, provider = "sandbox" }: { 
       return;
     }
     headingRef.current?.focus();
-    announce(t("stepAnnounce", { step, total: STEPS.length, label: t(`steps.${STEPS[step - 1].key}`) }));
+    announce(t("stepAnnounce", { step, total: STEPS.length, label: provider === "whatsapp" && STEPS[step - 1].key === "payment" ? t("steps.paymentRequest") : t(`steps.${STEPS[step - 1].key}`) }));
   }, [step, announce, t]);
 
   const today = useMemo(() => todayInLima(), []);
@@ -207,11 +208,11 @@ export function CheckoutFlow({ cardFeePercent = null, provider = "sandbox" }: { 
           {t("sandboxBanner")}
         </p>
       ) : null}
-      <h1 className="sr-only">{t("pageTitle")}</h1>
+      <h1 className="sr-only">{t(provider === "whatsapp" ? "pageTitleRequest" : "pageTitle")}</h1>
 
       <div className="grid gap-10 lg:grid-cols-[minmax(0,640px)_380px] lg:justify-between xl:grid-cols-[minmax(0,640px)_400px]">
         <div className="min-w-0">
-          <StepIndicator step={step} maxReached={maxReached} onGo={go} />
+          <StepIndicator step={step} maxReached={maxReached} onGo={go} request={provider === "whatsapp"} />
 
           {/* Resumen plegable en móvil/tablet */}
           <details className="mb-8 rounded-lg border border-border bg-surface lg:hidden">
@@ -227,6 +228,7 @@ export function CheckoutFlow({ cardFeePercent = null, provider = "sandbox" }: { 
           <div key={step} className={direction > 0 ? "pwt-step-forward" : "pwt-step-back"}>
             {step === 1 ? (
               <ContactStep
+                request={provider === "whatsapp"}
                 headingRef={headingRef}
                 defaultValues={contact}
                 onSubmit={(values) => {
@@ -256,7 +258,7 @@ export function CheckoutFlow({ cardFeePercent = null, provider = "sandbox" }: { 
         <aside className="hidden lg:block" aria-label={t("summaryLabel")}>
           <div className="sticky top-24">
             {step === 2 && quote ? (
-              <QuoteSummary quote={quote} option={option}>
+              <QuoteSummary quote={quote} option={option} request={provider === "whatsapp"}>
                 <Link href="/carrito" className="pwt-link mt-4 inline-flex min-h-11 items-center text-sm">
                   {t("editCart")}
                 </Link>

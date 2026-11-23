@@ -29,5 +29,10 @@
   "questions": "Dúvidas? Fale conosco pelo WhatsApp",
   "seeDates": "Ver datas",
   "floating": "Reservar",
-  "floatingHint": ": escolher data e viajantes,"
+  "floatingHint": ": escolher data e viajantes,",
+  "bookNowRequest": "Solicitar disponibilidade",
+  "depositTodayRequest": "Sinal na confirmação: <amount></amount> ({percent}%).",
+  "depositTodayNoAmountRequest": "Sinal de {percent}% ao confirmar a disponibilidade.",
+  "fullPolicyRequest": "Este passeio é pago integralmente ao confirmar a reserva.",
+  "closeDepartureRequest": "Saídas com menos de {days} dias de antecedência são pagas integralmente na confirmação."
 }

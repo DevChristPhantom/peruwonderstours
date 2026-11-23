@@ -215,7 +215,12 @@
     "questions": "¿Dudas? Escríbenos por WhatsApp",
     "seeDates": "Ver fechas",
     "floating": "Reservar",
-    "floatingHint": ": elegir fecha y viajeros,"
+    "floatingHint": ": elegir fecha y viajeros,",
+    "bookNowRequest": "Solicitar disponibilidad",
+    "depositTodayRequest": "Adelanto al confirmar: <amount></amount> ({percent}%).",
+    "depositTodayNoAmountRequest": "Adelanto del {percent}% al confirmar la disponibilidad.",
+    "fullPolicyRequest": "Este tour se paga completo al confirmar la reserva.",
+    "closeDepartureRequest": "Las salidas con menos de {days} días de anticipación se pagan completas al confirmar."
   },
   "calendar": {
     "prevMonth": "Mes anterior",
@@ -290,14 +295,16 @@
     "summaryAllUnpriced": "Precio por cotizar: te enviaremos el monto exacto antes de cobrar.",
     "summarySomeUnpriced": "{count, plural, one {# tour por cotizar: no se cobra hoy.} other {# tours por cotizar: no se cobran hoy.}}",
     "whatsappStep": "carrito",
-    "metaDescription": "Revisa tus tours antes de reservar."
+    "metaDescription": "Revisa tus tours antes de reservar.",
+    "payTodayRequest": "A pagar al confirmar"
   },
   "checkout": {
     "stepsLabel": "Pasos del pago",
     "stepOf": "Paso {step} de {total}",
     "steps": {
       "contact": "Tus datos",
-      "payment": "Pago"
+      "payment": "Pago",
+      "paymentRequest": "Confirmación"
     },
     "stepDone": "(completado)",
     "stepAnnounce": "Paso {step} de {total}: {label}.",
@@ -346,7 +353,8 @@
       "extrasTitle": "Hotel para el recojo y necesidades especiales",
       "hotel": "Hotel para el recojo",
       "notes": "Necesidades especiales o alimentación",
-      "optional": "(opcional)"
+      "optional": "(opcional)",
+      "nextRequest": "Continuar"
     },
     "payment": {
       "announceBlocked": "Hay tours de tu carrito que no se pueden reservar. Revisa los avisos.",
@@ -423,7 +431,13 @@
       "whatsappStep": "pago",
       "travelerDocsLater": "Viajeros: después de reservar te pediremos por WhatsApp o correo los nombres y documentos exactos de cada viajero para emitir los boletos.",
       "currencyNational": "Precios en soles (S/) con tarifa para residentes en el Perú.",
-      "currencyForeign": "Precios en dólares (US$) con tarifa para viajeros extranjeros (país: {country}). Si resides en el Perú, cambia tu país en «Tus datos»."
+      "currencyForeign": "Precios en dólares (US$) con tarifa para viajeros extranjeros (país: {country}). Si resides en el Perú, cambia tu país en «Tus datos».",
+      "howMuchRequest": "¿Cómo prefieres pagar al confirmar?",
+      "depositOptionRequest": "Adelanto de {percent} % al confirmar",
+      "depositHelpRequest": "Te enviamos las instrucciones de pago cuando confirmemos la disponibilidad. El saldo se paga antes de viajar.",
+      "fullOptionRequest": "Pago del 100 % al confirmar",
+      "fullHelpRequest": "Sin saldos pendientes.",
+      "payTodayRequest": "A pagar al confirmar"
     },
     "hold": {
       "minutesLeft": "{count, plural, one {Queda # minuto para completar el pago.} other {Quedan # minutos para completar el pago.}}",
@@ -507,7 +521,8 @@
       "description": "Reserva {code}"
     },
     "metaTitle": "Pago",
-    "metaDescription": "Completa tu reserva en 3 pasos."
+    "metaDescription": "Completa tu reserva en 3 pasos.",
+    "pageTitleRequest": "Solicitud de reserva"
   },
   "collection": {
     "destinationEyebrow": "Destino",
@@ -895,7 +910,7 @@
       "complaintStatus": "Consultar mi reclamo",
       "favorites": "Mis favoritos",
       "terms": "Términos y condiciones",
-      "payments": "Condiciones de pago",
+      "payments": "Cancelación, cambios y reembolsos",
       "privacy": "Protección de datos personales",
       "cookies": "Política de cookies",
       "promotions": "Promociones y eventos",
@@ -914,7 +929,8 @@
     "esnna": "{name} rechaza la explotación sexual de niñas, niños y adolescentes. Si conoces algún caso, denúncialo a la Línea 100.",
     "copyright": "© {year} {name}. Todos los derechos reservados.",
     "whatsappHelp": "¿Planeamos tu viaje?",
-    "whatsappMessage": "Hola Peru Wonders Tours, quiero información para planear mi viaje."
+    "whatsappMessage": "Hola Peru Wonders Tours, quiero información para planear mi viaje.",
+    "paymentsTextRequest": "Por ahora confirmamos las reservas por WhatsApp y te enviamos las instrucciones de pago (transferencia bancaria)."
   },
   "formErrors": {
     "firstNameRequired": "Escribe tus nombres.",
@@ -1134,7 +1150,7 @@
         "description": "Cómo tratamos tus datos personales conforme a la Ley N.° 29733 y cómo ejercer tus derechos ARCO."
       },
       "payments": {
-        "title": "Condiciones de pago",
+        "title": "Cancelación, cambios y reembolsos",
         "description": "Adelantos, saldos, medios de pago, cambios, cancelaciones y reembolsos de tus reservas."
       },
       "cookies": {
@@ -1369,7 +1385,7 @@
       "cusco": "Cusco está a 3 400 m s. n. m.: descansa el día de llegada, hidrátate y consulta a tu médico si tienes alguna condición cardiaca o respiratoria."
     },
     "policiesTitle": "Políticas de reserva y cancelación",
-    "policiesText": "Revisa los plazos de pago, cambios y reembolsos en nuestras <link>condiciones de pago</link>.",
+    "policiesText": "Revisa los plazos de pago, cambios y reembolsos en nuestra <link>política de cancelación, cambios y reembolsos</link>.",
     "faqTitle": "Preguntas frecuentes",
     "bookingAside": "Reserva",
     "related": "Tours relacionados",

@@ -9,7 +9,7 @@ Tradução da versão em espanhol, que prevalece em caso de divergência.
 - PERU WONDERS TOURS S.A.C., RUC 20616102339.
 - Domicílio fiscal: Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Peru.
 - Escritório: Calle N 500, Puno, Peru.
-- Contato: reservas@peruwonderstours.com · +51 989 028 802 (WhatsApp).
+- Contato: reservas@peruwonderstours.com · +51 941 598 840 (WhatsApp).
 
 Esta política faz parte dos Termos e Condições. Você a aceita antes de pagar, ela fica guardada com a
 sua reserva e a enviamos no e-mail de confirmação.
@@ -33,7 +33,7 @@ sua reserva e a enviamos no e-mail de confirmação.
 
 ## 2. Se você cancelar sua reserva
 
-**Como cancelar:** escreva para reservas@peruwonderstours.com ou pelo WhatsApp +51 989 028 802
+**Como cancelar:** escreva para reservas@peruwonderstours.com ou pelo WhatsApp +51 941 598 840
 informando seu **código de reserva**. Confirmaremos o recebimento e o valor a devolver.
 
 **Como os prazos são contados:** em **dias úteis** (segunda a sexta-feira, sem feriados nacionais

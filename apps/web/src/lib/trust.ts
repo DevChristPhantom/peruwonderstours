@@ -47,7 +47,8 @@ export function enabledBadges(locale: Locale): TrustBadge[] {
 }
 
 /** Orden de la franja "Enlaces oficiales". */
-const OFFICIAL_LINKS = ["machu-picchu-tickets", "mincetur-directory", "peru-travel", "iperu", "sernanp-visit", "esnna-info"] as const;
+// SERNANP y ESNNA ya tienen su logo en la franja de instituciones: aquí no se repiten.
+const OFFICIAL_LINKS = ["machu-picchu-tickets", "mincetur-directory", "peru-travel", "iperu"] as const;
 export type OfficialLinkId = (typeof OFFICIAL_LINKS)[number];
 
 export function officialLinks(): { id: OfficialLinkId; url: string }[] {

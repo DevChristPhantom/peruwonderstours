@@ -14,15 +14,19 @@ const selection = [
   'tour-full-day-canon-del-colca',
 ];
 
-/** Server-rendered photographs from the current catalog; no extra API requests or carousel JS. */
-export async function PhotoGallery({ tours }: { tours: TourSummary[] }) {
+/**
+ * Server-rendered photographs from the current catalog; no extra API requests or carousel JS.
+ * `exclude`: tours ya mostrados en «Tours destacados», para no repetirlos en la misma portada.
+ */
+export async function PhotoGallery({ tours, exclude = [] }: { tours: TourSummary[]; exclude?: string[] }) {
   const t = await getTranslations('home.gallery');
   const byKey = new Map(tours.map((tour) => [tour.key, tour]));
   const ordered = [...selection.map((key) => byKey.get(key)), ...tours];
+  const skip = new Set(exclude);
   const seen = new Set<string>();
   const photos = ordered
     .filter((tour): tour is TourSummary => {
-      if (!tour?.image || tour.image.src.includes('media-pending.svg') || seen.has(tour.image.src))
+      if (!tour?.image || skip.has(tour.key) || tour.image.src.includes('media-pending.svg') || seen.has(tour.image.src))
         return false;
       seen.add(tour.image.src);
       return true;

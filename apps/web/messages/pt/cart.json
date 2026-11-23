@@ -46,5 +46,6 @@
   "summaryAllUnpriced": "Preço sob consulta: enviaremos o valor exato antes de cobrar.",
   "summarySomeUnpriced": "{count, plural, one {# passeio com preço sob consulta: não será cobrado hoje.} other {# passeios com preço sob consulta: não serão cobrados hoje.}}",
   "whatsappStep": "carrinho",
-  "metaDescription": "Confira seus passeios antes de reservar."
+  "metaDescription": "Confira seus passeios antes de reservar.",
+  "payTodayRequest": "A pagar na confirmação"
 }

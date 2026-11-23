@@ -124,7 +124,7 @@ test('Official resource controls, WhatsApp destination and complaint access work
     const rect=image.getBoundingClientRect();return rect.right>0&&rect.left<document.documentElement.clientWidth;
   }).every(image=>(image as HTMLImageElement).complete&&(image as HTMLImageElement).naturalWidth>0))).toBe(true);
   await resources.screenshot({path:info.outputPath('official-resources-loaded.png')});
-  const wa = page.locator('a[href^="https://wa.me/51989028802"]').filter({ has: page.locator('img[src="/icons/whatsapp.svg"]') });
+  const wa = page.locator('a[href^="https://wa.me/51941598840"]').filter({ has: page.locator('img[src="/icons/whatsapp.svg"]') });
   await expect(wa).toHaveAttribute('target', '_blank'); await expect(wa).toHaveAccessibleName(/WhatsApp/);
   // The floating button opens the chat with a greeting instead of an empty message.
   expect(new URL((await wa.getAttribute('href'))!).searchParams.get('text')).toBe('Hola Peru Wonders Tours, quiero información para planear mi viaje.');

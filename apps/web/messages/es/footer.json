@@ -41,7 +41,7 @@
     "complaintStatus": "Consultar mi reclamo",
     "favorites": "Mis favoritos",
     "terms": "Términos y condiciones",
-    "payments": "Condiciones de pago",
+    "payments": "Cancelación, cambios y reembolsos",
     "privacy": "Protección de datos personales",
     "cookies": "Política de cookies",
     "promotions": "Promociones y eventos",
@@ -60,5 +60,6 @@
   "esnna": "{name} rechaza la explotación sexual de niñas, niños y adolescentes. Si conoces algún caso, denúncialo a la Línea 100.",
   "copyright": "© {year} {name}. Todos los derechos reservados.",
   "whatsappHelp": "¿Planeamos tu viaje?",
-  "whatsappMessage": "Hola Peru Wonders Tours, quiero información para planear mi viaje."
+  "whatsappMessage": "Hola Peru Wonders Tours, quiero información para planear mi viaje.",
+  "paymentsTextRequest": "Por ahora confirmamos las reservas por WhatsApp y te enviamos las instrucciones de pago (transferencia bancaria)."
 }

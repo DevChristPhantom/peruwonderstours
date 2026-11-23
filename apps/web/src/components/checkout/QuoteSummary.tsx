@@ -9,7 +9,7 @@ import type { CheckoutQuote } from "@/lib/checkout/api-checkout";
 import type { PaymentOption } from "@/lib/checkout/payment-plan";
 
 /** Resumen con los montos VIGENTES de la API (tras revalidar precio y cupo). */
-export function QuoteSummary({ quote, option, children }: { quote: CheckoutQuote; option: PaymentOption; children?: ReactNode }) {
+export function QuoteSummary({ quote, option, children, request = false }: { quote: CheckoutQuote; option: PaymentOption; children?: ReactNode; request?: boolean }) {
   const t = useTranslations("cart");
   const tq = useTranslations("checkout");
   const fmt = useFormat();
@@ -42,7 +42,7 @@ export function QuoteSummary({ quote, option, children }: { quote: CheckoutQuote
         </div>
         {plan ? (
           <div className="flex items-baseline justify-between gap-4">
-            <dt className="text-foreground-muted">{t("payToday")}</dt>
+            <dt className="text-foreground-muted">{t(request ? "payTodayRequest" : "payToday")}</dt>
             <dd className="tabular font-semibold text-success">{money(plan.payNowCents)}</dd>
           </div>
         ) : null}

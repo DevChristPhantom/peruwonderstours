@@ -467,12 +467,12 @@ export function PaymentStep({
       {/* 3.1 ¿Cuánto quieres pagar hoy? */}
       {plans && depositAvailable && plans.deposit && plans.full ? (
         <fieldset>
-          <legend className="text-h4 font-medium">{t("howMuch")}</legend>
+          <legend className="text-h4 font-medium">{t(provider === "whatsapp" ? "howMuchRequest" : "howMuch")}</legend>
           <div className="mt-4 space-y-3">
             {(
               [
-                ["deposit", t("depositOption", { percent: plans.deposit.depositPercent }), t("depositHelp"), plans.deposit],
-                ["full", t("fullOption"), t("fullHelp"), plans.full],
+                ["deposit", t(provider === "whatsapp" ? "depositOptionRequest" : "depositOption", { percent: plans.deposit.depositPercent }), t(provider === "whatsapp" ? "depositHelpRequest" : "depositHelp"), plans.deposit],
+                ["full", t(provider === "whatsapp" ? "fullOptionRequest" : "fullOption"), t(provider === "whatsapp" ? "fullHelpRequest" : "fullHelp"), plans.full],
               ] as const
             ).map(([value, label, help, p]) => (
               <label
@@ -537,7 +537,7 @@ export function PaymentStep({
             </>
           ) : null}
           <p className="mt-1 flex items-baseline justify-between font-medium">
-            <span>{t("payToday")}</span>
+            <span>{t(provider === "whatsapp" ? "payTodayRequest" : "payToday")}</span>
             <span className="tabular text-success">{money(payTodayCents)}</span>
           </p>
           {plan.balanceCents > 0 ? (

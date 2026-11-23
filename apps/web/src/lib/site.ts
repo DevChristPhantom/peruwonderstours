@@ -27,8 +27,8 @@ export const SITE = {
    * Se puede sobrescribir con NEXT_PUBLIC_WHATSAPP_NUMBER (solo dígitos, con código de país).
    */
   whatsapp: {
-    display: "+51 989 028 802",
-    digits: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "51989028802",
+    display: "+51 941 598 840",
+    digits: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "51941598840",
   },
 } as const;
 

@@ -47,7 +47,7 @@ FROM source AS web-build
 # Valores públicos que Next incrusta al compilar (cambiarlos exige un nuevo build).
 ARG NEXT_PUBLIC_GA_ID=""
 ARG NEXT_PUBLIC_PAYMENTS_MODE="sandbox"
-ARG NEXT_PUBLIC_WHATSAPP_NUMBER="51989028802"
+ARG NEXT_PUBLIC_WHATSAPP_NUMBER="51941598840"
 ARG PUBLIC_WEB_BASE_URL
 ARG MEDIA_PUBLIC_BASE_URL
 # Durante el build la web lee el catálogo de la API por el puerto local del servidor (127.0.0.1).

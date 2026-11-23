@@ -309,17 +309,17 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
         </div>
         <div className="rounded-md bg-success-soft px-4 py-3 text-sm text-success">
           {fullByPolicy ? (
-            <p>{t("fullPolicy")}</p>
+            <p>{t(tour.onlinePayments ? "fullPolicy" : "fullPolicyRequest")}</p>
           ) : closeDeparture ? (
-            <p>{t("closeDeparture", { days: BALANCE_DAYS })}</p>
+            <p>{t(tour.onlinePayments ? "closeDeparture" : "closeDepartureRequest", { days: BALANCE_DAYS })}</p>
           ) : (
             <p>
               {deposit !== null && pricing
-                ? t.rich("depositToday", {
+                ? t.rich(tour.onlinePayments ? "depositToday" : "depositTodayRequest", {
                     percent: percentNow,
                     amount: () => <strong className="tabular">{f.money(deposit, pricing.currency)}</strong>,
                   })
-                : t("depositTodayNoAmount", { percent: percentNow })}{" "}
+                : t(tour.onlinePayments ? "depositTodayNoAmount" : "depositTodayNoAmountRequest", { percent: percentNow })}{" "}
               {date ? t("balanceUntil", { date: f.date(addDays(date, -BALANCE_DAYS)) }) : t("balanceBefore", { days: BALANCE_DAYS })}
             </p>
           )}
@@ -347,7 +347,7 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
           )}
         </button>
         <button type="button" className={buttonClass("outline", "lg", "w-full")} onClick={onBookNow}>
-          {t("bookNow")}
+          {t(tour.onlinePayments ? "bookNow" : "bookNowRequest")}
         </button>
       </div>
 

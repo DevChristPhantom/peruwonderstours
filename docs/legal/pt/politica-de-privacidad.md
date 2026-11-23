@@ -13,7 +13,7 @@ Proteção de Dados Pessoais do Peru, e seu Regulamento (D.S. 016-2024-JUS).
 - Domicílio fiscal: Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Peru.
 - Escritório: Calle N 500, Puno, Peru.
 
-**Contato para assuntos de privacidade:** reservas@peruwonderstours.com · +51 989 028 802 (WhatsApp).
+**Contato para assuntos de privacidade:** reservas@peruwonderstours.com · +51 941 598 840 (WhatsApp).
 Essas solicitações são atendidas pela gerência da empresa.
 
 ## 2. Quais dados tratamos?

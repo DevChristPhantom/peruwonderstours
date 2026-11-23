@@ -3,7 +3,8 @@
   "stepOf": "Step {step} of {total}",
   "steps": {
     "contact": "Your details",
-    "payment": "Payment"
+    "payment": "Payment",
+    "paymentRequest": "Confirmation"
   },
   "stepDone": "(completed)",
   "stepAnnounce": "Step {step} of {total}: {label}.",
@@ -52,7 +53,8 @@
     "extrasTitle": "Pickup hotel and special needs",
     "hotel": "Hotel for pickup",
     "notes": "Special needs or dietary requirements",
-    "optional": "(optional)"
+    "optional": "(optional)",
+    "nextRequest": "Continue"
   },
   "payment": {
     "announceBlocked": "Some tours in your cart cannot be booked. Check the notices.",
@@ -129,7 +131,13 @@
     "whatsappStep": "payment",
     "travelerDocsLater": "Travelers: after booking we will ask you by WhatsApp or email for each traveler’s exact name and document to issue the tickets.",
     "currencyNational": "Prices in soles (S/) with the rate for Peru residents.",
-    "currencyForeign": "Prices in US dollars (US$) with the rate for international travelers (country: {country}). If you live in Peru, change your country in “Your details”."
+    "currencyForeign": "Prices in US dollars (US$) with the rate for international travelers (country: {country}). If you live in Peru, change your country in “Your details”.",
+    "howMuchRequest": "How would you like to pay on confirmation?",
+    "depositOptionRequest": "{percent} % deposit on confirmation",
+    "depositHelpRequest": "We send you the payment instructions once availability is confirmed. The balance is paid before travelling.",
+    "fullOptionRequest": "100 % payment on confirmation",
+    "fullHelpRequest": "No outstanding balance.",
+    "payTodayRequest": "To pay on confirmation"
   },
   "hold": {
     "minutesLeft": "{count, plural, one {# minute left to complete the payment.} other {# minutes left to complete the payment.}}",
@@ -213,5 +221,6 @@
     "description": "Booking {code}"
   },
   "metaTitle": "Checkout",
-  "metaDescription": "Complete your booking in 3 steps."
+  "metaDescription": "Complete your booking in 3 steps.",
+  "pageTitleRequest": "Booking request"
 }

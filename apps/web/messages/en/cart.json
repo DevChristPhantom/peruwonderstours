@@ -46,5 +46,6 @@
   "summaryAllUnpriced": "Price on request: we will send you the exact amount before charging you.",
   "summarySomeUnpriced": "{count, plural, one {# tour priced on request: not charged today.} other {# tours priced on request: not charged today.}}",
   "whatsappStep": "cart",
-  "metaDescription": "Review your tours before booking."
+  "metaDescription": "Review your tours before booking.",
+  "payTodayRequest": "To pay on confirmation"
 }
