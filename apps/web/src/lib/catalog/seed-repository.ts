@@ -32,6 +32,7 @@ interface SeedTour {
   durationLabel: string;
   durationDays: number | null;
   durationNights: number | null;
+  durationHours?: number | null;
   minPax: number | null;
   difficulty: string | null;
   featured: boolean;
@@ -145,6 +146,7 @@ function toSummary(t: SeedTour, locale: Locale): TourSummary {
     durationLabel: text.durationLabel,
     durationDays: t.durationDays,
     durationNights: t.durationNights,
+    durationHours: t.durationHours ?? null,
     durationBucket: durationBucketOf(t.durationDays),
     destinationNames: (locale === "en" && !fallback ? text.destinations : t.destinations) ?? [],
     // Claves estables en español (filtros, reglas de altura, carrito).

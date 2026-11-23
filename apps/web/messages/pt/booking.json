@@ -25,6 +25,7 @@
   "announceAdded": "{title} adicionado ao carrinho. {count, plural, one {Você tem # passeio no carrinho.} other {Você tem # passeios no carrinho.}}",
   "announceUpdated": "{title} atualizado no carrinho. {count, plural, one {Você tem # passeio no carrinho.} other {Você tem # passeios no carrinho.}}",
   "trust": "Pagamento seguro. Sua vaga é reservada após a confirmação do pagamento.",
+  "trustRequest": "Solicite sua reserva: confirmamos a disponibilidade e enviamos as instruções de pagamento.",
   "questions": "Dúvidas? Fale conosco pelo WhatsApp",
   "seeDates": "Ver datas",
   "floating": "Reservar",

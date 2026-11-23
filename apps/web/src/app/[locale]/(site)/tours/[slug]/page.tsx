@@ -18,6 +18,7 @@ import { localePath } from "@/i18n/paths";
 import { routing, type Locale } from "@/i18n/routing";
 import { getAllTours, getDestinations, getRelatedTours, getTour } from "@/lib/catalog";
 import { isDifficultyLevel } from "@/lib/catalog/difficulty";
+import { env } from "@/lib/env";
 import { durationText } from "@/lib/i18n/units";
 import { faqJsonLd, JsonLd, touristTripJsonLd } from "@/lib/seo/json-ld";
 import { pageMetadata } from "@/lib/seo/metadata";
@@ -84,7 +85,7 @@ export default async function TourPage({ params }: PageProps<"/[locale]/tours/[s
     path: tour.path,
     image: tour.image,
     destinationLabel: places,
-    durationLabel: durationText(tu, tour.durationDays, tour.durationNights),
+    durationLabel: durationText(tu, tour.durationDays, tour.durationNights, tour.durationHours),
     minPax: tour.minPax,
     pricing: tour.pricing,
     foreignPricing: tour.foreignPricing,
@@ -92,6 +93,7 @@ export default async function TourPage({ params }: PageProps<"/[locale]/tours/[s
     durationDays: tour.durationDays,
     destinationSlugs: tour.destinationSlugs,
     difficulty: tour.difficulty,
+    onlinePayments: env.PAYMENT_PROVIDER !== "whatsapp",
   };
 
   const sections = [
@@ -142,7 +144,7 @@ export default async function TourPage({ params }: PageProps<"/[locale]/tours/[s
           <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-foreground-muted">
             <li className="inline-flex items-center gap-2">
               <CalendarDays aria-hidden size={20} strokeWidth={1.5} />
-              {durationText(tu, tour.durationDays, tour.durationNights)}
+              {durationText(tu, tour.durationDays, tour.durationNights, tour.durationHours)}
             </li>
             <li className="inline-flex items-center gap-2">
               <MapPin aria-hidden size={20} strokeWidth={1.5} />

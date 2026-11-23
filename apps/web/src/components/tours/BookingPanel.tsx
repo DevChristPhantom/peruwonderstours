@@ -40,6 +40,8 @@ export interface BookableTour {
   durationDays: number | null;
   destinationSlugs: string[];
   difficulty: string | null;
+  /** false con PAYMENT_PROVIDER=whatsapp: no se promete un pago ni un cupo automático. */
+  onlinePayments: boolean;
 }
 
 const BALANCE_DAYS = 7;
@@ -351,7 +353,7 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
 
       <p className="mt-4 flex items-start gap-2 text-sm text-foreground-muted">
         <ShieldCheck aria-hidden size={18} strokeWidth={1.5} className="mt-0.5 shrink-0" />
-        {t("trust")}
+        {tour.onlinePayments ? t("trust") : t("trustRequest")}
       </p>
       <a
         href={whatsappHref(tourHelpMessage(wa, { title: tour.title, date: date || null, travelers: date ? travelers : null }))}

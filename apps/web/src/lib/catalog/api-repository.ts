@@ -284,6 +284,7 @@ function toSummary(entry: CardEntry, taxonomy: Taxonomy, locale: Locale): TourSu
     durationLabel: seed?.durationLabel ?? durationLabelOf(es.durationDays, es.durationNights),
     durationDays: es.durationDays,
     durationNights: es.durationNights,
+    durationHours: es.durationHours == null ? null : Number(es.durationHours),
     durationBucket: durationBucketOf(es.durationDays),
     destinationNames: destinations.map((d) => d.text.name),
     destinationSlugs: destinations.map((d) => d.key),

@@ -69,7 +69,7 @@ export async function TourCard({
         <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-foreground-muted">
           <li className="inline-flex items-center gap-1.5">
             <CalendarDays aria-hidden size={16} strokeWidth={1.5} />
-            {durationText(tu, tour.durationDays, tour.durationNights)}
+            {durationText(tu, tour.durationDays, tour.durationNights, tour.durationHours)}
           </li>
           <li className="inline-flex items-center gap-1.5">
             <Users aria-hidden size={16} strokeWidth={1.5} />

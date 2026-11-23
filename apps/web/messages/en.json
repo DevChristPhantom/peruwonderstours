@@ -211,6 +211,7 @@
     "announceAdded": "{title} added to cart. {count, plural, one {You have # tour in your cart.} other {You have # tours in your cart.}}",
     "announceUpdated": "{title} updated in cart. {count, plural, one {You have # tour in your cart.} other {You have # tours in your cart.}}",
     "trust": "Secure payment. Your seat is held once the payment is confirmed.",
+    "trustRequest": "Request your booking: we confirm availability and send you the payment instructions.",
     "questions": "Questions? Message us on WhatsApp",
     "seeDates": "See dates",
     "floating": "Book",
@@ -1490,6 +1491,7 @@
     "noTravelers": "No travelers",
     "duration": "{days} days / {nights, plural, one {# night} other {# nights}}",
     "durationOneDay": "1 day",
+    "durationHalfDay": "Half day",
     "durationUnknown": "Duration to be confirmed"
   },
   "voucher": {

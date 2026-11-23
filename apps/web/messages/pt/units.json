@@ -6,5 +6,6 @@
   "noTravelers": "Sem viajantes",
   "duration": "{days} dias / {nights, plural, one {# noite} other {# noites}}",
   "durationOneDay": "1 dia",
+  "durationHalfDay": "Meio dia",
   "durationUnknown": "Duração a confirmar"
 }

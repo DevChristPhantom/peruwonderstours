@@ -112,18 +112,6 @@
       {
         "question": "¿Puedo tomar fotos durante las visitas?",
         "answer": "Sí, la mayoría de los lugares en el itinerario son aptos para tomar fotografías. Sin embargo, es recomendable respetar las normas locales en lugares religiosos o durante las presentaciones culturales."
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación, debido a la disponibilidad."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online – Niubiz."
       }
     ],
     "policies": null,
@@ -166,9 +154,9 @@
       "excursiones",
       "paquetes-turisticos-en-peru"
     ],
-    "durationLabel": "1D",
-    "durationDays": 1,
-    "durationNights": 0,
+    "durationLabel": "3D/2N",
+    "durationDays": 3,
+    "durationNights": 2,
     "durationHours": null,
     "minPax": 2,
     "difficulty": "Fácil",
@@ -263,18 +251,6 @@
       {
         "question": "¿El servicio de traslado al aeropuerto o terminal de buses es privado?",
         "answer": "El traslado de salida está incluido, y generalmente es un servicio compartido. Si prefieres un traslado privado, también se puede organizar por un costo adicional."
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación, debido a la disponibilidad."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online – Niubiz."
       }
     ],
     "policies": null,
@@ -417,18 +393,6 @@
       {
         "question": "¿Es posible adaptar el itinerario si tengo menos días?",
         "answer": "Sí, el itinerario puede personalizarse según la duración de tu viaje y tus intereses"
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación ya que la entrada a Machu Picchu tiene una capacidad limitada . Si usted desea subir a la montaña de Huayna Picchu o Montaña Machu Picchu es recomendable realizarlo con anticipación."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online (pago link – Niubiz)."
       }
     ],
     "policies": null,
@@ -581,18 +545,6 @@
       {
         "question": "¿Cuáles son las opciones para comprar recuerdos o artesanías locales?",
         "answer": "Muchos turistas estarán interesados en comprar recuerdos típicos, como textiles o cerámica. Preguntarán si hay mercados o tiendas locales donde puedan adquirir productos de la región."
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación, debido a la disponibilidad."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online – Niubiz."
       }
     ],
     "policies": null,
@@ -907,18 +859,6 @@
       {
         "question": "¿Los guías privados hablan otros idiomas además del español, como inglés?",
         "answer": "Sí. Disponemos de guías en inglés. Indícanos tu idioma preferido al momento de reservar para asignarte el guía adecuado."
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación ya que la entrada a Machu Picchu tiene una capacidad limitada por horario. , esto por motivos de inscripciones, boleto de Tren, compras de boletos turísticos, reserva de hotel para su estadía, etc. Si usted desea subir a la montaña de Huayna Picchu o Montaña Machu Picchu es recomendable realizarlo con anticipación."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online – Niubiz."
       }
     ],
     "policies": null,
@@ -1052,18 +992,6 @@
       {
         "question": "¿Cómo se manejan los traslados entre ciudades y hoteles?",
         "answer": "Todos los traslados están organizados: aeropuerto, estaciones, hoteles y actividades, para que no tengas que preocuparte por la logística."
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación ya que la entrada a Machu Picchu tiene una capacidad limitada. Si usted desea subir a la montaña de Huayna Picchu o Montaña Machu Picchu es recomendable realizarlo con anticipación."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online (pago link – Niubiz)."
       }
     ],
     "policies": null,
@@ -1208,18 +1136,6 @@
       {
         "question": "¿Cómo se manejan los traslados entre ciudades y hoteles?",
         "answer": "Todos los traslados están organizados: aeropuerto, estaciones, hoteles y actividades, para que no tengas que preocuparte por la logística."
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación ya que la entrada a Machu Picchu tiene una capacidad limitada. Si usted desea subir a la montaña de Huayna Picchu o Montaña Machu Picchu es recomendable realizarlo con anticipación."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online (pago link – Niubiz)."
       }
     ],
     "policies": null,
@@ -1373,18 +1289,6 @@
       {
         "question": "¿Es seguro el recorrido para niños y personas mayores?",
         "answer": "Si bien el recorrido está diseñado para todos los públicos, los niños pequeños y personas mayores deben estar en buen estado físico para las caminatas en terrenos irregulares."
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación, debido a la disponibilidad."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online – Niubiz."
       }
     ],
     "policies": null,
@@ -1702,18 +1606,6 @@
       {
         "question": "¿Se proporcionan guías en diferentes idiomas durante el tour?",
         "answer": "Los turistas internacionales podrían preguntar si el tour está disponible en su idioma, como inglés o francés, para asegurarse de comprender toda la información histórica y cultural."
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación, debido a la disponibilidad."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online – Niubiz."
       }
     ],
     "policies": null,
@@ -1865,18 +1757,6 @@
       {
         "question": "¿Hay oportunidades para comprar souvenirs o recuerdos?",
         "answer": "En algunas paradas del recorrido, como en el almuerzo o en las salinas, podrías encontrar pequeños puestos donde comprar recuerdos locales."
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación, debido a la disponibilidad."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online – Niubiz."
       }
     ],
     "policies": null,
@@ -2079,18 +1959,6 @@
       {
         "question": "¿Qué pasa si el clima no es favorable para hacer el trekking?",
         "answer": "En caso de mal tiempo o condiciones climáticas extremas, la agencia podría reprogramar el tour o ofrecer alternativas, siempre garantizando la seguridad de los turistas."
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación, debido a la disponibilidad."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online – Niubiz."
       }
     ],
     "policies": null,
@@ -2200,18 +2068,6 @@
       {
         "question": "¿Hay alguna opción para personas con movilidad reducida o problemas de salud?",
         "answer": "Dado que el trekking es de alta dificultad, este tour no es recomendado para personas con movilidad reducida o problemas graves de salud. Es importante consultar con un médico antes de participar en este tipo de actividades si hay dudas sobre la capacidad física."
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación, debido a la disponibilidad."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online – Niubiz."
       }
     ],
     "policies": null,
@@ -2362,18 +2218,6 @@
       {
         "question": "¿Es posible adaptar el itinerario si tengo menos días?",
         "answer": "Sí, el itinerario puede personalizarse según la duración de tu viaje y tus intereses"
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación ya que la entrada a Machu Picchu tiene una capacidad limitada . Si usted desea subir a la montaña de Huayna Picchu o Montaña Machu Picchu es recomendable realizarlo con anticipación."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online (pago link – Niubiz)."
       }
     ],
     "policies": null,
@@ -2551,18 +2395,6 @@
       {
         "question": "¿Es posible adaptar el itinerario si tengo menos días?",
         "answer": "Sí, el itinerario puede personalizarse según la duración de tu viaje y tus intereses"
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación ya que la entrada a Machu Picchu tiene una capacidad limitada . Si usted desea subir a la montaña de Huayna Picchu o Montaña Machu Picchu es recomendable realizarlo con anticipación."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online (pago link – Niubiz)."
       }
     ],
     "policies": null,
@@ -3022,18 +2854,6 @@
       {
         "question": "¿Es posible adaptar el itinerario si tengo menos días?",
         "answer": "Sí, el itinerario puede personalizarse según la duración de tu viaje y tus intereses"
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación ya que la entrada a Machu Picchu tiene una capacidad limitada . Si usted desea subir a la montaña de Huayna Picchu o Montaña Machu Picchu es recomendable realizarlo con anticipación."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online (pago link – Niubiz)."
       }
     ],
     "policies": null,
@@ -3434,18 +3254,6 @@
       {
         "question": "¿Hay baños disponibles durante el recorrido, especialmente en las lagunas o en Q’eswachaka?",
         "answer": "Sí, habrá baños disponibles en los puntos de descanso y en los restaurantes locales durante el recorrido."
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación, debido a la disponibilidad."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online – Niubiz."
       }
     ],
     "policies": null,
@@ -3802,7 +3610,7 @@
     "durationLabel": "1D",
     "durationDays": 1,
     "durationNights": 0,
-    "durationHours": null,
+    "durationHours": 4,
     "minPax": 2,
     "difficulty": "Fácil",
     "featured": true,
@@ -4033,12 +3841,12 @@
     "durationLabel": "1D",
     "durationDays": 1,
     "durationNights": 0,
-    "durationHours": null,
+    "durationHours": 4,
     "minPax": 2,
     "difficulty": "Fácil",
     "featured": true,
     "cardSummary": "Explore las Islas Flotantes de los Uros en Puno. Un recorrido de medio día para conocer la arquitectura ancestral en totora y el estilo de vida de la comunidad Uru. Salidas diarias con guías profesionales.",
-    "description": "Explore el complejo ancestral de los Uros, un conjunto de más de 100 islas artificiales construidas íntegramente con totora, una planta acuática propia de la región. Esta visita permite comprender un sistema de subsistencia milenario en el corazón del Lago Titicaca, donde la comunidad mantiene vigentes sus técnicas de construcción y convivencia con el ecosistema lacustre.\nEsta visita permite comprender la organización social, el uso de los recursos naturales y la historia de un pueblo que mantiene su identidad en un entorno geográfico desafante a más de 3,800 metros de altura.",
+    "description": "Explore el complejo ancestral de los Uros, un conjunto de más de 100 islas artificiales construidas íntegramente con totora, una planta acuática propia de la región. Esta visita permite comprender un sistema de subsistencia milenario en el corazón del Lago Titicaca, donde la comunidad mantiene vigentes sus técnicas de construcción y convivencia con el ecosistema lacustre.\nEsta visita permite comprender la organización social, el uso de los recursos naturales y la historia de un pueblo que mantiene su identidad en un entorno geográfico desafiante a más de 3,800 metros de altura.",
     "summary": "Puno ciudad\nTour por el Lago Titicaca\nIslas flotantes de los Uros",
     "itinerary": [
       {
@@ -4050,7 +3858,7 @@
     "includes": [
       "Traslados de ida y vuelta desde hoteles en el casco urbano de Puno.",
       "Transporte lacustre motorizado con equipo de seguridad y chalecos salvavidas.",
-      "Guía bilingue oficial de turismo especializado.",
+      "Guía bilingüe oficial de turismo especializado.",
       "Tickets de ingreso a la comunidad de los Uros."
     ],
     "notIncludes": [
@@ -4353,7 +4161,7 @@
     "durationLabel": "1D",
     "durationDays": 1,
     "durationNights": 0,
-    "durationHours": null,
+    "durationHours": 4,
     "minPax": 2,
     "difficulty": "Fácil",
     "featured": true,
@@ -4881,18 +4689,6 @@
       {
         "question": "¿Puedo contratar un caballo para facilitar el recorrido?",
         "answer": "En algunas rutas de trekking, es posible contratar caballos para los turistas que necesiten ayuda adicional debido a la altitud o la dificultad del recorrido. Es recomendable preguntar con anticipación sobre esta opción.}"
-      },
-      {
-        "question": "¿Con cuanto tiempo de anticipación tengo que hacer mi reserva del tour ?",
-        "answer": "Es importante que realice la reserva de su viaje con bastante anticipación, debido a la disponibilidad."
-      },
-      {
-        "question": "¿Para que fechas están programados los paquetes turísticos?",
-        "answer": "Contamos con salidas diarias para cualquier día del año."
-      },
-      {
-        "question": "¿Cual es el medio de pago para poder reservar?",
-        "answer": "Contamos con varios métodos de Pagos. Transferencia Bancaria,Pagos por nuestro sistema de Visa Online – Niubiz."
       }
     ],
     "policies": null,

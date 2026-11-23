@@ -68,6 +68,8 @@ export interface TourSummary {
   durationLabel: string;
   durationDays: number | null;
   durationNights: number | null;
+  /** Horas del servicio (solo tours de un día); <= 6 se muestra como "Medio día". */
+  durationHours: number | null;
   durationBucket: DurationBucket | null;
   destinationNames: string[];
   destinationSlugs: string[];

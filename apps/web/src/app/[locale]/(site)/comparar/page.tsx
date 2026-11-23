@@ -73,7 +73,7 @@ export default async function ComparePage({ params, searchParams }: PageProps<"/
 
   const rows: { label: string; render: (tour: Tour) => ReactNode }[] = [
     { label: t("rows.price"), render: (tour) => <PriceTag pricing={tour.pricing} foreignPricing={tour.foreignPricing} policy={tour.paymentPolicy} /> },
-    { label: t("rows.duration"), render: (tour) => durationText(tu, tour.durationDays, tour.durationNights) },
+    { label: t("rows.duration"), render: (tour) => durationText(tu, tour.durationDays, tour.durationNights, tour.durationHours) },
     { label: t("rows.destinations"), render: (tour) => (tour.destinationNames.length ? tour.destinationNames.join(", ") : tc("severalDestinations")) },
     { label: t("rows.difficulty"), render: (tour) => (isDifficultyLevel(tour.difficulty) ? tc(`difficultyLevels.${tour.difficulty}`) : (tour.difficulty ?? pending)) },
     { label: t("rows.minPax"), render: (tour) => tour.minPax },

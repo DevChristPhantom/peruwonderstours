@@ -211,6 +211,7 @@
     "announceAdded": "{title} agregado al carrito. {count, plural, one {Tienes # tour en el carrito.} other {Tienes # tours en el carrito.}}",
     "announceUpdated": "{title} actualizado en el carrito. {count, plural, one {Tienes # tour en el carrito.} other {Tienes # tours en el carrito.}}",
     "trust": "Pago seguro. Tu cupo queda reservado al confirmar el pago.",
+    "trustRequest": "Solicita tu reserva: confirmamos la disponibilidad y te enviamos las instrucciones de pago.",
     "questions": "¿Dudas? Escríbenos por WhatsApp",
     "seeDates": "Ver fechas",
     "floating": "Reservar",
@@ -1490,6 +1491,7 @@
     "noTravelers": "Sin viajeros",
     "duration": "{days} días / {nights, plural, one {# noche} other {# noches}}",
     "durationOneDay": "1 día",
+    "durationHalfDay": "Medio día",
     "durationUnknown": "Duración por confirmar"
   },
   "voucher": {
