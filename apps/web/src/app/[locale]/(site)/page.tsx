@@ -111,7 +111,7 @@ export default async function HomePage({ params }: PageProps<'/[locale]'>) {
       <PromotionsSection promotions={promotions} locale={locale} />
       <FeaturedTours groups={groups} totalTours={allTours.length} locale={locale} />
       <DestinationsSection destinations={destinations} locale={locale} />
-      <PhotoGallery tours={allTours} exclude={featured.map((tour) => tour.key)} />
+      <PhotoGallery tours={allTours} exclude={groups.flatMap((group) => group.tours.map((tour) => tour.key))} />
       <WhyUsSection
         tourCount={allTours.length}
         destinationCount={destinations.length}
