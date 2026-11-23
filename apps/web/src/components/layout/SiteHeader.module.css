@@ -157,7 +157,8 @@
   opacity: 0;
   pointer-events: none;
   border-radius: 16px;
-  background: var(--panel);
+  /* Casi opaco: con el 84 % del token se leía el texto de la página detrás del menú. */
+  background: rgb(14 19 23 / 0.97);
   border: 1px solid var(--line);
   box-shadow: var(--pwt-shadow-overlay);
   backdrop-filter: blur(22px) saturate(140%);
@@ -215,10 +216,10 @@
   transition: none;
 }
 
-/* Panel A — Descubre (664×358) */
+/* Panel A — Descubre (664×440): 4 destinos con descripción de hasta 3 líneas. */
 .panelDiscover {
   width: 664px;
-  height: 358px;
+  height: 440px;
   display: grid;
   grid-template-columns: 236px 1fr;
 }
@@ -431,7 +432,7 @@
   margin: 0;
   list-style: none;
   border-radius: 12px;
-  background: var(--panel);
+  background: rgb(14 19 23 / 0.97);
   border: 1px solid var(--line);
   box-shadow: var(--pwt-shadow-overlay);
   backdrop-filter: blur(22px) saturate(140%);
@@ -526,7 +527,7 @@
   overflow-y: auto;
   padding: 10px;
   border-radius: 16px;
-  background: var(--panel);
+  background: rgb(14 19 23 / 0.97);
   border: 1px solid var(--line);
   box-shadow: var(--pwt-shadow-overlay);
   backdrop-filter: blur(22px) saturate(140%);

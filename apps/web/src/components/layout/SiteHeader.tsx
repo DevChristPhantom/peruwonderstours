@@ -32,7 +32,7 @@ import s from "./SiteHeader.module.css";
 type PanelId = "descubre" | "viajes" | "destinos";
 const ORDER: PanelId[] = ["descubre", "viajes", "destinos"];
 const SIZE: Record<PanelId, { w: number; h: number }> = {
-  descubre: { w: 664, h: 358 },
+  descubre: { w: 664, h: 440 },
   viajes: { w: 446, h: 308 },
   destinos: { w: 232, h: 218 },
 };
