@@ -3,7 +3,7 @@
   "tagline": "Agencia de viajes con oficina en Puno. Tours por el Lago Titicaca, Cusco, Machu Picchu, Arequipa y la costa sur del Perú.",
   "short": {
     "terms": "Términos",
-    "payments": "Pagos",
+    "payments": "Reserva y cancelación",
     "privacy": "Privacidad"
   },
   "complaintsBook": "Libro de Reclamaciones",
@@ -41,7 +41,7 @@
     "complaintStatus": "Consultar mi reclamo",
     "favorites": "Mis favoritos",
     "terms": "Términos y condiciones",
-    "payments": "Cancelación, cambios y reembolsos",
+    "payments": "Políticas de reserva y cancelación",
     "privacy": "Protección de datos personales",
     "cookies": "Política de cookies",
     "promotions": "Promociones y eventos",

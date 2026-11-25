@@ -34,5 +34,8 @@
   "depositTodayRequest": "Sinal na confirmação: <amount></amount> ({percent}%).",
   "depositTodayNoAmountRequest": "Sinal de {percent}% ao confirmar a disponibilidade.",
   "fullPolicyRequest": "Este passeio é pago integralmente ao confirmar a reserva.",
-  "closeDepartureRequest": "Saídas com menos de {days} dias de antecedência são pagas integralmente na confirmação."
+  "closeDepartureRequest": "Saídas com menos de {days} dias de antecedência são pagas integralmente na confirmação.",
+  "policyCancel": "Condições de cancelamento claras. Ingressos e bilhetes podem ter condições especiais.",
+  "policyEmail": "Você recebe a confirmação da reserva por e-mail.",
+  "policyLink": "Ler as Políticas de reserva e cancelamento"
 }

@@ -34,5 +34,8 @@
   "depositTodayRequest": "Adelanto al confirmar: <amount></amount> ({percent}%).",
   "depositTodayNoAmountRequest": "Adelanto del {percent}% al confirmar la disponibilidad.",
   "fullPolicyRequest": "Este tour se paga completo al confirmar la reserva.",
-  "closeDepartureRequest": "Las salidas con menos de {days} días de anticipación se pagan completas al confirmar."
+  "closeDepartureRequest": "Las salidas con menos de {days} días de anticipación se pagan completas al confirmar.",
+  "policyCancel": "Condiciones de cancelación claras. Pueden aplicar condiciones especiales a entradas y boletos.",
+  "policyEmail": "Recibes la confirmación de tu reserva por correo electrónico.",
+  "policyLink": "Leer las Políticas de reserva y cancelación"
 }

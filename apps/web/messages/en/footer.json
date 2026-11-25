@@ -3,7 +3,7 @@
   "tagline": "Travel agency based in Puno. Tours to Lake Titicaca, Cusco, Machu Picchu, Arequipa and Peru's southern coast.",
   "short": {
     "terms": "Terms",
-    "payments": "Payments",
+    "payments": "Booking & cancellation",
     "privacy": "Privacy"
   },
   "complaintsBook": "Complaints Book (Libro de Reclamaciones)",
@@ -41,7 +41,7 @@
     "complaintStatus": "Check my complaint",
     "favorites": "My favorites",
     "terms": "Terms and conditions",
-    "payments": "Cancellation, changes and refunds",
+    "payments": "Booking & Cancellation Policy",
     "privacy": "Personal data protection",
     "cookies": "Cookie policy",
     "promotions": "Promotions and events",

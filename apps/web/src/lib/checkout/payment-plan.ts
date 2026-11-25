@@ -16,7 +16,7 @@ export interface PaymentPlanConfig {
   balanceDaysBeforeDeparture: number;
 }
 
-export const DEFAULT_PLAN_CONFIG: PaymentPlanConfig = { balanceDaysBeforeDeparture: 7 };
+export const DEFAULT_PLAN_CONFIG: PaymentPlanConfig = { balanceDaysBeforeDeparture: 15 };
 
 export type FullPaymentReason = "option" | "policy" | "close-departure";
 

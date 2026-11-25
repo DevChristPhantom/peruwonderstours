@@ -35,8 +35,8 @@ Si una condición no figura en el anuncio ni en la ficha, no se te aplica en tu 
 Muchas festividades y eventos (por ejemplo, celebraciones religiosas, concursos de danzas o
 ferias) los organizan terceros, que fijan sus fechas, horarios y programa. Publicamos las fechas
 que esos organizadores anuncian y te avisaremos si cambian. Si un evento se cancela o se modifica
-de forma que el viaje pierda su finalidad, se aplica la sección «Cancelación o cambios por parte de
-Peru Wonders Tours» de la Política de Cancelación, Cambios y Reembolsos: podrás elegir entre cambiar
+de forma que el viaje pierda su finalidad, se aplica la sección «Cancelaciones por parte de
+PERU WONDERS TOURS» de las Políticas de Reserva, Pago y Cancelación: podrás elegir entre cambiar
 de fecha o servicio, o recibir el reembolso que corresponda.
 
 ## 5. Imágenes y descripciones

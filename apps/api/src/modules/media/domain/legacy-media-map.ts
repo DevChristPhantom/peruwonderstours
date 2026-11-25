@@ -493,7 +493,7 @@ export const LEGACY_LINK_PATHS: Readonly<Record<string, string>> = {
   "/es/testimonios": "/es/testimonios",
   "/es/dejar-testimonio": "/es/dejar-testimonio",
   "/es/andean-peru-tours/quienes-somos": "/es/nosotros",
-  "/es/andean-peru-tours/politicas-y-condiciones-de-pago": "/es/politicas/condiciones-de-pago",
+  "/es/andean-peru-tours/politicas-y-condiciones-de-pago": "/es/politicas-de-reserva-y-cancelacion",
   "/es/andean-peru-tours/proteccion-de-datos-personales": "/es/politicas/proteccion-de-datos-personales",
   "/es/libro-de-reclamaciones": "/es/libro-de-reclamaciones",
   "/es/reservar-tour": "/es/carrito",

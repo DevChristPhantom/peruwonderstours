@@ -1,107 +1,150 @@
-# Política de Cancelación, Cambios y Reembolsos
+# Políticas de reserva, pago y cancelación
 
-Última actualización: 20 de noviembre de 2026 · Versión 1.0
+Última actualización: 25 de noviembre de 2026 · Versión 2.0 (PWT-LEG-001)
 
-**Proveedor:**
+Nuestro compromiso es ofrecer experiencias de viaje seguras, responsables y de calidad, proporcionando información clara y transparente durante todo el proceso de reserva.
 
-- PERU WONDERS TOURS S.A.C., RUC 20616102339.
-- Domicilio fiscal: Jr. Amauta Mza. X Lote 15, Urb. Tepro (Centro Poblado Salcedo), Puno, Perú.
-- Oficina: Calle N 500, Puno, Perú.
-- Contacto: reservas@peruwonderstours.com · +51 941 598 840 (WhatsApp).
+Las siguientes políticas regulan la contratación de tours, excursiones, paquetes turísticos y servicios ofrecidos por PERU WONDERS TOURS.
 
-Esta política forma parte de los Términos y Condiciones. La aceptas antes de pagar, se guarda con tu
-reserva y te la enviamos en el correo de confirmación.
+## 1. Reservas y confirmaciones
+Todas las reservas están sujetas a disponibilidad de los servicios solicitados.
 
-## 1. Pagos y estado de tu reserva
+Para realizar una reserva, el cliente deberá proporcionar la información requerida y efectuar el pago correspondiente.
 
-1. **Adelanto:** al pagar el **50 %** del precio total, tu reserva queda **confirmada** y separamos
-   tus cupos.
-2. **Saldo:** el 50 % restante se paga hasta **7 días calendario antes** del inicio del primer
-   servicio. Te enviamos recordatorios, y el sitio te muestra la fecha límite exacta.
-3. **Pago total:** se paga el **100 %** al reservar en estos casos:
-   - si el servicio empieza en 7 días o menos;
-   - si incluye boletos nominativos que compramos a terceros al reservar: tren, ingreso a Machu
-     Picchu o sobrevuelo de las Líneas de Nazca.
-4. Con el pago del saldo, tu reserva queda **pagada**.
-5. **Si el saldo no se paga a tiempo:**
-   - te avisamos por correo y WhatsApp y te damos **48 horas** adicionales para pagar;
-   - si no se paga en ese plazo, la reserva se cancela y se aplica la tabla de la sección 2, contando
-     los días desde la fecha en que venció el saldo.
-6. **No cobramos recargos** por el medio de pago.
+La reserva se considerará confirmada una vez verificada la disponibilidad, recibido el pago requerido y enviada la confirmación oficial por correo electrónico.
 
-## 2. Si cancelas tu reserva
+La confirmación incluirá los servicios contratados, fechas, importe pagado, saldo pendiente y condiciones aplicables.
 
-**Cómo cancelar:** escríbenos a reservas@peruwonderstours.com o por WhatsApp al +51 941 598 840
-indicando tu **código de reserva**. Te confirmamos la recepción y el monto a devolver.
+Si no fuera posible confirmar la reserva, se ofrecerán alternativas al cliente o la devolución íntegra del importe abonado.
 
-**Cómo se cuentan los plazos:** son **días hábiles** (de lunes a viernes, sin feriados nacionales),
-desde el día en que recibimos tu solicitud hasta la fecha de inicio del primer servicio.
+## 2. Condiciones de pago
+Se requiere un adelanto del 50 % del precio total para confirmar la reserva.
 
-| Aviso antes del inicio del servicio | Te devolvemos |
-|---|---|
-| **20 días hábiles o más** | El **100 %** de lo pagado |
-| **De 8 a 19 días hábiles** | El **50 %** de lo pagado |
-| **Menos de 8 días hábiles** | No hay devolución |
-| No te presentas o no usas voluntariamente un servicio | No hay devolución de ese servicio |
+El saldo restante deberá abonarse hasta 15 días calendario antes del inicio del viaje.
 
-**Boletos de terceros ya emitidos:** los boletos de tren, de ingreso a Machu Picchu y del sobrevuelo
-de Nazca se compran con tu nombre y sus emisores no los devuelven.
+Las reservas realizadas con menos de 15 días de anticipación requerirán el pago completo.
 
-- Si ya los emitimos, su costo real **no es reembolsable**, cualquiera sea la fecha de tu
-  cancelación.
-- Te enviamos el sustento de ese costo y lo descontamos de la devolución.
-- La ficha de cada tour y el resumen de pago indican qué servicios incluyen estos boletos.
+Los pagos podrán realizarse en dólares estadounidenses (USD) o soles peruanos (PEN), mediante los medios de pago habilitados por la empresa.
 
-## 3. Cambios de fecha o de servicio
+Los precios incluirán los impuestos y cargos obligatorios aplicables. El tipo de cambio, cuando corresponda, será informado antes del pago.
 
-- Puedes hacer **un cambio de fecha sin penalidad** si lo pides con **7 días calendario o más** antes
-  del inicio, sujeto a disponibilidad. Solo pagas, si los hay, la **diferencia de tarifa** y lo que
-  cobren terceros por cambiar boletos ya emitidos.
-- Con menos de 7 días calendario, o a partir del segundo cambio, el cambio se trata como una
-  cancelación (sección 2) más una nueva reserva.
-- Algunos boletos nominativos ya emitidos no admiten cambios. Te lo diremos antes de confirmar el
-  cambio.
-- Para cambiar el nombre de un viajero vale la misma regla: si el servicio incluye boletos ya
-  emitidos, depende de que su emisor lo permita.
+Determinados servicios podrán requerir condiciones especiales de pago, las cuales serán comunicadas antes de contratar.
 
-## 4. Si nosotros cancelamos o cambiamos el servicio
+## 3. Incumplimiento del pago del saldo
+Si el cliente no efectúa el pago del saldo dentro del plazo establecido, PERU WONDERS TOURS se comunicará con él para regularizar la situación.
 
-Si cancelamos un servicio por causas que dependen de nosotros, o porque no se alcanzó el número
-mínimo de viajeros que indica la ficha, **tú eliges**:
+Si el incumplimiento persiste después de la notificación y del plazo adicional concedido, la reserva podrá ser cancelada, aplicándose las condiciones de cancelación correspondientes.
 
-- el **reembolso del 100 %** de lo pagado por ese servicio; o
-- **otra fecha u otro servicio** de valor equivalente. Si el nuevo cuesta menos, te devolvemos la
-  diferencia.
+## 4. Cancelaciones solicitadas por el cliente
+El cliente podrá solicitar la cancelación mediante correo electrónico, WhatsApp o los canales oficiales habilitados para la contratación.
 
-Si hacemos un cambio importante (de fecha, de itinerario o de categoría de hotel), te lo informamos
-antes y puedes elegir entre aceptarlo o cancelar con el reembolso total de lo pagado por ese servicio.
+Los plazos se calcularán en días calendario, según la fecha de recepción de la solicitud, considerando la hora oficial de Perú (UTC-5).
 
-## 5. Causas ajenas a ambas partes (fuerza mayor)
+Se aplicarán los siguientes límites máximos de penalización sobre el precio total del servicio contratado:
 
-Si el servicio no puede prestarse por causas que no dependen ni de ti ni de nosotros, tú eliges entre:
+| Anticipación al inicio del viaje | Penalización máxima |
+| --- | --- |
+| 31 días o más | 10 % |
+| Entre 16 y 30 días | 25 % |
+| Entre 8 y 15 días | 50 % |
+| Entre 3 y 7 días | 75 % |
+| 2 días o menos | Hasta el 100 % |
+| No presentación (No-show) | Hasta el 100 % |
 
-- **reprogramar sin penalidad** a otra fecha disponible; o
-- el **reembolso de la parte del servicio no prestada**, descontando solo los costos que los
-  terceros no devuelvan, y siempre con sustento.
+Las retenciones deberán ser razonables, proporcionales y justificadas por los costos y compromisos efectivamente asumidos. No se aplicarán penalizaciones superiores a los importes abonados conforme a esta política general.
 
-Estas causas incluyen:
+## 5. Servicios con condiciones especiales
+Algunos servicios pueden estar sujetos a restricciones particulares de modificación, cancelación y reembolso, entre ellos:
 
-- cierre de Machu Picchu u otros sitios por disposición de las autoridades;
-- huelgas, paros o bloqueos de vías;
-- desastres naturales o clima extremo que impida operar con seguridad;
-- emergencias sanitarias.
+- Entradas a Machu Picchu.
+- Permisos para el Camino Inca.
+- Boletos de tren.
+- Pasajes aéreos.
+- Reservas hoteleras con tarifas especiales.
+- Servicios contratados para fechas de alta demanda.
+- Otros servicios adquiridos anticipadamente.
 
-## 6. Cómo y cuándo te devolvemos el dinero
+Estas condiciones y sus posibles costos no recuperables serán informados expresamente antes del pago y deberán ser aceptados por el cliente.
 
-- Devolvemos por el **mismo medio de pago** que usaste y en la **misma moneda**. Si eso no es
-  posible (por ejemplo, una tarjeta cancelada), acordamos contigo otro medio a tu nombre.
-- Procesamos la devolución en un plazo máximo de **10 días hábiles** desde que la aprobamos.
-- El tiempo hasta que el dinero aparece en tu estado de cuenta depende de tu banco o del emisor de tu
-  tarjeta.
-- Emitimos la nota de crédito electrónica que corresponde.
+No se aplicarán cargos duplicados por un mismo concepto ni se limitarán los derechos reconocidos por la legislación aplicable.
 
-## 7. Reclamos
+## 6. Cambios y reprogramaciones
+El cliente podrá solicitar modificaciones en las fechas, itinerarios o servicios contratados.
 
-Si no estás conforme, puedes registrar un reclamo en nuestro **Libro de Reclamaciones virtual**
-(enlace al pie de todas las páginas). Te respondemos en un plazo máximo de **15 días hábiles**.
-Esto no te impide acudir al INDECOPI ni a otras vías que la ley te reconoce.
+Las modificaciones estarán sujetas a disponibilidad, condiciones de los proveedores y diferencias de precio debidamente informadas.
+
+Ningún costo adicional será aplicado sin la aceptación del cliente.
+
+## 7. Cancelaciones por parte de PERU WONDERS TOURS
+Si PERU WONDERS TOURS no pudiera prestar el servicio contratado, ofrecerá al cliente las alternativas correspondientes:
+
+- Reprogramación sin penalización por la cancelación.
+- Un servicio alternativo equivalente, previa aceptación del cliente.
+- Reembolso íntegro del importe pagado cuando el servicio sea cancelado en su totalidad.
+
+En caso de incumplimiento parcial, se reconocerá la devolución correspondiente a los servicios no prestados y los demás derechos que resulten aplicables.
+
+## 8. Fuerza mayor y circunstancias extraordinarias
+En caso de fenómenos meteorológicos extremos, desastres naturales, huelgas, manifestaciones, restricciones gubernamentales, cierre de atractivos turísticos u otras circunstancias extraordinarias que impidan la prestación del servicio, PERU WONDERS TOURS informará oportunamente al cliente.
+
+Se ofrecerán alternativas de reprogramación o devolución de los importes correspondientes a los servicios no prestados, de conformidad con la legislación vigente.
+
+La seguridad y el bienestar de nuestros viajeros serán nuestra prioridad.
+
+## 9. Procedimiento de reembolso
+Una vez determinado el importe a devolver, PERU WONDERS TOURS informará al cliente sobre el cálculo y los conceptos aplicables.
+
+Los reembolsos serán gestionados dentro de un plazo máximo de 15 días hábiles desde su determinación, salvo que corresponda legalmente un plazo menor.
+
+Siempre que sea posible, la devolución se realizará mediante el mismo medio y moneda utilizados para efectuar el pago.
+
+El tiempo de acreditación final podrá variar según la entidad bancaria o plataforma de pago.
+
+## 10. No presentación y abandono voluntario
+Cuando el cliente no se presente en la fecha y hora acordadas, o decida abandonar voluntariamente un tour ya iniciado, podrán aplicarse las condiciones de cancelación correspondientes a los servicios reservados y los gastos no recuperables justificados.
+
+Esta disposición no limita los derechos del cliente cuando exista un incumplimiento atribuible al proveedor.
+
+## 11. Documentación del viajero
+El cliente deberá proporcionar información correcta y mantener vigente la documentación necesaria para su viaje, incluyendo pasaporte, documento de identidad, visas y otros requisitos aplicables.
+
+PERU WONDERS TOURS proporcionará información sobre los requisitos específicos de los servicios contratados.
+
+## 12. Seguro de viaje
+Recomendamos contratar un seguro de viaje que incluya cobertura médica, accidentes, cancelaciones, interrupciones del viaje y evacuación de emergencia, especialmente para actividades de aventura y destinos de gran altitud.
+
+## 13. Atención al cliente y reclamaciones
+Para consultas, modificaciones, cancelaciones o solicitudes de reembolso, el cliente podrá comunicarse mediante nuestros canales oficiales.
+
+- **PERU WONDERS TOURS S.A.C.** · RUC 20616102339 · Puno, Perú.
+- Sitio web: [peruwonderstours.com](https://peruwonderstours.com)
+- Teléfono y WhatsApp: +51 941 598 840
+- Correo: reservas@peruwonderstours.com
+
+Los clientes también podrán presentar sus reclamaciones mediante nuestro [Libro de Reclamaciones Virtual](/es/libro-de-reclamaciones), sin perjuicio de su derecho a acudir al Indecopi.
+
+## 14. Aceptación de las políticas
+Antes de realizar el pago, el cliente tendrá acceso a estas políticas y a las condiciones particulares de los servicios contratados.
+
+La aceptación expresa quedará registrada durante el proceso de reserva.
+
+Estas políticas se interpretarán de conformidad con la legislación peruana y no implican la renuncia a los derechos legalmente reconocidos al consumidor.
+
+## Preguntas frecuentes
+
+### ¿Cuánto debo pagar para reservar un tour?
+Por lo general se requiere un adelanto del 50 % del precio total para confirmar tu reserva.
+
+### ¿Cuándo debo pagar el saldo?
+Hasta 15 días calendario antes del inicio de tu viaje. Si reservas con menos de 15 días de anticipación, se paga el 100 %.
+
+### ¿Puedo cancelar mi reserva?
+Sí. La penalidad depende de la anticipación con que lo solicites y de las condiciones especiales de tu reserva (sección 4 y sección 5).
+
+### ¿Qué pasa si la empresa cancela mi tour?
+Te ofreceremos reprogramar, un servicio alternativo equivalente o el reembolso, de acuerdo con la legislación aplicable (sección 7).
+
+### ¿Necesito un seguro de viaje?
+Te recomendamos contratar un seguro de viaje con cobertura amplia (sección 12).
+
+**Viaja con confianza. Descubre el Perú con nosotros.**

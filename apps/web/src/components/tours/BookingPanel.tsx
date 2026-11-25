@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, MessageCircle, ShieldCheck } from "lucide-react";
+import { Check, Mail, MessageCircle, ShieldCheck } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useId, useRef, useState } from "react";
 
@@ -44,7 +44,8 @@ export interface BookableTour {
   onlinePayments: boolean;
 }
 
-const BALANCE_DAYS = 7;
+/** PWT-LEG-001 (nov 2026): saldo hasta 15 días calendario antes; con menos días se paga el 100 %. */
+const BALANCE_DAYS = 15;
 const MAX_TRAVELERS = 20;
 
 /**
@@ -355,6 +356,19 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
         <ShieldCheck aria-hidden size={18} strokeWidth={1.5} className="mt-0.5 shrink-0" />
         {tour.onlinePayments ? t("trust") : t("trustRequest")}
       </p>
+      <ul className="mt-3 space-y-2 text-sm text-foreground-muted">
+        <li className="flex items-start gap-2">
+          <ShieldCheck aria-hidden size={18} strokeWidth={1.5} className="mt-0.5 shrink-0" />
+          {t("policyCancel")}
+        </li>
+        <li className="flex items-start gap-2">
+          <Mail aria-hidden size={18} strokeWidth={1.5} className="mt-0.5 shrink-0" />
+          {t("policyEmail")}
+        </li>
+      </ul>
+      <Link href="/politicas/condiciones-de-pago" target="_blank" className="pwt-link mt-2 inline-flex min-h-11 items-center text-sm">
+        {t("policyLink")}
+      </Link>
       <a
         href={whatsappHref(tourHelpMessage(wa, { title: tour.title, date: date || null, travelers: date ? travelers : null }))}
         target="_blank"

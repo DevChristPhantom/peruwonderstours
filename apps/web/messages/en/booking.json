@@ -34,5 +34,8 @@
   "depositTodayRequest": "Deposit on confirmation: <amount></amount> ({percent}%).",
   "depositTodayNoAmountRequest": "{percent}% deposit once availability is confirmed.",
   "fullPolicyRequest": "This tour is paid in full once the booking is confirmed.",
-  "closeDepartureRequest": "Departures less than {days} days away are paid in full on confirmation."
+  "closeDepartureRequest": "Departures less than {days} days away are paid in full on confirmation.",
+  "policyCancel": "Clear cancellation terms. Special ticket conditions may apply.",
+  "policyEmail": "Booking confirmation by email with your confirmed travel details.",
+  "policyLink": "Read our Booking & Cancellation Policy"
 }

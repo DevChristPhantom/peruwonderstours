@@ -220,7 +220,10 @@
     "depositTodayRequest": "Adelanto al confirmar: <amount></amount> ({percent}%).",
     "depositTodayNoAmountRequest": "Adelanto del {percent}% al confirmar la disponibilidad.",
     "fullPolicyRequest": "Este tour se paga completo al confirmar la reserva.",
-    "closeDepartureRequest": "Las salidas con menos de {days} días de anticipación se pagan completas al confirmar."
+    "closeDepartureRequest": "Las salidas con menos de {days} días de anticipación se pagan completas al confirmar.",
+    "policyCancel": "Condiciones de cancelación claras. Pueden aplicar condiciones especiales a entradas y boletos.",
+    "policyEmail": "Recibes la confirmación de tu reserva por correo electrónico.",
+    "policyLink": "Leer las Políticas de reserva y cancelación"
   },
   "calendar": {
     "prevMonth": "Mes anterior",
@@ -386,12 +389,12 @@
       "fullHelp": "Sin saldos pendientes. Recibes un solo comprobante.",
       "lockedOption": "Tu reserva {code} ya está guardada: completa el pago de {amount}.",
       "fullOnlyReasons": {
-        "departure_too_close": "Este pedido se paga completo porque la salida es en menos de 7 días.",
+        "departure_too_close": "Este pedido se paga completo porque la salida es en menos de 15 días.",
         "third_party_tickets": "Este pedido se paga completo porque incluye boletos de terceros (tren, ingreso a Machu Picchu o sobrevuelos).",
         "tour_override": "Este tour se paga completo al reservar.",
         "deposit_covers_total": "Este pedido se paga completo porque el adelanto cubriría casi todo el total."
       },
-      "fullOnly": "Este pedido se paga completo: incluye boletos de terceros o salidas en menos de 7 días.",
+      "fullOnly": "Este pedido se paga completo: incluye boletos de terceros o salidas en menos de 15 días.",
       "bookingTotal": "Total de la reserva",
       "deposit": "Adelanto",
       "payment": "Pago",
@@ -418,13 +421,13 @@
       "cardFeeNote": "Comisión de {percent} % sobre el monto a pagar",
       "contact": "Contacto:",
       "edit": "Editar",
-      "cancellationTitle": "Política de cancelación (resumen)",
-      "cancellation1": "Cancelaciones con al menos 20 días hábiles: se descuentan gastos de servicios ya emitidos.",
-      "cancellation2": "Boletos de tren, ingreso a Machu Picchu y sobrevuelos no son reembolsables una vez emitidos.",
-      "cancellation3": "Cancelaciones con pocos días o servicios no usados: sin devolución.",
+      "cancellationTitle": "Cancelación (resumen de la política)",
+      "cancellation1": "Penalidad máxima según la anticipación: 31 días o más, 10 %; de 16 a 30 días, 25 %; de 8 a 15 días, 50 %; de 3 a 7 días, 75 %; 2 días o menos o no presentación, hasta el 100 %.",
+      "cancellation2": "Entradas a Machu Picchu, permisos del Camino Inca, trenes, vuelos y hoteles con tarifa especial pueden tener condiciones propias; te las informamos antes del pago.",
+      "cancellation3": "Si cancelamos nosotros, te ofrecemos reprogramar, un servicio equivalente o el reembolso total.",
       "fullPolicy": "Ver política completa",
       "holdNote": "Al confirmar guardamos tus cupos 15 minutos mientras se procesa el pago.",
-      "terms": "Acepto los <terms>Términos y condiciones</terms> y la <payments>Política de pagos y cancelación</payments>, y declaro haber leído la <privacy>Política de privacidad</privacy>.",
+      "terms": "He leído y acepto las <payments>Políticas de reserva y cancelación</payments>, los <terms>Términos y condiciones</terms> y las condiciones especiales aplicables a mi reserva, y declaro haber leído la <privacy>Política de privacidad</privacy>.",
       "processing": "Procesando tu pago…",
       "secureNote": "Pago seguro · Recibirás tu comprobante electrónico por correo",
       "payHelp": "¿Problemas para pagar? Ayuda por WhatsApp",
@@ -872,7 +875,7 @@
     "tagline": "Agencia de viajes con oficina en Puno. Tours por el Lago Titicaca, Cusco, Machu Picchu, Arequipa y la costa sur del Perú.",
     "short": {
       "terms": "Términos",
-      "payments": "Pagos",
+      "payments": "Reserva y cancelación",
       "privacy": "Privacidad"
     },
     "complaintsBook": "Libro de Reclamaciones",
@@ -910,7 +913,7 @@
       "complaintStatus": "Consultar mi reclamo",
       "favorites": "Mis favoritos",
       "terms": "Términos y condiciones",
-      "payments": "Cancelación, cambios y reembolsos",
+      "payments": "Políticas de reserva y cancelación",
       "privacy": "Protección de datos personales",
       "cookies": "Política de cookies",
       "promotions": "Promociones y eventos",
@@ -1150,8 +1153,8 @@
         "description": "Cómo tratamos tus datos personales conforme a la Ley N.° 29733 y cómo ejercer tus derechos ARCO."
       },
       "payments": {
-        "title": "Cancelación, cambios y reembolsos",
-        "description": "Adelantos, saldos, medios de pago, cambios, cancelaciones y reembolsos de tus reservas."
+        "title": "Políticas de reserva, pago y cancelación",
+        "description": "Adelanto del 50 %, saldo hasta 15 días antes del viaje, cancelaciones, cambios y reembolsos de PERU WONDERS TOURS."
       },
       "cookies": {
         "title": "Política de cookies",
@@ -1385,7 +1388,7 @@
       "cusco": "Cusco está a 3 400 m s. n. m.: descansa el día de llegada, hidrátate y consulta a tu médico si tienes alguna condición cardiaca o respiratoria."
     },
     "policiesTitle": "Políticas de reserva y cancelación",
-    "policiesText": "Revisa los plazos de pago, cambios y reembolsos en nuestra <link>política de cancelación, cambios y reembolsos</link>.",
+    "policiesText": "Revisa los plazos de pago, cambios y reembolsos en nuestras <link>Políticas de reserva y cancelación</link>.",
     "faqTitle": "Preguntas frecuentes",
     "bookingAside": "Reserva",
     "related": "Tours relacionados",

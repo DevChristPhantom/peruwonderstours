@@ -65,10 +65,10 @@ export function formatCalendarDate(date: string, locale: MailLocale = 'es'): str
   return formatLimaDate(new Date(`${date}T17:00:00Z`), locale);
 }
 
-const FOOTER: Record<MailLocale, { support: string; complaints: string; privacy: string }> = {
-  pt: { support: 'Atendimento', complaints: 'Livro de Reclamações', privacy: 'Política de privacidade' },
-  es: { support: 'Atención', complaints: 'Libro de Reclamaciones', privacy: 'Política de privacidad' },
-  en: { support: 'Customer care', complaints: 'Complaints Book (Libro de Reclamaciones)', privacy: 'Privacy policy' },
+const FOOTER: Record<MailLocale, { support: string; complaints: string; privacy: string; booking: string; bookingPath: string }> = {
+  pt: { support: 'Atendimento', complaints: 'Livro de Reclamações', privacy: 'Política de privacidade', booking: 'Políticas de reserva e cancelamento', bookingPath: 'politicas-de-reserva-e-cancelamento' },
+  es: { support: 'Atención', complaints: 'Libro de Reclamaciones', privacy: 'Política de privacidad', booking: 'Políticas de reserva y cancelación', bookingPath: 'politicas-de-reserva-y-cancelacion' },
+  en: { support: 'Customer care', complaints: 'Complaints Book (Libro de Reclamaciones)', privacy: 'Privacy policy', booking: 'Booking & Cancellation Policy', bookingPath: 'booking-and-cancellation-policy' },
 };
 
 function layout(params: { title: string; preheader: string; bodyHtml: string; brand: BrandInfo; footerExtraHtml?: string; locale?: MailLocale }): string {
@@ -90,6 +90,7 @@ ${params.bodyHtml}
 ${escapeHtml(brand.providerLegalName)} · RUC ${escapeHtml(brand.providerRuc)}<br>
 ${f.support}: <a href="mailto:${escapeHtml(brand.contactEmail)}" style="color:#7a2e1d">${escapeHtml(brand.contactEmail)}</a> · ${escapeHtml(brand.contactPhone)}<br>
 <a href="${escapeHtml(brand.publicWebBaseUrl)}/${locale}/${locale === 'pt' ? 'livro-de-reclamacoes' : 'libro-de-reclamaciones'}" style="color:#7a2e1d">${f.complaints}</a> ·
+<a href="${escapeHtml(brand.publicWebBaseUrl)}/${locale}/${f.bookingPath}" style="color:#7a2e1d">${f.booking}</a> ·
 <a href="${escapeHtml(brand.publicWebBaseUrl)}/${locale}/politicas/${locale === 'pt' ? 'protecao-de-dados-pessoais' : 'proteccion-de-datos-personales'}" style="color:#7a2e1d">${f.privacy}</a>
 ${params.footerExtraHtml ?? ''}
 </td></tr></table></td></tr></table></body></html>`;
@@ -102,6 +103,7 @@ function textFooter(brand: BrandInfo, extra?: string, locale: MailLocale = 'es')
     `${brand.providerLegalName} · RUC ${brand.providerRuc}`,
     `${f.support}: ${brand.contactEmail} · ${brand.contactPhone}`,
     `${f.complaints}: ${brand.publicWebBaseUrl}/${locale}/${locale === 'pt' ? 'livro-de-reclamacoes' : 'libro-de-reclamaciones'}`,
+    `${f.booking}: ${brand.publicWebBaseUrl}/${locale}/${f.bookingPath}`,
     `${f.privacy}: ${brand.publicWebBaseUrl}/${locale}/politicas/${locale === 'pt' ? 'protecao-de-dados-pessoais' : 'proteccion-de-datos-personales'}`,
     ...(extra ? [extra] : []),
   ].join('\n');

@@ -35,6 +35,15 @@ const PORTUGUESE_DOCUMENTS = {
   esnna: process.env.PWT_LEGAL_PT_ESNNA,
 };
 
+/** Documentos con versión propia en inglés (los demás se muestran en español con aviso). */
+const ENGLISH_DOCUMENTS: Partial<Record<keyof typeof RAW_DOCUMENTS, string | undefined>> = {
+  cancelacion: process.env.PWT_LEGAL_EN_CANCELACION,
+};
+
+export function hasEnglishVersion(key: LegalDocumentKey): boolean {
+  return !!ENGLISH_DOCUMENTS[key];
+}
+
 export const LEGAL_DOCUMENTS = {
   terminos: "terminos-y-condiciones.md",
   privacidad: "politica-de-privacidad.md",
@@ -56,7 +65,7 @@ export interface LegalDocument {
 }
 
 export function loadLegalDocument(key: LegalDocumentKey, locale: Locale = "es"): LegalDocument {
-  const source = (locale === "pt" ? PORTUGUESE_DOCUMENTS : RAW_DOCUMENTS)[key];
+  const source = locale === "pt" ? PORTUGUESE_DOCUMENTS[key] : locale === "en" ? (ENGLISH_DOCUMENTS[key] ?? RAW_DOCUMENTS[key]) : RAW_DOCUMENTS[key];
   if (!source) throw new Error(`No se encontró docs/legal/${LEGAL_DOCUMENTS[key]} (borrador legal) al compilar.`);
   const lines = source.replace(/\r\n/g, "\n").split("\n");
   const h1 = lines.map((l, i) => (/^#\s/.test(l) ? i : -1)).filter((i) => i >= 0);

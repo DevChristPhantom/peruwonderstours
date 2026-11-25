@@ -23,7 +23,7 @@ Se uma condição não constar do anúncio nem da página do pacote, ela não se
 
 ## 4. Eventos organizados por terceiros
 
-Muitas festas e eventos são organizados por terceiros, que definem datas, horários e programação. Publicamos as datas anunciadas por esses organizadores e avisaremos se mudarem. Se um evento for cancelado ou alterado de modo que a viagem perca sua finalidade, aplica-se a seção «Cancelamento ou alterações por parte da Peru Wonders Tours» da Política de Cancelamento, Alterações e Reembolsos: você poderá escolher entre mudar a data ou o serviço, ou receber o reembolso correspondente.
+Muitas festas e eventos são organizados por terceiros, que definem datas, horários e programação. Publicamos as datas anunciadas por esses organizadores e avisaremos se mudarem. Se um evento for cancelado ou alterado de modo que a viagem perca sua finalidade, aplica-se a seção «Cancelamentos por parte da PERU WONDERS TOURS» das Políticas de Reserva, Pagamento e Cancelamento: você poderá escolher entre mudar a data ou o serviço, ou receber o reembolso correspondente.
 
 ## 5. Imagens e descrições
 

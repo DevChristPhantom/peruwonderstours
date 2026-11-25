@@ -66,7 +66,7 @@ ${toursEs.map(tourLine).join("\n")}
 
 ## Policies
 - [Terms and conditions](${absoluteUrl("/es/politicas/terminos-y-condiciones")})
-- [Payment and cancellation](${absoluteUrl("/es/politicas/condiciones-de-pago")})
+- [Booking and cancellation policy](${absoluteUrl("/en/booking-and-cancellation-policy")})
 - [Privacy](${absoluteUrl("/es/politicas/proteccion-de-datos-personales")})
 - [Complaints book (Libro de Reclamaciones)](${absoluteUrl("/es/libro-de-reclamaciones")})
 

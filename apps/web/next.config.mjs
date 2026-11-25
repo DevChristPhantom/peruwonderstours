@@ -32,6 +32,12 @@ function buildLegacyRedirects() {
   }
   // Categorías del blog viejo (/es/blog/categorias/<slug>) → índice del blog.
   rules.push({ source: "/es/blog/categorias/:slug", destination: "/es/blog", statusCode: 301 });
+  // Nov 2026: la política de pagos y cancelación pasó a su URL propia (PWT-LEG-001).
+  rules.push(
+    { source: "/es/politicas/condiciones-de-pago", destination: "/es/politicas-de-reserva-y-cancelacion", statusCode: 301 },
+    { source: "/en/policies/payment-conditions", destination: "/en/booking-and-cancellation-policy", statusCode: 301 },
+    { source: "/pt/politicas/condicoes-de-pagamento", destination: "/pt/politicas-de-reserva-e-cancelamento", statusCode: 301 },
+  );
   return rules;
 }
 
@@ -59,6 +65,7 @@ function legalDocumentsEnv() {
     PWT_LEGAL_PT_PROMOCIONES: read("pt/politica-de-promociones.md"),
     PWT_LEGAL_PT_RESENAS: read("pt/politica-de-resenas.md"),
     PWT_LEGAL_PT_ESNNA: read("pt/prevencion-esnna.md"),
+    PWT_LEGAL_EN_CANCELACION: read("en/politica-de-cancelacion-y-reembolso.md"),
   };
 }
 

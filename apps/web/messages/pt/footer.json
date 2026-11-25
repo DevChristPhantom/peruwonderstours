@@ -3,7 +3,7 @@
   "tagline": "Agência de viagens com escritório em Puno. Passeios pelo Lago Titicaca, Cusco, Machu Picchu, Arequipa e a costa sul do Peru.",
   "short": {
     "terms": "Termos",
-    "payments": "Pagamentos",
+    "payments": "Reserva e cancelamento",
     "privacy": "Privacidade"
   },
   "complaintsBook": "Livro de Reclamações",
@@ -41,7 +41,7 @@
     "complaintStatus": "Consultar minha reclamação",
     "favorites": "Meus favoritos",
     "terms": "Termos e condições",
-    "payments": "Cancelamento, alterações e reembolsos",
+    "payments": "Políticas de reserva e cancelamento",
     "privacy": "Proteção de dados pessoais",
     "cookies": "Política de cookies",
     "promotions": "Promoções e eventos",

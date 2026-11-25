@@ -213,12 +213,12 @@ export class EnvironmentVariables {
   @Type(() => Number)
   @IsInt()
   @Min(0)
-  BALANCE_DUE_DAYS_BEFORE_SERVICE = 7;
+  BALANCE_DUE_DAYS_BEFORE_SERVICE = 15;
 
   @Type(() => Number)
   @IsInt()
   @Min(0)
-  FULL_PAYMENT_WITHIN_DAYS = 7;
+  FULL_PAYMENT_WITHIN_DAYS = 15;
 
   @Transform(toBool)
   @IsBoolean()
@@ -246,10 +246,10 @@ export class EnvironmentVariables {
   IDEMPOTENCY_TTL_HOURS = 24;
 
   @IsString()
-  TERMS_VERSION = '1.0-2026-11-20';
+  TERMS_VERSION = '1.1-2026-11-25';
 
   @IsString()
-  CANCELLATION_POLICY_VERSION = '1.0-2026-11-20';
+  CANCELLATION_POLICY_VERSION = '2.0-2026-11-25';
 
   @IsOptional()
   @IsString()

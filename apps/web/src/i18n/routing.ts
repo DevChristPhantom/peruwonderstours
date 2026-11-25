@@ -39,7 +39,7 @@ export const routing = defineRouting({
     "/libro-de-reclamaciones": { es: "/libro-de-reclamaciones", en: "/complaints-book", pt: "/livro-de-reclamacoes" },
     "/libro-de-reclamaciones/consulta": { es: "/libro-de-reclamaciones/consulta", en: "/complaints-book/status", pt: "/livro-de-reclamacoes/consulta" },
     "/politicas/terminos-y-condiciones": { es: "/politicas/terminos-y-condiciones", en: "/policies/terms-and-conditions", pt: "/politicas/termos-e-condicoes" },
-    "/politicas/condiciones-de-pago": { es: "/politicas/condiciones-de-pago", en: "/policies/payment-conditions", pt: "/politicas/condicoes-de-pagamento" },
+    "/politicas/condiciones-de-pago": { es: "/politicas-de-reserva-y-cancelacion", en: "/booking-and-cancellation-policy", pt: "/politicas-de-reserva-e-cancelamento" },
     "/politicas/proteccion-de-datos-personales": {
       es: "/politicas/proteccion-de-datos-personales",
       en: "/policies/personal-data-protection",

@@ -1,6 +1,6 @@
 # Termos e Condições de Uso e Contratação
 
-Última atualização: 20 de novembro de 2026 · Versão 1.0
+Última atualização: 25 de novembro de 2026 · Versão 1.1
 
 Tradução da versão em espanhol, que prevalece em caso de divergência. Estes termos regulam o uso do
 site peruwonderstours.com e a contratação dos passeios e pacotes turísticos que oferecemos nele.
@@ -21,8 +21,8 @@ Agências de Viagens e Turismo (D.S. 005-2020-MINCETUR).
 
 ## 2. Aceitação
 
-Você pode navegar no site livremente. Ao reservar, você aceita estes Termos e a **Política de
-Cancelamento, Alterações e Reembolsos**, e declara ter lido a **Política de Privacidade**. Antes de
+Você pode navegar no site livremente. Ao reservar, você aceita estes Termos e as **Políticas de
+Reserva, Pagamento e Cancelamento**, e declara ter lido a **Política de Privacidade**. Antes de
 pagar, você vê o resumo da sua reserva com o preço total e estas condições. Guardamos a versão que
 você aceitou junto com a sua reserva e a enviamos na confirmação.
 
@@ -62,8 +62,8 @@ você o quanto antes por e-mail ou WhatsApp.
 
 - **Regra geral:** paga-se um **sinal de 50 %** para confirmar a reserva e o saldo antes da viagem.
   Alguns serviços são pagos integralmente na reserva (saídas próximas ou bilhetes nominais de
-  terceiros). Os prazos exatos e suas exceções estão na **Política de Cancelamento, Alterações e
-  Reembolsos**.
+  terceiros). Os prazos exatos (saldo até 15 dias corridos antes da viagem) e suas exceções estão nas
+  **Políticas de Reserva, Pagamento e Cancelamento**.
 - **Formas de pagamento:** as exibidas na etapa de pagamento. Quando o pagamento é com cartão, ele é
   processado na plataforma segura do gateway; **não recebemos nem guardamos os dados completos do seu
   cartão**.
