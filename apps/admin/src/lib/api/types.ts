@@ -124,6 +124,16 @@ export interface RefundTier {
 }
 
 export interface CancellationQuote {
+  policyKind?: "calendar-cap";
+  policyVersion?: string;
+  calendarDaysBefore?: number;
+  receivedDate?: string;
+  firstServiceDate?: string;
+  total?: Money;
+  refunded?: Money;
+  maximumRetentionPercent?: number;
+  requiresExplicitDecision?: boolean;
+  calendarTiers?: { minDaysBefore: number; maxRetentionPercent: number }[];
   businessDaysBefore: number;
   tier: RefundTier;
   refundAmount: Money;

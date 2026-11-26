@@ -35,6 +35,7 @@ export interface CheckoutInput {
   paymentOption: PaymentOption;
   customer: { email: string; firstName: string; lastName: string; country?: string | null; phone?: string };
   acceptTerms: boolean;
+  acceptedBookingPolicyVersion?: string;
   acceptPrivacyPolicy: boolean;
   /** Consentimientos opcionales de marketing por canal (Ley 29733; nunca obligatorios). */
   marketingEmailOptIn?: boolean;
@@ -65,7 +66,7 @@ const CHECKOUT_SCOPE = 'checkout';
 export interface CheckoutPrivacyRecorder {
   recordCheckout(
     repos: TransactionalRepositories,
-    params: { customerId: string; bookingId: string; email: string; locale: Locale; marketingEmail: boolean; marketingWhatsapp: boolean; meta: { ip: string | null; userAgent: string | null }; now: Date },
+    params: { cancellationPolicyVersion?: string; customerId: string; bookingId: string; email: string; locale: Locale; marketingEmail: boolean; marketingWhatsapp: boolean; meta: { ip: string | null; userAgent: string | null }; now: Date },
   ): Promise<void>;
 }
 
@@ -80,6 +81,7 @@ export class BookingUseCases {
     private readonly settings: BookingSettings,
     private readonly privacy: CheckoutPrivacyRecorder | null = null,
     private readonly cipher: PiiCipher | null = null,
+    private readonly bookingPolicy: { current(locale: Locale): Promise<{ version: string; body: string }> } | null = null,
   ) {}
 
   /**
@@ -104,6 +106,7 @@ export class BookingUseCases {
       ...(input.customer.phone !== undefined ? { phone: input.customer.phone } : {}),
       notes: input.customerNotes ?? null,
       expectedTotalAmount: input.expectedTotalAmount,
+      acceptedBookingPolicyVersion: input.acceptedBookingPolicyVersion,
     });
 
     return this.unitOfWork.run(async (repos) => {
@@ -140,6 +143,11 @@ export class BookingUseCases {
           expected: input.expectedTotalAmount,
           current: total.amount,
         });
+      }
+
+      const acceptedPolicy = this.bookingPolicy ? await this.bookingPolicy.current(input.locale ?? cart.locale) : null;
+      if (acceptedPolicy && input.acceptedBookingPolicyVersion !== acceptedPolicy.version) {
+        throw new ConflictError('booking-policy-changed', 'Las condiciones han cambiado. Revisa y acepta la versión actual antes de reservar.');
       }
 
       const plan = calculatePaymentPlan({
@@ -195,7 +203,15 @@ export class BookingUseCases {
         plan,
         items,
         lastServiceDate,
-        cancellationPolicyVersion: this.settings.cancellationPolicyVersion,
+        cancellationPolicyVersion: acceptedPolicy?.version ?? this.settings.cancellationPolicyVersion,
+        policyAcceptanceSnapshot: acceptedPolicy ? {
+          version: acceptedPolicy.version, body: acceptedPolicy.body, acceptedAt: now.toISOString(), locale: input.locale ?? cart.locale,
+          services: cart.items.map((item) => {
+            const tour = details.tours.get(item.tourId);
+            const translation = tour?.translations.find(t => t.locale === (input.locale ?? cart.locale)) ?? tour?.translations.find(t => t.locale === 'es');
+            return { tourId: item.tourId, policies: translation?.policies ?? null, itinerary: translation?.itinerary ?? [] };
+          }),
+        } : null,
         termsVersion: this.settings.termsVersion,
         customerNotes: input.customerNotes?.slice(0, 2000) ?? null,
         accessTokenHash: access.tokenHash,
@@ -234,6 +250,7 @@ export class BookingUseCases {
         bookingId: booking.id,
         email: customer.email,
         locale: input.locale ?? cart.locale,
+        cancellationPolicyVersion: acceptedPolicy?.version,
         marketingEmail: input.marketingEmailOptIn ?? false,
         marketingWhatsapp: input.marketingWhatsappOptIn ?? false,
         meta: input.meta ?? { ip: null, userAgent: null },

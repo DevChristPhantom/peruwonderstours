@@ -1,4 +1,4 @@
-import { minDate, startOfDayInLima, type CalendarDate } from '../../../shared/domain/calendar-date.js';
+import { minDate, startOfDayInLima, toLimaCalendarDate, type CalendarDate } from '../../../shared/domain/calendar-date.js';
 import { BusinessRuleError, ValidationError } from '../../../shared/domain/domain-error.js';
 import { Money } from '../../../shared/domain/money.js';
 
@@ -10,6 +10,8 @@ export type PaymentOption = 'deposit' | 'full';
  * configuran por variables de entorno (ver config/environment.ts).
  */
 export interface PaymentPlanPolicy {
+  /** Draft policy: calendar days in Lima, with the balance due at the end of its due date. */
+  calendarDays?: boolean;
   /** % de adelanto por defecto (RN-01: 50). */
   defaultDepositPercent: number;
   /** El saldo vence N días antes del primer servicio (RN-02: 7). */
@@ -125,7 +127,8 @@ export function evaluatePaymentOptions(params: {
   });
 
   const fullOnlyFrom = firstServiceStart.getTime() - policy.fullPaymentWithinDays * MS_PER_DAY;
-  if (now.getTime() >= fullOnlyFrom) return forcedFull('departure_too_close');
+  const daysBefore = (firstServiceStart.getTime() - startOfDayInLima(toLimaCalendarDate(now)).getTime()) / MS_PER_DAY;
+  if (policy.calendarDays ? daysBefore < policy.fullPaymentWithinDays : now.getTime() >= fullOnlyFrom) return forcedFull('departure_too_close');
 
   if (policy.thirdPartyTicketsRequireFull && items.some((i) => i.includesThirdPartyTickets)) {
     return forcedFull('third_party_tickets');
@@ -151,7 +154,7 @@ export function evaluatePaymentOptions(params: {
       total,
       deposit,
       balance,
-      balanceDueAt: new Date(firstServiceStart.getTime() - policy.balanceDueDaysBeforeService * MS_PER_DAY),
+      balanceDueAt: new Date(firstServiceStart.getTime() - policy.balanceDueDaysBeforeService * MS_PER_DAY + (policy.calendarDays ? MS_PER_DAY - 1 : 0)),
       firstServiceDate,
       fullPaymentReason: null,
     },

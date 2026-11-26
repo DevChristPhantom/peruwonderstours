@@ -1,3 +1,4 @@
+import { BookingPolicyModule } from './modules/booking-policy/booking-policy.module.js';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -37,6 +38,7 @@ import { throttlerOptions } from './shared/interface/throttling.js';
     CatalogModule,
     CartModule,
     BookingModule,
+    BookingPolicyModule,
     PaymentsModule,
     ComplaintsModule,
     NotificationsModule,

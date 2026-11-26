@@ -160,6 +160,8 @@ export function settingsFromEnvironment(env: EnvironmentVariables): AppSettings 
         : undefined,
     booking: {
       policy: {
+        // PWT-LEG-001: días calendario de Lima; con MENOS de 15 días se paga el 100 %.
+        calendarDays: true,
         defaultDepositPercent: env.DEPOSIT_DEFAULT_PERCENT,
         balanceDueDaysBeforeService: env.BALANCE_DUE_DAYS_BEFORE_SERVICE,
         fullPaymentWithinDays: env.FULL_PAYMENT_WITHIN_DAYS,

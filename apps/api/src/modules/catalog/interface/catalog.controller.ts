@@ -66,6 +66,7 @@ function presentDetail(detail: TourDetail, locale: Locale, urls: MediaUrlResolve
     languages: tour.languages,
     bookingCutoffHours: tour.bookingCutoffHours,
     requiresTravelerDocument: tour.requiresTravelerDocument,
+    depositPercentOverride: tour.depositPercentOverride,
     usesInventory: tour.usesInventory,
     alternateLocales: tour.translations.map((t) => ({ locale: t.locale, slug: t.slug })),
     media: tour.media.map((m) => ({ url: urls.url(m.url), kind: m.kind, alt: (locale === 'en' ? (m.altEn ?? m.altEs) : m.altEs) ?? null, isCover: m.isCover })),

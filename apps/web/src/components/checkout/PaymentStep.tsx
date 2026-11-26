@@ -191,6 +191,7 @@ export function PaymentStep({
         },
         notes: buildNotes(lines, contact),
         acceptTerms: values.terms,
+        acceptedBookingPolicyVersion: quote.bookingPolicy?.version,
         // La casilla final incluye el acuse de lectura de la Política de privacidad (informativo, no consentimiento).
         acceptPrivacy: values.terms,
         expectedTotalCents: quote.totalCents,

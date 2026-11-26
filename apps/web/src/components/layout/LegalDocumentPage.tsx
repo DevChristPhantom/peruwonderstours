@@ -2,8 +2,9 @@ import { FileWarning, Languages } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import type { Locale } from "@/i18n/routing";
-import { hasEnglishVersion, loadLegalDocument, type LegalDocumentKey } from "@/lib/legal/documents";
-import { Markdown } from "@/lib/legal/markdown";
+import { getBookingPolicy } from "@/lib/api/booking-policy";
+import { hasEnglishVersion, loadLegalDocument, type LegalDocument, type LegalDocumentKey } from "@/lib/legal/documents";
+import { Markdown, parseMarkdown } from "@/lib/legal/markdown";
 import type { Crumb } from "@/lib/seo/json-ld";
 
 import { Breadcrumbs } from "./Breadcrumbs";
@@ -13,7 +14,12 @@ import { Breadcrumbs } from "./Breadcrumbs";
  * legales existen solo en español: en inglés se avisa y el documento se marca `lang="es"`.
  */
 export async function LegalDocumentPage({ doc, crumbs, locale }: { doc: LegalDocumentKey; crumbs: Crumb[]; locale: Locale }) {
-  const legal = loadLegalDocument(doc, locale);
+  let legal: LegalDocument = loadLegalDocument(doc, locale);
+  // PWT-LEG-001: si el panel guardó una revisión (r1, r2…), se publica esa en lugar del texto base.
+  if (doc === "cancelacion") {
+    const revision = await getBookingPolicy(locale);
+    if (revision && revision.revision > 0) legal = { title: revision.title, draft: false, draftVersion: null, blocks: parseMarkdown(revision.body) };
+  }
   const english = locale === "en" && hasEnglishVersion(doc);
   const documentLanguage = locale === "pt" ? "pt-BR" : english ? "en" : "es-PE";
   const t = await getTranslations("legal");

@@ -56,6 +56,7 @@ export type RefundInput = z.input<typeof refundSchema>;
 export const cancelSchema = z
   .object({
     reason: z.string().trim().min(5, "Mínimo 5 caracteres.").max(500, "Máximo 500 caracteres."),
+    cancellationReceivedDate: z.string().optional().default(""),
     override: z.boolean().default(false),
     overrideAmount: z.string().optional().default(""),
     overrideReason: z.string().trim().max(500).optional().default(""),
@@ -68,6 +69,6 @@ export const cancelSchema = z
       else overrideAmountCents = cents;
       if (v.overrideReason.length < 5) ctx.addIssue({ code: "custom", path: ["overrideReason"], message: "Explica por qué el reembolso es distinto al de la política (mín. 5)." });
     }
-    return { reason: v.reason, override: v.override, overrideAmountCents, overrideReason: v.overrideReason };
+    return { reason: v.reason, cancellationReceivedDate: v.cancellationReceivedDate, override: v.override, overrideAmountCents, overrideReason: v.overrideReason };
   });
 export type CancelInput = z.input<typeof cancelSchema>;

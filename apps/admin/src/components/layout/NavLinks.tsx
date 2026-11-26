@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import {
   BookOpenCheck,
+  FileText,
   CalendarDays,
   FolderTree,
   Gauge,
@@ -43,6 +44,7 @@ export type NavKey =
   | "testimonios"
   | "contacto"
   | "reclamos"
+  | "politicas-reserva"
   | "privacidad"
   | "auditoria"
   | "usuarios"
@@ -63,6 +65,7 @@ const ICONS: Record<NavKey, LucideIcon> = {
   testimonios: MessageSquareQuote,
   contacto: Inbox,
   reclamos: BookOpenCheck,
+  "politicas-reserva": FileText,
   privacidad: ShieldCheck,
   auditoria: ScrollText,
   usuarios: Users,
@@ -79,7 +82,7 @@ export interface NavItem {
 const NAV_GROUP: Record<NavKey, string> = {
   tablero: "Operación", reservas: "Operación", "pagos-manuales": "Operación", reclamos: "Operación", contacto: "Operación",
   tours: "Catálogo", precios: "Catálogo", salidas: "Catálogo", destinos: "Catálogo", categorias: "Catálogo",
-  blog: "Contenido", testimonios: "Contenido", banners: "Contenido", eventos: "Contenido",
+  blog: "Contenido", testimonios: "Contenido", banners: "Contenido", eventos: "Contenido", "politicas-reserva": "Contenido",
   privacidad: "Administración", auditoria: "Administración", usuarios: "Administración", cuenta: "Administración",
 };
 

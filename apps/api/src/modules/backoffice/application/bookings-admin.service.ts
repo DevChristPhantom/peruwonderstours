@@ -11,7 +11,7 @@ import type { Booking } from '../../booking/domain/booking.js';
 import type { BookingStatus } from '../../booking/domain/booking-status.js';
 import type { StaffActor } from '../../identity/application/staff-auth.use-cases.js';
 import { MAIL_EVENTS, outboxMessage } from '../../notifications/domain/mail-events.js';
-import { quoteCancellationRefund, type RefundTier } from '../domain/cancellation-policy.js';
+import { quoteCancellationRefund, quoteCalendarCancellation, validateCalendarCancellationDecision, usesCalendarCancellationPolicy, CALENDAR_CANCELLATION_TIERS, type RefundTier } from '../domain/cancellation-policy.js';
 import { pageArgs, type AdminDatabase, type AdminTx, type PageQuery } from '../infrastructure/admin-database.js';
 
 export interface BookingListFilters extends PageQuery {
@@ -180,7 +180,7 @@ export class BookingsAdminService {
   }
 
   /** Cancela con cálculo de reembolso (política configurable) y libera el cupo. */
-  cancel(actor: StaffActor, meta: RequestMeta, code: string, input: { reason: string; refundAmountOverride?: bigint; overrideReason?: string }) {
+  cancel(actor: StaffActor, meta: RequestMeta, code: string, input: { reason: string; refundAmountOverride?: bigint; overrideReason?: string; cancellationReceivedDate?: string }) {
     if (input.refundAmountOverride !== undefined && !input.overrideReason?.trim()) {
       throw new ValidationError('validation-failed', 'Indica el motivo del reembolso distinto al de la política.', {
         errors: [{ field: 'overrideReason', messages: ['Obligatorio si se envía refundAmountOverride.'] }],
@@ -191,6 +191,16 @@ export class BookingsAdminService {
       if (!CANCELLABLE.includes(booking.status)) throw new ConflictError('booking-not-cancellable', `Una reserva en estado "${booking.status}" no se puede cancelar.`);
       const snapshot = booking.toSnapshot();
       const holidays = await this.holidaysUntil(ctx, snapshot.firstServiceDate);
+      const calendarPolicy = usesCalendarCancellationPolicy(snapshot.cancellationPolicyVersion);
+      const receivedDate = input.cancellationReceivedDate;
+      if (calendarPolicy && (!receivedDate || !/^\d{4}-\d{2}-\d{2}$/.test(receivedDate) || receivedDate > toLimaCalendarDate(ctx.now) || receivedDate < toLimaCalendarDate(snapshot.createdAt))) {
+        throw new ValidationError('invalid-cancellation-received-date', 'Indica la fecha de recepción en Perú, no futura ni anterior a la reserva.');
+      }
+      const calendarDecision = calendarPolicy ? validateCalendarCancellationDecision({
+        totalAmount: snapshot.totalAmount, paidAmount: snapshot.paidAmount, refundedAmount: snapshot.refundedAmount,
+        receivedDate: receivedDate!, firstServiceDate: snapshot.firstServiceDate,
+        refundAmount: input.refundAmountOverride, justification: input.overrideReason,
+      }) : null;
       const quote = quoteCancellationRefund({
         paidAmount: snapshot.paidAmount,
         refundedAmount: snapshot.refundedAmount,
@@ -199,9 +209,11 @@ export class BookingsAdminService {
         holidays,
         tiers: this.refundTiers,
       });
-      const refundDue = input.refundAmountOverride ?? quote.refundAmount;
+      const refundDue = calendarDecision?.refundAmount ?? input.refundAmountOverride ?? quote.refundAmount;
       const released = await this.lifecycle.releaseInventoryForCancellation(ctx.repos, booking, ctx.now);
-      booking.cancelByStaff(input.reason.trim(), ctx.now, Money.of(refundDue, booking.currency));
+      const savedReason = calendarPolicy ? `${input.reason.trim()} | Recepción Perú: ${receivedDate}. Justificación: ${input.overrideReason!.trim()}` : input.reason.trim();
+      if (savedReason.length > 500) throw new ValidationError('cancellation-reason-too-long', 'Resume el motivo y la justificación: máximo 440 caracteres entre ambos.');
+      booking.cancelByStaff(savedReason, ctx.now, Money.of(refundDue, booking.currency));
       await ctx.repos.bookings.save(booking);
       await ctx.repos.outbox.add(
         outboxMessage(this.ids, {
@@ -220,11 +232,14 @@ export class BookingsAdminService {
         after: auditJson({
           // H-06: sin textos libres (motivos) en audit_log; el motivo queda en bookings.cancellation_reason.
           hasReason: input.reason.length > 0,
-          policyRefund: quote.refundAmount,
+          policyRefund: calendarDecision?.minimumRefundAmount ?? quote.refundAmount,
+          policyVersion: snapshot.cancellationPolicyVersion,
+          cancellationReceivedDate: calendarPolicy ? receivedDate : null,
+          calendarDecision,
           refundDue,
           override: input.refundAmountOverride !== undefined ? { amount: input.refundAmountOverride } : null,
-          businessDaysBefore: quote.businessDaysBefore,
-          tier: quote.tier,
+          businessDaysBefore: calendarPolicy ? null : quote.businessDaysBefore,
+          tier: calendarDecision?.tier ?? quote.tier,
           releasedSeats: released,
         }),
       });
@@ -232,7 +247,7 @@ export class BookingsAdminService {
         code: booking.code,
         status: booking.status,
         releasedSeats: released,
-        quote: { ...quote, currency: booking.currency },
+        quote: { ...(calendarDecision ?? quote), currency: booking.currency },
         refundDue: { amount: refundDue, currency: booking.currency },
         pendingRefund: { amount: refundDue, currency: booking.currency },
       };
@@ -414,9 +429,23 @@ export class BookingsAdminService {
     return new Set(rows.map((r) => calendarDateFromUtcDate(r.holidayDate)));
   }
 
-  private async quote(row: { paidAmount: bigint; refundedAmount: bigint; firstServiceDate: Date; currency: string }) {
+  private async quote(row: { paidAmount: bigint; refundedAmount: bigint; firstServiceDate: Date; currency: string; totalAmount: bigint; cancellationPolicyVersion: string }) {
     const first = calendarDateFromUtcDate(row.firstServiceDate);
     const today = toLimaCalendarDate(this.db.now());
+    if (usesCalendarCancellationPolicy(row.cancellationPolicyVersion)) {
+      const q = quoteCalendarCancellation({ totalAmount: row.totalAmount, paidAmount: row.paidAmount, refundedAmount: row.refundedAmount, receivedDate: today, firstServiceDate: first });
+      const money = (amount: bigint) => ({ amount, currency: row.currency });
+      return {
+        policyKind: 'calendar-cap' as const, policyVersion: row.cancellationPolicyVersion,
+        calendarDaysBefore: q.calendarDaysBefore, receivedDate: today, firstServiceDate: first,
+        total: money(row.totalAmount), refunded: money(row.refundedAmount),
+        maximumRetentionPercent: q.tier.maxRetentionPercent, requiresExplicitDecision: true,
+        businessDaysBefore: 0, tier: { minBusinessDaysBefore: 0, refundPercent: 0 }, tiers: [],
+        refundAmount: money(q.minimumRefundAmount), retainedAmount: money(q.maxRetainedAmount), paid: money(row.paidAmount),
+        calendarTiers: CALENDAR_CANCELLATION_TIERS,
+        policyNote: 'Referencia con fecha de hoy. Calcula por la fecha real de recepción en Perú. El límite no es un cargo automático: la retención debe justificarse por costos reales, sin duplicar cargos. Las cancelaciones de la empresa requieren la devolución correspondiente.',
+      };
+    }
     const holidays = await this.db.holidays(today, first > today ? first : addDays(today, 1));
     const q = quoteCancellationRefund({ paidAmount: row.paidAmount, refundedAmount: row.refundedAmount, today, firstServiceDate: first, holidays, tiers: this.refundTiers });
     return {

@@ -78,6 +78,7 @@ export async function cancelBookingAction(code: string, input: CancelInput) {
       method: "POST",
       body: {
         reason: v.reason,
+        cancellationReceivedDate: v.cancellationReceivedDate || undefined,
         ...(v.override ? { refundAmountOverride: v.overrideAmountCents, overrideReason: v.overrideReason } : {}),
       },
     });

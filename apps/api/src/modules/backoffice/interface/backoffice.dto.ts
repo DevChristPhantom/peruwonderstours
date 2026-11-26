@@ -360,6 +360,7 @@ export class BookingSearchDto extends BookingListQueryDto {
 }
 
 export class CancelBookingDto {
+  @ApiPropertyOptional({ description: "Fecha real de recepción en Perú (YYYY-MM-DD)." }) @IsOptional() @IsString() @Matches(/^\d{4}-\d{2}-\d{2}$/) cancellationReceivedDate?: string;
   @ApiProperty({ example: 'Solicitud del cliente por correo del 2026-10-08' }) @Transform(trim) @IsString() @Length(5, 500) reason: string;
   @ApiPropertyOptional({ description: 'Reembolso distinto al de la política (céntimos). Requiere overrideReason.' })
   @IsOptional()

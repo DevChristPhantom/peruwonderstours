@@ -851,6 +851,7 @@ model Booking {
   firstServiceDate DateTime    @map("first_service_date") @db.Date
   lastServiceDate  DateTime    @map("last_service_date") @db.Date
   /// Política de cancelación y T&C aceptadas (versión congelada).
+  policyAcceptanceSnapshot Json? @map("policy_acceptance_snapshot")
   cancellationPolicyVersion String @map("cancellation_policy_version") @db.VarChar(40)
   termsVersion   String        @map("terms_version") @db.VarChar(40)
   customerNotes  String?       @map("customer_notes") @db.VarChar(2000)
@@ -1784,4 +1785,14 @@ model BusinessHoliday {
 
   @@unique([holidayDate, scope])
   @@map("business_holidays")
+}
+
+/// Append-only general policy revisions; r0 is the bundled source.
+model BookingPolicyRevision {
+  revision Int @id
+  version String @unique @db.VarChar(40)
+  translations Json
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  createdBy String @map("created_by") @db.Uuid
+  @@map("booking_policy_revisions")
 }

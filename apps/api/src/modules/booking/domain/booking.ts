@@ -38,7 +38,13 @@ export interface BookingStatusChange {
   at: Date;
 }
 
+export interface PolicyAcceptanceSnapshot {
+  version: string; acceptedAt: string; locale: string; body: string;
+  services: Array<{ tourId: string; policies: string | null; itinerary: Array<{ day: number; title: string | null; description: string }> }>;
+}
+
 export interface BookingSnapshot {
+  policyAcceptanceSnapshot?: PolicyAcceptanceSnapshot | null;
   id: string;
   code: string;
   customerId: string;
@@ -131,6 +137,7 @@ export class Booking {
     customerNotes: string | null;
     /** SHA-256 (hex) del token de acceso entregado al comprador. */
     accessTokenHash?: string | null;
+    policyAcceptanceSnapshot?: PolicyAcceptanceSnapshot | null;
     now: Date;
   }): Booking {
     const accessTokenHash = params.accessTokenHash ?? null;
@@ -164,6 +171,7 @@ export class Booking {
       lastServiceDate: params.lastServiceDate,
       cancellationPolicyVersion: params.cancellationPolicyVersion,
       termsVersion: params.termsVersion,
+      policyAcceptanceSnapshot: params.policyAcceptanceSnapshot ?? null,
       customerNotes: params.customerNotes,
       accessTokenHash,
       confirmedAt: null,

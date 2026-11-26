@@ -1,3 +1,5 @@
+import { ValidationError } from '../../../shared/domain/domain-error.js';
+import { assertCalendarDate } from '../../../shared/domain/calendar-date.js';
 import type { CalendarDate } from '../../../shared/domain/calendar-date.js';
 import { countBusinessDaysBetween } from '../../complaints/domain/business-days.js';
 
@@ -66,4 +68,48 @@ export function quoteCancellationRefund(params: {
   const entitled = (params.paidAmount * BigInt(tier.refundPercent)) / 100n;
   const refundAmount = entitled > params.refundedAmount ? entitled - params.refundedAmount : 0n;
   return { businessDaysBefore, tier, refundAmount, retainedAmount: params.paidAmount - entitled };
+}
+
+/** Only bookings that accepted this policy family use calendar-day caps. */
+export function usesCalendarCancellationPolicy(version: string): boolean {
+  return version === '2.0-2026-11-25' || version.startsWith('2.0-2026-11-25-r');
+}
+export const CALENDAR_CANCELLATION_TIERS = [
+  { minDaysBefore: 31, maxRetentionPercent: 10 },
+  { minDaysBefore: 16, maxRetentionPercent: 25 },
+  { minDaysBefore: 8, maxRetentionPercent: 50 },
+  { minDaysBefore: 3, maxRetentionPercent: 75 },
+  { minDaysBefore: 0, maxRetentionPercent: 100 },
+] as const;
+/** Ceiling only, never an automatic charge. Floor cannot exceed the published cap. */
+export function quoteCalendarCancellation(params: {
+  totalAmount: bigint; paidAmount: bigint; refundedAmount: bigint;
+  receivedDate: CalendarDate; firstServiceDate: CalendarDate;
+}) {
+  assertCalendarDate(params.receivedDate, 'cancellationReceivedDate');
+  assertCalendarDate(params.firstServiceDate, 'firstServiceDate');
+  if (params.totalAmount < 0n || params.paidAmount < 0n || params.refundedAmount < 0n || params.refundedAmount > params.paidAmount) {
+    throw new ValidationError('invalid-cancellation-amounts', 'Los importes de la reserva no son válidos.');
+  }
+  const calendarDaysBefore = Math.max(0, Math.round((Date.parse(params.firstServiceDate) - Date.parse(params.receivedDate)) / 86_400_000));
+  const tier = CALENDAR_CANCELLATION_TIERS.find((t) => calendarDaysBefore >= t.minDaysBefore)!;
+  const percentageCap = params.totalAmount * BigInt(tier.maxRetentionPercent) / 100n;
+  const remainingPaid = params.paidAmount - params.refundedAmount;
+  const maxRetainedAmount = percentageCap < remainingPaid ? percentageCap : remainingPaid;
+  return { calendarDaysBefore, tier, maxRetainedAmount, minimumRefundAmount: remainingPaid - maxRetainedAmount, maximumRefundAmount: remainingPaid };
+}
+/** Operator must enter the justified refund, including zero explicitly. */
+export function validateCalendarCancellationDecision(params: Parameters<typeof quoteCalendarCancellation>[0] & {
+  refundAmount?: bigint; justification?: string;
+}) {
+  const quote = quoteCalendarCancellation(params);
+  if (params.refundAmount === undefined || !params.justification || params.justification.trim().length < 5) {
+    throw new ValidationError('cancellation-decision-required', 'Indica el reembolso y justifica los costos reales de la retención (o la devolución íntegra).');
+  }
+  if (params.refundAmount < quote.minimumRefundAmount || params.refundAmount > quote.maximumRefundAmount) {
+    throw new ValidationError('cancellation-refund-out-of-bounds', 'El reembolso debe respetar el límite máximo de retención y no superar el saldo abonado sin devolver.', {
+      minimumRefundAmount: quote.minimumRefundAmount.toString(), maximumRefundAmount: quote.maximumRefundAmount.toString(),
+    });
+  }
+  return { ...quote, refundAmount: params.refundAmount, retainedAmount: quote.maximumRefundAmount - params.refundAmount };
 }

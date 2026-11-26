@@ -90,6 +90,12 @@ export class CheckoutDto {
   @Equals(true, { message: 'Debes aceptar los términos y condiciones.' })
   acceptTerms: boolean;
 
+  @ApiPropertyOptional({ maxLength: 40 })
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  acceptedBookingPolicyVersion?: string;
+
   @ApiProperty({ description: 'Aceptación de la política de privacidad, Ley 29733 (obligatoria).' })
   @IsBoolean()
   @Equals(true, { message: 'Debes aceptar la política de privacidad.' })
@@ -215,6 +221,7 @@ export class BookingsController {
       paymentOption: body.paymentOption,
       customer: body.customer,
       acceptTerms: body.acceptTerms,
+      acceptedBookingPolicyVersion: body.acceptedBookingPolicyVersion,
       acceptPrivacyPolicy: body.acceptPrivacyPolicy,
       marketingEmailOptIn: body.marketingEmailOptIn ?? false,
       marketingWhatsappOptIn: body.marketingWhatsappOptIn ?? false,

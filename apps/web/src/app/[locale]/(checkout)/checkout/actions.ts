@@ -2,6 +2,7 @@
 
 import { revalidateTag } from "next/cache";
 
+import { getBookingPolicy } from "@/lib/api/booking-policy";
 import { checkout } from "@/lib/api/bookings";
 import { toUserError } from "@/lib/api/problems";
 import { requestLocale } from "@/lib/i18n/request-locale";
@@ -45,7 +46,8 @@ export async function prepareCheckoutAction(raw: unknown): Promise<ActionResult<
   const parsed = prepareInputSchema.safeParse(raw);
   if (!parsed.success) return { ok: false, error: toUserError("validation-failed", undefined, locale) };
   try {
-    return { ok: true, data: await prepareQuote(parsed.data, locale) };
+    const [quote, policy] = await Promise.all([prepareQuote(parsed.data, locale), getBookingPolicy(locale, { fresh: true })]);
+    return { ok: true, data: policy ? { ...quote, bookingPolicy: { version: policy.version } } : quote };
   } catch (error) {
     return fail(error, locale);
   }
@@ -98,6 +100,7 @@ export async function placeBookingAction(raw: unknown): Promise<ActionResult<Pla
         },
         customerNotes: input.notes?.slice(0, 2000),
         expectedTotalAmount: input.expectedTotalCents,
+        acceptedBookingPolicyVersion: input.acceptedBookingPolicyVersion,
         // Los correos de confirmación salen en el idioma en que se hizo la reserva.
         locale,
         marketingEmailOptIn: input.contact.marketingEmail,

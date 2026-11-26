@@ -81,6 +81,7 @@ export interface CheckoutInput {
   paymentOption: PaymentOption;
   customer: { email: string; firstName: string; lastName: string; country?: string; phone?: string };
   customerNotes?: string;
+  acceptedBookingPolicyVersion?: string;
   expectedTotalAmount?: number;
   /** Idioma de la reserva y de sus correos de confirmación. */
   locale?: Locale;
@@ -106,6 +107,7 @@ export async function checkout(input: CheckoutInput): Promise<CheckoutResult> {
       paymentOption: input.paymentOption,
       customer: input.customer,
       acceptTerms: true,
+      acceptedBookingPolicyVersion: input.acceptedBookingPolicyVersion,
       acceptPrivacyPolicy: true,
       customerNotes: input.customerNotes || undefined,
       expectedTotalAmount: input.expectedTotalAmount,

@@ -1,3 +1,4 @@
+import { BookingPolicyService } from '../booking-policy/booking-policy.service.js';
 import { Module } from '@nestjs/common';
 import { APP_SETTINGS, type AppSettings } from '../../config/app-settings.js';
 import { CLOCK, ID_GENERATOR, PII_CIPHER, UNIT_OF_WORK } from '../../shared/application/tokens.js';
@@ -16,9 +17,9 @@ import { PrivacyUseCases } from '../privacy/application/privacy.use-cases.js';
   providers: [
     {
       provide: BookingUseCases,
-      inject: [UNIT_OF_WORK, CLOCK, ID_GENERATOR, CartUseCases, APP_SETTINGS, PrivacyUseCases, PII_CIPHER],
-      useFactory: (uow: UnitOfWork, clock: Clock, ids: IdGenerator, carts: CartUseCases, settings: AppSettings, privacy: PrivacyUseCases, cipher: PiiCipher) =>
-        new BookingUseCases(uow, clock, ids, carts, settings.booking, privacy, cipher),
+      inject: [UNIT_OF_WORK, CLOCK, ID_GENERATOR, CartUseCases, APP_SETTINGS, PrivacyUseCases, PII_CIPHER, BookingPolicyService],
+      useFactory: (uow: UnitOfWork, clock: Clock, ids: IdGenerator, carts: CartUseCases, settings: AppSettings, privacy: PrivacyUseCases, cipher: PiiCipher, policies: BookingPolicyService) =>
+        new BookingUseCases(uow, clock, ids, carts, settings.booking, privacy, cipher, policies),
     },
   ],
   exports: [BookingUseCases],

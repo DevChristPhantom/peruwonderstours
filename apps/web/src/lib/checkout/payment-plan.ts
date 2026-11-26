@@ -18,6 +18,11 @@ export interface PaymentPlanConfig {
 
 export const DEFAULT_PLAN_CONFIG: PaymentPlanConfig = { balanceDaysBeforeDeparture: 15 };
 
+/** PWT-LEG-001: el 100 % se exige cuando faltan MENOS de `limit` días calendario (con 15 exactos aún vale el adelanto). */
+export function requiresFullPaymentSoon(days: number, limit = 15): boolean {
+  return days < limit;
+}
+
 export type FullPaymentReason = "option" | "policy" | "close-departure";
 
 export interface LinePlan {
@@ -83,7 +88,7 @@ function planLine(
   } else if (line.paymentPolicy.depositPercent >= 100) {
     percentNow = 100;
     fullPaymentReason = "policy";
-  } else if (daysToDeparture <= config.balanceDaysBeforeDeparture) {
+  } else if (requiresFullPaymentSoon(daysToDeparture, config.balanceDaysBeforeDeparture)) {
     // RN-13: si la salida cae dentro del plazo del saldo, solo se ofrece 100 %.
     percentNow = 100;
     fullPaymentReason = "close-departure";

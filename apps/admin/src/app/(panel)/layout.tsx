@@ -24,6 +24,7 @@ const NAV: (NavItem & { perm?: Permission })[] = [
   { key: "banners", href: "/banners", label: "Banners de inicio", perm: "tours:read" },
   { key: "eventos", href: "/eventos", label: "Eventos y promociones", perm: "content:read" },
   { key: "testimonios", href: "/testimonios", label: "Testimonios", perm: "content:read" },
+  { key: "politicas-reserva", href: "/politicas-reserva", label: "Políticas de reserva", perm: "content:read" },
   { key: "privacidad", href: "/privacidad", label: "Protección de datos", perm: "privacy:read" },
   { key: "auditoria", href: "/auditoria", label: "Auditoría", perm: "audit:read" },
   { key: "usuarios", href: "/usuarios", label: "Usuarios", perm: "users:manage" },

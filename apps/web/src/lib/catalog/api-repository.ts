@@ -81,6 +81,7 @@ interface ApiTourDetail extends ApiTourCard {
   seo: { title: string; description: string };
   maxPax: number | null;
   requiresTravelerDocument: boolean;
+  depositPercentOverride?: number | null;
   media: { url: string; kind: "image" | "video"; alt: string | null; isCover: boolean }[];
   category: { id: string; slug: string } | null;
   destinations: { id: string; slug: string; isPrimary: boolean }[];
@@ -252,7 +253,8 @@ function pricingOf(priceFrom: ApiMoney | null, rates: ApiTourDetail["rates"] = [
   };
 }
 
-function policyOf(categorySlugs: string[], requiresTravelerDocument?: boolean): PaymentPolicy {
+function policyOf(categorySlugs: string[], requiresTravelerDocument?: boolean, override?: number | null): PaymentPolicy {
+  if (override != null) return { depositPercent: override, fullPaymentReason: null };
   if (requiresTravelerDocument) return { depositPercent: 100, fullPaymentReason: "third-party-tickets" };
   return derivePaymentPolicy(categorySlugs);
 }
@@ -311,7 +313,7 @@ function toTour(detail: ApiTourDetail, entry: CardEntry, taxonomy: Taxonomy, loc
     ...summary,
     pricing: pricingOf(detail.priceFrom, detail.rates),
     foreignPricing: usdDetail ? pricingOf(usdDetail.priceFrom, usdDetail.rates) : summary.foreignPricing,
-    paymentPolicy: policyOf(summary.categorySlugs, detail.requiresTravelerDocument),
+    paymentPolicy: policyOf(summary.categorySlugs, detail.requiresTravelerDocument, detail.depositPercentOverride),
     translatedLocales: detail.alternateLocales?.length ? detail.alternateLocales.map((a) => a.locale) : undefined,
     metaTitle: detail.seo.title,
     metaDescription: cleanSeedText(detail.seo.description) ?? summary.excerpt,

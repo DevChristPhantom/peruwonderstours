@@ -142,7 +142,7 @@ export class PrivacyUseCases {
    */
   async recordCheckout(
     repos: TransactionalRepositories,
-    params: { customerId: string; bookingId: string; email: string; locale: Locale; marketingEmail: boolean; marketingWhatsapp: boolean; meta: ConsentMeta; now: Date },
+    params: { cancellationPolicyVersion?: string; customerId: string; bookingId: string; email: string; locale: Locale; marketingEmail: boolean; marketingWhatsapp: boolean; meta: ConsentMeta; now: Date },
   ): Promise<void> {
     const hash = this.subjectHash(params.email);
     const ip = auditIp(params.meta.ip);
@@ -150,7 +150,7 @@ export class PrivacyUseCases {
     const documents: Array<[LegalDocument, string]> = [
       ['privacy_policy_ack', this.settings.privacyNoticeVersion],
       ['terms_and_conditions', this.settings.termsVersion],
-      ['cancellation_policy', this.settings.cancellationPolicyVersion],
+      ['cancellation_policy', params.cancellationPolicyVersion ?? this.settings.cancellationPolicyVersion],
     ];
     for (const [document, version] of documents) {
       await repos.legalAcceptances.insert({

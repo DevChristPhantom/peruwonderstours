@@ -11,7 +11,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { localePath } from "@/i18n/paths";
 import { cartLineId, travelerCount, type Travelers } from "@/lib/cart/types";
 import type { CatalogImage, PaymentPolicy, TourPricing } from "@/lib/catalog/types";
-import { lineTotalCents, percentOfCentsCeil } from "@/lib/checkout/payment-plan";
+import { lineTotalCents, percentOfCentsCeil, requiresFullPaymentSoon } from "@/lib/checkout/payment-plan";
 import { addDays, daysBetween } from "@/lib/format";
 import { describeTravelers } from "@/lib/i18n/units";
 import { pricingFor, usePriceResidency, type PriceResidency } from "@/lib/pricing/residency";
@@ -98,7 +98,7 @@ export function BookingPanel({ tour, anchorId = "reservar" }: { tour: BookableTo
       : base;
   const total = lineTotalCents(pricing, travelers);
   const fullByPolicy = tour.paymentPolicy.depositPercent >= 100;
-  const closeDeparture = !!(date && today && daysBetween(today, date) <= BALANCE_DAYS);
+  const closeDeparture = !!(date && today && requiresFullPaymentSoon(daysBetween(today, date), BALANCE_DAYS));
   const percentNow = fullByPolicy || closeDeparture ? 100 : tour.paymentPolicy.depositPercent;
   const deposit = total !== null ? percentOfCentsCeil(total, percentNow) : null;
   const inCart = date ? lines.some((l) => l.id === cartLineId(tour.slug, date)) : false;

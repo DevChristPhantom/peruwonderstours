@@ -49,6 +49,7 @@ export const placeInputSchema = z.object({
     marketingWhatsapp: z.boolean().default(false),
   }),
   notes: z.string().max(2000).optional(),
+  acceptedBookingPolicyVersion: z.string().trim().min(1).max(80).optional(),
   acceptTerms: z.literal(true),
   acceptPrivacy: z.literal(true),
   /** Total mostrado en la cotización (céntimos): si la API calcula otro → "el precio cambió". */
@@ -87,6 +88,8 @@ export interface QuoteIssue {
 }
 
 export interface CheckoutQuote {
+  /** Versión de las Políticas de reserva que se muestran y se aceptan en este pago. */
+  bookingPolicy?: { version: string };
   currency: Currency;
   totalCents: number;
   lines: QuoteLine[];

@@ -3,7 +3,7 @@ import type { PrismaTx } from '../../../persistence/prisma/prisma-client.js';
 import { calendarDateFromUtcDate, calendarDateToUtcDate } from '../../../shared/domain/calendar-date.js';
 import { ConcurrencyError } from '../../../shared/domain/domain-error.js';
 import { assertCurrencyCode } from '../../../shared/domain/money.js';
-import { Booking } from '../domain/booking.js';
+import { Booking, type PolicyAcceptanceSnapshot } from '../domain/booking.js';
 import { formatBookingCode, type BookingCodeGenerator, type BookingRepository } from '../domain/booking.repository.js';
 
 const BOOKING_INCLUDE = { items: { include: { lines: true }, orderBy: { createdAt: 'asc' } } } satisfies Prisma.BookingInclude;
@@ -34,6 +34,7 @@ function mapBooking(row: BookingRow): Booking {
     lastServiceDate: calendarDateFromUtcDate(row.lastServiceDate),
     cancellationPolicyVersion: row.cancellationPolicyVersion,
     termsVersion: row.termsVersion,
+    policyAcceptanceSnapshot: row.policyAcceptanceSnapshot as unknown as PolicyAcceptanceSnapshot | null,
     customerNotes: row.customerNotes,
     accessTokenHash: row.accessTokenHash,
     confirmedAt: row.confirmedAt,
@@ -147,6 +148,7 @@ export class PrismaBookingRepository implements BookingRepository {
         lastServiceDate: calendarDateToUtcDate(s.lastServiceDate),
         cancellationPolicyVersion: s.cancellationPolicyVersion,
         termsVersion: s.termsVersion,
+        ...(s.policyAcceptanceSnapshot ? { policyAcceptanceSnapshot: s.policyAcceptanceSnapshot as unknown as Prisma.InputJsonValue } : {}),
         customerNotes: s.customerNotes,
         createdAt: s.createdAt,
         ...mutable,

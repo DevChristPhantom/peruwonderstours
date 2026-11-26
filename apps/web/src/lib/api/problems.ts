@@ -29,6 +29,7 @@ const MESSAGES: Record<string, [UserErrorKind, string, string]> = {
   "minor-without-adult": ["validation", "Los niños deben viajar acompañados de al menos un adulto.", "Children must travel with at least one adult."],
   "invalid-pax-quantity": ["validation", "Revisa la cantidad de viajeros.", "Check the number of travelers."],
   // Precio
+  "booking-policy-changed": ["price-changed", "Actualizamos las Políticas de reserva y cancelación. Revísalas y vuelve a aceptarlas para continuar.", "We updated our Booking & Cancellation Policy. Please review and accept it again to continue."],
   "total-changed": ["price-changed", "El precio de tu reserva cambió. Revisa el nuevo total antes de pagar.", "The price of your booking changed. Check the new total before paying."],
   "cart-has-issues": ["price-changed", "Algunos tours de tu carrito cambiaron de precio o ya no tienen cupo. Revísalos antes de pagar.", "Some tours in your cart changed price or are sold out. Review them before paying."],
   "rate-not-available": ["validation", "Este tour aún no tiene precio para reservar en línea. Consúltalo por WhatsApp.", "This tour does not have an online price yet. Ask us on WhatsApp."],
@@ -86,6 +87,7 @@ const PORTUGUESE_MESSAGES: Record<string, string> = {
   "below-min-pax": "Este passeio exige um número mínimo maior de viajantes.",
   "minor-without-adult": "As crianças devem viajar acompanhadas de pelo menos um adulto.",
   "invalid-pax-quantity": "Confira o número de viajantes.",
+  "booking-policy-changed": "Atualizamos as Políticas de reserva e cancelamento. Revise e aceite novamente para continuar.",
   "total-changed": "O preço da sua reserva mudou. Confira o novo total antes de pagar.",
   "cart-has-issues": "Alguns passeios do seu carrinho mudaram de preço ou não têm mais vagas. Confira antes de pagar.",
   "rate-not-available": "Este passeio ainda não tem preço para reserva on-line. Consulte pelo WhatsApp.",

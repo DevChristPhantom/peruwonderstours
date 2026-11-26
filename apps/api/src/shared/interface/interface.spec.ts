@@ -96,7 +96,7 @@ describe('Validación de entorno', () => {
     expect(env).toMatchObject({ PORT: 4100, DATA_SOURCE: 'seed', DEMO_PRICING: false, HOLD_TTL_MINUTES: 20, DEPOSIT_DEFAULT_PERCENT: 50 });
     const settings = settingsFromEnvironment(env);
     expect(settings.cart.ttlMinutes).toBe(7 * 24 * 60);
-    expect(settings.booking.policy).toEqual({ defaultDepositPercent: 50, balanceDueDaysBeforeService: 15, fullPaymentWithinDays: 15, thirdPartyTicketsRequireFull: true });
+    expect(settings.booking.policy).toEqual({ calendarDays: true, defaultDepositPercent: 50, balanceDueDaysBeforeService: 15, fullPaymentWithinDays: 15, thirdPartyTicketsRequireFull: true });
   });
 
   it('falla rápido con datos inválidos o inseguros', () => {

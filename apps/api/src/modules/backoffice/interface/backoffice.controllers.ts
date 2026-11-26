@@ -392,6 +392,7 @@ export class BookingsAdminController {
         reason: body.reason,
         refundAmountOverride: body.refundAmountOverride !== undefined ? BigInt(body.refundAmountOverride) : undefined,
         overrideReason: body.overrideReason,
+        cancellationReceivedDate: body.cancellationReceivedDate,
       }),
     };
   }

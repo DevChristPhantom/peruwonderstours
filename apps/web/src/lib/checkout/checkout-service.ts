@@ -38,7 +38,7 @@ export class CheckoutFailure extends Error {
 export function failureFrom(error: unknown, locale: Locale = "es"): CheckoutFailure {
   if (error instanceof CheckoutFailure) return error;
   if (error instanceof ApiError) {
-    const requote = ["total-changed", "cart-has-issues", "sold-out"].includes(error.code);
+    const requote = ["total-changed", "cart-has-issues", "sold-out", "booking-policy-changed"].includes(error.code);
     return new CheckoutFailure(toUserError(error.code, error.status < 500 ? error.problem?.detail : undefined, locale), { requote });
   }
   console.error("[checkout] error inesperado", error);
