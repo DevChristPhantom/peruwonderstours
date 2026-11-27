@@ -15,13 +15,15 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/politica
 }
 
 /** Texto de docs/legal (borrador de compliance-peru-analyst) con aviso visible de BORRADOR. */
-export default async function PaymentConditionsPage({ params }: PageProps<"/[locale]/politicas/condiciones-de-pago">) {
+export default async function PaymentConditionsPage({ params, searchParams }: PageProps<"/[locale]/politicas/condiciones-de-pago">) {
   const locale = (await params).locale as Locale;
   setRequestLocale(locale);
+  const { version } = await searchParams;
   const [t, tc] = await Promise.all([getTranslations("legal.pages.payments"), getTranslations("common")]);
   return (
     <LegalDocumentPage
       doc="cancelacion"
+      version={typeof version === "string" ? version : undefined}
       locale={locale}
       crumbs={[
         { name: tc("home"), path: localePath(locale, "/") },

@@ -132,6 +132,21 @@ describe('Plantillas en inglés y enlaces mágicos (Sprint 3)', () => {
     expect(bookingVoucherEmail({ ...data, locale: 'es' }, BRAND, 'voucher').subject).toBe('Voucher de tu reserva PWT-2026-000009');
   });
 
+  it('shows the booked itinerary, special conditions and accepted revision in both formats', () => {
+    const acceptedPolicyUrl = 'https://pwt.test/en/booking-and-cancellation-policy?version=2.0-2026-11-25-r2';
+    const mail = bookingVoucherEmail({
+      ...data,
+      acceptedPolicyUrl,
+      serviceDetails: [{ title: 'Sacred Valley', itinerary: [{ day: 1, title: 'Pisac', description: 'Visit <Pisac>' }], policies: 'Train tickets cannot be transferred.' }],
+    }, BRAND, 'confirmation');
+    expect(mail.html).toContain('Visit &lt;Pisac&gt;');
+    expect(mail.text).toContain('Day 1 · Pisac · Visit <Pisac>');
+    for (const body of [mail.html, mail.text]) {
+      expect(body).toContain('Train tickets cannot be transferred.');
+      expect(body).toContain(acceptedPolicyUrl);
+    }
+  });
+
   it('enlace de acceso, login de cliente y contacto', () => {
     const access = bookingAccessLinkEmail({ code: data.code, customerName: 'Sam', linkUrl: 'https://pwt.test/en/reserva/acceso?token=t', ttlMinutes: 30, locale: 'en' }, BRAND);
     expect(access.text).toContain('expires in 30 minutes');

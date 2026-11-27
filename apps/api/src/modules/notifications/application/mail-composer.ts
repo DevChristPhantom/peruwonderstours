@@ -201,6 +201,12 @@ export class MailComposer {
     const customer = await repos.customers.findById(s.customerId);
     if (!customer) return { kind: 'skip', reason: 'cliente inexistente' };
     const base = this.ctx.brand.publicWebBaseUrl;
+    const accepted = s.policyAcceptanceSnapshot;
+    const policyPath = {
+      es: 'politicas-de-reserva-y-cancelacion',
+      en: 'booking-and-cancellation-policy',
+      pt: 'politicas-de-reserva-e-cancelamento',
+    }[s.locale];
     const data: BookingMailData = {
       code: s.code,
       customerName: customer.firstName,
@@ -211,6 +217,12 @@ export class MailComposer {
       paid: { amount: s.paidAmount, currency: s.currency },
       balance: { amount: s.totalAmount - s.paidAmount, currency: s.currency },
       balanceDueAt: s.balanceDueAt,
+      acceptedPolicyUrl: accepted ? `${base}/${s.locale}/${policyPath}?version=${encodeURIComponent(accepted.version)}` : undefined,
+      serviceDetails: accepted?.services.map((service) => ({
+        title: s.items.find((item) => item.tourId === service.tourId)?.tourTitle ?? '',
+        itinerary: service.itinerary,
+        policies: service.policies,
+      })),
       manageUrl: `${base}/${s.locale}/reserva`,
       linkTtlHours: this.ctx.links.emailTtlHours,
       unsubscribeUrl: await this.ctx.unsubscribeUrl(repos, customer.email, s.locale),

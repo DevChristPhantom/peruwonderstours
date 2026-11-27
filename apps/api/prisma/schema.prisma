@@ -1794,5 +1794,6 @@ model BookingPolicyRevision {
   translations Json
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   createdBy String @map("created_by") @db.Uuid
+  isDraft Boolean @default(false) @map("is_draft")
   @@map("booking_policy_revisions")
 }

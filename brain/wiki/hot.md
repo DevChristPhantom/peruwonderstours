@@ -192,3 +192,5 @@ tags:
 Validación del logo Nov15: ESLint focalizado OK; builds web270 y admin30 rutas OK; revisión independiente estática sin bloqueos.
 
 - 2026-11-15: Corrección tras feedback visual: cabecera usa adaptación horizontal transparente clara del logo oficial, 240px escritorio/190px móvil; logo íntegro conservado en pie/admin/checkout. Evita tarjeta blanca y microtexto ilegible.
+
+- PWT-LEG-001: el correo de confirmación y el voucher usan el itinerario y las condiciones guardadas con la reserva y enlazan a la revisión aceptada. El panel separa guardar borrador de publicar; el borrador no alimenta el checkout. Cambios locales pendientes de despliegue. Ver [[decisions/ADR-politicas-borradores-y-confirmacion]].

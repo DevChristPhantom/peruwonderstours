@@ -49,7 +49,7 @@ export function organizationJsonLd(about?: { description: string; slogan: string
     ...(SITE.legal.businessName ? { legalName: SITE.legal.businessName } : {}),
     ...(SITE.legal.ruc ? { taxID: SITE.legal.ruc } : {}),
     url: SITE.url,
-    logo: absoluteUrl('/brand/peruwonderstours-logo-official-20261115.webp'),
+    logo: absoluteUrl('/brand/peruwonderstours-logo-circular.webp'),
     ...(SITE.legal.email ? { email: SITE.legal.email } : {}),
     telephone: SITE.whatsapp.display.replace(/[^+\d]/g, ''),
     ...(SITE.legal.address ? { address: { '@type': 'PostalAddress', streetAddress: SITE.legal.address, addressLocality: 'Puno', addressCountry: 'PE' } } : {}),

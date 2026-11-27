@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { FileWarning, Languages } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
@@ -13,12 +14,13 @@ import { Breadcrumbs } from "./Breadcrumbs";
  * Página legal publicada desde `docs/legal/*.md`, con aviso de BORRADOR siempre visible. Los textos
  * legales existen solo en español: en inglés se avisa y el documento se marca `lang="es"`.
  */
-export async function LegalDocumentPage({ doc, crumbs, locale }: { doc: LegalDocumentKey; crumbs: Crumb[]; locale: Locale }) {
+export async function LegalDocumentPage({ doc, crumbs, locale, version }: { doc: LegalDocumentKey; crumbs: Crumb[]; locale: Locale; version?: string }) {
   let legal: LegalDocument = loadLegalDocument(doc, locale);
   // PWT-LEG-001: si el panel guardó una revisión (r1, r2…), se publica esa en lugar del texto base.
   if (doc === "cancelacion") {
-    const revision = await getBookingPolicy(locale);
-    if (revision && revision.revision > 0) legal = { title: revision.title, draft: false, draftVersion: null, blocks: parseMarkdown(revision.body) };
+    const revision = await getBookingPolicy(locale, { version });
+    if (version && !revision) notFound();
+    if (revision && (version || revision.revision > 0)) legal = { title: revision.title, draft: false, draftVersion: null, blocks: parseMarkdown(revision.body) };
   }
   const english = locale === "en" && hasEnglishVersion(doc);
   const documentLanguage = locale === "pt" ? "pt-BR" : english ? "en" : "es-PE";

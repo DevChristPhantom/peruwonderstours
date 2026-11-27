@@ -48,7 +48,7 @@ export function pageMetadata({
   // Google corta los títulos de más de ~60 caracteres: si con la marca no entra, va sin la marca.
   const pageTitle: Metadata["title"] = `${title} · ${SITE.name}`.length > 60 ? { absolute: title } : title;
   description = fitDescription(description);
-  const shareImage = absoluteUrl(image || '/brand/peruwonderstours-logo-official-20261115.webp');
+  const shareImage = absoluteUrl(image || '/brand/peruwonderstours-logo-circular.webp');
   return {
     title: pageTitle,
     description,

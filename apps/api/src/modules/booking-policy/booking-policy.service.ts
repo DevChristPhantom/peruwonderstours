@@ -55,7 +55,7 @@ export class BookingPolicyService {
     if (version !== undefined && !VERSION_PATTERN.test(version)) throw new NotFoundError('policy-version-not-found', 'Versión de políticas no encontrada.');
     if (version === `${POLICY_BASE_VERSION}-r0`) return baseDocument();
     const row = this.db.available
-      ? await this.db.read((tx) => (version ? tx.bookingPolicyRevision.findUnique({ where: { version } }) : tx.bookingPolicyRevision.findFirst({ orderBy: { revision: 'desc' } })))
+      ? await this.db.read((tx) => (version ? tx.bookingPolicyRevision.findUnique({ where: { version, isDraft: false } }) : tx.bookingPolicyRevision.findFirst({ where: { isDraft: false }, orderBy: { revision: 'desc' } })))
       : null;
     if (row) return { version: row.version, revision: row.revision, translations: validatePolicyTranslations(row.translations), updatedAt: row.createdAt.toISOString() };
     if (version) throw new NotFoundError('policy-version-not-found', 'Versión de políticas no encontrada.');
@@ -67,23 +67,40 @@ export class BookingPolicyService {
     return { version: doc.version, revision: doc.revision, locale, ...doc.translations[locale], updatedAt: doc.updatedAt };
   }
 
+  async editor() {
+    const published = await this.document();
+    const latest = this.db.available
+      ? await this.db.read((tx) => tx.bookingPolicyRevision.findFirst({ orderBy: { revision: 'desc' } }))
+      : null;
+    const draft = latest?.isDraft && latest.revision > published.revision ? {
+      revision: latest.revision,
+      translations: validatePolicyTranslations(latest.translations),
+      updatedAt: latest.createdAt.toISOString(),
+    } : null;
+    return { published, draft };
+  }
+
   /** Guarda una revisión nueva. `expectedRevision` evita pisar cambios de otra persona. */
-  async save(actor: StaffActor, meta: RequestMeta, expectedRevision: number, raw: unknown): Promise<PolicyDocument> {
+  async save(actor: StaffActor, meta: RequestMeta, expectedRevision: number, raw?: unknown): Promise<PolicyDocument> {
     if (!Number.isInteger(expectedRevision) || expectedRevision < 0) throw new ValidationError('invalid-policy-revision', 'Revisión inválida.');
-    const translations = validatePolicyTranslations(raw);
+    const isDraft = raw !== undefined;
     return this.db.run(actor, meta, async (ctx) => {
       // Serializa la asignación del número de revisión entre procesos.
-      await ctx.tx.$queryRaw`SELECT pg_advisory_xact_lock(7601126)`;
+      await ctx.tx.$executeRaw`SELECT pg_advisory_xact_lock(7601126)`;
       const previous = await ctx.tx.bookingPolicyRevision.findFirst({ orderBy: { revision: 'desc' } });
       if ((previous?.revision ?? 0) !== expectedRevision) {
         throw new ConflictError('policy-version-conflict', 'Otra persona cambió las políticas. Recarga la página antes de guardar.');
       }
+      if (!isDraft && !previous?.isDraft) {
+        throw new ConflictError('policy-draft-required', 'Guarda un borrador antes de publicar.');
+      }
+      const translations = validatePolicyTranslations(isDraft ? raw : previous?.translations);
       const revision = expectedRevision + 1;
       const version = `${POLICY_BASE_VERSION}-r${revision}`;
       await ctx.tx.bookingPolicyRevision.create({
-        data: { revision, version, translations: translations as unknown as Prisma.InputJsonValue, createdAt: ctx.now, createdBy: actor.userId },
+        data: { revision, version, isDraft, translations: translations as unknown as Prisma.InputJsonValue, createdAt: ctx.now, createdBy: actor.userId },
       });
-      await ctx.audit({ action: 'BOOKING_POLICY_REVISED', entityType: 'booking_policy_revision', entityId: null, before: { revision: expectedRevision }, after: { revision, version } });
+      await ctx.audit({ action: isDraft ? 'BOOKING_POLICY_DRAFT_SAVED' : 'BOOKING_POLICY_REVISED', entityType: 'booking_policy_revision', entityId: null, before: { revision: expectedRevision }, after: { revision, version } });
       return { version, revision, translations, updatedAt: ctx.now.toISOString() };
     });
   }

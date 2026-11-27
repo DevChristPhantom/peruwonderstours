@@ -15,6 +15,13 @@ export async function saveBookingPolicyAction(expectedRevision: number, _prev: u
   );
   return action(
     () => apiData<{ version: string }>("/admin/booking-policy", { method: "PUT", body: { expectedRevision, translations } }).then(() => null),
-    { message: "Políticas guardadas como una versión nueva. La web ya muestra el texto actualizado; las reservas anteriores conservan la versión que aceptaron." },
+    { message: "Borrador guardado. Puedes revisarlo y publicarlo cuando esté listo." },
+  );
+}
+
+export async function publishBookingPolicyAction(expectedRevision: number) {
+  return action(
+    () => apiData<{ version: string }>("/admin/booking-policy/publish", { method: "POST", body: { expectedRevision } }).then(() => null),
+    { message: "Políticas publicadas. Las reservas anteriores conservan la versión que aceptaron." },
   );
 }

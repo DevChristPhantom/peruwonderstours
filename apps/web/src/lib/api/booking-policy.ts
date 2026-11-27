@@ -18,11 +18,11 @@ export interface BookingPolicyRevision {
  * `fresh`: sin caché (checkout: el cliente debe aceptar la versión vigente). Sin `fresh` se cachea
  * 1 h con el tag `booking-policy`, que el panel invalida al guardar una revisión nueva.
  */
-export async function getBookingPolicy(locale: Locale, options: { fresh?: boolean } = {}): Promise<BookingPolicyRevision | null> {
+export async function getBookingPolicy(locale: Locale, options: { fresh?: boolean; version?: string } = {}): Promise<BookingPolicyRevision | null> {
   try {
     const res = await apiRequest<{ data: BookingPolicyRevision }>(
-      `/booking-policy?locale=${locale}`,
-      options.fresh ? { nullOn404: true } : { nullOn404: true, next: { revalidate: 3600, tags: ["booking-policy"] } },
+      `/booking-policy?${new URLSearchParams({ locale, ...(options.version ? { version: options.version } : {}) })}`,
+      options.fresh || options.version ? { nullOn404: true } : { nullOn404: true, next: { revalidate: 3600, tags: ["booking-policy"] } },
     );
     return res?.body.data ?? null;
   } catch {

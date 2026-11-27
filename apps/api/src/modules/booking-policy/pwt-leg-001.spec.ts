@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import { Money } from '../../shared/domain/money.js';
 import { evaluatePaymentOptions, type PaymentPlanItem, type PaymentPlanPolicy } from '../booking/domain/payment-plan.js';
 import {
@@ -75,4 +76,39 @@ describe('PWT-LEG-001 · políticas editables', () => {
     expect(() => validatePolicyTranslations({ ...BOOKING_POLICY_SEED, en: { title: 'x', body: 'y' } })).toThrow();
     expect(() => validatePolicyTranslations({ ...BOOKING_POLICY_SEED, es: { title: 'Título', body: `${'a'.repeat(120)}<script>alert(1)</script>` } })).toThrow();
   });
+  it('keeps drafts private, rejects stale publication, and preserves published revisions', async () => {
+    type Row = { version: string; revision: number; isDraft: boolean; translations: unknown; createdAt: Date };
+    const rows: Row[] = [];
+    const tx = {
+      $executeRaw: vi.fn(),
+      bookingPolicyRevision: {
+        findFirst: async ({ where }: { where?: { isDraft: boolean } }) =>
+          rows.findLast((row) => where === undefined || row.isDraft === where.isDraft) ?? null,
+        findUnique: async ({ where }: { where: { version: string; isDraft: boolean } }) =>
+          rows.find((row) => row.version === where.version && row.isDraft === where.isDraft) ?? null,
+        create: async ({ data }: { data: Row }) => { rows.push(data); },
+      },
+    };
+    const audit = vi.fn();
+    const service = new BookingPolicyService({
+      available: true,
+      read: (fn: (value: typeof tx) => unknown) => fn(tx),
+      run: (_actor: unknown, _meta: unknown, fn: (value: unknown) => unknown) => fn({ tx, audit, now: new Date() }),
+    } as never);
+    const modified = { ...BOOKING_POLICY_SEED, es: { ...BOOKING_POLICY_SEED.es, title: 'Política revisada' } };
+    const actor = { userId: 'staff' } as never;
+    const meta = {} as never;
+    const draft = await service.save(actor, meta, 0, modified);
+    expect((await service.current('es')).revision).toBe(0);
+    await expect(service.current('es', draft.version)).rejects.toThrow();
+    expect((await service.editor()).draft?.translations.es.title).toBe('Política revisada');
+    await expect(service.save(actor, meta, 0)).rejects.toThrow();
+    const published = await service.save(actor, meta, draft.revision);
+    expect((await service.current('es')).title).toBe('Política revisada');
+    expect((await service.editor()).draft).toBeNull();
+    await service.save(actor, meta, published.revision, BOOKING_POLICY_SEED);
+    expect((await service.current('es', published.version)).title).toBe('Política revisada');
+    expect((await service.current('es')).version).toBe(published.version);
+  });
+
 });

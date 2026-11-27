@@ -133,6 +133,8 @@ export interface BookingMailData {
   status: string;
   paymentOption: 'deposit' | 'full';
   items: Array<{ title: string; travelDate: string; paxCount: number; subtotal: MoneyView }>;
+  acceptedPolicyUrl?: string;
+  serviceDetails?: Array<{ title: string; itinerary: Array<{ day: number; title: string | null; description: string }>; policies: string | null }>;
   total: MoneyView;
   paid: MoneyView;
   balance: MoneyView;
@@ -292,6 +294,21 @@ export function bookingVoucherEmail(d: BookingMailData, brand: BrandInfo, kind: 
   const title = kind === 'confirmation' ? t.confirmedTitle(d.code) : t.voucherTitle(d.code);
   const intro = kind === 'confirmation' ? t.confirmedIntro(d.customerName) : t.voucherIntro(d.customerName);
   const unsub = unsubscribeFooter(d);
+  const labels = {
+    es: { day: 'Día', conditions: 'Condiciones particulares', policy: 'Política aceptada' },
+    en: { day: 'Day', conditions: 'Special conditions', policy: 'Accepted policy' },
+    pt: { day: 'Dia', conditions: 'Condições especiais', policy: 'Política aceita' },
+  }[locale];
+  const details = (d.serviceDetails ?? []).filter((service) => service.itinerary.length || service.policies);
+  const detailLines = details.flatMap((service) => [
+    service.title,
+    ...service.itinerary.map((day) => [`${labels.day} ${day.day}`, day.title, day.description].filter(Boolean).join(' · ')),
+    ...(service.policies ? [`${labels.conditions}: ${service.policies}`] : []),
+  ]);
+  const detailHtml = detailLines.map((line) => `<p>${escapeHtml(line).replace(/\r?\n/g, '<br>')}</p>`).join('');
+  const acceptedPolicyHtml = d.acceptedPolicyUrl
+    ? `<p><a href="${escapeHtml(d.acceptedPolicyUrl)}">${labels.policy}</a></p>`
+    : '';
   const html = layout({
     title,
     locale,
@@ -302,13 +319,15 @@ export function bookingVoucherEmail(d: BookingMailData, brand: BrandInfo, kind: 
 <p style="margin:0 0 4px;font-size:13px;color:#5f6b76">${t.voucher}</p>
 <p style="margin:0;font-size:22px;font-weight:bold;letter-spacing:1px">${escapeHtml(d.code)}</p></div>
 ${itemsHtml(d.items, locale)}
+${detailHtml}
+${acceptedPolicyHtml}
 ${rows(amountsPairs(d))}
 ${d.balance.amount > 0n ? `<p>${escapeHtml(t.payBefore)}</p>` : ''}
 ${button(d.manageUrl, t.view)}
 ${linkNote(d)}`,
     footerExtraHtml: unsub.html,
   });
-  const text = [title, '', intro, '', `${t.voucher}: ${d.code}`, itemsText(d.items, locale), '', textRows(amountsPairs(d)), '', `${t.view}: ${d.manageUrl}`, '', textFooter(brand, unsub.text || undefined, locale)].join('\n');
+  const text = [title, '', intro, '', `${t.voucher}: ${d.code}`, itemsText(d.items, locale), ...detailLines, ...(d.acceptedPolicyUrl ? [`${labels.policy}: ${d.acceptedPolicyUrl}`] : []), '', textRows(amountsPairs(d)), '', `${t.view}: ${d.manageUrl}`, '', textFooter(brand, unsub.text || undefined, locale)].join('\n');
   return { subject: kind === 'confirmation' ? t.confirmedSubject(d.code) : t.voucherSubject(d.code), html, text };
 }
 
